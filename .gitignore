@@ -1,0 +1,40 @@
+# mac's folder info file (DS_Store)
+**/.DS_Store
+**/.vscode/
+**/__pycache__/
+
+# compiling files
+**/*.pcm
+**/*.so
+**/*.o
+
+**/*.png
+
+# txt files: Be careful not to upload experiments datasets
+#*.txt
+#*.csv
+#*.docx
+#*.xlsx
+#*.dat
+#*.gz
+#*.tar.gz
+#*.tar
+#*.zip
+
+# output of CtauErr: 3 - 70 MB
+**/CtauErr/*.root
+
+# Temporal - no root file at all
+**/*.root
+
+
+# main inputs - GB level
+skimmed_files/*.root
+Oniatree/*.root
+files_skim/*.root
+files_roodata/*.root
+
+
+# test codes
+**/study_*/
+# study_*/
