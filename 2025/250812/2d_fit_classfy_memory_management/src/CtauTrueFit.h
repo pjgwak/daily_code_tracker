@@ -34,6 +34,8 @@ public:
 
   int nBins = 100; // plotting bins
 
+  void initVar(const std::string &varName, double init, double low, double high);
+
 private:
   void setLabels();
   void makeOutputFolder();

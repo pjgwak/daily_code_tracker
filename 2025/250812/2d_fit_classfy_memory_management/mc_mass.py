@@ -31,12 +31,18 @@ fit = McMassFit(
 # === set user custom values if you want ===
 # fit.inputFilePath = ''
 
-
 # ===== prepare and perform the fit =====
 fit.init() # up to bulding models
 
 # --- set parameters ---
-# fit.initVar('b_Jpsi', 0.20, 0, 0.8) # by experience, < 0.80
+fit.fitLimit = 3.23 # max of mass for fit
+fit.initVar('N_Jpsi', 2000000, 1000000, 5000000)
+fit.initVar('mean', 3.096, 3.086, 3.106)
+fit.initVar('x_A', 1.1,1,3)
+fit.initVar('sigma_1_A', 0.01,0.001,0.1)
+fit.initVar('alpha_1_A', 1.5,0.8,5)
+fit.initVar('n_1_A', 1.5,0.8,5)
+fit.initVar('f', 0.6,0.05,0.95)
 
 
 fit.run() # fit and save

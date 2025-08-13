@@ -30,6 +30,8 @@ public:
   double ctauResMin = -10;
   double ctauResMax = 0;
 
+  void initVar(const std::string &varName, double init, double low, double high);
+
 private:
   void setLabels();
   void makeOutputFolder();

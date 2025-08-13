@@ -24,22 +24,6 @@
 #include "TLine.h"
 #include "/work/pjgwak/pol24/headers/polarizationUtilities.h"
 
-// #include <iostream>
-// #include <RooGaussian.h>
-// #include <RooFormulaVar.h>
-// #include <RooCBShape.h>
-// #include <RooWorkspace.h>
-// #include <RooChebychev.h>
-// #include <RooPolynomial.h>
-// #include "RooPlot.h"
-// #include "TText.h"
-// #include "TArrow.h"
-// #include "TFile.h"
-// #include "RooDataHist.h"
-// #include "RooCategory.h"
-// #include "RooSimultaneous.h"
-// #include "RooStats/SPlot.h"
-
 using std::cout; using std::endl;
 using std::min;
 using namespace RooFit;
@@ -146,6 +130,8 @@ void CtauResFit::processDataset()
 
   RooDataSet *ctauResCutDS = (RooDataSet *)dataw_Sig->reduce(RooArgSet(*(ws->var("ctau3DRes")), *(ws->var("ctau3D")), *(ws->var("ctau3DErr"))), Form("ctau3DRes<0&&ctau3DErr>%f&&ctau3DErr<%f", ctauErrMin, ctauErrMax));
   ws->import(*ctauResCutDS, Rename("ctauResCutDS")); // ctauResCutDS->SetName("ctauResCutDS");
+
+  delete ctauResCutDS;
 }
 
 void CtauResFit::setVariableRanges()
@@ -167,6 +153,28 @@ void CtauResFit::setVariableRanges()
   ws->var("ctau3D")->Print();
   ws->var("ctau3DErr")->Print();
   ws->var("ctau3DRes")->Print();
+}
+
+void CtauResFit::initVar(const std::string &varName, double init, double low, double high)
+{
+  RooRealVar *var = ws->var(varName.c_str());
+  if (!var)
+  {
+    std::cerr << "[ERROR] there is no variable:: " << varName << "\n";
+    exit(1);
+  }
+
+  if (init < low || init > high)
+  {
+    std::cerr << "[ERROR] init value out of bounds for variable: " << varName << "\n";
+    std::cerr << "        init = " << init << ", range = [" << low << ", " << high << "]\n";
+    exit(1);
+  }
+
+  var->setVal(init);
+  // var->setMin(low);
+  // var->setMax(high);
+  var->setRange(low, high);
 }
 
 void CtauResFit::buildModel()
@@ -268,6 +276,9 @@ void CtauResFit::doFit()
   // --- fit ---
   bool isWeighted = ws->data("dataToFit")->isWeighted();
   fitResult = ws->pdf("GaussModel_Tot")->fitTo(*dataToFit, Save(), SumW2Error(isWeighted), Extended(kTRUE), NumCPU(nCPU), PrintLevel(-1));
+
+  delete hTot;
+  delete dataToFit;
 }
 
 void CtauResFit::drawPlot()
@@ -432,6 +443,9 @@ void CtauResFit::drawPlot()
 
   c_C->Update();
   c_C->SaveAs(Form("figs/2DFit_%s/CtauRes/CtauRes_%s_%sw_Effw%d_Accw%d_PtW%d_TnP%d.pdf", DATE.Data(), kineLabel.Data(), bCont.Data(), fEffW, fAccW, isPtW, isTnP));
+
+  delete h;
+  delete c_C;
 }
 
 void CtauResFit::saveOutput()
@@ -455,6 +469,8 @@ void CtauResFit::saveOutput()
 
   // print result
   fitResult->Print("V");
+
+  delete outFile;
 }
 
 // =================================

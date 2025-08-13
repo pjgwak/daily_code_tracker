@@ -156,6 +156,28 @@ void CtauBkgFit::setVariableRanges()
   // ws->var("ctau3DErr")->Print();
 }
 
+void CtauBkgFit::initVar(const std::string &varName, double init, double low, double high)
+{
+  RooRealVar *var = ws->var(varName.c_str());
+  if (!var)
+  {
+    std::cerr << "[ERROR] there is no variable:: " << varName << "\n";
+    exit(1);
+  }
+
+  if (init < low || init > high)
+  {
+    std::cerr << "[ERROR] init value out of bounds for variable: " << varName << "\n";
+    std::cerr << "        init = " << init << ", range = [" << low << ", " << high << "]\n";
+    exit(1);
+  }
+
+  var->setVal(init);
+  // var->setMin(low);
+  // var->setMax(high);
+  var->setRange(low, high);
+}
+
 void CtauBkgFit::fixParameters()
 {
   cout << "--- fixParameters() ---\n\n";
@@ -254,6 +276,9 @@ void CtauBkgFit::buildCtauFitModel()
   ws->factory(Form("SUM::%s(%s*%s, %s)", "pdfCTAUCOND_Bkg", "b_Bkg", "pdfCTAUCOND_BkgNoPR", "pdfCTAUCOND_BkgPR"));
 
   ws->factory(Form("RooExtendPdf::%s(%s,%s)", "pdfTot_Bkg", "pdfCTAUCOND_Bkg", "nBkgNp")); // nBkgNp is number of bkg events in dataw_Bkg dataset
+
+  delete pdfCTAU1;
+  delete pdfCTAUCOND_BkgNoPR;
 }
 
 void CtauBkgFit::buildCtauCondModel()
@@ -267,6 +292,8 @@ void CtauBkgFit::buildCtauCondModel()
   ws->factory(Form("SUM::%s(%s*%s, %s)", "pdfCTAU_Bkg", "b_Bkg", "pdfCTAU_BkgNoPR", "pdfCTAU_BkgPR"));
   RooAbsPdf *pdfCTAU_Bkg_Tot = new RooAddPdf("pdfCTAU_Bkg_Tot", "pdfCTAU_Bkg_Tot", RooArgList(*ws->pdf("pdfCTAU_Bkg")), RooArgList(*ws->var("nBkgNp")));
   ws->import(*pdfCTAU_Bkg_Tot);
+
+  delete pdfCTAU_Bkg_Tot;
 }
 
 void CtauBkgFit::doFit()
@@ -293,7 +320,10 @@ void CtauBkgFit::doFit()
   
   // --- fit options ---
   // SumW2Error(isWeighted)
-  // ConditionalObservables(RooArgSet(*ws->var("ctau3DErr"))) 
+  // ConditionalObservables(RooArgSet(*ws->var("ctau3DErr")))
+
+  delete hTot;
+  delete dataToFit;
 }
 
 void CtauBkgFit::drawCtauPull()
@@ -313,31 +343,30 @@ void CtauBkgFit::drawCtauPull()
   RooPlot *myPlot_E = ws->var("ctau3D")->frame(Bins(nCtauBins), Range(ctauLow, ctauHigh)); // bins
   myPlot_E->SetTitle("");
   
-  RooPlot *myPlot2_E = (RooPlot *)myPlot_E->Clone(); // copy to avoid memory error
-  myPlot2_E->updateNormVars(RooArgSet(*ws->var("ctau3D")));
+  myPlot_E->updateNormVars(RooArgSet(*ws->var("ctau3D")));
   ws->pdf("pdfCTAU_Bkg_Tot")->setNormRange("fitRange");
 
   // --- plotOn ---
   // data
-  ws->data("dataToFit")->plotOn(myPlot2_E, Name("data_ctauBkg"), DataError(RooAbsData::SumW2), XErrorSize(0), MarkerColor(kBlue), LineColor(kBlue), MarkerSize(0.7));
+  ws->data("dataToFit")->plotOn(myPlot_E, Name("data_ctauBkg"), DataError(RooAbsData::SumW2), XErrorSize(0), MarkerColor(kBlue), LineColor(kBlue), MarkerSize(0.7));
 
   // pdf
-  ws->pdf("pdfCTAU_Bkg_Tot")->plotOn(myPlot2_E, Name("ctauBkg_Tot"), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dataToFit"), kTRUE), FillStyle(1001), FillColor(kAzure - 9), VLines(), DrawOption("LCF"), Precision(1e-4));
+  ws->pdf("pdfCTAU_Bkg_Tot")->plotOn(myPlot_E, Name("ctauBkg_Tot"), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dataToFit"), kTRUE), FillStyle(1001), FillColor(kAzure - 9), VLines(), DrawOption("LCF"), Precision(1e-4));
   if (ws->pdf("pdfCTAU_BkgPR"))
   {
-    ws->pdf("pdfCTAU_Bkg_Tot")->plotOn(myPlot2_E, Name("BKGPR"), Components(RooArgSet(*ws->pdf("pdfCTAU_BkgPR"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dataToFit"), kTRUE), LineColor(kRed + 2));
+    ws->pdf("pdfCTAU_Bkg_Tot")->plotOn(myPlot_E, Name("BKGPR"), Components(RooArgSet(*ws->pdf("pdfCTAU_BkgPR"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dataToFit"), kTRUE), LineColor(kRed + 2));
   }
   if (ws->pdf("pdfCTAU_BkgNoPR"))
   {
-    ws->pdf("pdfCTAU_Bkg_Tot")->plotOn(myPlot2_E, Name("BKGNoPR"), Components(RooArgSet(*ws->pdf("pdfCTAU_BkgNoPR"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dataToFit"), kTRUE), LineColor(kOrange + 10), Precision(1e-4));
+    ws->pdf("pdfCTAU_Bkg_Tot")->plotOn(myPlot_E, Name("BKGNoPR"), Components(RooArgSet(*ws->pdf("pdfCTAU_BkgNoPR"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dataToFit"), kTRUE), LineColor(kOrange + 10), Precision(1e-4));
   }
-  ws->pdf("pdfCTAU_Bkg_Tot")->plotOn(myPlot2_E, Name("PDF"), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dataToFit"), kTRUE), LineColor(kBlack), Precision(1e-4));
+  ws->pdf("pdfCTAU_Bkg_Tot")->plotOn(myPlot_E, Name("PDF"), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dataToFit"), kTRUE), LineColor(kBlack), Precision(1e-4));
 
   // redraw dataset at top
-  ws->data("dataToFit")->plotOn(myPlot2_E, Name("data_ctauBkg"), DataError(RooAbsData::SumW2), XErrorSize(0), MarkerColor(kBlack), LineColor(kBlack), MarkerSize(0.7));
+  ws->data("dataToFit")->plotOn(myPlot_E, Name("data_ctauBkg"), DataError(RooAbsData::SumW2), XErrorSize(0), MarkerColor(kBlack), LineColor(kBlack), MarkerSize(0.7));
 
   // --- find y-max ---
-  myPlot2_E->GetYaxis()->SetRangeUser(10e-2, 10e7);
+  myPlot_E->GetYaxis()->SetRangeUser(10e-2, 10e7);
   TH1 *h = ws->data("dataToFit")->createHistogram("hist", *ws->var("ctau3D"), Binning(myPlot_E->GetNbinsX(), myPlot_E->GetXaxis()->GetXmin(), myPlot_E->GetXaxis()->GetXmax()));
   Double_t YMax = h->GetBinContent(h->GetMaximumBin());
   Double_t YMin = 1e99;
@@ -350,35 +379,35 @@ void CtauBkgFit::drawCtauPull()
   Ydown = 0.01;
 
   // --- other cosmetics ---
-  myPlot2_E->GetYaxis()->SetRangeUser(Ydown, Yup);
-  myPlot2_E->GetXaxis()->SetRangeUser(-4, 7);
-  myPlot2_E->GetXaxis()->SetTitle("#font[12]{l}_{J/#psi)} (mm)");
-  myPlot2_E->SetFillStyle(4000);
-  myPlot2_E->GetYaxis()->SetTitleOffset(1.43);
-  myPlot2_E->GetXaxis()->SetLabelSize(0);
-  myPlot2_E->GetXaxis()->SetTitleSize(0);
+  myPlot_E->GetYaxis()->SetRangeUser(Ydown, Yup);
+  myPlot_E->GetXaxis()->SetRangeUser(-4, 7);
+  myPlot_E->GetXaxis()->SetTitle("#font[12]{l}_{J/#psi)} (mm)");
+  myPlot_E->SetFillStyle(4000);
+  myPlot_E->GetYaxis()->SetTitleOffset(1.43);
+  myPlot_E->GetXaxis()->SetLabelSize(0);
+  myPlot_E->GetXaxis()->SetTitleSize(0);
 
   // --- draw vertical lines to show ctauMin and max ---
   TLine *minline = new TLine(ctauMin, 0.0, ctauMin, Ydown * TMath::Power((Yup / Ydown), 0.4));
   minline->SetLineStyle(2);
   minline->SetLineColor(1);
   minline->SetLineWidth(3);
-  myPlot2_E->addObject(minline);
+  myPlot_E->addObject(minline);
   TLine *maxline = new TLine(ctauMax, 0.0, ctauMax, Ydown * TMath::Power((Yup / Ydown), 0.4));
   maxline->SetLineStyle(2);
   maxline->SetLineColor(1);
   maxline->SetLineWidth(3);
-  myPlot2_E->addObject(maxline);
-  myPlot2_E->Draw();
+  myPlot_E->addObject(maxline);
+  myPlot_E->Draw();
 
   // --- draw legend ---
   TLegend *leg_E = new TLegend(text_x + 0.033 + 0.25, text_y + 0.09 + 0.04, text_x + 0.033 + 0.38, text_y + 0.09 - 0.15);
   leg_E->SetTextSize(text_size);
   leg_E->SetTextFont(43);
   leg_E->SetBorderSize(0);
-  leg_E->AddEntry(myPlot2_E->findObject("data_ctauBkg"), "Data_Bkg", "pe");
-  leg_E->AddEntry(myPlot2_E->findObject("ctauBkg_Tot"), "Total PDF", "fl");
-  // leg_E->AddEntry(myPlot2_E->findObject("test"),"?? PDF","l");
+  leg_E->AddEntry(myPlot_E->findObject("data_ctauBkg"), "Data_Bkg", "pe");
+  leg_E->AddEntry(myPlot_E->findObject("ctauBkg_Tot"), "Total PDF", "fl");
+  // leg_E->AddEntry(myPlot_E->findObject("test"),"?? PDF","l");
   leg_E->Draw("same");
 
   // --- print latex ---
@@ -413,8 +442,7 @@ void CtauBkgFit::drawCtauPull()
   pad_E_2->SetFrameFillStyle(4000);
   pad_E_2->SetTicks(1, 1);
 
-  RooPlot *frameTMP = (RooPlot *)myPlot2_E->Clone("TMP");
-  RooHist *hpull_E = frameTMP->pullHist("data_ctauBkg", "ctauBkg_Tot", true);
+  RooHist *hpull_E = myPlot_E->pullHist("data_ctauBkg", "ctauBkg_Tot", true);
   hpull_E->SetMarkerSize(0.8);
   RooPlot *pullFrame_E = ws->var("ctau3D")->frame(Title("Pull Distribution"), Bins(nCtauBins), Range(ctauLow, ctauHigh));
   pullFrame_E->addPlotable(hpull_E, "PX");
@@ -443,12 +471,15 @@ void CtauBkgFit::drawCtauPull()
   lD->SetLineStyle(1);
   lD->Draw("same");
 
-  printChi2(ws, pad_E_2, frameTMP, fitResult, "ctau3D", "data_ctauBkg", "ctauBkg_Tot", nCtauBins, false);
+  printChi2(ws, pad_E_2, myPlot_E, fitResult, "ctau3D", "data_ctauBkg", "ctauBkg_Tot", nCtauBins, false);
 
   pad_E_2->Update();
 
   c_E->Update();
   c_E->SaveAs(Form("figs/2DFit_%s/CtauBkg/Bkg_%s_%sw_Effw%d_Accw%d_PtW%d_TnP%d.pdf", DATE.Data(), kineLabel.Data(), fname.Data(), fEffW, fAccW, isPtW, isTnP));
+
+  delete h;
+  delete c_E;
 }
 
 
@@ -464,31 +495,10 @@ void CtauBkgFit::saveOutput()
 
   fitResult->Print(); // print fit result
   fitResult->correlationMatrix().Print();
+
+  delete outFile;
 }
 
 // =================================
 // ===== legacy codes or notes =====
 // =================================
-
-// #include <iostream>
-// #include "../headers/cutsAndBin.h"
-// #include "../headers/CMS_lumi_v2mass.C"
-// #include "../headers/tdrstyle.C"
-// #include "../headers/rootFitHeaders.h"
-// #include "../headers/commonUtility.h"
-// #include "../headers/JpsiUtility.h"
-
-// #include <RooGaussian.h>
-// #include <RooFormulaVar.h>
-// #include <RooCBShape.h>
-// #include <RooWorkspace.h>
-// #include <RooChebychev.h>
-// #include <RooPolynomial.h>
-// #include "RooPlot.h"
-// #include "TText.h"
-// #include "TArrow.h"
-// #include "TFile.h"
-// #include "RooDataHist.h"
-// #include "RooCategory.h"
-// #include "RooSimultaneous.h"
-// #include "RooStats/SPlot.h"

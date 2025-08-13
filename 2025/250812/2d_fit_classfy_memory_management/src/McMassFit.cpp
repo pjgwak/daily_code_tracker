@@ -171,6 +171,28 @@ void McMassFit::setVariableRanges()
   ws->var("mass")->Print();
 }
 
+void McMassFit::initVar(const std::string &varName, double init, double low, double high)
+{
+  RooRealVar *var = ws->var(varName.c_str());
+  if (!var)
+  {
+    std::cerr << "[ERROR] there is no variable:: " << varName << "\n";
+    exit(1);
+  }
+
+  if (init < low || init > high)
+  {
+    std::cerr << "[ERROR] init value out of bounds for variable: " << varName << "\n";
+    std::cerr << "        init = " << init << ", range = [" << low << ", " << high << "]\n";
+    exit(1);
+  }
+
+  var->setVal(init);
+  // var->setMin(low);
+  // var->setMax(high);
+  var->setRange(low, high);
+}
+
 void McMassFit::buildModel()
 {
   cout << "--- buildModel() ---\n\n";

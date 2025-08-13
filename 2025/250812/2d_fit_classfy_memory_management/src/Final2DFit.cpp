@@ -178,6 +178,10 @@ void Final2DFit::processDataset() {
 
   RooDataSet *dsTot = (RooDataSet *)datasetW->reduce(*argSet, kineCut.Data());
   ws->import(*dsTot, Rename("dsTot"));
+
+  delete dsTot;
+  delete datasetW;
+  delete argSet;
 }
 
 void Final2DFit::setVariableRanges() {
@@ -212,6 +216,28 @@ void Final2DFit::fixParameters() {
 
   ws->pdf("pdfMASS_Tot")->getParameters(RooArgSet(*ws->var("mass"), *ws->pdf("pdfMASS_Jpsi"), *ws->pdf("pdfMASS_bkg")))->setAttribAll("Constant", kTRUE); // mass result
   ws->pdf("pdfCTAU_Bkg_Tot")->getParameters(RooArgSet(*ws->var("ctau3D"), *ws->pdf("pdfCTAU_BkgPR"), *ws->pdf("pdfCTAU_BkgNoPR"), *ws->pdf("pdfCTAUCOND_BkgPR"), *ws->pdf("pdfCTAUCOND_BkgNoPR")))->setAttribAll("Constant", kTRUE); // ctauBkg result
+}
+
+void Final2DFit::initVar(const std::string &varName, double init, double low, double high)
+{
+  RooRealVar *var = ws->var(varName.c_str());
+  if (!var)
+  {
+    std::cerr << "[ERROR] there is no variable:: " << varName << "\n";
+    exit(1);
+  }
+
+  if (init < low || init > high)
+  {
+    std::cerr << "[ERROR] init value out of bounds for variable: " << varName << "\n";
+    std::cerr << "        init = " << init << ", range = [" << low << ", " << high << "]\n";
+    exit(1);
+  }
+
+  var->setVal(init);
+  // var->setMin(low);
+  // var->setMax(high);
+  var->setRange(low, high);
 }
 
 void Final2DFit::buildCtauNpModel() {
@@ -261,6 +287,8 @@ void Final2DFit::buildCtauNpModel() {
                                             RooArgList(*ws->pdf("pdfCTAUTRUE_test1"), *ws->pdf("pdfCTAUTRUE_test2")),
                                             RooArgList(*ws->var("fDSS1_test")));
   ws->import(*pdfCTAUCOND_JpsiNoPR);
+
+  delete pdfCTAUCOND_JpsiNoPR;
 }
 
 void Final2DFit::buildMassCtauModel() {
@@ -312,6 +340,8 @@ void Final2DFit::buildMassCtauModel() {
                            RooArgList(*ws->pdf("pdfCTAUMASS_Bkg"), *ws->pdf("pdfCTAUMASS_Jpsi")),
                            RooArgList(*ws->var("N_Bkg"), *ws->var("N_Jpsi")));
   ws->import(*themodel);
+
+  delete themodel;
 }
 
 void Final2DFit::do2dFit() {
@@ -355,21 +385,20 @@ void Final2DFit::drawCtauPull() {
   myPlot_G->SetTitle("");
 
   // --- plotOn ---
-  RooPlot *myPlot2_G = (RooPlot *)myPlot_G->Clone(); // clone frame to avoid memory error
-  myPlot2_G->updateNormVars(RooArgSet(*ws->var("ctau3D")));
+  myPlot_G->updateNormVars(RooArgSet(*ws->var("ctau3D")));
 
   // plot dataset
   ws->data("dsToFit")->plotOn(myPlot_G, Name("dataHist_ctau"), DataError(RooAbsData::SumW2));
 
   // plot pdfs
-  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot2_G, Name("Ctau_Tot"), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), FillStyle(1001), FillColor(kViolet + 6), VLines(), DrawOption("LF"), NumCPU(nCPU), LineColor(kBlack), Precision(1e-4), Normalization(normDSTot, RooAbsReal::RelativeExpected));
-  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot2_G, Name("Ctau_Bkg"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_Bkg"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), FillStyle(1001), FillColor(kAzure - 9), VLines(), DrawOption("F"), NumCPU(nCPU));
-  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot2_G, Name("Ctau_JpsiPR"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_JpsiPR"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), LineColor(kRed + 3), NumCPU(nCPU));
-  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot2_G, Name("Ctau_JpsiNoPR"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_JpsiNoPR"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), LineColor(kGreen + 3), NumCPU(nCPU));
-  ws->data("dsToFit")->plotOn(myPlot2_G, Name("data_Ctau"), DataError(RooAbsData::SumW2), XErrorSize(0), MarkerColor(kBlack), LineColor(kBlack));
+  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot_G, Name("Ctau_Tot"), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), FillStyle(1001), FillColor(kViolet + 6), VLines(), DrawOption("LF"), NumCPU(nCPU), LineColor(kBlack), Precision(1e-4), Normalization(normDSTot, RooAbsReal::RelativeExpected));
+  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot_G, Name("Ctau_Bkg"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_Bkg"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), FillStyle(1001), FillColor(kAzure - 9), VLines(), DrawOption("F"), NumCPU(nCPU));
+  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot_G, Name("Ctau_JpsiPR"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_JpsiPR"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), LineColor(kRed + 3), NumCPU(nCPU));
+  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot_G, Name("Ctau_JpsiNoPR"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_JpsiNoPR"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), LineColor(kGreen + 3), NumCPU(nCPU));
+  ws->data("dsToFit")->plotOn(myPlot_G, Name("data_Ctau"), DataError(RooAbsData::SumW2), XErrorSize(0), MarkerColor(kBlack), LineColor(kBlack));
 
   // --- find good y-max ---
-  myPlot2_G->GetYaxis()->SetRangeUser(10e-2, 10e8);
+  myPlot_G->GetYaxis()->SetRangeUser(10e-2, 10e8);
   TH1 *hCtau = ws->data("dsToFit")->createHistogram("histCtau", *ws->var("ctau3D"), Binning(myPlot_G->GetNbinsX(), myPlot_G->GetXaxis()->GetXmin(), myPlot_G->GetXaxis()->GetXmax()));
   Double_t YMaxCtau = hCtau->GetBinContent(hCtau->GetMaximumBin());
   Double_t YMinCtau = 1e99;
@@ -382,24 +411,24 @@ void Final2DFit::drawCtauPull() {
   YdownCtau = 0.1; // fix y-min
 
   // --- other cosmetic ---
-  myPlot2_G->GetYaxis()->SetRangeUser(YdownCtau, YupCtau);
-  myPlot2_G->GetXaxis()->SetRangeUser(-4, 6);
-  myPlot2_G->GetXaxis()->SetTitle("#font[12]{l}_{J/#psi} (mm)");
-  myPlot2_G->SetFillStyle(4000);
-  myPlot2_G->GetXaxis()->SetLabelSize(0);
-  myPlot2_G->GetXaxis()->SetTitleSize(0);
-  myPlot2_G->Draw();
+  myPlot_G->GetYaxis()->SetRangeUser(YdownCtau, YupCtau);
+  myPlot_G->GetXaxis()->SetRangeUser(-4, 6);
+  myPlot_G->GetXaxis()->SetTitle("#font[12]{l}_{J/#psi} (mm)");
+  myPlot_G->SetFillStyle(4000);
+  myPlot_G->GetXaxis()->SetLabelSize(0);
+  myPlot_G->GetXaxis()->SetTitleSize(0);
+  myPlot_G->Draw();
 
   // --- draw legend ---
   TLegend *leg_G = new TLegend(text_x+0.033 + 0.25, text_y+0.09 + 0.05, text_x+0.033 + 0.38, text_y+0.09 - 0.11);
   leg_G->SetTextSize(text_size);
   leg_G->SetTextFont(43);
   leg_G->SetBorderSize(0);
-  leg_G->AddEntry(myPlot2_G->findObject("data_Ctau"), "Data", "pe");
-  leg_G->AddEntry(myPlot2_G->findObject("Ctau_Tot"), "Total fit", "fl");
-  leg_G->AddEntry(myPlot2_G->findObject("Ctau_Bkg"), "Background", "fl");
-  leg_G->AddEntry(myPlot2_G->findObject("Ctau_JpsiPR"), "J/#psi Prompt", "l");
-  leg_G->AddEntry(myPlot2_G->findObject("Ctau_JpsiNoPR"), "J/#psi Non-Prompt", "l");
+  leg_G->AddEntry(myPlot_G->findObject("data_Ctau"), "Data", "pe");
+  leg_G->AddEntry(myPlot_G->findObject("Ctau_Tot"), "Total fit", "fl");
+  leg_G->AddEntry(myPlot_G->findObject("Ctau_Bkg"), "Background", "fl");
+  leg_G->AddEntry(myPlot_G->findObject("Ctau_JpsiPR"), "J/#psi Prompt", "l");
+  leg_G->AddEntry(myPlot_G->findObject("Ctau_JpsiNoPR"), "J/#psi Non-Prompt", "l");
   leg_G->Draw("same");
 
   // --- print latex ---
@@ -415,15 +444,17 @@ void Final2DFit::drawCtauPull() {
 
   // --- pull padd ---
   TPad *pad_G_2 = new TPad("pad_G_2", "pad_G_2", 0, 0.006, 0.98, 0.227);
-  RooPlot *frameTMP_G = (RooPlot *)myPlot2_G->Clone("TMP_G");
   RooHist *hpull_G;
 
-  pullDist(ws, pad_G_2, c_G, frameTMP_G, hpull_G, "data_Ctau", "Ctau_Tot", "ctau3D", nCtauBins, -4, 6.0, "#font[12]{l}_{J/#psi} (mm)");
-  printChi2(ws, pad_G_2, frameTMP_G, fitResult, "ctau3D", "data_Ctau", "Ctau_Tot", nCtauBins);
+  pullDist(ws, pad_G_2, c_G, myPlot_G, hpull_G, "data_Ctau", "Ctau_Tot", "ctau3D", nCtauBins, -4, 6.0, "#font[12]{l}_{J/#psi} (mm)");
+  printChi2(ws, pad_G_2, myPlot_G, fitResult, "ctau3D", "data_Ctau", "Ctau_Tot", nCtauBins);
   pad_G_2->Update();
 
   c_G->Update();
   c_G->SaveAs(Form("figs/2DFit_%s/Final/2DFit_Ctau_%s_%sw_Effw%d_Accw%d_PtW%d_TnP%d.pdf", DATE.Data(), kineLabel.Data(), fname.Data(), fEffW, fAccW, isPtW, isTnP));
+
+  delete hCtau;
+  delete c_G;
 }
 
 void Final2DFit::drawMass() {
@@ -446,18 +477,17 @@ void Final2DFit::drawMass() {
   myPlot_H->SetTitle("");
 
   // --- plotting ---
-  RooPlot *myPlot2_H = (RooPlot *)myPlot_H->Clone(); // clone the frame to avoid memory error later
-  myPlot2_H->updateNormVars(RooArgSet(*ws->var("mass")));
+  myPlot_H->updateNormVars(RooArgSet(*ws->var("mass")));
 
   // dataset
   ws->data("dsToFit")->plotOn(myPlot_H, Name("dataHist_mass"));
   
   // pdfs
-  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot2_H, Name("Mass_Bkg"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_Bkg"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), FillStyle(1001), FillColor(kAzure - 9), VLines(), DrawOption("LCF"), NumCPU(nCPU), LineStyle(kDashed));
-  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot2_H, Name("Mass_JpsiPR"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_JpsiPR"), *ws->pdf("pdfCTAUMASS_Bkg"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), LineColor(kRed + 3), LineStyle(1), Precision(1e-4), NumCPU(nCPU));
-  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot2_H, Name("Mass_JpsiNoPR"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_JpsiNoPR"), *ws->pdf("pdfCTAUMASS_Bkg"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), LineColor(kGreen + 3), LineStyle(1), Precision(1e-4), NumCPU(nCPU));
-  ws->data("dsToFit")->plotOn(myPlot2_H, Name("data_Mass"), DataError(RooAbsData::SumW2), XErrorSize(0), MarkerColor(kBlack), LineColor(kBlack));
-  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot2_H, Name("Mass_Tot"), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), NumCPU(nCPU), LineColor(kBlack));
+  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot_H, Name("Mass_Bkg"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_Bkg"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), FillStyle(1001), FillColor(kAzure - 9), VLines(), DrawOption("LCF"), NumCPU(nCPU), LineStyle(kDashed));
+  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot_H, Name("Mass_JpsiPR"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_JpsiPR"), *ws->pdf("pdfCTAUMASS_Bkg"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), LineColor(kRed + 3), LineStyle(1), Precision(1e-4), NumCPU(nCPU));
+  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot_H, Name("Mass_JpsiNoPR"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_JpsiNoPR"), *ws->pdf("pdfCTAUMASS_Bkg"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), LineColor(kGreen + 3), LineStyle(1), Precision(1e-4), NumCPU(nCPU));
+  ws->data("dsToFit")->plotOn(myPlot_H, Name("data_Mass"), DataError(RooAbsData::SumW2), XErrorSize(0), MarkerColor(kBlack), LineColor(kBlack));
+  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot_H, Name("Mass_Tot"), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), NumCPU(nCPU), LineColor(kBlack));
 
   // --- find y-max value ---
   TH1 *h = ws->data("dsToFit")->createHistogram("hist2", *ws->var("mass"), Binning(myPlot_H->GetNbinsX(), myPlot_H->GetXaxis()->GetXmin(), myPlot_H->GetXaxis()->GetXmax()));
@@ -473,24 +503,24 @@ void Final2DFit::drawMass() {
   Yup = YMax * TMath::Power((YMax / YMin), (0.4 / (1.0 - 0.1 - 0.4)));
 
   // --- other cosmetics ---
-  myPlot2_H->GetYaxis()->SetRangeUser(Ydown, Yup);
-  myPlot2_H->GetXaxis()->SetRangeUser(massLow, massHigh);
-  myPlot2_H->GetXaxis()->SetTitle("m_{#mu^{+}#mu^{-} (GeV/c^{2})}");
-  myPlot2_H->SetFillStyle(4000);
-  myPlot2_H->GetXaxis()->SetLabelSize(0);
-  myPlot2_H->GetXaxis()->SetTitleSize(0);
-  myPlot2_H->Draw();
+  myPlot_H->GetYaxis()->SetRangeUser(Ydown, Yup);
+  myPlot_H->GetXaxis()->SetRangeUser(massLow, massHigh);
+  myPlot_H->GetXaxis()->SetTitle("m_{#mu^{+}#mu^{-} (GeV/c^{2})}");
+  myPlot_H->SetFillStyle(4000);
+  myPlot_H->GetXaxis()->SetLabelSize(0);
+  myPlot_H->GetXaxis()->SetTitleSize(0);
+  myPlot_H->Draw();
 
   // -- draw legends ---
   TLegend *leg_H = new TLegend(text_x+0.033 + 0.25, text_y+0.09 + 0.03, text_x+0.033 + 0.38, text_y+0.09 - 0.17);
   leg_H->SetTextSize(text_size);
   leg_H->SetTextFont(43);
   leg_H->SetBorderSize(0);
-  leg_H->AddEntry(myPlot2_H->findObject("data_Mass"), "Data", "pe");
-  leg_H->AddEntry(myPlot2_H->findObject("Mass_Tot"), "Total fit", "fl");
-  leg_H->AddEntry(myPlot2_H->findObject("Mass_Bkg"), "Background", "fl");
-  leg_H->AddEntry(myPlot2_H->findObject("Mass_JpsiPR"), "J/#psi Prompt", "l");
-  leg_H->AddEntry(myPlot2_H->findObject("Mass_JpsiNoPR"), "J/#psi Non-Prompt", "l");
+  leg_H->AddEntry(myPlot_H->findObject("data_Mass"), "Data", "pe");
+  leg_H->AddEntry(myPlot_H->findObject("Mass_Tot"), "Total fit", "fl");
+  leg_H->AddEntry(myPlot_H->findObject("Mass_Bkg"), "Background", "fl");
+  leg_H->AddEntry(myPlot_H->findObject("Mass_JpsiPR"), "J/#psi Prompt", "l");
+  leg_H->AddEntry(myPlot_H->findObject("Mass_JpsiNoPR"), "J/#psi Non-Prompt", "l");
   leg_H->Draw("same");
 
   // --- print latex ---
@@ -506,13 +536,12 @@ void Final2DFit::drawMass() {
   
   // --- pull pad ---
   TPad *pad_H_2 = new TPad("pad_H_2", "pad_H_2", 0.0, 0.0, 1.0, 0.3);
-  RooPlot *frameTMP_H = (RooPlot *)myPlot2_H->Clone("TMP_H");
   RooHist *hpull_H;
 
-  pullDist(ws, pad_H_2, c_H, frameTMP_H, hpull_H, "data_Mass", "Mass_Tot", "mass", nMassBin, massLow, massHigh, "m_{#mu^{+}#mu^{-} (GeV/c^{2})}");
+  pullDist(ws, pad_H_2, c_H, myPlot_H, hpull_H, "data_Mass", "Mass_Tot", "mass", nMassBin, massLow, massHigh, "m_{#mu^{+}#mu^{-} (GeV/c^{2})}");
   pad_H_2->Update();
 
-  printChi2(ws, pad_H_2, frameTMP_H, fitResult, "mass", "data_Mass", "Mass_Tot", nMassBin, false);
+  printChi2(ws, pad_H_2, myPlot_H, fitResult, "mass", "data_Mass", "Mass_Tot", nMassBin, false);
 
   cout << "############################################################################" << endl;
 
@@ -520,6 +549,9 @@ void Final2DFit::drawMass() {
 
   // --- save ---
   c_H->SaveAs(Form("figs/2DFit_%s/Final/2DFit_Mass_%s_%sw_Effw%d_Accw%d_PtW%d_TnP%d.pdf", DATE.Data(), kineLabel.Data(), fname.Data(), fEffW, fAccW, isPtW, isTnP));
+
+  delete h;
+  delete c_H;
 }
 
 void Final2DFit::drawCtauRatio() {
@@ -543,22 +575,21 @@ void Final2DFit::drawCtauRatio() {
   pad_G_1->cd();
 
   // drawing part
-  RooPlot *myPlot2_G = (RooPlot *)myPlot_G->Clone();
-  myPlot2_G->updateNormVars(RooArgSet(*ws->var("ctau3D")));
+  myPlot_G->updateNormVars(RooArgSet(*ws->var("ctau3D")));
 
   ws->data("dsToFit")->plotOn(myPlot_G, Name("dataHist_ctau"), DataError(RooAbsData::SumW2));
-  //   myPlot2_G->updateNormVars(RooArgSet(*ws->var("mass"), *ws->var("ctau3D"), *ws->var("ctau3DErr")));
-  // ws->data("dsToFit")->plotOn(myPlot2_G,Name("dOS"), DataError(RooAbsData::SumW2), XErrorSize(0), MarkerColor(kBlack), LineColor(kBlack));
+  //   myPlot_G->updateNormVars(RooArgSet(*ws->var("mass"), *ws->var("ctau3D"), *ws->var("ctau3DErr")));
+  // ws->data("dsToFit")->plotOn(myPlot_G,Name("dOS"), DataError(RooAbsData::SumW2), XErrorSize(0), MarkerColor(kBlack), LineColor(kBlack));
 
-  // ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot2_G, Name("Ctau_Tot"), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::NumEvent), FillStyle(1001), FillColor(kViolet + 6), VLines(), DrawOption("LF"), NumCPU(nCPU), LineColor(kBlack));
-  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot2_G, Name("Ctau_Tot"), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), FillStyle(1001), FillColor(kViolet + 6), VLines(), DrawOption("LF"), NumCPU(nCPU), LineColor(kBlack), Precision(1e-4), Normalization(normDSTot, RooAbsReal::RelativeExpected));
+  // ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot_G, Name("Ctau_Tot"), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::NumEvent), FillStyle(1001), FillColor(kViolet + 6), VLines(), DrawOption("LF"), NumCPU(nCPU), LineColor(kBlack));
+  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot_G, Name("Ctau_Tot"), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), FillStyle(1001), FillColor(kViolet + 6), VLines(), DrawOption("LF"), NumCPU(nCPU), LineColor(kBlack), Precision(1e-4), Normalization(normDSTot, RooAbsReal::RelativeExpected));
 
-  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot2_G, Name("Ctau_Bkg"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_Bkg"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), FillStyle(1001), FillColor(kAzure - 9), VLines(), DrawOption("F"), NumCPU(nCPU));
-  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot2_G, Name("Ctau_JpsiPR"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_JpsiPR"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), LineColor(kRed + 3), NumCPU(nCPU));
-  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot2_G, Name("Ctau_JpsiNoPR"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_JpsiNoPR"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), LineColor(kGreen + 3), NumCPU(nCPU));
-  ws->data("dsToFit")->plotOn(myPlot2_G, Name("data_Ctau"), DataError(RooAbsData::SumW2), XErrorSize(0), MarkerColor(kBlack), LineColor(kBlack));
+  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot_G, Name("Ctau_Bkg"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_Bkg"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), FillStyle(1001), FillColor(kAzure - 9), VLines(), DrawOption("F"), NumCPU(nCPU));
+  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot_G, Name("Ctau_JpsiPR"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_JpsiPR"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), LineColor(kRed + 3), NumCPU(nCPU));
+  ws->pdf("pdfCTAUMASS_Tot")->plotOn(myPlot_G, Name("Ctau_JpsiNoPR"), Components(RooArgSet(*ws->pdf("pdfCTAUMASS_JpsiNoPR"))), ProjWData(RooArgSet(*ws->var("ctau3DErr")), *ws->data("dsToFit"), kTRUE), Normalization(normDSTot, RooAbsReal::RelativeExpected), LineColor(kGreen + 3), NumCPU(nCPU));
+  ws->data("dsToFit")->plotOn(myPlot_G, Name("data_Ctau"), DataError(RooAbsData::SumW2), XErrorSize(0), MarkerColor(kBlack), LineColor(kBlack));
 
-  myPlot2_G->GetYaxis()->SetRangeUser(10e-2, 10e8);
+  myPlot_G->GetYaxis()->SetRangeUser(10e-2, 10e8);
   TH1 *hCtau = ws->data("dsToFit")->createHistogram("histCtau", *ws->var("ctau3D"), Binning(myPlot_G->GetNbinsX(), myPlot_G->GetXaxis()->GetXmin(), myPlot_G->GetXaxis()->GetXmax()));
   Double_t YMaxCtau = hCtau->GetBinContent(hCtau->GetMaximumBin());
   Double_t YMinCtau = 1e99;
@@ -568,22 +599,22 @@ void Final2DFit::drawCtauRatio() {
   Double_t YupCtau(0.), YdownCtau(0.);
   YupCtau = YMaxCtau * TMath::Power((YMaxCtau / 0.1), 0.5);
   YdownCtau = 0.1;
-  myPlot2_G->GetYaxis()->SetRangeUser(YdownCtau, YupCtau);
-  myPlot2_G->GetXaxis()->SetRangeUser(-4, 6);
-  myPlot2_G->GetXaxis()->SetTitle("#font[12]{l}_{J/#psi} (mm)");
-  myPlot2_G->SetFillStyle(4000);
-  myPlot2_G->GetXaxis()->SetLabelSize(0);
-  myPlot2_G->GetXaxis()->SetTitleSize(0);
-  myPlot2_G->Draw();
+  myPlot_G->GetYaxis()->SetRangeUser(YdownCtau, YupCtau);
+  myPlot_G->GetXaxis()->SetRangeUser(-4, 6);
+  myPlot_G->GetXaxis()->SetTitle("#font[12]{l}_{J/#psi} (mm)");
+  myPlot_G->SetFillStyle(4000);
+  myPlot_G->GetXaxis()->SetLabelSize(0);
+  myPlot_G->GetXaxis()->SetTitleSize(0);
+  myPlot_G->Draw();
   TLegend *leg_G = new TLegend(text_x+0.033 + 0.25, text_y+0.09 + 0.05, text_x+0.033 + 0.38, text_y+0.09 - 0.11);
   leg_G->SetTextSize(text_size);
   leg_G->SetTextFont(43);
   leg_G->SetBorderSize(0);
-  leg_G->AddEntry(myPlot2_G->findObject("data_Ctau"), "Data", "pe");
-  leg_G->AddEntry(myPlot2_G->findObject("Ctau_Tot"), "Total fit", "fl");
-  leg_G->AddEntry(myPlot2_G->findObject("Ctau_Bkg"), "Background", "fl");
-  leg_G->AddEntry(myPlot2_G->findObject("Ctau_JpsiPR"), "J/#psi Prompt", "l");
-  leg_G->AddEntry(myPlot2_G->findObject("Ctau_JpsiNoPR"), "J/#psi Non-Prompt", "l");
+  leg_G->AddEntry(myPlot_G->findObject("data_Ctau"), "Data", "pe");
+  leg_G->AddEntry(myPlot_G->findObject("Ctau_Tot"), "Total fit", "fl");
+  leg_G->AddEntry(myPlot_G->findObject("Ctau_Bkg"), "Background", "fl");
+  leg_G->AddEntry(myPlot_G->findObject("Ctau_JpsiPR"), "J/#psi Prompt", "l");
+  leg_G->AddEntry(myPlot_G->findObject("Ctau_JpsiNoPR"), "J/#psi Non-Prompt", "l");
   leg_G->Draw("same");
   drawText(Form("%.1f < p_{T}^{#mu#mu} < %.1f GeV/c", ptLow, ptHigh), text_x+0.033, text_y+0.09, text_color, text_size);
   if (yLow == 0)
@@ -611,10 +642,10 @@ void Final2DFit::drawCtauRatio() {
   ratioPad->Draw();
   ratioPad->cd();
 
-  RooHist *h_dataPoints = (RooHist *)myPlot2_G->findObject("data_Ctau");
-  RooCurve *curveRatio = (RooCurve *)myPlot2_G->findObject("Ctau_Tot");
+  RooHist *h_dataPoints = (RooHist *)myPlot_G->findObject("data_Ctau");
+  RooCurve *curveRatio = (RooCurve *)myPlot_G->findObject("Ctau_Tot");
 
-  // RooPlot *ratioFrame = ws->var("ctau3D")->frame(Bins(nCtauBins), Range(myPlot2_G->GetXaxis()->GetXmin(), myPlot2_G->GetXaxis()->GetXmax()));
+  // RooPlot *ratioFrame = ws->var("ctau3D")->frame(Bins(nCtauBins), Range(myPlot_G->GetXaxis()->GetXmin(), myPlot_G->GetXaxis()->GetXmax()));
   RooPlot *ratioFrame = ws->var("ctau3D")->frame(Bins(nCtauBins), Range(-4, 6));
   ratioFrame->SetTitle(" ");
 
@@ -673,6 +704,10 @@ void Final2DFit::drawCtauRatio() {
   line_at_1->SetLineStyle(kDashed);
   line_at_1->Draw("same");
   c_ratio->SaveAs(Form("figs/2DFit_%s/Final/2DFit_Ctau_%s_%sw_Effw%d_Accw%d_PtW%d_TnP%d_ratio.pdf", DATE.Data(), kineLabel.Data(), fname.Data(), fEffW, fAccW, isPtW, isTnP));
+
+  delete hCtau;
+  delete c_G;
+  delete c_ratio;
 }
 
 void Final2DFit::saveOutput() {
@@ -710,27 +745,6 @@ void Final2DFit::saveOutput() {
 // ===== legacy codes or notes =====
 // =================================
 
-// ===== legacy headers =====
-// #include <RooGaussian.h>
-// #include <RooFormulaVar.h>
-// #include <RooCBShape.h>
-// #include <RooWorkspace.h>
-// #include <RooChebychev.h>
-// #include <RooPolynomial.h>
-// #include "RooPlot.h"
-// #include "TText.h"
-// #include "TArrow.h"
-// #include "TFile.h"
-// #include "RooDataHist.h"
-// #include "RooCategory.h"
-// #include "RooSimultaneous.h"
-// #include "RooStats/SPlot.h"
-// #include "../headers/cutsAndBin.h"
-// #include "../headers/CMS_lumi_v2mass.C"
-// #include "../headers/tdrstyle.C"
-// #include "../headers/rootFitHeaders.h"
-// #include "../headers/commonUtility.h"
-// #include "../headers/JpsiUtility.h"
 
 // ===== legacy code for Gaussian constraint + fixing the parameters =====
 // {

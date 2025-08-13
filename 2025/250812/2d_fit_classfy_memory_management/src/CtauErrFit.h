@@ -35,6 +35,8 @@ public:
 
   int nBins = 100; // initial nBins
 
+  void initVar(const std::string &varName, double init, double low, double high);
+
 private:
   void setLabels();
   void makeOutputFolder();

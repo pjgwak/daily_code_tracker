@@ -26,6 +26,8 @@ public:
   double nGauss, nExpTrue; //Todo: 이것도 trueFit에서 만들고 가져오는 게 더 나을지도?
   bool isLogon = true;
 
+  void initVar(const std::string &varName, double init, double low, double high);
+
 private:
   void setLabels();
   void makeOutputFolder();

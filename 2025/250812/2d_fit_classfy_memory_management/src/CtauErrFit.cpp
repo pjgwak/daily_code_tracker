@@ -150,6 +150,10 @@ void CtauErrFit::processDataset()
 
   // dsAB->Print();
   // cout << "Weight : " << ws->var("weight")->getVal() << endl;
+
+  delete dsAB;
+  delete datasetW;
+  delete argSet;
 }
 
 void CtauErrFit::setVariableRanges()
@@ -159,6 +163,28 @@ void CtauErrFit::setVariableRanges()
 
   nBins = min(int(round((ws->var("ctau3DErr")->getMax() - ws->var("ctau3DErr")->getMin()) / 0.0025)), 100);
   cout << "ctau3DErr nBin : " << nBins << endl;
+}
+
+void CtauErrFit::initVar(const std::string &varName, double init, double low, double high)
+{
+  RooRealVar *var = ws->var(varName.c_str());
+  if (!var)
+  {
+    std::cerr << "[ERROR] there is no variable:: " << varName << "\n";
+    exit(1);
+  }
+
+  if (init < low || init > high)
+  {
+    std::cerr << "[ERROR] init value out of bounds for variable: " << varName << "\n";
+    std::cerr << "        init = " << init << ", range = [" << low << ", " << high << "]\n";
+    exit(1);
+  }
+
+  var->setVal(init);
+  // var->setMin(low);
+  // var->setMax(high);
+  var->setRange(low, high);
 }
 
 void CtauErrFit::doSplotFit()
@@ -188,6 +214,8 @@ void CtauErrFit::doSplotFit()
 
   cout << "[INFO] Jpsi yield -> Mass Fit:" << ws->var("N_Jpsi")->getVal() << ", sWeights :" << sData.GetYieldFromSWeight("N_Jpsi") << endl;
   cout << "[INFO] Bkg  yield -> Mass Fit:" << ws->var("N_Bkg")->getVal() << ", sWeights :" << sData.GetYieldFromSWeight("N_Bkg") << endl;
+
+  delete cloneSet;
 }
 
 void CtauErrFit::buildOutputs()
@@ -239,7 +267,6 @@ void CtauErrFit::buildOutputs()
   RooDataSet *dataw_Bkg_b = new RooDataSet("dataw_Bkg_b", "TMP_BKG_DATA", (RooDataSet *)ws->data("dataset_SPLOT"), RooArgSet(*ws->var("ctau3DErr"), *ws->var("N_Bkg_sw"), *ws->var("ctau3DRes"), *ws->var("ctau3D"), *ws->var("mass")), 0, "N_Bkg_sw");
   RooDataSet *dataw_Sig_b = new RooDataSet("dataw_Sig_b", "TMP_SIG_DATA", (RooDataSet *)ws->data("dataset_SPLOT"),RooArgSet(*ws->var("ctau3DErr"), *ws->var("N_Jpsi_sw"), *ws->var("ctau3DRes"), *ws->var("ctau3D"), *ws->var("mass")), 0, "N_Jpsi_sw");
 
-  
 
   // --- build RooHistPdfs ---
   TH1D *hSig = (TH1D *)dataw_Sig_b->createHistogram(("hSig"), *ws->var("ctau3DErr"), Binning(nBins, ctauErrLow, ctauErrHigh));
@@ -251,12 +278,12 @@ void CtauErrFit::buildOutputs()
 
   // sig: TH1D -> RooDataHist -> RooHistPdf
   TH1D *hSig_w = (TH1D *)dataw_Sig_b->createHistogram(("hSig_w"), *ws->var("ctau3DErr"), Binning(newBins, ctauErrMin, ctauErrMax));
-  RooDataHist *sigHist = new RooDataHist("dsAB", "", *ws->var("ctau3DErr"), hSig_w);
+  RooDataHist *sigHist = new RooDataHist("sigHist", "", *ws->var("ctau3DErr"), hSig_w);
   RooHistPdf *pdfCTAUERR_Jpsi = new RooHistPdf("pdfCTAUERR_Jpsi", "hist pdf", *ws->var("ctau3DErr"), *sigHist);
 
   // bkg: TH1D -> RooDataHist -> RooHistPdf
   TH1D *hBkg_w = (TH1D *)dataw_Bkg_b->createHistogram(("hBkg_w"), *ws->var("ctau3DErr"), Binning(newBins, ctauErrMin, ctauErrMax));
-  RooDataHist *bkgHist = new RooDataHist("dsAB", "", *ws->var("ctau3DErr"), hBkg_w);
+  RooDataHist *bkgHist = new RooDataHist("bkgHist", "", *ws->var("ctau3DErr"), hBkg_w);
   RooHistPdf *pdfCTAUERR_Bkg = new RooHistPdf("pdfCTAUERR_Bkg", "hist pdf", *ws->var("ctau3DErr"), *bkgHist);
 
 
@@ -270,6 +297,25 @@ void CtauErrFit::buildOutputs()
   ws->import(*pdfCTAUERR_Tot);
   ws->import(*pdfCTAUERR_Jpsi);
   ws->import(*pdfCTAUERR_Bkg);
+
+  delete hSig;
+  delete hTot;
+  delete hSig_w;
+  delete hBkg_w;
+
+  delete totHist;
+  delete sigHist;
+  delete bkgHist;
+
+  delete pdfCTAUERR_Tot;
+  delete pdfCTAUERR_Jpsi;
+  delete pdfCTAUERR_Bkg;
+
+  delete dataw_Sig_b;
+  delete dataw_Bkg_b;
+
+  delete dataw_Sig;
+  delete dataw_Bkg;
 
   delete hTotTmp;
 }
@@ -303,20 +349,19 @@ void CtauErrFit::drawPlot()
   // --- ctauErr frame ---
   RooPlot *myPlot_B = ws->var("ctau3DErr")->frame(Bins(newBins), Range(ctauErrMin, ctauErrMax));
   myPlot_B->SetTitle("");
-  RooPlot *myPlot2_B = (RooPlot *)myPlot_B->Clone(); // clone to avoid memory error
 
   // --- plotOn ---
   // Total: data, pdf
-  ws->data("dsAB")->plotOn(myPlot2_B, Name("dataCTAUERR_Tot"), MarkerSize(.7), Binning(newBins)); // Normalization(wsmc->data("reducedDS_MC")->sumEntries()
-  ws->pdf("pdfCTAUERR_Tot")->plotOn(myPlot2_B, Name("pdfCTAUERR_Tot"), LineColor(kGreen + 1), Range(ctauErrMin, ctauErrMax), LineWidth(2));
+  ws->data("dsAB")->plotOn(myPlot_B, Name("dataCTAUERR_Tot"), MarkerSize(.7), Binning(newBins)); // Normalization(wsmc->data("reducedDS_MC")->sumEntries()
+  ws->pdf("pdfCTAUERR_Tot")->plotOn(myPlot_B, Name("pdfCTAUERR_Tot"), LineColor(kGreen + 1), Range(ctauErrMin, ctauErrMax), LineWidth(2));
 
   // signal: data, pdf
-  ws->data("dataw_Sig")->plotOn(myPlot2_B, Name("dataHist_Sig"), MarkerSize(.7), LineColor(kRed + 2), MarkerColor(kRed + 2), Binning(newBins));
-  ws->pdf("pdfCTAUERR_Jpsi")->plotOn(myPlot2_B, Name("pdfCTAUERR_Jpsi"), LineColor(kRed + 2), LineWidth(2), Range(ctauErrMin, ctauErrMax));
+  ws->data("dataw_Sig")->plotOn(myPlot_B, Name("dataHist_Sig"), MarkerSize(.7), LineColor(kRed + 2), MarkerColor(kRed + 2), Binning(newBins));
+  ws->pdf("pdfCTAUERR_Jpsi")->plotOn(myPlot_B, Name("pdfCTAUERR_Jpsi"), LineColor(kRed + 2), LineWidth(2), Range(ctauErrMin, ctauErrMax));
 
   // bkg: data, pdf
-  ws->data("dataw_Bkg")->plotOn(myPlot2_B, Name("dataHist_Bkg"), MarkerSize(.7), LineColor(kBlue + 2), MarkerColor(kBlue + 2), Binning(newBins));
-  ws->pdf("pdfCTAUERR_Bkg")->plotOn(myPlot2_B, Name("pdfCTAUERR_Bkg"), LineColor(kBlue + 2), LineWidth(2), Range(ctauErrMin, ctauErrMax));
+  ws->data("dataw_Bkg")->plotOn(myPlot_B, Name("dataHist_Bkg"), MarkerSize(.7), LineColor(kBlue + 2), MarkerColor(kBlue + 2), Binning(newBins));
+  ws->pdf("pdfCTAUERR_Bkg")->plotOn(myPlot_B, Name("pdfCTAUERR_Bkg"), LineColor(kBlue + 2), LineWidth(2), Range(ctauErrMin, ctauErrMax));
 
   // --- find y-max ---
   TH1D *hTot = (TH1D *)ws->data("dsAB")->createHistogram(("hTot"), *ws->var("ctau3DErr"), Binning(myPlot_B->GetNbinsX(), myPlot_B->GetXaxis()->GetXmin(), myPlot_B->GetXaxis()->GetXmax())); // tot
@@ -328,7 +373,7 @@ void CtauErrFit::drawPlot()
   Double_t Yup(0.), Ydown(0.);
   Yup = YMax * TMath::Power((YMax / YMin), (0.4 / (1.0 - 0.4 - 0.3)));
   Ydown = YMin / (TMath::Power((YMax / YMin), (0.3 / (1.0 - 0.4 - 0.3))));
-  myPlot2_B->GetYaxis()->SetRangeUser(Ydown, Yup);
+  myPlot_B->GetYaxis()->SetRangeUser(Ydown, Yup);
 
   // --- check how many events were cut out ---
   // cout<<ctauErrLow<<", "<<ctauErrHigh<<endl;
@@ -347,20 +392,20 @@ void CtauErrFit::drawPlot()
   minline->SetLineStyle(2);
   minline->SetLineColor(1);
   minline->SetLineWidth(3);
-  myPlot2_B->addObject(minline);
+  myPlot_B->addObject(minline);
   TLine *maxline = new TLine(ctauErrMax, 0.0, ctauErrMax, (Ydown * TMath::Power((Yup / Ydown), 0.5)));
   maxline->SetLineStyle(2);
   maxline->SetLineColor(1);
   maxline->SetLineWidth(3);
-  myPlot2_B->addObject(maxline);
+  myPlot_B->addObject(maxline);
 
-  myPlot2_B->GetXaxis()->CenterTitle();
-  myPlot2_B->GetXaxis()->SetTitle("#font[12]{l}_{J/#psi} Error (mm)");
-  myPlot2_B->SetFillStyle(4000);
-  myPlot2_B->GetYaxis()->SetTitleOffset(1.43);
-  myPlot2_B->GetXaxis()->SetLabelSize(0);
-  myPlot2_B->GetXaxis()->SetTitleSize(0);
-  myPlot2_B->Draw();
+  myPlot_B->GetXaxis()->CenterTitle();
+  myPlot_B->GetXaxis()->SetTitle("#font[12]{l}_{J/#psi} Error (mm)");
+  myPlot_B->SetFillStyle(4000);
+  myPlot_B->GetYaxis()->SetTitleOffset(1.43);
+  myPlot_B->GetXaxis()->SetLabelSize(0);
+  myPlot_B->GetXaxis()->SetTitleSize(0);
+  myPlot_B->Draw();
   // Double_t outTot = ws->data("dsAB")->numEntries();
   // Double_t outErr = ws->data("dsAB")->reduce(Form("(ctauErr>=%.6f || ctauErr<=%.6f)", ctauErrHigh, ctauErrLow))->numEntries();
   // cout<<(outErr*100)/outTot<<endl;
@@ -370,10 +415,10 @@ void CtauErrFit::drawPlot()
   leg_B->SetTextSize(text_size);
   leg_B->SetTextFont(43);
   leg_B->SetBorderSize(0);
-  leg_B->AddEntry(myPlot2_B->findObject("dataCTAUERR_Tot"), "Data", "pe");
-  leg_B->AddEntry(myPlot2_B->findObject("pdfCTAUERR_Tot"), "Total PDF", "l");
-  leg_B->AddEntry(myPlot2_B->findObject("pdfCTAUERR_Jpsi"), "Signal", "l");
-  leg_B->AddEntry(myPlot2_B->findObject("pdfCTAUERR_Bkg"), "Background", "l");
+  leg_B->AddEntry(myPlot_B->findObject("dataCTAUERR_Tot"), "Data", "pe");
+  leg_B->AddEntry(myPlot_B->findObject("pdfCTAUERR_Tot"), "Total PDF", "l");
+  leg_B->AddEntry(myPlot_B->findObject("pdfCTAUERR_Jpsi"), "Signal", "l");
+  leg_B->AddEntry(myPlot_B->findObject("pdfCTAUERR_Bkg"), "Background", "l");
   leg_B->Draw("same");
 
   // --- latex ---
@@ -400,8 +445,7 @@ void CtauErrFit::drawPlot()
   pad_B_2->SetFrameFillStyle(4000);
   pad_B_2->SetTicks(1, 1);
 
-  RooPlot *frameTMP_B = (RooPlot *)myPlot2_B->Clone("TMP");
-  RooHist *hpull_B = frameTMP_B->pullHist("dataCTAUERR_Tot", "pdfCTAUERR_Tot");
+  RooHist *hpull_B = myPlot_B->pullHist("dataCTAUERR_Tot", "pdfCTAUERR_Tot");
   hpull_B->SetMarkerSize(0.8);
   // RooPlot* pullFrame_B = ws->var("ctau3DErr")->frame(Title("Pull Distribution")) ;
   RooPlot *pullFrame_B = ws->var("ctau3DErr")->frame(Bins(newBins), Range(ctauErrMin, ctauErrMax));
@@ -435,6 +479,9 @@ void CtauErrFit::drawPlot()
   // --- draw the plot ---
   c_B->Update();
   c_B->SaveAs(Form("figs/2DFit_%s/CtauErr/ctauErr_%s_%sw_Effw%d_Accw%d_PtW%d_TnP%d.pdf", DATE.Data(), kineLabel.Data(), bCont.Data(), fEffW, fAccW, isPtW, isTnP));
+
+  delete hTot;
+  delete c_B;
 }
 
 void CtauErrFit::saveOutput()
@@ -449,6 +496,8 @@ void CtauErrFit::saveOutput()
   ws->pdf("pdfCTAUERR_Bkg")->Write();
   ws->pdf("pdfCTAUERR_Jpsi")->Write();
   outFile->Close();
+
+  delete outFile;
 }
 
 // =================================

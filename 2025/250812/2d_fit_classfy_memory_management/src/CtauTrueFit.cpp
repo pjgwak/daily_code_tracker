@@ -142,6 +142,9 @@ void CtauTrueFit::processDataset()
   ws->import(*reducedDS_MC, Rename("reducedDS_MC"));
 
   // reducedDS_MC->Print();
+
+  delete datasetMC;
+  delete reducedDS_MC;
 }
 
 void CtauTrueFit::setVariableRanges()
@@ -151,6 +154,28 @@ void CtauTrueFit::setVariableRanges()
   ws->var("ctau3D")->setRange("ctauTrueRange", ctau3DMin, ctau3DMax);
   ws->var("ctau3D")->setRange("ctauTruePlotRange", ctau3DMin, ctau3DHigh);
   // ws->var("ctau3D")->Print();
+}
+
+void CtauTrueFit::initVar(const std::string &varName, double init, double low, double high)
+{
+  RooRealVar *var = ws->var(varName.c_str());
+  if (!var)
+  {
+    std::cerr << "[ERROR] there is no variable:: " << varName << "\n";
+    exit(1);
+  }
+
+  if (init < low || init > high)
+  {
+    std::cerr << "[ERROR] init value out of bounds for variable: " << varName << "\n";
+    std::cerr << "        init = " << init << ", range = [" << low << ", " << high << "]\n";
+    exit(1);
+  }
+
+  var->setVal(init);
+  // var->setMin(low);
+  // var->setMax(high);
+  var->setRange(low, high);
 }
 
 void CtauTrueFit::fixParameters()
@@ -192,17 +217,10 @@ void CtauTrueFit::buildCtauTrueModel()
   RooAddPdf *pdfCTAUTRUE1 = nullptr;
   RooAddPdf *pdfCTAUTRUE = nullptr;
 
-  if (nExp == 2)
-  {
-    pdfCTAUTRUE = new RooAddPdf("pdfCTAUTRUE", "Combined decay model", RooArgList(*ws->pdf("pdfCTAUTRUEDSS1"), *ws->pdf("pdfCTAUTRUEDSS2")), RooArgList(*ws->var("fDSS")));
-    ws->import(*pdfCTAUTRUE);
-  }
-  else if (nExp == 3)
-  {
-    RooAddPdf *pdfCTAUTRUE1 = new RooAddPdf("pdfCTAUTRUE1", "Combined decay model", RooArgList(*ws->pdf("pdfCTAUTRUEDSS1"), *ws->pdf("pdfCTAUTRUEDSS2")), RooArgList(*ws->var("fDSS")));
-    ws->import(*pdfCTAUTRUE1);
-    RooAddPdf *pdfCTAUTRUE = new RooAddPdf("pdfCTAUTRUE", "", RooArgList(*ws->pdf("pdfCTAUTRUE1"), *ws->pdf("pdfCTAUTRUEDSS3")), RooArgList(*ws->function("fDSS1")));
-    ws->import(*pdfCTAUTRUE);
+  if (nExp == 2) ws->factory("AddPdf::pdfCTAUTRUE({pdfCTAUTRUEDSS1,pdfCTAUTRUEDSS2},{fDSS})");
+  else if (nExp == 3) {
+    ws->factory("AddPdf::pdfCTAUTRUE1({pdfCTAUTRUEDSS1,pdfCTAUTRUEDSS2},{fDSS})");
+    ws->factory("AddPdf::pdfCTAUTRUE({pdfCTAUTRUE1,pdfCTAUTRUEDSS3},{fDSS1})");
   }
 
   // --- the model for the fit ---
@@ -219,6 +237,8 @@ void CtauTrueFit::doFit()
 
   bool isWeighted = ws->data("dataToFit")->isWeighted();
   fitResult = ws->pdf("TrueModel_Tot")->fitTo(*dataToFit, Save(), SumW2Error(isWeighted), Extended(kTRUE), NumCPU(nCPU), Range("ctauTrueRange"), PrintLevel(-1), PrintEvalErrors(-1), Timer(true));
+
+  delete dataToFit;
 }
 
 void CtauTrueFit::drawPlot()
@@ -353,6 +373,9 @@ void CtauTrueFit::drawPlot()
   // draw and save a plot
   c_D->Update();
   c_D->SaveAs(Form("figs/2DFit_%s/CtauTrue/ctauTrue_%s_%s.pdf", DATE.Data(), bCont.Data(), kineLabel.Data()));
+
+  delete h;
+  delete c_D;
 }
 
 void CtauTrueFit::saveOutput()
@@ -366,6 +389,8 @@ void CtauTrueFit::saveOutput()
   outFile->Close();
 
   fitResult->Print("v");
+
+  delete outFile;
 }
 
 // =================================
