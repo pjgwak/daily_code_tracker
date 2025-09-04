@@ -8,7 +8,7 @@
 
 // ----- preview options -----
 // turn it on when you want to test new functions or rangeds
-static const bool PREVIEW_ON = true;
+static const bool PREVIEW_ON = false;
 static const Long64_t PREVIEW_NENTRIES = 100000; // how many entries to use?
 static const Long64_t PREVIEW_FIRSTENTRY = 0;
 
@@ -223,25 +223,25 @@ static const std::vector<Plot1D> CFG_1D = {
     {"pt_by_rap", "pt", 50, 0, 50, "p_{T};p_{T} [GeV];Events", TCut(), "RAP"},
 
     // mass — rapidity
-    {"mass_by_rap", "mass", 100, 2.6, 3.5, "mass;m_{#mu#mu} [GeV];Events", TCut(), "RAP"},
+    {"mass_by_rap", "mass", 36, 2.6, 3.5, "mass;m_{#mu#mu} [GeV];Events", TCut(), "RAP"},
 
     // mass - integrated pT
-    {"mass_by_rap_ptU50", "mass", 100, 2.6, 3.5, "mass;m_{#mu#mu} [GeV];Events", TCut(), "RAP_MASS1D_PTUP50"},
+    {"mass_by_rap_ptU50", "mass", 36, 2.6, 3.5, "mass;m_{#mu#mu} [GeV];Events", TCut(), "RAP_MASS1D_PTUP50"},
 
     // mass — rapidty + pT regions
-    {"mass_by_ptbins_rap", "mass", 100, 2.6, 3.5, "mass;m_{#mu#mu} [GeV];Events", TCut(), "RAPxPT_MASS"},
+    {"mass_by_ptbins_rap", "mass", 36, 2.6, 3.5, "mass;m_{#mu#mu} [GeV];Events", TCut(), "RAPxPT_MASS"},
 
     // PR, NP region: mass -> Don't use it. We need to distinguish by rapidity at least
-    // {"mass_region6_only", "mass", 100, 2.6, 3.5, "mass;m_{#mu#mu} [GeV];Events", TCut(), "REGION6"},
+    // {"mass_region6_only", "mass", 36, 2.6, 3.5, "mass;m_{#mu#mu} [GeV];Events", TCut(), "REGION6"},
 
     // PR, NP region: ctau3D -> Don't use it. We need to distinguish by rapidity at least
     // {"ctau3D_region6_only", "ctau3D", 180, -0.1, 0.8, "ctau3D;ctau3D;Events", TCut(), "REGION6"},
 
     // region6 × RAP × pT: mass
-    {"mass_region6", "mass", 100, 2.6, 3.5, "mass;m_{#mu#mu} [GeV];Events", TCut(), "REGION6xRAPxPT_MASS"},
+    {"mass_region6", "mass", 36, 2.6, 3.5, "mass;m_{#mu#mu} [GeV];Events", TCut(), "REGION6xRAPxPT_MASS"},
 
     // region6 × RAP × pT: ctau3D
-    {"ctau3D_region6", "ctau3D", 180, -0.1, 0.8, "ctau3D;ctau3D;Events", TCut(), "REGION6xRAPxPT_MASS"},
+    {"ctau3D_region6", "ctau3D", 100, -0.1, 0.8, "ctau3D;ctau3D;Events", TCut(), "REGION6xRAPxPT_MASS"},
 };
 
 // 2D
@@ -251,10 +251,10 @@ static const std::vector<Plot2D> CFG_2D = {
     // pT vs y — rapidity
     {"pt_vs_y_by_rap", "pt:y", 48, -2.4, 2.4, 50, 0, 50, ";y;p_{T} [GeV]", TCut(), false, false, "RAP"},
     // pT va mass — rapidity
-    {"pt_vs_mass_by_rap", "pt:mass", 100, 2.6, 3.5, 50, 0, 50, ";m_{#mu#mu} [GeV];p_{T} [GeV]", TCut(), false, false, "RAP"},
+    {"pt_vs_mass_by_rap", "pt:mass", 36, 2.6, 3.5, 50, 0, 50, ";m_{#mu#mu} [GeV];p_{T} [GeV]", TCut(), false, false, "RAP"},
 
     // ctau3D vs mass - rapidity
-    {"ctau3D_vs_mass_by_rap", "ctau3D:mass", 100, 2.6, 3.5, 180, -0.1, 0.8,
+    {"ctau3D_vs_mass_by_rap", "ctau3D:mass", 36, 2.6, 3.5, 100, -0.1, 0.8,
      ";m_{#mu#mu} [GeV];ctau3D", TCut(), false, false, "RAP"},
 };
 

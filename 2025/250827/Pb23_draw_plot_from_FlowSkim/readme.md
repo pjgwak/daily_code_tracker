@@ -11,9 +11,11 @@ ConfigPlot.h: core function and recipes
   * Add combined cut to SlicesForTag()
 
 draw_from_config.C: draw very crude plots from TTree and save histograms for cosmetcis -> use the cosmetics codes such as drawH1All.C
+
+It will take about 3 hours (for 300 plots)
 ```bash
 # No parameter
-root -b -q draw_from_config.C()
+root -b -q draw_from_config.C
 ```
 
 draw_flowSkim_mass.C: crude macro to draw a plot form TTree (rarely used)
