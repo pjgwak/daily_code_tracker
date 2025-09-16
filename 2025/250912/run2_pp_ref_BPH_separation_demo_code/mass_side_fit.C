@@ -209,13 +209,13 @@ void mass_side_fit(string comp, string region)
   massFrame->Draw("e");
 
   // --- object legend ---
-  TLegend *leg = new TLegend(0.16, 0.8, 0.49, 0.92);
+  TLegend *leg = new TLegend(0.49, 0.75, 0.70, 0.93);
   leg->SetBorderSize(0);
   leg->SetFillStyle(0);
   leg->SetTextSize(0.03);
 
   leg->AddEntry(massFrame->findObject("data"), "Data", "lep");
-  leg->AddEntry(massFrame->findObject("model"), "Cheby2", "pe");
+  leg->AddEntry(massFrame->findObject("model"), "Fit model", "pe");
   leg->Draw("same");
 
   // --- info latex ---
@@ -224,9 +224,27 @@ void mass_side_fit(string comp, string region)
   latexInfo.SetTextSize(0.03);
   latexInfo.SetTextFont(42);
 
-  latexInfo.DrawLatex(0.66, 0.89, "CMS pp Ref. #sqrt{s_{NN}} = 5.02 TeV");
-  latexInfo.DrawLatex(0.66, 0.83, Form("Data, %s %s", comp.c_str(), region.c_str()));
-  latexInfo.DrawLatex(0.66, 0.77, Form("%.1f < p_{T} < %.1f, %.1f < y < %.1f", ptLow, ptHigh, yLow, yHigh));
+  double x_start = 0.19;
+  double y_start = 0.95;
+  double y_step = -0.06, y_stepCount = 1;
+  latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, "CMS pp Ref. #sqrt{s_{NN}} = 5.02 TeV");
+  latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("Data, %s %s", comp.c_str(), region.c_str()));
+  if (yLow == 0)
+    latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("%.1f < p_{T} < %.1f, %.1f < y < %.1f", ptLow, ptHigh, yLow, yHigh));
+  else
+    latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("%.1f < p_{T} < %.1f, |y| < %.1f", ptLow, ptHigh, yHigh));
+
+  // --- latex parameters ---
+  TLatex latexParams;
+  latexParams.SetNDC();
+  latexParams.SetTextSize(0.03);
+  latexParams.SetTextFont(42);
+
+  x_start = 0.71;
+  y_step = -0.045;
+  y_stepCount = 1;
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("c1 = %.3f #pm %.3f", c1.getVal(), c1.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("c2 = %.3f #pm %.3f", c2.getVal(), c2.getError()));
 
   // --- pull pad ---
   c_mass.cd();

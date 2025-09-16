@@ -30,13 +30,12 @@ using namespace RooFit;
 using std::cout;
 using std::string;
 
-
-void mass_center_fit()
+void mass_center_fit(string comp = "NP")
 {
   float ptLow = 25, ptHigh = 40;
   float yLow = 0, yHigh = 1.6;
   float massLow = 2.6, massHigh = 3.5;
-  std::string comp = "PR", region = "MassFull";
+  string region = "MassFull";
   int cLow = 0, cHigh = 180;
 
   TStopwatch t;
@@ -116,6 +115,7 @@ void mass_center_fit()
   else
     compCut = cutCtauFull;
 
+  double massMin = massLow, massMax = massHigh;
   TString regionCut;
   if (region == "SR")
     regionCut = cutSR;
@@ -125,8 +125,11 @@ void mass_center_fit()
     regionCut = cutRSB;
   else if (region == "MassFull")
     regionCut = cutMassFull;
-  else if (region == "MassCenter")
+  else if (region == "MassCenter") {
     regionCut = cutMassCenter;
+    massMin = 2.95;
+    massMax = 3.25;
+  } 
   else regionCut = "(1)";
 
   TString fullCut = Form("%s && %s && %s && %s && %s",
@@ -157,9 +160,9 @@ void mass_center_fit()
   if (!massVar)
     cout << "Warn: There is no variable 'mass'\n";
 
-  massVar->setRange(massLow, massHigh);
-  massVar->setRange("fitRange", massLow, massHigh);
-  double massMin = massLow, massMax = massHigh;
+  massVar->setRange(massMin, massMax);
+  massVar->setRange("fitRange", massMin, massMax);
+  massVar->setRange("SR", 3, 3.2);
 
   // === fitting ===
   double mean0 = 3.0969;
@@ -245,22 +248,25 @@ void mass_center_fit()
   RooGaussian gaus("gaus", "gaus core", *massVar, mean, sigmaG);
 
   // --- combine sig components ---
-  RooRealVar f_cbR("f_cbR", "frac of right CB", 0.5, 0, 1.0);
-  RooRealVar f_gaus("f_gaus", "frac of gaus", 0.05, 0, 1);
+  RooRealVar f_cbR("f_cbR", "frac of right CB", 0.17, 0, 1.0);
+  RooRealVar f_gaus("f_gaus", "frac of gaus", 0.45, 0, 1);
   RooAddPdf sig("sig", "", RooArgList(cbLeft, cbRight, gaus), RooArgList(f_cbR, f_gaus));
   // RooAddPdf sig("sig", "",
   //             RooArgList(cbLeft, cbRight),
   //               RooArgList(f_cbR));
 
   // --- bkg ---
-  RooRealVar c1("c1", "c1", 0.01, -1, 1);
+  RooRealVar c1("c1", "c1", -0.01, -1, 1);
   RooRealVar c2("c2", "c2", 0.01, -1, 1);
-  RooRealVar c3("c3", "c3", 0.01, -1, 1);
-  RooChebychev bkg("bkg", "2nd-order Chebychev", *massVar, RooArgList(c1, c2));
+  RooRealVar c3("c3", "c3", 0.001, -1, 1);
+  RooChebychev bkg("bkg", "Chebychev", *massVar, RooArgList(c1));
+
+  // RooRealVar c1("c1", "lifetiem", 0.1, -1, 10);
+  // RooExponential bkg("bkg", "", *massVar, c1);
 
   // --- Extended yields ---
-  RooRealVar Nsig("Nsig", "signal yield", 6.7089e+05, 1000, 1000000);
-  RooRealVar Nbkg("Nbkg", "background yield", 5.9070e+04, 100, 100000);
+  RooRealVar Nsig("Nsig", "signal yield", 15000, 10000, 100000);
+  RooRealVar Nbkg("Nbkg", "background yield", 1.2305e+02, 100, 10000);
 
   RooAddPdf model("pdf_mass_tot", "",
                 RooArgList(sig, bkg), RooArgList(Nsig, Nbkg));
@@ -281,6 +287,15 @@ void mass_center_fit()
   pad1->Draw();
   pad1->cd();
 
+  // --- events in subrange ---
+  massVar->setRange("SR", 3.0, 3.2);
+  RooArgSet obs(*massVar);
+  auto fSig = sig.createIntegral(obs, NormSet(obs), Range("SR"))->getVal();
+  auto fBkg = bkg.createIntegral(obs, NormSet(obs), Range("SR"))->getVal();
+  // nEvt in subrange = (probability in subrange) × (yield in full range)
+  double nSig_sub = Nsig.getVal() * fSig;
+  double nBkg_sub = Nbkg.getVal() * fBkg;
+
   RooPlot *massFrame = massVar->frame(Range(massMin, massMax), Title("")); // Bins(80)
   ds_red->plotOn(massFrame, DataError(RooAbsData::SumW2), Name("data"));
   model.plotOn(massFrame, NormRange("fitRange"), Range("fitRange"), Name("model"));
@@ -288,6 +303,9 @@ void mass_center_fit()
   model.plotOn(massFrame, Components("cbRight"), LineStyle(kDotted), LineColor(kAzure), Name("cbRight"));
   model.plotOn(massFrame, Components("gaus"), LineStyle(kDotted), LineColor(kViolet), Name("gaus"));
   model.plotOn(massFrame, Components("bkg"), LineStyle(kDotted), LineColor(kOrange), Name("bkg"));
+
+  model.plotOn(massFrame, Range("SR"), NormRange("SR"), VLines(), FillColor(kAzure - 9), FillStyle(3004), DrawOption("F"), Name("model_sub")); // Components("sig"),
+  model.plotOn(massFrame, Range("SR"), NormRange("SR"), VLines(), Components("bkg"), FillColor(kOrange), FillStyle(3004), DrawOption("F"), Name("bkg_sub"));
 
   // y axis: logY style
   double ymin = 1e300, ymax = -1e300;
@@ -308,9 +326,8 @@ void mass_center_fit()
   double floor = 1e-3;
   if (ymin <= 0 || ymin == 1e300)
     ymin = floor;
-
   massFrame->SetMinimum(ymin * 0.5);
-  massFrame->SetMaximum(ymax * 10.0);
+  massFrame->SetMaximum(ymax * 500); // 2, 500
 
   // title
   massFrame->GetYaxis()->SetTitle("Events");
@@ -318,7 +335,7 @@ void mass_center_fit()
   massFrame->Draw("e");
 
   // --- object legend ---
-  TLegend *leg = new TLegend(0.16, 0.6, 0.49, 0.92);
+  TLegend *leg = new TLegend(0.49, 0.6, 0.70, 0.92);
   leg->SetBorderSize(0);
   leg->SetFillStyle(0);
   leg->SetTextSize(0.03);
@@ -328,7 +345,7 @@ void mass_center_fit()
   leg->AddEntry(massFrame->findObject("cbLeft"), "CB1", "pe");
   leg->AddEntry(massFrame->findObject("cbRight"), "CB2", "pe");
   leg->AddEntry(massFrame->findObject("gaus"), "Gauss", "pe");
-  leg->AddEntry(massFrame->findObject("bkg"), "Cheby2", "pe");
+  leg->AddEntry(massFrame->findObject("bkg"), "Bkg", "pe");
   leg->Draw("same");
 
   // --- info latex ---
@@ -337,9 +354,37 @@ void mass_center_fit()
   latexInfo.SetTextSize(0.03);
   latexInfo.SetTextFont(42);
 
-  latexInfo.DrawLatex(0.66, 0.89, "CMS pp Ref. #sqrt{s_{NN}} = 5.02 TeV");
-  latexInfo.DrawLatex(0.66, 0.83, Form("Data, %s %s", comp.c_str(), region.c_str()));
-  latexInfo.DrawLatex(0.66, 0.77, Form("%.1f < p_{T} < %.1f, %.1f < y < %.1f", ptLow, ptHigh, yLow, yHigh));
+  double x_start = 0.19;
+  double y_start = 0.95;
+  double y_step = -0.06, y_stepCount = 1;
+  latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, "CMS pp Ref. #sqrt{s_{NN}} = 5.02 TeV");
+  latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("Data, %s %s", comp.c_str(), region.c_str()));
+  if (yLow == 0)
+    latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("%.1f < p_{T} < %.1f, %.1f < y < %.1f", ptLow, ptHigh, yLow, yHigh));
+  else
+    latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("%.1f < p_{T} < %.1f, |y| < %.1f", ptLow, ptHigh, yHigh));
+
+  // --- latex parameters ---
+  TLatex latexParams;
+  latexParams.SetNDC();
+  latexParams.SetTextSize(0.025);
+  latexParams.SetTextFont(42);
+
+  x_start = 0.71;
+  y_step = -0.045;
+  y_stepCount = 1;
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("Nsig = %.0f #pm %.0f", Nsig.getVal(), Nsig.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("Nbkg = %.0f #pm %.0f", Nbkg.getVal(), Nbkg.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("mean = %.3f #pm %.3f", mean.getVal(), mean.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#sigma_{L} = %.3f #pm %.3f", sigmaLVar->getVal(), sigmaLVar->getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("f_{CB,R} = %.3f #pm %.3f", f_cbR.getVal(), f_cbR.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("f_{Gauss} = %.3f #pm %.3f", f_gaus.getVal(), f_gaus.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("c1 = %.3f #pm %.3f", c1.getVal(), c1.getError()));
+  // latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("c2 = %.3f #pm %.3f", c2.getVal(), c2.getError()));
+
+  // --- latex subrange ---
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("N_{Sig, sub} = %.0f", nSig_sub));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("N_{Bkg, sub} = %.0f", nBkg_sub));
 
   // === pull pad ===
   c_mass.cd();
@@ -383,12 +428,20 @@ void mass_center_fit()
   latexChi2.DrawLatex(0.82, 0.86, Form("#chi^{2}/ndf = %.2f", chi2ndf));
 
   c_mass.SaveAs(Form("figs/mass_%s_%s_pT%.1f_%.1f_y%.1f_%.1f.png", comp.c_str(), region.c_str(), ptLow, ptHigh, yLow, yHigh));
+  c_mass.SaveAs(Form("figs/mass_%s_%s_pT%.1f_%.1f_y%.1f_%.1f.pdf", comp.c_str(), region.c_str(), ptLow, ptHigh, yLow, yHigh));
 
-  fitResult->Print();
+  fitResult->Print("V");
   cout << "\n chi2/ndf = " << chi2ndf << endl;
 
   // === save results ===
   TFile fout(Form("roots/mass_%s_%s_pT%.1f_%.1f_y%.1f_%.1f.root", comp.c_str(), region.c_str(), ptLow, ptHigh, yLow, yHigh), "RECREATE");
+
+  TParameter<double> n_sig_sub("n_sig_sub", nSig_sub);
+  n_sig_sub.Write();
+  double f_mass_bkg_tmp = nBkg_sub / (nSig_sub + nBkg_sub);
+  TParameter<double> f_mass_bkg("f_mass_bkg", f_mass_bkg_tmp);
+  f_mass_bkg.Write();
+
   fitResult->Write("fitResult");
   model.Write();
   fout.Close();

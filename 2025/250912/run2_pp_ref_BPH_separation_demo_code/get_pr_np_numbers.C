@@ -13,19 +13,14 @@ void get_pr_np_numbers()
   // load inputs
   // mass PR Full - # of mass PRS, f_PR_Bkg (tmp)
   TFile *fMassPrFull = TFile::Open(Form("roots/mass_PR_MassFull_pT%.1f_%.1f_y%.1f_%.1f.root", ptLow, ptHigh, yLow, yHigh));
-  RooFitResult *resultMassPrFull = (RooFitResult *)fMassPrFull->Get("fitResult");
-  const RooArgList &paramsMassPrFull = resultMassPrFull->floatParsFinal();
-  RooRealVar *NsigMassPrFull = (RooRealVar *)paramsMassPrFull.find("Nsig");
-  RooRealVar *NbkgMassPrFull = (RooRealVar *)paramsMassPrFull.find("Nbkg");
-  double f_Pr_bkg = NbkgMassPrFull->getVal() / (NbkgMassPrFull->getVal() + NsigMassPrFull->getVal());
+  auto *nSig_pr = (TParameter<double> *)fMassPrFull->Get("n_sig_sub");
+  auto *f_pr_bkg = (TParameter<double> *)fMassPrFull->Get("f_mass_bkg");
+  
 
   // mass NP Full - # of mass NPS, f_NP_Bkg (tmp)
   TFile *fMassNpFull = TFile::Open(Form("roots/mass_NP_MassFull_pT%.1f_%.1f_y%.1f_%.1f.root", ptLow, ptHigh, yLow, yHigh));
-  RooFitResult *resultMassNpFull = (RooFitResult *)fMassNpFull->Get("fitResult");
-  const RooArgList &paramsMassNpFull = resultMassNpFull->floatParsFinal();
-  RooRealVar *NsigMassNpFull = (RooRealVar *)paramsMassNpFull.find("Nsig");
-  RooRealVar *NbkgMassNpFull = (RooRealVar *)paramsMassNpFull.find("Nbkg");
-  double f_Np_bkg = NbkgMassNpFull->getVal() / (NbkgMassNpFull->getVal() + NsigMassNpFull->getVal());
+  auto *nSig_np = (TParameter<double> *)fMassNpFull->Get("n_sig_sub");
+  auto *f_np_bkg = (TParameter<double> *)fMassNpFull->Get("f_mass_bkg");
 
   // mass PRSB - # of mass PRSB (LSB onlt for test)
   TFile *fMassPrLsb = TFile::Open(Form("roots/mass_PR_LSB_pT%.1f_%.1f_y%.1f_%.1f.root", ptLow, ptHigh, yLow, yHigh));
@@ -47,15 +42,15 @@ void get_pr_np_numbers()
   auto *b_frac = (TParameter<double> *)fCtauPr->Get("b_frac");
 
   cout << "\n--- Componetns ---\n";
-  cout << "nMassPrs:     " << NsigMassPrFull->getVal() << "\n";
-  cout << "f_Pr_bkg:     " << f_Pr_bkg << "\n";
-  cout << "nMassNps:     " << NsigMassNpFull->getVal() << "\n";
-  cout << "f_Np_bkg:     " << f_Np_bkg << "\n";
+  cout << "nMassPrs:     " << nSig_pr->GetVal() << "\n";
+  cout << "f_Pr_bkg:     " << f_pr_bkg->GetVal() << "\n";
+  cout << "nMassNps:     " << nSig_np->GetVal() << "\n";
+  cout << "f_Np_bkg:     " << f_np_bkg->GetVal() << "\n";
   cout << "nMass PR LSB: " << NsigMassPrLsb->getVal() << "\n";
   cout << "nMass NP LSB: " << NsigMassNpLsb->getVal() << "\n";
   cout << "f_PR_JpsiB:   " << b_frac->GetVal() << "\n";
 
   cout << "\n--- # of Jpsi ---\n";
-  cout << "PR: " << NsigMassPrFull->getVal() - (b_frac->GetVal() * (NsigMassNpFull->getVal() - (f_Np_bkg * NsigMassNpLsb->getVal()))) - (f_Pr_bkg * NsigMassPrLsb->getVal()) << "\n";
-  cout << "NP: " << NsigMassNpFull->getVal() - (f_Np_bkg * NsigMassNpLsb->getVal()) << "\n";
+  cout << "PR: " << nSig_pr->GetVal() - (b_frac->GetVal() * (nSig_np->GetVal() - (f_np_bkg->GetVal() * NsigMassNpLsb->getVal()))) - (f_pr_bkg->GetVal() * NsigMassPrLsb->getVal()) << "\n";
+  cout << "NP: " << nSig_np->GetVal() - (f_np_bkg->GetVal() * NsigMassNpLsb->getVal()) << "\n";
 }

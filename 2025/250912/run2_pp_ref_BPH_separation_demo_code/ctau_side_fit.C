@@ -26,12 +26,12 @@ using namespace RooFit;
 using std::cout;
 using std::string;
 
-void ctau_side_fit()
+void ctau_side_fit(string region = "RSB")
 {
   float ptLow = 25, ptHigh = 40;
   float yLow = 0, yHigh = 1.6;
+  string comp = "NP";
   float massLow = 2.6, massHigh = 3.5;
-  std::string comp = "NP", region = "RSB";
   int cLow = 0, cHigh = 180;
 
   TStopwatch t;
@@ -143,14 +143,14 @@ void ctau_side_fit()
   
   // === fit by Expo ===
   // --- 1-Expo ---
-  RooRealVar tau("tau", "lifetiem", 0.1, 0.01, 10);
-  RooFormulaVar c("c", "-1.0/@0", RooArgList(tau)); // c = -1/tau
-  RooExponential expo1("expo1", "exp(c*t)", *ctau3DVar, c);
+  RooRealVar tau1("tau1", "lifetiem", 0.1, 0.01, 10);
+  RooFormulaVar c1("c1", "-1.0/@0", RooArgList(tau1)); // c = -1/tau
+  RooExponential expo1("expo1", "exp(c*t)", *ctau3DVar, c1);
 
   // --- 2-Expo ---
-  RooRealVar tau1("tau1", "lifetime1", 0.05, 0.001, 10.0);
+  // RooRealVar tau1("tau1", "lifetime1", 0.05, 0.001, 10.0);
   RooRealVar tau2("tau2", "lifetime2", 0.20, 0.001, 10.0);
-  RooFormulaVar c1("c1", "-1.0/@0", RooArgList(tau1));
+  // RooFormulaVar c1("c1", "-1.0/@0", RooArgList(tau1));
   RooFormulaVar c2("c2", "-1.0/@0", RooArgList(tau2));
   RooExponential e1("e1", "e1", *ctau3DVar, c1);
   RooExponential e2("e2", "e2", *ctau3DVar, c2);
@@ -210,7 +210,7 @@ void ctau_side_fit()
   f_ctau->Draw("e");
 
   // --- object legend ---
-  TLegend *leg = new TLegend(0.16, 0.8, 0.49, 0.92);
+  TLegend *leg = new TLegend(0.49, 0.8, 0.70, 0.92);
   leg->SetBorderSize(0);
   leg->SetFillStyle(0);
   leg->SetTextSize(0.03);
@@ -225,9 +225,28 @@ void ctau_side_fit()
   latexInfo.SetTextSize(0.03);
   latexInfo.SetTextFont(42);
 
-  latexInfo.DrawLatex(0.66, 0.89, "CMS pp Ref. #sqrt{s_{NN}} = 5.02 TeV");
-  latexInfo.DrawLatex(0.66, 0.83, Form("Data, %s %s", comp.c_str(), region.c_str()));
-  latexInfo.DrawLatex(0.66, 0.77, Form("%.1f < p_{T} < %.1f, %.1f < y < %.1f", ptLow, ptHigh, yLow, yHigh));
+  double x_start = 0.19;
+  double y_start = 0.95;
+  double y_step = -0.06, y_stepCount = 1;
+  latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, "CMS pp Ref. #sqrt{s_{NN}} = 5.02 TeV");
+  latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("Data, %s %s", comp.c_str(), region.c_str()));
+  if (yLow == 0)
+    latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("%.1f < p_{T} < %.1f, %.1f < y < %.1f", ptLow, ptHigh, yLow, yHigh));
+  else
+    latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("%.1f < p_{T} < %.1f, |y| < %.1f", ptLow, ptHigh, yHigh));
+
+  // --- latex parameters ---
+  TLatex latexParams;
+  latexParams.SetNDC();
+  latexParams.SetTextSize(0.03);
+  latexParams.SetTextFont(42);
+
+  x_start = 0.71;
+  y_step = -0.045;
+  y_stepCount = 1;
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("N_{dimuon} = %.0f #pm %.0f", N.getVal(), N.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#tau1 = %.3f #pm %.3f", tau1.getVal(), tau1.getError()));
+  // latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#sigma_{L} = %.3f #pm %.3f", sigmaLVar->getVal(), sigmaLVar->getError()));
 
   // === pull pad ===
   c_ctau.cd();

@@ -41,6 +41,16 @@ void mc_mass_center_fit()
   t.Start();
   cout << "\n=== Start mc_mass_center_fit() ===\n";
 
+  RooMsgService::instance().getStream(0).removeTopic(Eval);
+  RooMsgService::instance().getStream(1).removeTopic(Eval);
+  RooMsgService::instance().getStream(0).removeTopic(Caching);
+  RooMsgService::instance().getStream(1).removeTopic(Caching);
+  RooMsgService::instance().getStream(0).removeTopic(Plotting);
+  RooMsgService::instance().getStream(1).removeTopic(Plotting);
+  RooMsgService::instance().getStream(0).removeTopic(Integration);
+  RooMsgService::instance().getStream(1).removeTopic(Integration);
+  RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
+
   // use rootlogon
   gROOT->Macro("/data/users/pjgwak/input_files/rootlogon.C");
 
@@ -155,7 +165,7 @@ void mc_mass_center_fit()
   RooRealVar mean("mean", "signal mean", mean0, mean0 - 0.05, mean0 + 0.05);
 
   // --- CB left tail ---
-  RooRealVar sigmaL("sigmaL", "sigma left", 0.025, 0.001, 0.100);
+  RooRealVar sigmaL("sigmaL", "sigma left", 0.025, 0.001, 0.05);
   RooRealVar alphaL("alphaL", "alpha left", 0.6, 0.2, 2.0);
   RooRealVar nL("nL", "n left", 3.0, 1, 5.0);
   RooCBShape cbLeft("cbLeft", "CB left tail", *massVar, mean, sigmaL, alphaL, nL);
@@ -234,7 +244,7 @@ void mc_mass_center_fit()
   massFrame->Draw("e");
 
   // --- object legend ---
-  TLegend *leg = new TLegend(0.16, 0.65, 0.49, 0.92);
+  TLegend *leg = new TLegend(0.49, 0.65, 0.70, 0.93);
   leg->SetBorderSize(0);
   leg->SetFillStyle(0);
   leg->SetTextSize(0.03);
@@ -252,9 +262,43 @@ void mc_mass_center_fit()
   latexInfo.SetTextSize(0.03);
   latexInfo.SetTextFont(42);
 
-  latexInfo.DrawLatex(0.66, 0.89, "CMS pp Ref. #sqrt{s_{NN}} = 5.02 TeV");
-  latexInfo.DrawLatex(0.66, 0.83, "Prompt MC, J/#psi #rightarrow #mu^{+}#mu^{-}");
-  latexInfo.DrawLatex(0.66, 0.77, Form("%.1f < p_{T} < %.1f, %.1f < y < %.1f", ptLow, ptHigh, yLow, yHigh));
+  double x_start = 0.19;
+  double y_start = 0.95;
+  double y_step = -0.06, y_stepCount = 1;
+  latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, "CMS pp Ref. #sqrt{s_{NN}} = 5.02 TeV");
+  latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, "Prompt MC, J/#psi #rightarrow #mu^{+}#mu^{-}");
+  if (yLow ==0 )
+    latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("%.1f < p_{T} < %.1f, %.1f < y < %.1f", ptLow, ptHigh, yLow, yHigh));
+  else
+    latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("%.1f < p_{T} < %.1f, |y| < %.1f", ptLow, ptHigh, yHigh));
+
+  // --- latex parameters ---
+  TLatex latexParams;
+  latexParams.SetNDC();
+  latexParams.SetTextSize(0.025);
+  latexParams.SetTextFont(42);
+
+  x_start = 0.71;
+  y_step = -0.045;
+  y_stepCount = 1;
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("mean = %.3f #pm %.3f", mean.getVal(), mean.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#alpha_{L} = %.3f #pm %.3f", alphaL.getVal(), alphaL.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#alpha_{ratio} = %.3f #pm %.3f", alphaRatio.getVal(), alphaRatio.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("f_{CB,R} = %.3f #pm %.3f", f_cbR.getVal(), f_cbR.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("f_{Gauss} = %.3f #pm %.3f", f_gaus.getVal(), f_gaus.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("n_{L} = %.3f #pm %.3f", nL.getVal(), nL.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("n_{ratio} = %.3f #pm %.3f", nRatio.getVal(), nRatio.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#sigma_{L} = %.3f #pm %.3f", sigmaL.getVal(), sigmaL.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#sigma_{ratio, R} = %.3f #pm %.3f", sigmaRatio.getVal(), sigmaRatio.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#sigma_{ratio, Gauss} = %.3f #pm %.3f", sigmaGRatio.getVal(), sigmaGRatio.getError()));
+  
+  // latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("sigma_{L} = %.3f #pm %.3f", sigmaL.getVal(), sigmaL.getError()));
+  // latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("sigma_{L} = %.3f #pm %.3f", sigmaL.getVal(), sigmaL.getError()));
+
+  // latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#alpha_{L} = %.3f #pm %.3f, #alpha_{Ratio} = %.3f #pm %.3f", alphaL.getVal(), alphaL.getError(), alphaRatio.getVal(), alphaRatio.getError()));
+  // latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#f_{CB,R} = %.3f #pm %.3f, #f_{gauss} = %.3f #pm %.3f", f_cbR.getVal(), f_cbR.getError(), f_gaus.getVal(), f_gaus.getError()));
+  // latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#n_{L} = %.3f #pm %.3f, #n_{ratio} = %.3f #pm %.3f", nL.getVal(), nL.getError(), nRatio.getVal(), nRatio.getError()));
+  // latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#sigma_{ratio} = %.3f #pm %.3f, #sigma_{Gauss, ratio} = %.3f #pm %.3f", sigmaRatio.getVal(), sigmaRatio.getError(), sigmaGRatio.getVal(), sigmaGRatio.getError()));
 
   // === pull pad ===
   c_mass.cd();

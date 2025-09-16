@@ -32,7 +32,8 @@ void ctau_pr_fit()
   gROOT->Macro("/data/users/pjgwak/input_files/rootlogon.C");
 
   // make output folder
-  gSystem->mkdir("figs_region6_test", true);
+  gSystem->mkdir("figs", true);
+  gSystem->mkdir("roots", true);
 
   // read input
   TFile *fInput = TFile::Open("/data/hwan/psi2S_RAA_PbPb2018/skimmedFiles/OniaRooDataSet_isMC0_JPsi_pp_y0.00_2.40_Effw0_Accw0_PtW1_TnP1_230221.root");
@@ -198,7 +199,7 @@ void ctau_pr_fit()
   }
 
   const RooArgList &paramsCtauSide = fitCtauSide->floatParsFinal();
-  RooRealVar *tau_bkg1Var = (RooRealVar *)paramsCtauSide.find("tau");
+  RooRealVar *tau_bkg1Var = (RooRealVar *)paramsCtauSide.find("tau1");
 
   if (tau_bkg1Var)
   {
@@ -207,7 +208,6 @@ void ctau_pr_fit()
   }
 
   // RooRealVar tau_bkg1("tau_bkg1", "short lifetime", 4.2119e-01, 0.1, 1.0);
-
   RooDecay bkg("bkg", "NP short", *ctau, *tau_bkg1Var, resModel, RooDecay::SingleSided);
   // RooDecay decay_bkg2("decay_bkg2", "NP long", *ctau, tau_bkg2, resModel, RooDecay::SingleSided);
   // RooAddPdf bkg("bkg", "NP sum",
@@ -217,18 +217,8 @@ void ctau_pr_fit()
   // --- decide Nnp vs Nbkg ratio from NPS mass fit
   // load input
   TFile fMassNPS(Form("roots/mass_NP_MassFull_pT%.1f_%.1f_y%.1f_%.1f.root", ptLow, ptHigh, yLow, yHigh), "open");
-  RooFitResult *fitMassNPS = (RooFitResult *)fMassNPS.Get("fitResult");
-  if (!fitMassNPS)
-  {
-    std::cerr << "fitResult not found in mass NPS fit!" << std::endl;
-    return;
-  }
-
-  const RooArgList &paramsMassNPS = fitMassNPS->floatParsFinal();
-  RooRealVar *massNSigVar = (RooRealVar *)paramsMassNPS.find("Nsig");
-  RooRealVar *massNBkgVar = (RooRealVar *)paramsMassNPS.find("Nbkg");
-  double NbkgRatio_tmp = massNBkgVar->getVal() / (massNSigVar->getVal() + massNBkgVar->getVal());
-  RooRealVar NbkgRatio("NbkgRatio", "yield nonprompt", NbkgRatio_tmp);
+  auto *f_mass_bkg = (TParameter<double> *)fMassNPS.Get("f_mass_bkg");
+  RooRealVar NbkgRatio("NbkgRatio", "yield nonprompt", f_mass_bkg->GetVal());
   NbkgRatio.setConstant();
 
   RooRealVar Npr("Npr", "yield prompt", 3.7659e+04, 10000, 1000000);
@@ -262,6 +252,19 @@ void ctau_pr_fit()
   pad1->Draw();
   pad1->cd();
 
+  // --- subrange ---
+  ctau->setRange("SR", -0.05, 0.05);
+  RooArgSet obs(*ctau);
+  auto fPrompt = prompt->createIntegral(obs, NormSet(obs), Range("SR"))->getVal();
+  auto fNonprompt = decay.createIntegral(obs, NormSet(obs), Range("SR"))->getVal();
+  auto fBkg = bkg.createIntegral(obs, NormSet(obs), Range("SR"))->getVal();
+
+  // nEvt in subrange = (probability in subrange) × (yield in full range)
+  double Npr_in = Npr.getVal() * fPrompt;
+  double Nnp_in = Nnp.getVal() * fNonprompt;
+  double Nbkg_in = Nbkg.getVal() * fBkg;
+  double b_fraction = Nnp_in / (Npr_in + Nnp_in + Nbkg_in);
+
   // double ctMin = -0.1, ctMax = 0.8;
   double ctMin = -0.1, ctMax = 0.5;
   RooPlot *f_ctau = ctau->frame(Range(ctMin, ctMax), Title("")); // Bins(80)
@@ -272,8 +275,12 @@ void ctau_pr_fit()
   model.plotOn(f_ctau, Components("g2"), Name("g2"),LineStyle(kDotted), LineColor(kAzure));
   model.plotOn(f_ctau, Components("g3"), Name("g3"),LineStyle(kDotted), LineColor(kBlack));
   model.plotOn(f_ctau, Components("extNP"), Name("extNP"), LineStyle(kDashed), LineColor(kMagenta));
-  model.plotOn(f_ctau, Components("extBkg"), Name("extBkg"), LineStyle(kDashed), LineColor(kViolet - 9));
+  model.plotOn(f_ctau, Components("extBkg"), Name("extBkg"), LineStyle(kDashed), LineColor(kOrange));
   model.plotOn(f_ctau, Components("extBkg,extNP"), Name("NPContribution"), LineStyle(kDashed), LineColor(kViolet));
+
+  model.plotOn(f_ctau, Range("SR"), NormRange("SR"), VLines(), FillColor(kAzure - 9), FillStyle(3004), DrawOption("F"), Name("model_sub")); // Components("sig"),
+  model.plotOn(f_ctau, Range("SR"), NormRange("SR"), VLines(), Components("extNP"), FillColor(kMagenta), FillStyle(3004), DrawOption("F"), Name("NP_sub"));
+  model.plotOn(f_ctau, Range("SR"), NormRange("SR"), VLines(), Components("extBkg"), FillColor(kOrange), FillStyle(3004), DrawOption("F"), Name("bkg_sub"));
 
   // y axis: logY style
   double ymin = 1e300, ymax = -1e300;
@@ -304,7 +311,7 @@ void ctau_pr_fit()
   f_ctau->Draw("e");
 
   // --- object legend ---
-  TLegend *leg1 = new TLegend(0.16, 0.61, 0.49, 0.92);
+  TLegend *leg1 = new TLegend(0.44, 0.61, 0.58, 0.92);
   leg1->SetBorderSize(0);
   leg1->SetFillStyle(0);
   leg1->SetTextSize(0.025);
@@ -312,12 +319,12 @@ void ctau_pr_fit()
   leg1->AddEntry(f_ctau->findObject("data"), "Data", "lep");
   leg1->AddEntry(f_ctau->findObject("model"), "model", "pe");
   leg1->AddEntry(f_ctau->findObject("extPR"), "Prompt", "pe");
-  leg1->AddEntry(f_ctau->findObject("g1"), "GaussRes 1", "pe");
-  leg1->AddEntry(f_ctau->findObject("g2"), "GaussRes 2", "pe");
-  leg1->AddEntry(f_ctau->findObject("g3"), "GaussRes 3", "pe");
+  leg1->AddEntry(f_ctau->findObject("g1"), "Gauss 1", "pe");
+  leg1->AddEntry(f_ctau->findObject("g2"), "Gauss 2", "pe");
+  leg1->AddEntry(f_ctau->findObject("g3"), "Gauss 3", "pe");
   leg1->Draw("same");
 
-  TLegend *leg2 = new TLegend(0.35, 0.74, 0.5, 0.92);
+  TLegend *leg2 = new TLegend(0.56, 0.74, 0.65, 0.92);
   leg2->SetBorderSize(0);
   leg2->SetFillStyle(0);
   leg2->SetTextSize(0.025);
@@ -329,12 +336,46 @@ void ctau_pr_fit()
   // --- info latex ---
   TLatex latexInfo;
   latexInfo.SetNDC();
-  latexInfo.SetTextSize(0.03);
+  latexInfo.SetTextSize(0.026);
   latexInfo.SetTextFont(42);
 
-  latexInfo.DrawLatex(0.66, 0.89, "CMS pp Ref. #sqrt{s_{NN}} = 5.02 TeV");
-  latexInfo.DrawLatex(0.66, 0.83, Form("Data, %s %s", comp.c_str(), region.c_str()));
-  latexInfo.DrawLatex(0.66, 0.77, Form("%.1f < p_{T} < %.1f, %.1f < y < %.1f", ptLow, ptHigh, yLow, yHigh));
+  double x_start = 0.19;
+  double y_start = 0.95;
+  double y_step = -0.06, y_stepCount = 1;
+  latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, "CMS pp Ref. #sqrt{s_{NN}} = 5.02 TeV");
+  latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("Data, %s %s", comp.c_str(), region.c_str()));
+  if (yLow == 0)
+    latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("%.1f < p_{T} < %.1f, %.1f < y < %.1f", ptLow, ptHigh, yLow, yHigh));
+  else
+    latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("%.1f < p_{T} < %.1f, |y| < %.1f", ptLow, ptHigh, yHigh));
+
+  // --- latex parameters ---
+  TLatex latexParams;
+  latexParams.SetNDC();
+  latexParams.SetTextSize(0.025);
+  latexParams.SetTextFont(42);
+
+  x_start = 0.76;
+  y_step = -0.045;
+  y_stepCount = 1;
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("N_{PR} = %.0f #pm %.0f", Npr.getVal(), Npr.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("N_{NP} = %.0f #pm %.0f", Nnp.getVal(), Nnp.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("N_{Bkg}/N_{NP} = %.2f (fixed)", NbkgRatio.getVal()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#sigma1 = %.3f #pm %.3f", sigma1.getVal(), sigma1.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#tau^{NP}_{#psi} = %.3f #pm %.3f", tau.getVal(), tau.getError()));
+  // latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#tau^{NP}_{#psi} = %.3f #pm %.3f", tau.getVal(), tau.getError()));
+  
+  // subrange values
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("N_{PR, sub} = %.0f", Npr_in));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("N_{NP, sub} = %.0f", Nnp_in));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("N_{Bkg, sub} = %.0f", Nbkg_in));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("f^{PR}_{#psi_{B}} = %.3f", b_fraction));
+
+
+  // latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("f_{CB,R} = %.3f #pm %.3f", f_cbR.getVal(), f_cbR.getError()));
+  // latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("f_{Gauss} = %.3f #pm %.3f", f_gaus.getVal(), f_gaus.getError()));
+  // latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("c1 = %.3f #pm %.3f", c1.getVal(), c1.getError()));
+  // latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("c1 = %.3f #pm %.3f", c2.getVal(), c2.getError()));
 
   // === pull pad ===
   c_ctau.cd();
@@ -384,19 +425,8 @@ void ctau_pr_fit()
 
   cout << "Chi2/ndf: " << chi2ndf << "\n";
 
-  //  === count nJpsi in -0.05 ~ 0.05
-  ctau->setRange("sig", -0.05, 0.05);
-  RooArgSet obs(*ctau);
-  auto fPrompt = prompt->createIntegral(obs, NormSet(obs), Range("sig"))->getVal();
-  auto fNonprompt = decay.createIntegral(obs, NormSet(obs), Range("sig"))->getVal();
-  auto fBkg = bkg.createIntegral(obs, NormSet(obs), Range("sig"))->getVal();
 
-  // nEvt in subrange = (probability in subrange) × (yield in full range)
-  double Npr_in = Npr.getVal() * fPrompt;
-  double Nnp_in = Nnp.getVal() * fNonprompt;
-  double Nbkg_in = Nbkg.getVal() * fBkg;
-  double b_fraction = Nnp_in / (Npr_in + Nnp_in + Nbkg_in);
-
+  // --- print # of events in subrange ---
   std::cout
       << "[-0.05,0.05] yields:\n"
       << "  Prompt     = " << Npr_in << "\n"

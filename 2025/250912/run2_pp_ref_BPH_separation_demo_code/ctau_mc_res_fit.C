@@ -142,8 +142,8 @@ void ctau_mc_res_fit()
   ctau3DVar->setRange("fitRange", -10, 10);
   
   // === fit by Expo ===
-  // RooRealVar mu0("mu0", "res mean", 1.6249e-02, -0.02, 0.02);
-  RooRealVar mu0("mu0", "res mean", 0);
+  RooRealVar mu0("mu0", "res mean", 0.001, -0.02, 0.02);
+  // RooRealVar mu0("mu0", "res mean", 0);
 
   RooRealVar sigma1("sigma1", "sigma1", 0.5, 0.01, 1);  // 가장 큼
   RooRealVar r21("r21", "sigma2/sigma1", 1.1, 1, 3); // 0<r21<1
@@ -152,9 +152,9 @@ void ctau_mc_res_fit()
   RooRealVar r32("r32", "sigma3/sigma2", 1.1, 1, 3); // 0<r32<1
   RooFormulaVar sigma3("sigma3", "@0*@1", RooArgList(sigma2, r32));
 
-  RooRealVar fg1("fg1", "frac g1", 4.4158e-01, 0, 1.00);
-  RooRealVar fg2("fg2", "frac g2", 1.1448e-05, 0, 1.00);
-  
+  RooRealVar fg1("fg1", "frac g1", 0.1, 0.01, 1.00);
+  RooRealVar fg2("fg2", "frac g2", 0.05, 0.01, 1.00);
+
   RooGaussModel g1("g1", "g1", *ctau3DVar, mu0, sigma1);
   RooGaussModel g2("g2", "g2", *ctau3DVar, mu0, sigma2);
   RooGaussModel g3("g3", "g3", *ctau3DVar, mu0, sigma3);
@@ -205,7 +205,7 @@ void ctau_mc_res_fit()
     ymin = floor;
 
   f_ctau->SetMinimum(ymin * 0.5);
-  f_ctau->SetMaximum(ymax * 10.0);
+  f_ctau->SetMaximum(ymax * 500.0);
 
   // title
   f_ctau->GetYaxis()->SetTitle("Events");
@@ -213,7 +213,7 @@ void ctau_mc_res_fit()
   f_ctau->Draw("e");
 
   // --- object legend ---
-  TLegend *leg = new TLegend(0.16, 0.65, 0.49, 0.92);
+  TLegend *leg = new TLegend(0.49, 0.65, 0.70, 0.92);
   leg->SetBorderSize(0);
   leg->SetFillStyle(0);
   leg->SetTextSize(0.03);
@@ -231,9 +231,32 @@ void ctau_mc_res_fit()
   latexInfo.SetTextSize(0.03);
   latexInfo.SetTextFont(42);
 
-  latexInfo.DrawLatex(0.66, 0.89, "CMS pp Ref. #sqrt{s_{NN}} = 5.02 TeV");
-  latexInfo.DrawLatex(0.66, 0.83, "Prompt MC, J/#psi #rightarrow #mu^{+}#mu^{-}");
-  latexInfo.DrawLatex(0.66, 0.77, Form("%.1f < p_{T} < %.1f, %.1f < y < %.1f", ptLow, ptHigh, yLow, yHigh));
+  double x_start = 0.19;
+  double y_start = 0.95;
+  double y_step = -0.06, y_stepCount = 1;
+  latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, "CMS pp Ref. #sqrt{s_{NN}} = 5.02 TeV");
+  latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, "Prompt MC, J/#psi #rightarrow #mu^{+}#mu^{-}");
+  if (yLow == 0)
+    latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("%.1f < p_{T} < %.1f, %.1f < y < %.1f", ptLow, ptHigh, yLow, yHigh));
+  else
+    latexInfo.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("%.1f < p_{T} < %.1f, |y| < %.1f", ptLow, ptHigh, yHigh));
+
+  // --- latex parameters ---
+  TLatex latexParams;
+  latexParams.SetNDC();
+  latexParams.SetTextSize(0.025);
+  latexParams.SetTextFont(42);
+
+  x_start = 0.71;
+  y_step = -0.045;
+  y_stepCount = 1;
+  // latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("mean = 0 (fixed)"));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("mean = %.4f #pm %.4f", mu0.getVal(), mu0.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#sigma1 = %.3f #pm %.3f", sigma1.getVal(), sigma1.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#sigma2/#sigma1 = %.3f #pm %.3f", r21.getVal(), r21.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("#sigma3/#sigma2 = %.3f #pm %.3f", r32.getVal(), r32.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("f_{G1} = %.3f #pm %.3f", fg1.getVal(), fg1.getError()));
+  latexParams.DrawLatex(x_start, y_start + y_step * y_stepCount++, Form("f_{G2} = %.3f #pm %.3f", fg2.getVal(), fg2.getError()));
 
   // === pull pad ===
   c_ctau.cd();
