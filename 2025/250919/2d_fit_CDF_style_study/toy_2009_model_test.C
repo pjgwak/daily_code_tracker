@@ -5,31 +5,6 @@
 
 using namespace RooFit;
 
-RooDataSet *makeFakeDataXY()
-{
-  TRandom3 trnd{};
-
-  RooRealVar dt("dt", "dt", -10, 10);
-  RooRealVar dterr("dterr", "dterr", 0.0001, 5);
-  RooArgSet coord(dt, dterr);
-
-  RooDataSet *d = new RooDataSet("d", "d", RooArgSet(dt, dterr));
-
-  for (int i = 0; i < 10000; i++)
-  {
-    double tmpy = trnd.Gaus(0, 10);
-    double tmpx = trnd.Gaus(0.5 * tmpy, 1);
-    if (fabs(tmpy) < 10 && fabs(tmpx) < 10)
-    {
-      dt.setVal(tmpx);
-      dterr.setVal(tmpy);
-      d->add(coord);
-    }
-  }
-
-  return d;
-}
-
 void toy_2009_model_test()
 {
   cout << "=== start toy_2009_model_test()";
@@ -41,12 +16,12 @@ void toy_2009_model_test()
 
   // --- mass signal - two gaussians ---
   RooRealVar *Mean0_mass = new RooRealVar("M_{0}", "mass mean gauss 0", 5.28, 5.27, 5.29);
-  RooRealVar *Sigma0_mass = new RooRealVar("#sigma_{M0}", "mass sigma gauss0", 0.1, 0.05, 0.5);
+  RooRealVar *Sigma0_mass = new RooRealVar("#sigma_{M0}", "mass sigma gauss0", 0.001, 0.00001, 0.5);
   RooResolutionModel *g0_mass = new RooGaussModel("g0_mass", "mass resolution", *mass, *Mean0_mass, *Sigma0_mass);
 
-  RooRealVar *Mean1_mass = new RooRealVar("M_{1}", "mass mean gauss 0", 5.28, 5.27, 5.29);
-  RooRealVar *Sigma1_mass = new RooRealVar("#sigma_{M1}", "mass sigma gauss0", 0.1, 0.05, 0.5);
-  RooResolutionModel *g1_mass = new RooGaussModel("g1_mass", "mass resolution", *mass, *Mean0_mass, *Sigma0_mass);
+  // RooRealVar *Mean1_mass = new RooRealVar("M_{1}", "mass mean gauss 1", 5.28, 5.27, 5.29);
+  RooRealVar *Sigma1_mass = new RooRealVar("#sigma_{M1}", "mass sigma gauss0", 0.005, 0.00001, 0.5);
+  RooResolutionModel *g1_mass = new RooGaussModel("g1_mass", "mass resolution", *mass, *Mean0_mass, *Sigma1_mass);
 
   // fractions of gauss0, 1
   RooRealVar *frac_g0_mass = new RooRealVar("f_g0_M", "gauss resol.fracion 0", 0.05, 0.01, 1);
@@ -56,7 +31,7 @@ void toy_2009_model_test()
   RooAbsPdf *mass_b_pdf = new RooAddPdf("mass_b_pdf", "dual gaussian Pdf", RooArgList(*g0_mass, *g1_mass), RooArgList(*frac_g0_mass));
 
   // extend
-  RooRealVar *N_b = new RooRealVar("N_{b}", "signal number B Jpsi K", 1500, 1000, 3000);
+  RooRealVar *N_b = new RooRealVar("N_{b}", "signal number B Jpsi K", 1500, 1, 3000);
   RooAbsPdf *mass_b_epdf = new RooExtendPdf("mass_b_epdf", "mass sig B 2 Jpsi K", *mass_b_pdf, *N_b);
 
   // --- ctau signal ---
@@ -77,7 +52,7 @@ void toy_2009_model_test()
   RooResolutionModel *g1_tom = new RooGaussModel("g1_tom", "proper time resolution", *tom, *Mean_tom, *Sigma1_tom);
 
   // one gauss signal
-  RooResolutionModel *properTimeRes = new RooGaussModel("g1_tom", "proper time resolution", *tom, *Mean_tom, *Sigma1_tom);
+  RooResolutionModel *properTimeRes = new RooGaussModel("properTimeRes", "proper time resolution", *tom, *Mean_tom, *Sigma1_tom);
 
   // two gauss signal
   // RooResolutionModel *properTimeRes = new RooAddModel("properTimeRes", "dual gaussain PDF", RooArgList(*g0_tom, *g1_tom), RooArgList(*frac_g_tom));
@@ -86,7 +61,7 @@ void toy_2009_model_test()
   // OK, signal time PDF is ready
 
   // --- combine signal PDFs (mass + time)
-  RooAbsPdf *masstimeSigpdf = new RooProdPdf("masstimeSigdpf", "signal m* t", RooArgSet(*time_b_pdf, *mass_b_epdf));
+  RooAbsPdf *masstimeSigpdf = new RooProdPdf("masstimeSigpdf", "signal m* t", RooArgSet(*time_b_pdf, *mass_b_epdf));
 
   // === Jpsi bkg ===
   // ctau에서 Prompt에 해당하는 것과 묶었으니까 prompt J/psi mass bkg라고 말할 수 있다. -> vs BB bkg
@@ -95,12 +70,12 @@ void toy_2009_model_test()
   // --- prompt J/psi mass ---
   RooRealVar *slope = new RooRealVar("slope", "slope", 0.0, -0.01, 0.01);
   RooAbsPdf *mass_pJpsi_pdf = new RooPolynomial("mass_pJpsi_pdf", "mass pdf pJpsi", *mass, *slope); // 이게 prompt인지 어떻게 알고?
-  RooRealVar *N_pJpsi = new RooRealVar("N_{p-J/#psi}", "signal number prompt Jpsi", 2000, 1000, 10000);
+  RooRealVar *N_pJpsi = new RooRealVar("N_{p-J/#psi}", "signal number prompt Jpsi", 10000, 1, 20000);
   RooAbsPdf *mass_pJpsi_epdf = new RooExtendPdf("mass_pJpsi_epdf", "mass sig pJpsi", *mass_pJpsi_pdf, *N_pJpsi);
 
   // --- prompt J/psi ctau ---
   // 이름이 몇 번 중복되는데 ctua_gm1과 같다.
-  RooAbsPdf *time_pJpsi_pdf = new RooGaussModel("g1_tom", "proper time resolution", *tom, *Mean_tom, *Sigma1_tom);
+  RooAbsPdf *time_pJpsi_pdf = new RooGaussModel("time_pJpsi_pdf", "proper time resolution", *tom, *Mean_tom, *Sigma1_tom);
 
   // --- bkg Jpsi mass + time ---
   RooAbsPdf *masstimeBkgpdf = new RooProdPdf("masstimeBkgpdf", "background m * t", RooArgSet(*time_pJpsi_pdf, *mass_pJpsi_epdf));
@@ -129,7 +104,7 @@ void toy_2009_model_test()
   /// Real data generate -> Toy MC로 테스트
   RooArgSet *pdf_obs = new RooArgSet(*mass, *tom);
   // RooDataSet *dataB = RooDataSet::read("fitsample.txt", RooArgList(*pdf_obs));
-  std::unique_ptr<RooDataSet> data(pdf_fit->generate(RooArgSet(*mass, *tom), 10000));
+  std::unique_ptr<RooDataSet> data(pdf_fit->generate(RooArgSet(*mass, *tom), 20000));
 
   // fit
   // Define difference -log(L) for B->ff, B->ff fbar and B->fbar f
@@ -143,6 +118,7 @@ void toy_2009_model_test()
   m1.setStrategy(2);
   m1.migrad();
 
+  {
   TCanvas c1("c1", "", 800, 800);
   c1.Divide(1, 2);
   TPad *pad1 = (TPad *)c1.cd(1);
@@ -158,13 +134,42 @@ void toy_2009_model_test()
   // main plot
   pad1->cd();
   RooPlot *frame = tom->frame();
-  data->plotOn(frame);
-  pdf_fit->plotOn(frame, ProjWData(*data));
+  data->plotOn(frame, Name("data"));
+  pdf_fit->plotOn(frame, Name("model"));
+  pdf_fit->plotOn(frame,
+                  Components("masstimeSigpdf"),
+                  Name("signal"),
+                  LineColor(kRed),
+                  LineStyle(kDotted),
+                  LineWidth(3));
+  pdf_fit->plotOn(frame,
+                  Components("masstimeBkgpdf"),
+                  Name("pr_bkg"),
+                  LineColor(kOrange),
+                  LineStyle(kDashed),
+                  LineWidth(2));
+  pdf_fit->plotOn(frame,
+                  Components("masstimeBkgpdf2"),
+                  Name("np_bkg"),
+                  LineColor(kGreen + 2),
+                  LineStyle(kDashed),
+                  LineWidth(2));
   frame->Draw();
+
+  // --- legend ---
+  auto leg = new TLegend(0.6, 0.65, 0.95, 0.88);
+  leg->SetBorderSize(0);
+  leg->SetFillStyle(0);
+  leg->AddEntry(frame->findObject("data"), "data", "pe");
+  leg->AddEntry(frame->findObject("model"), "Total fit", "e");
+  leg->AddEntry(frame->findObject("signal"), "Signal", "e");
+  leg->AddEntry(frame->findObject("pr_bkg"), "Prompt bkg", "e");
+  leg->AddEntry(frame->findObject("np_bkg"), "Nonprompt bkg", "e");
+  leg->Draw();
 
   // pull
   pad2->cd();
-  RooHist *hpull = frame->pullHist(); // data - fit / error
+  RooHist *hpull = frame->pullHist("data", "model"); // data - fit / error
   RooPlot *frame_pull = tom->frame();
   frame_pull->addPlotable(hpull, "P");
   frame_pull->SetTitle("");
@@ -178,14 +183,93 @@ void toy_2009_model_test()
 
   // --- chi2/ndf ---
   int nFitParam = pdf_fit->getParameters(*data)->selectByAttrib("Constant", kFALSE)->getSize();
-  double chi2 = frame->chiSquare(nFitParam); // (chi2/ndf)
+  double chi2 = frame->chiSquare("model", "data", nFitParam); // (chi2/ndf)
   std::cout << "Chi2/ndf = " << chi2 << std::endl;
   TLatex latex;
   latex.SetNDC();
   latex.SetTextSize(0.08);
   latex.DrawLatex(0.85, 0.85, Form("#chi^{2}/ndf = %.2f", chi2));
 
-  c1.SaveAs("toy_2009_model_test.png");
+  c1.SaveAs("toy_2009_model_ctau.png");
+  c1.SaveAs("toy_2009_model_ctau.pdf");
+  }
+
+  // === mass plot ===
+  {
+  TCanvas c2("c2", "", 800, 800);
+  c2.Divide(1, 2);
+  TPad *pad1 = (TPad *)c2.cd(1);
+  // gPad->SetLogy();
+  pad1->SetPad(0.0, 0.3, 1.0, 1.0);
+  pad1->SetBottomMargin(0.02);
+
+  TPad *pad2 = (TPad *)c2.cd(2);
+  pad2->SetPad(0.0, 0.0, 1.0, 0.3);
+  pad2->SetTopMargin(0.05);
+  pad2->SetBottomMargin(0.25);
+
+  // main plot
+  pad1->cd();
+  RooPlot *frame = mass->frame();
+  data->plotOn(frame, Name("data"));
+  pdf_fit->plotOn(frame, Name("model"));
+  pdf_fit->plotOn(frame,
+                  Components("masstimeSigpdf"),
+                  Name("signal"),
+                  LineColor(kRed),
+                  LineStyle(kDotted),
+                  LineWidth(3));
+  pdf_fit->plotOn(frame,
+                  Components("masstimeBkgpdf"),
+                  Name("pr_bkg"),
+                  LineColor(kOrange),
+                  LineStyle(kDashed),
+                  LineWidth(2));
+  pdf_fit->plotOn(frame,
+                  Components("masstimeBkgpdf2"),
+                  Name("np_bkg"),
+                  LineColor(kGreen + 2),
+                  LineStyle(kDashed),
+                  LineWidth(2));
+  frame->Draw();
+
+  // --- legend ---
+  auto leg = new TLegend(0.6, 0.65, 0.95, 0.88);
+  leg->SetBorderSize(0);
+  leg->SetFillStyle(0);
+  leg->AddEntry(frame->findObject("data"), "data", "pe");
+  leg->AddEntry(frame->findObject("model"), "Total fit", "e");
+  leg->AddEntry(frame->findObject("signal"), "Signal", "e");
+  leg->AddEntry(frame->findObject("pr_bkg"), "Prompt bkg", "e");
+  leg->AddEntry(frame->findObject("np_bkg"), "Nonprompt bkg", "e");
+  leg->Draw();
+
+  // pull
+  pad2->cd();
+  RooHist *hpull = frame->pullHist("data", "model"); // data - fit / error
+  RooPlot *frame_pull = mass->frame();
+  frame_pull->addPlotable(hpull, "P");
+  frame_pull->SetTitle("");
+  frame_pull->GetYaxis()->SetTitle("Pull");
+  frame_pull->GetYaxis()->SetNdivisions(505);
+  frame_pull->GetYaxis()->SetTitleSize(0.08);
+  frame_pull->GetYaxis()->SetLabelSize(0.08);
+  frame_pull->GetXaxis()->SetTitleSize(0.1);
+  frame_pull->GetXaxis()->SetLabelSize(0.08);
+  frame_pull->Draw();
+
+  // --- chi2/ndf ---
+  int nFitParam = pdf_fit->getParameters(*data)->selectByAttrib("Constant", kFALSE)->getSize();
+  double chi2 = frame->chiSquare("model", "data", nFitParam); // (chi2/ndf)
+  std::cout << "Chi2/ndf = " << chi2 << std::endl;
+  TLatex latex;
+  latex.SetNDC();
+  latex.SetTextSize(0.08);
+  latex.DrawLatex(0.85, 0.85, Form("#chi^{2}/ndf = %.2f", chi2));
+
+  c2.SaveAs("toy_2009_model_mass.png");
+  c2.SaveAs("toy_2009_model_mass.pdf");
+  }
 
   cout << "=== finish toy_2009_model_test()";
   t.Stop();
