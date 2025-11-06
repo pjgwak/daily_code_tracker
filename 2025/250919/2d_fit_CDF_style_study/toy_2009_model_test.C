@@ -11,6 +11,8 @@ void toy_2009_model_test()
   TStopwatch t;
   t.Start();
 
+  gSystem->mkdir("figs", true);
+
   // === mass ===
   RooRealVar *mass = new RooRealVar("mass", "mass", 5.15, 5.6, "GeV/c^{2}");
 
@@ -68,7 +70,7 @@ void toy_2009_model_test()
   // Prompt -> 진짜 관심 있는 Jpsi
   // 총 Sig + (Jpsi bkg + BB bkg)로 구성
   // --- prompt J/psi mass ---
-  RooRealVar *slope = new RooRealVar("slope", "slope", 0.0, -0.01, 0.01);
+  RooRealVar *slope = new RooRealVar("slope", "slope", 0.0, -0.1, 0.01);
   RooAbsPdf *mass_pJpsi_pdf = new RooPolynomial("mass_pJpsi_pdf", "mass pdf pJpsi", *mass, *slope); // 이게 prompt인지 어떻게 알고?
   RooRealVar *N_pJpsi = new RooRealVar("N_{p-J/#psi}", "signal number prompt Jpsi", 10000, 1, 20000);
   RooAbsPdf *mass_pJpsi_epdf = new RooExtendPdf("mass_pJpsi_epdf", "mass sig pJpsi", *mass_pJpsi_pdf, *N_pJpsi);
@@ -111,12 +113,16 @@ void toy_2009_model_test()
   auto nllB = pdf_fit->createNLL(*data, Extended(true), NumCPU(32), EvalBackend("legacy"));
 
   RooMinimizer m1(*nllB);
-  // m1.setVerobse(kTRUE);
+  m1.setVerbose(kFALSE);
   // m1.setLogFile(logFile); - 이게 나을지도??
-  m1.setProfile(1);
-  m1.setPrintLevel(3);
+  m1.setProfile(0);
+  m1.setPrintLevel(-1);
   m1.setStrategy(2);
   m1.migrad();
+  m1.hesse();
+  m1.migrad();
+
+  std::unique_ptr<RooFitResult> result(m1.save());
 
   {
   TCanvas c1("c1", "", 800, 800);
@@ -190,8 +196,8 @@ void toy_2009_model_test()
   latex.SetTextSize(0.08);
   latex.DrawLatex(0.85, 0.85, Form("#chi^{2}/ndf = %.2f", chi2));
 
-  c1.SaveAs("toy_2009_model_ctau.png");
-  c1.SaveAs("toy_2009_model_ctau.pdf");
+  c1.SaveAs("figs/toy_2009_model_ctau.png");
+  // c1.SaveAs("figs/toy_2009_model_ctau.pdf");
   }
 
   // === mass plot ===
@@ -267,9 +273,11 @@ void toy_2009_model_test()
   latex.SetTextSize(0.08);
   latex.DrawLatex(0.85, 0.85, Form("#chi^{2}/ndf = %.2f", chi2));
 
-  c2.SaveAs("toy_2009_model_mass.png");
-  c2.SaveAs("toy_2009_model_mass.pdf");
+  c2.SaveAs("figs/toy_2009_model_mass.png");
+  // c2.SaveAs("figs/toy_2009_model_mass.pdf");
   }
+
+  result->Print("v");
 
   cout << "=== finish toy_2009_model_test()";
   t.Stop();

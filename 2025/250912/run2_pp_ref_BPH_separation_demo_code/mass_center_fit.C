@@ -35,7 +35,7 @@ void mass_center_fit(string comp = "NP")
   float ptLow = 25, ptHigh = 40;
   float yLow = 0, yHigh = 1.6;
   float massLow = 2.6, massHigh = 3.5;
-  string region = "MassFull";
+  string region = "MassCenter"; // MassFull
   int cLow = 0, cHigh = 180;
 
   TStopwatch t;

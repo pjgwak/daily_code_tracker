@@ -1,0 +1,283 @@
+// https://github.com/root-project/training/blob/master/RooFit/roofit-tutorial-01.ipynb
+
+#include <RooFit.h>
+
+using namespace RooFit;
+
+void fit2D_example()
+{
+  // Setup
+  // -----
+
+  // silent
+  RooMsgService::instance().setGlobalKillBelow(WARNING);
+
+
+  // Create your first RooFit model
+  // ------------------------------
+
+  // observable
+  RooRealVar x("x", "x", 0, 0, 10);
+
+  // parameters
+  RooRealVar mean("mean", "mean of gaussian", 5, 0, 10);
+  RooRealVar sigma("sigma", "width of gaussian", 1, 0.1, 10);
+
+  // Gaussian PDF
+  RooGaussian gauss("gauss", "gaussian PDF", x, mean, sigma);
+
+  // PDF inspection
+  gauss.Print("t");
+
+
+  // Toy dataset generation and fitting
+  // ----------------------------------
+
+  // Generate a toy dataset with 9000 entires sampled from the Gaussain PDF
+  auto data = gauss.generate({x}, 9000);
+
+  data->Print();
+
+  // fit the PDF to the toy data, saving the fit result
+  auto fit_result = gauss.fitTo(*data, PrintLevel(-1), Save());
+  fit_result->Print("V");
+
+  // inspect the correlation of your model parameters
+  fit_result->correlationMatrix().Print();
+
+
+  // Plotting the data and the model
+  // -------------------------------
+
+  // create a RooPlot object on which the data and PDF is plotted
+  auto x_frame = x.frame(Title("Gaussain PDF with data"));
+  data->plotOn(x_frame);
+  gauss.plotOn(x_frame);
+
+  // draw the RooPlot on a TCanvas
+  TCanvas c1("c1", "", 500, 300);
+  x_frame->Draw();
+  c1.Draw();
+  c1.SaveAs("data_and_model_test.png");
+
+
+  // Importing RooFit datasets from a ROOT file
+  // ------------------------------------------
+
+  // export the toy dataset to a ROOT file so we can show how to imoprt it
+  data->convertToTreeStore();
+
+  TFile output_file("dataset.root", "recreate");
+  TTree *output_tree = const_cast<TTree *>(data->store()->tree());
+  output_tree->SetName("mytree");
+  output_tree->SetTitle("My measured data");
+  output_tree->Write();
+  output_file.Close();
+
+  data->convertToVectorStore();
+
+  // import RooDataSet using the constructor that takse a TTree
+  TFile input_file("dataset.root", "read");
+  auto mytree = (TTree *)input_file.Get("mytree");
+  RooDataSet dataset("dataset", "", RooArgSet(x), Import((*mytree))); // expression for version after root6.26
+  dataset.Print("V");
+  input_file.Close();
+
+
+  // Composite PDFs
+  // --------------
+
+  // composite PDF: model with multiple componenets, liek signal and background
+  
+  // create exponential PDF with parameter tau
+  RooRealVar tau("tau", "", -0.2, -10.0, -0.01);
+  RooExponential expo("expo", "", x, tau);
+
+  // define parameters for the number of signal and background events
+  RooRealVar n_sig("n_sig", "", 10000, 1000, 100000);
+  RooRealVar n_bkg("n_bkg", "", 50000, 5000, 500000);
+
+  // composite model that automatically include a Poisson term for the total number of events
+  RooAddPdf model("model", "", {gauss, expo}, {n_sig, n_bkg});
+
+  // generate a toy MC
+  data = model.generate({x}, 100000);
+
+  // do the fit
+  fit_result = model.fitTo(*data, PrintLevel(-1), Save());
+  fit_result->Print("V");
+
+
+  // Creatubg a nice plot
+  // --------------------
+
+  // create RooPlot and draw data, PDF, and components
+  x_frame = x.frame(Title("Gaussian plus exp. background"));
+  
+  data->plotOn(x_frame, Name("data"));
+
+  model.plotOn(x_frame, Components("gauss"), LineColor(kRed), LineStyle(kDashed), Name("gauss"));
+  model.plotOn(x_frame, Components("expo"), LineColor(kMagenta), LineStyle(kDashed), Name("expo"));
+  model.plotOn(x_frame, Name("model"));
+
+  // add legend
+  TLegend legend(0.7, 0.55, 0.92, 0.87);
+  legend.SetBorderSize(0);
+  legend.SetFillStyle(0);
+  legend.AddEntry(x_frame->findObject("data"), "data", "p");
+
+  vector<string> names = {"model", "gauss", "expo"};
+  for (const auto& name : names) {
+    TObject *obj = x_frame->findObject(name.c_str());
+    if (obj) {
+      legend.AddEntry(obj, name.c_str(), "L");
+    }
+  }
+
+  // create a second frame with the residuals
+  auto resid_hist = x_frame->pullHist();
+  auto resid_frame = x.frame(Title("; x;residuals"));
+  resid_frame->addPlotable(resid_hist, "P");
+
+  // create a canvas that is divided into two drawing pads
+  TCanvas c2("c2", "", 600, 600);
+  c2.Divide(1, 2);
+
+  // first pad is for the main plot and the legend
+  auto pad_1 = c2.cd(1);
+  x_frame->Draw();
+  legend.Draw();
+  pad_1->SetPad(0.0, 0.2, 1, 1);
+
+  // second pad is for the residuals
+  auto pad_2 = c2.cd(2);
+  pad_2->SetPad(0, 0, 1, 0.25);
+  resid_frame->Draw();
+  resid_frame->GetXaxis()->SetLabelSize(0.12);
+  resid_frame->GetYaxis()->SetLabelSize(0.12);
+  resid_frame->GetYaxis()->SetTitleSize(0.12);
+  resid_frame->GetYaxis()->SetTitleOffset(0.25);
+
+  // draw the canvas
+  c2.Draw();
+  c2.SaveAs("signal_bkg_test.png");
+
+
+  // Template fits with convolutions
+  // -------------------------------
+  // A template PDF is baded on histogram shape and not expressed by an analytical function
+
+  // imagine you have a histogram giving the expected signal shape
+  TH1D template_hist("h1", "", 100, 0, 10);
+  TF1 f1("f1", "exp(-abs(x-5))", 0, 10);
+  template_hist.FillRandom("f1", 100000);
+
+  TCanvas c3("c3", "", 600, 600);
+  template_hist.Draw();
+  c3.Draw();
+  c3.SaveAs("template_hist.png");
+
+  // getting the template PDF into RooFit
+  // 1.create a corresponding observable
+  RooRealVar y("y", "", 0, 0, 10);
+  
+  // 2. convert the TH1 into a RooDataHist
+  RooDataHist roo_template_hist("roo_template_hist", "", y, Import(template_hist));
+
+  // 3. create a RooHistPdf based of the Roofit histogram
+  RooHistPdf sig_raw_y("sig_raw_y", "", y, roo_template_hist);
+  
+  TCanvas c4("c4", "", 600, 600);
+  auto y_frame = y.frame(Title(""));
+  sig_raw_y.plotOn(y_frame);
+  y_frame->Draw();
+  c4.Draw();
+  c4.SaveAs("roo_template_hist.png");
+
+
+  // Creating a full composite model
+  // -------------------------------
+
+  // construct a RooGaussian to model detector resolution effects
+  RooRealVar resolution("resolution", "", 0.2, 0.1, 1.0);
+  RooGaussian sig_smearing_y("sig_smearing_y", "sig_smearing_y", y, RooConst(0), resolution);
+
+  // the signal PDF is a convolution of the template and the resolution function
+  RooFFTConvPdf sig_y("sig_y", "", y, sig_raw_y, sig_smearing_y);
+
+  // for the background, we use a CHebychev polynomial
+  RooRealVar s1("s1", "", -1, 1);
+  RooRealVar s2("s2", "", -1, 1);
+  RooChebychev bkg_y("bkg_y", "", y, {s1, s2});
+
+  // create RooAddPdf for the composite model
+  RooAddPdf model_y("model_y", "", {sig_y, bkg_y}, {n_sig, n_bkg});
+
+  // creating toyMC and fitting
+  auto data_y = model_y.generate(y);
+
+  fit_result = model_y.fitTo(*data_y, PrintLevel(-1), Save());
+  fit_result->Print("V");
+
+  // plotting
+  TCanvas c5("c5", "", 600, 600);
+  y_frame = y.frame(Title("Model for y"));
+  data_y->plotOn(y_frame);
+  model_y.plotOn(y_frame, Components("bkg_y"), LineColor(kRed), LineStyle(kDashed));
+  model_y.plotOn(y_frame);
+  y_frame->Draw();
+  c5.Draw();
+  c5.SaveAs("y_model_fit.png");
+
+
+  // Multivariate fit
+  // ----------------
+
+  // we have now modeld two observables
+  // x with Gaussian signal and exponential background
+  // y with smeared template signal and Chebychev background
+  
+  // create 2D model p(x,y) = p(x)p(y) for signal and background
+  RooProdPdf model_sig_xy("model_sig_xy", "", {gauss, sig_y});
+  RooProdPdf model_bkg_xy("model_bkg_xy", "", {expo, bkg_y});
+
+  // composite
+  RooAddPdf model_xy("model_xy", "", {model_sig_xy, model_bkg_xy}, {n_sig, n_bkg});
+
+  // generate a 2D toy MC
+  auto data_xy = model_xy.generate({x, y}, 100000);
+
+  // draw 2D plot
+  auto histo_xy = data_xy->createHistogram("histo_xy", x, Binning(25), YVar(y, Binning(15)));
+  histo_xy->SetTitle("");
+
+  TCanvas c6("c6", "", 600, 600);
+  histo_xy->Draw("LEGO2");
+  c6.Draw();
+  c6.SaveAs("2d_plot.png");
+
+  // fitting the 2D model'
+  auto fit_result_xy = model_xy.fitTo(*data_xy, PrintLevel(-1), Save());
+  fit_result_xy->Print("V");
+
+
+  // Final visualization of 2D model and data
+  // ----------------------------------------
+  x_frame = x.frame(Title("Model for x"));
+  y_frame = y.frame(Title("Model for y"));
+
+  data_xy->plotOn(x_frame);
+  model_xy.plotOn(x_frame);
+
+  data_xy->plotOn(y_frame);
+  model_xy.plotOn(y_frame);
+
+  TCanvas c7("c7", "", 800, 400);
+  c7.Divide(2);
+  c7.cd(1);
+  x_frame->Draw();
+  c7.cd(2);
+  y_frame->Draw();
+  c7.Draw();
+  c7.SaveAs("2d_projection.png");
+}

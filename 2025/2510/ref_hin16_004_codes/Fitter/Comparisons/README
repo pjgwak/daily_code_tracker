@@ -1,0 +1,21 @@
+* datasheet.h has all the numbers for drawing external results
+
+0) Loading the macro: .L compareRAA.C+
+
+1) Nonprompt J/psi w/ D, B, charged hadrons:
+compareRAA(0,2,0,0); compareRAA(0,2,0,0); compareRAA(0,2,1,1); compareRAA(0,0,0,0); compareRAA(0,0,1,1);
+
+2) Prompt J/psi w/ D, psi(2S):
+compareRAA(1,1,0,0); compareRAA(1,1,0,0); compareRAA(1,1,0,1);
+
+3) Prompt J/psi w/ Y(nS), psi(2S):
+compareYnSJpsi(1,0,1); compareYnSJpsi(1,1,1);
+
+4) Nonprompt J/psi w/ Y(nS):
+compareYnSJpsi(0,0,1); compareYnSJpsi(0,1,1);
+
+5) Prompt J/psi w/ psi(2S):
+comparePsi2SJpsi(0,0); comparePsi2SJpsi(1,0);
+
+6) Draw HIN14005 with extended pT bins down to 3 GeV/c
+extendLowPtFor14005(0); extendLowPtFor14005(1);

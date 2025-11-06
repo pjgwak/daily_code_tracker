@@ -1,0 +1,32 @@
+* Calculates efficiencies
+* Running settings and files can be found from 
+/afs/cern.ch/work/m/miheejo/public/2015JpsiRAA5TeV/Final/
+
+* Requirements
+- weightFunctDataMC/: data/MC ratio root files. This should be under the same directory.
+  - createMCWeightingFuncs.C will create this directory with "Distributions_data_nonprompt" directores as inputs
+- tnp_weight.h: tnp weighting factors + systematics given by tnp crews
+- oniaEff.h, oniaEff.C: Efficiency calculations are implemented (THIS IS THE MAIN)
+- oniaEff_TnPToyStudy.C: Inherite oniaEff.C, 100 tnp toy MC studies will be done here
+- oniaEff_pTShapeVary.C: Inherite oniaEff.C, 100 data/MC ratios toy studies will be done here
+- plotEffs.C: Draw plots from oniaEff.C file's running
+- plotEff_TnPToyStudy.C: Draw plots from oniaEff_TnPToyStudy.C and oniaEff_pTShapeVary.C files' running
+- writeCSVs.cpp: creates .csv files and store them under syst/, stat/ 
+
+* Running setting 
+- makeEffs_pp_pr.C: pp prompt J/psi efficiency files with options on oniaEff.C are defined here.
+  ex) root -l -b -q "makeEffs_pp_pr.C+(1)"
+- script_pp_pr.sh: automatically runs multiple makeEffs_pp_pr.C. Before you execute this script, it's better to check this file inside and run only the ones that you need. Nominal setting is makeEffs_pp_pr.C(1).
+
+* How to run
+0) Make sure you have all above requirements
+1-1) acceptance:
+  root -l -b -q "makeEffs_pp_pr.C+(1, true)"
+1-2) efficiency:
+  root -l -b -q "makeEffs_pp_pr.C+(1)"
+1-3) run all the options:
+  ./script_pp_pr.sh
+2) plots:
+  root -l -b -q plotEffs.C+
+3) csv files:
+  root -l -b -q writeCSVs.cpp+

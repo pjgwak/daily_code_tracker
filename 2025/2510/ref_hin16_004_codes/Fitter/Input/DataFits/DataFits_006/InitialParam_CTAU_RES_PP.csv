@@ -1,0 +1,13 @@
+rap;pt;cent;Model_CtauRes_PP;ctauResCut;
+0.0-0.6;6.5-50.0;0-100;DoubleGaussianResolution;;
+0.0-0.6;6.5-50.0;0-10;DoubleGaussianResolution;;
+0.0-0.6;6.5-50.0;10-20;DoubleGaussianResolution;;
+0.0-0.6;6.5-50.0;20-30;DoubleGaussianResolution;;
+0.0-0.6;6.5-50.0;30-40;DoubleGaussianResolution;;
+0.0-0.6;6.5-50.0;40-50;DoubleGaussianResolution;;
+0.0-0.6;6.5-50.0;50-100;DoubleGaussianResolution;;
+0.0-0.6;6.5-8.5;0-100;DoubleGaussianResolution;;
+0.0-0.6;8.5-9.5;0-100;DoubleGaussianResolution;;
+0.0-0.6;9.5-11.0;0-100;DoubleGaussianResolution;;
+0.0-0.6;11.0-15.0;0-100;DoubleGaussianResolution;;
+0.0-0.6;15.0-50.0;0-100;DoubleGaussianResolution;;

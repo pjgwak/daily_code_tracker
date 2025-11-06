@@ -145,11 +145,11 @@ void ctau_mc_res_fit()
   RooRealVar mu0("mu0", "res mean", 0.001, -0.02, 0.02);
   // RooRealVar mu0("mu0", "res mean", 0);
 
-  RooRealVar sigma1("sigma1", "sigma1", 0.5, 0.01, 1);  // 가장 큼
-  RooRealVar r21("r21", "sigma2/sigma1", 1.1, 1, 3); // 0<r21<1
+  RooRealVar sigma1("sigma1", "sigma1", 0.5, 0.01, 1);
+  RooRealVar r21("r21", "sigma2/sigma1", 1.1, 1, 3);
   RooFormulaVar sigma2("sigma2", "@0*@1", RooArgList(sigma1, r21));
 
-  RooRealVar r32("r32", "sigma3/sigma2", 1.1, 1, 3); // 0<r32<1
+  RooRealVar r32("r32", "sigma3/sigma2", 1.1, 1, 3);
   RooFormulaVar sigma3("sigma3", "@0*@1", RooArgList(sigma2, r32));
 
   RooRealVar fg1("fg1", "frac g1", 0.1, 0.01, 1.00);

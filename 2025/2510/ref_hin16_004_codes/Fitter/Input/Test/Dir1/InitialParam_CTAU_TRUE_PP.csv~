@@ -1,0 +1,3 @@
+rap;pt;cent;Model_CtauTrueRes_PP;Model_CtauTrue_PP;sigmaB_JpsiNoPR_PP;sigmaB_Psi2SNoPR_PP;lambdaDSS_JpsiNoPR_PP;lambdaDSS_Psi2SNoPR_PP;
+0.0-1.6;6.5-30.0;0.0-100.0;SingleGaussianResolution;SingleSidedDecay;
+0.0-1.6;6.5-9.0;0.0-100.0;SingleGaussianResolution;SingleSidedDecay;

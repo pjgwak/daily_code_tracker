@@ -1,0 +1,5 @@
+rap;pt;cent;Model_CtauTrueRes_PbPb;Model_CtauTrue_PbPb;sigmaMC_JpsiNoPR_PbPb;sigmaMC_Psi2SNoPR_PbPb;lambdaDSS_JpsiNoPR_PbPb;lambdaDSS_Psi2SNoPR_PbPb;
+0.0-1.6;6.5-30.0;0.0-100.0;Delta;SingleSidedDecay;
+0.0-1.6;6.5-30.0;0.0-20.0;Delta;SingleSidedDecay;
+0.0-1.6;6.5-30.0;20.0-40.0;Delta;SingleSidedDecay;
+0.0-1.6;6.5-30.0;40.0-100.0;Delta;SingleSidedDecay;

@@ -1,0 +1,5 @@
+rap;pt;cent;Model_Psi2SPR_PP;Model_Psi2SNoPR_PP;
+0.0-1.6;6.5-30.0;0.0-100.0;Delta;SingleSidedDecay;
+0.0-1.6;6.5-30.0;0.0-20.0;Delta;SingleSidedDecay;
+0.0-1.6;6.5-30.0;20.0-40.0;Delta;SingleSidedDecay;
+0.0-1.6;6.5-30.0;40.0-100.0;Delta;SingleSidedDecay;

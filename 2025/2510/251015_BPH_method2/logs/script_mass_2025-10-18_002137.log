@@ -1,0 +1,173 @@
+
+Processing mass_fit.C(6.5, 7.5, -0.5, -0.2)...
+=== start mass_fit() ===
+
+=== Import inputs ===
+Error in <TFile::TFile>: file /data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/roots/mc_mass_fit_pT6.5_7.5.root does not exist
+Error in <HandleInterpreterException>: Trying to dereference null pointer or trying to call routine taking non-null arguments
+Execution of your code was aborted.
+/data/hwan/psi2S_RAA_PbPb2018/skimmedFiles/OniaRooDataSet_isMC0_JPsi_pp_y0.00_2.40_Effw0_Accw0_PtW1_TnP1_230221.root
+
+=== Set kienematic cuts ===
+
+=== Reduce datasets ===
+
+=== Build model ===
+In file included from input_line_8:1:
+/data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/mass_fit.C:185:19: warning: null passed to a callee that requires a non-null argument [-Wnonnull]
+  apply_from_list(fitMcMass->floatParsFinal());
+                  ^~~~~~~~~
+
+Processing mass_fit.C(6.5, 7.5, -0.2, -0.1)...
+=== start mass_fit() ===
+
+=== Import inputs ===
+Error in <TFile::TFile>: file /data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/roots/mc_mass_fit_pT6.5_7.5.root does not exist
+Error in <HandleInterpreterException>: Trying to dereference null pointer or trying to call routine taking non-null arguments
+Execution of your code was aborted.
+/data/hwan/psi2S_RAA_PbPb2018/skimmedFiles/OniaRooDataSet_isMC0_JPsi_pp_y0.00_2.40_Effw0_Accw0_PtW1_TnP1_230221.root
+
+=== Set kienematic cuts ===
+
+=== Reduce datasets ===
+
+=== Build model ===
+In file included from input_line_8:1:
+/data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/mass_fit.C:185:19: warning: null passed to a callee that requires a non-null argument [-Wnonnull]
+  apply_from_list(fitMcMass->floatParsFinal());
+                  ^~~~~~~~~
+
+Processing mass_fit.C(6.5, 7.5, -0.1, -0.07)...
+=== start mass_fit() ===
+
+=== Import inputs ===
+Error in <TFile::TFile>: file /data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/roots/mc_mass_fit_pT6.5_7.5.root does not exist
+Error in <HandleInterpreterException>: Trying to dereference null pointer or trying to call routine taking non-null arguments
+Execution of your code was aborted.
+/data/hwan/psi2S_RAA_PbPb2018/skimmedFiles/OniaRooDataSet_isMC0_JPsi_pp_y0.00_2.40_Effw0_Accw0_PtW1_TnP1_230221.root
+
+=== Set kienematic cuts ===
+
+=== Reduce datasets ===
+
+=== Build model ===
+In file included from input_line_8:1:
+/data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/mass_fit.C:185:19: warning: null passed to a callee that requires a non-null argument [-Wnonnull]
+  apply_from_list(fitMcMass->floatParsFinal());
+                  ^~~~~~~~~
+
+Processing mass_fit.C(6.5, 7.5, -0.07, -0.05)...
+=== start mass_fit() ===
+
+=== Import inputs ===
+Error in <TFile::TFile>: file /data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/roots/mc_mass_fit_pT6.5_7.5.root does not exist
+Error in <HandleInterpreterException>: Trying to dereference null pointer or trying to call routine taking non-null arguments
+Execution of your code was aborted.
+/data/hwan/psi2S_RAA_PbPb2018/skimmedFiles/OniaRooDataSet_isMC0_JPsi_pp_y0.00_2.40_Effw0_Accw0_PtW1_TnP1_230221.root
+
+=== Set kienematic cuts ===
+
+=== Reduce datasets ===
+
+=== Build model ===
+In file included from input_line_8:1:
+/data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/mass_fit.C:185:19: warning: null passed to a callee that requires a non-null argument [-Wnonnull]
+  apply_from_list(fitMcMass->floatParsFinal());
+                  ^~~~~~~~~
+
+Processing mass_fit.C(6.5, 7.5, -0.05, -0.04)...
+=== start mass_fit() ===
+
+=== Import inputs ===
+Error in <TFile::TFile>: file /data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/roots/mc_mass_fit_pT6.5_7.5.root does not exist
+Error in <HandleInterpreterException>: Trying to dereference null pointer or trying to call routine taking non-null arguments
+Execution of your code was aborted.
+/data/hwan/psi2S_RAA_PbPb2018/skimmedFiles/OniaRooDataSet_isMC0_JPsi_pp_y0.00_2.40_Effw0_Accw0_PtW1_TnP1_230221.root
+
+=== Set kienematic cuts ===
+
+=== Reduce datasets ===
+
+=== Build model ===
+In file included from input_line_8:1:
+/data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/mass_fit.C:185:19: warning: null passed to a callee that requires a non-null argument [-Wnonnull]
+  apply_from_list(fitMcMass->floatParsFinal());
+                  ^~~~~~~~~
+
+Processing mass_fit.C(6.5, 7.5, -0.04, -0.03)...
+=== start mass_fit() ===
+
+=== Import inputs ===
+Error in <TFile::TFile>: file /data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/roots/mc_mass_fit_pT6.5_7.5.root does not exist
+Error in <HandleInterpreterException>: Trying to dereference null pointer or trying to call routine taking non-null arguments
+Execution of your code was aborted.
+/data/hwan/psi2S_RAA_PbPb2018/skimmedFiles/OniaRooDataSet_isMC0_JPsi_pp_y0.00_2.40_Effw0_Accw0_PtW1_TnP1_230221.root
+
+=== Set kienematic cuts ===
+
+=== Reduce datasets ===
+
+=== Build model ===
+In file included from input_line_8:1:
+/data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/mass_fit.C:185:19: warning: null passed to a callee that requires a non-null argument [-Wnonnull]
+  apply_from_list(fitMcMass->floatParsFinal());
+                  ^~~~~~~~~
+
+Processing mass_fit.C(6.5, 7.5, -0.03, -0.02)...
+=== start mass_fit() ===
+
+=== Import inputs ===
+Error in <TFile::TFile>: file /data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/roots/mc_mass_fit_pT6.5_7.5.root does not exist
+Error in <HandleInterpreterException>: Trying to dereference null pointer or trying to call routine taking non-null arguments
+Execution of your code was aborted.
+/data/hwan/psi2S_RAA_PbPb2018/skimmedFiles/OniaRooDataSet_isMC0_JPsi_pp_y0.00_2.40_Effw0_Accw0_PtW1_TnP1_230221.root
+
+=== Set kienematic cuts ===
+
+=== Reduce datasets ===
+
+=== Build model ===
+In file included from input_line_8:1:
+/data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/mass_fit.C:185:19: warning: null passed to a callee that requires a non-null argument [-Wnonnull]
+  apply_from_list(fitMcMass->floatParsFinal());
+                  ^~~~~~~~~
+
+Processing mass_fit.C(6.5, 7.5, -0.02, -0.01)...
+=== start mass_fit() ===
+
+=== Import inputs ===
+Error in <TFile::TFile>: file /data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/roots/mc_mass_fit_pT6.5_7.5.root does not exist
+Error in <HandleInterpreterException>: Trying to dereference null pointer or trying to call routine taking non-null arguments
+Execution of your code was aborted.
+/data/hwan/psi2S_RAA_PbPb2018/skimmedFiles/OniaRooDataSet_isMC0_JPsi_pp_y0.00_2.40_Effw0_Accw0_PtW1_TnP1_230221.root
+
+=== Set kienematic cuts ===
+
+=== Reduce datasets ===
+
+=== Build model ===
+In file included from input_line_8:1:
+/data/users/pjgwak/work/daily_code_tracker/2025/2510/251015_BPH_method2/mass_fit.C:185:19: warning: null passed to a callee that requires a non-null argument [-Wnonnull]
+  apply_from_list(fitMcMass->floatParsFinal());
+                  ^~~~~~~~~
+
+Processing mass_fit.C(6.5, 7.5, -0.01, 0.0)...
+=== start mass_fit() ===
+
+=== Import inputs ===
+
+ *** Break *** keyboard interrupt
+/data/hwan/psi2S_RAA_PbPb2018/skimmedFiles/OniaRooDataSet_isMC0_JPsi_pp_y0.00_2.40_Effw0_Accw0_PtW1_TnP1_230221.root
+
+Processing mass_fit.C(6.5, 7.5, 0.0, 0.01)...
+=== start mass_fit() ===
+
+=== Import inputs ===
+
+ *** Break *** keyboard interrupt
+/data/hwan/psi2S_RAA_PbPb2018/skimmedFiles/OniaRooDataSet_isMC0_JPsi_pp_y0.00_2.40_Effw0_Accw0_PtW1_TnP1_230221.root
+
+Processing mass_fit.C(6.5, 7.5, 0.01, 0.02)...
+=== start mass_fit() ===
+
+=== Import inputs ===
