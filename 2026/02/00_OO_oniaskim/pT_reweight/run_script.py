@@ -6,8 +6,8 @@ import sys
 
 # Usage:
 #   python3 run_script.py [nEvt] fill -1
-#   python3 run_script.py [nEvt] ratio
-#   python3 run_script.py [nEvt] fit
+#   python3 run_script.py ratio
+#   python3 run_script.py fit
 #   python3 run_script.py [nEvt] all
 # Example:
 #   python3 run_script.py -1 fill
@@ -22,9 +22,6 @@ def main(argv):
             continue
         except ValueError:
             step_tokens.append(token)
-
-    if n_evt == 1000:
-        print("Only handle 1000 events. Please add '-1' if you want to loop to all events")
 
     if not step_tokens:
         print("No step specified. Nothing to run.")
@@ -45,6 +42,8 @@ def main(argv):
     cwd = os.path.dirname(os.path.abspath(__file__))
     commands = []
     if "fill" in selected:
+        if n_evt == 1000:
+            print("Only handle 1000 events. Please add '-1' if you want to loop to all events")
         commands.extend(
             [
                 ["root", "-l", "-b", "-q", f"make_pt_bins.C({n_evt},0,1)"],  # fil bins for data
@@ -53,9 +52,9 @@ def main(argv):
             ]
         )
     if "ratio" in selected:
-        commands.append(["root", "-l", "-b", "-q", f"make_ratio_bins.C({n_evt})"])  # ratio
+        commands.append(["root", "-l", "-b", "-q", "make_ratio_bins.C"])  # ratio
     if "fit" in selected:
-        commands.append(["root", "-l", "-b", "-q", "fit_Tsallis.C"])  # fit
+        commands.append(["root", "-l", "-b", "-q", "fit_ratio.C"])  # fit
 
     for cmd in commands:
         print("+", " ".join(cmd))

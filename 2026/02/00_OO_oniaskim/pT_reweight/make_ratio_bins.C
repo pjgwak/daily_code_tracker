@@ -398,10 +398,8 @@ bool validateMatching(const TH1D *templ, const std::vector<BinResult> &bins, con
 }
 } // namespace
 
-void make_ratio_bins(long nEvt = -1)
+void make_ratio_bins()
 {
-  (void)nEvt;
-
   // --------------------------------------------------------------------
   // Global ROOT drawing setup.
   // --------------------------------------------------------------------
