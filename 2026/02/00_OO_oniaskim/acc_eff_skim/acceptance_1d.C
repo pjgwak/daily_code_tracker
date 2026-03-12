@@ -1,12 +1,16 @@
 // For PbPb2023 data
 
 #include "TFile.h"
+#include "TChain.h"
 #include "TTree.h"
 #include "TSystem.h"
 #include "TH1D.h"
+#include "TF1.h"
+#include <algorithm>
 #include <cmath>
 #include <iostream>
 #include <string>
+#include <vector>
 #include <TVector3.h>
 #include <TLorentzVector.h>
 // #include "cutsAndBins.h"
@@ -40,7 +44,16 @@ bool IsAcceptanceQQ(double pt, double eta)
   return pt >= 1.0;
 }
 
-void acceptance_1d(long nEvt = 10000, bool isPr = true, bool isMC = true)
+double GetPtWeight(TF1 *fW, double pt, double y)
+{
+  (void)y;
+  if (!fW)
+    return 1.0;
+  return fW->Eval(pt);
+}
+
+void acceptance_1d(long nEvt = 10000, bool isPr = true,
+                   bool isNCollW = false, bool isGenW = true, bool isPtW = true)
 {
   cout << "Start onia_to_skim_data()\n";
 
@@ -50,15 +63,48 @@ void acceptance_1d(long nEvt = 10000, bool isPr = true, bool isMC = true)
                           : "/data/Oniatree/light_ions_Raa/OO_PrivateMc/Oniatree_OO2025PrivateMcNp.root";
   const int nFilesAdded = oniaTree->Add(inputFile.c_str());
 
+  TF1 *fPtW_mid = nullptr;
+  TF1 *fPtW_fwd = nullptr;
+  if (isPtW)
+  {
+    const std::string ptWeightFilePath =
+        "/data/users/pjgwak/work/daily_code_tracker/2026/02/00_OO_oniaskim/pT_reweight/fit_ratio_outputs/roots/fit_ratio_exp2.root";
+    const std::string ptWeightMidName = isPr ? "exp2_pr_mid" : "exp2_np_mid";
+    const std::string ptWeightFwdName = isPr ? "exp2_pr_fwd" : "exp2_np_fwd";
+
+    TFile *fPtWeightIn = TFile::Open(ptWeightFilePath.c_str(), "READ");
+    if (!fPtWeightIn || fPtWeightIn->IsZombie())
+    {
+      cout << "[ERROR] failed to open pT weight file: " << ptWeightFilePath << "\n";
+      return;
+    }
+
+    TF1 *fPtWMidIn = dynamic_cast<TF1 *>(fPtWeightIn->Get(ptWeightMidName.c_str()));
+    TF1 *fPtWFwdIn = dynamic_cast<TF1 *>(fPtWeightIn->Get(ptWeightFwdName.c_str()));
+    if (!fPtWMidIn || !fPtWFwdIn)
+    {
+      cout << "[ERROR] failed to load pT weight functions: "
+           << ptWeightMidName << ", " << ptWeightFwdName << "\n";
+      fPtWeightIn->Close();
+      delete fPtWeightIn;
+      return;
+    }
+
+    fPtW_mid = static_cast<TF1 *>(fPtWMidIn->Clone(Form("%s_clone", ptWeightMidName.c_str())));
+    fPtW_fwd = static_cast<TF1 *>(fPtWFwdIn->Clone(Form("%s_clone", ptWeightFwdName.c_str())));
+    fPtWeightIn->Close();
+    delete fPtWeightIn;
+  }
+
 
   // user defined kinematic cuts
   int cLow = 0, cHigh = 180;
   double massLow = 2.6, massHigh = 3.5;
 
   // ===== labeling =====
-  std::string mcLabel = "";
-  if (isMC)
-    mcLabel = isPr ? "PR" : "NP";
+  const std::string mcLabel = isPr ? "PR" : "NP";
+  const std::string weightLabel = Form("_ncollW%d_genW%d_ptW%d",
+                                       isNCollW, isGenW, isPtW);
 
   // ===== set Oniatree branch address (input) =====
   const long int maxBranchSize = 5000;
@@ -90,7 +136,7 @@ void acceptance_1d(long nEvt = 10000, bool isPr = true, bool isMC = true)
   Int_t Centrality;
   ULong64_t HLTriggers;
   Float_t SumET_HF;
-  Float_t Gen_weight; // MC
+  Float_t Gen_weight = 1.f; // MC
 
   // // collection sizes
   Short_t Gen_QQ_size;
@@ -103,6 +149,7 @@ void acceptance_1d(long nEvt = 10000, bool isPr = true, bool isMC = true)
   // // per-dimuon (size = Gen_QQ_size)
   Short_t Gen_QQ_mupl_idx[maxBranchSize];
   Short_t Gen_QQ_mumi_idx[maxBranchSize];
+  Short_t Gen_mu_charge[maxBranchSize];
   Float_t Gen_QQ_ctau3D[maxBranchSize];
   Float_t Gen_QQ_ctau[maxBranchSize];
 
@@ -140,6 +187,7 @@ void acceptance_1d(long nEvt = 10000, bool isPr = true, bool isMC = true)
   // // dimuon
   oniaTree->SetBranchAddress("Gen_QQ_mupl_idx", Gen_QQ_mupl_idx);
   oniaTree->SetBranchAddress("Gen_QQ_mumi_idx", Gen_QQ_mumi_idx);
+  oniaTree->SetBranchAddress("Gen_mu_charge", Gen_mu_charge);
   oniaTree->SetBranchAddress("Gen_QQ_ctau3D", Gen_QQ_ctau3D);
   oniaTree->SetBranchAddress("Gen_QQ_ctau", Gen_QQ_ctau);
 
@@ -152,11 +200,10 @@ void acceptance_1d(long nEvt = 10000, bool isPr = true, bool isMC = true)
   // oniaTree->SetBranchAddress("Gen_mu_dzErr", Gen_mu_dzErr);
 
   // MC only
-  // if (isMC)
-  // {
-  //   oniaTree->SetBranchAddress("Gen_weight", &Gen_weight);
-  //   oniaTree->SetBranchAddress("Gen_mu_whichGen", Gen_mu_whichGen);
-  // }
+  if (isGenW)
+  {
+    oniaTree->SetBranchAddress("Gen_weight", &Gen_weight);
+  }
 
   // ----- declare local variables ----
   const static long long int nMaxDimu = 1000;
@@ -193,8 +240,8 @@ void acceptance_1d(long nEvt = 10000, bool isPr = true, bool isMC = true)
   }
 
   std::string outFilePath = Form(
-      "%s/acc_OO2025_isMC%d%s_Dimuon_MiniAOD_Private_MC.root",
-      outDir, isMC, mcLabel.empty() ? "" : ("_" + mcLabel).c_str());
+      "%s/acc_OO2025_isMC1_%s%s_Dimuon_MiniAOD_Private_MC.root",
+      outDir, mcLabel.c_str(), weightLabel.c_str());
 
   TFile *fFlowSkim = TFile::Open(outFilePath.c_str(), "RECREATE");
   if (!fFlowSkim || fFlowSkim->IsZombie() || !fFlowSkim->IsWritable())
@@ -268,6 +315,12 @@ void acceptance_1d(long nEvt = 10000, bool isPr = true, bool isMC = true)
   const bool VERBOSE_EVENT = false;  // event-level
   const bool VERBOSE_CANDID = false; // dimuon-level
 
+  if (isNCollW)
+  {
+    cout << "[ERROR] OO NCollWeight Not Ready\n";
+    return;
+  }
+
   // ----- start event loop -----
   for (long iev = 0; iev < nEvt; ++iev)
   {
@@ -275,7 +328,7 @@ void acceptance_1d(long nEvt = 10000, bool isPr = true, bool isMC = true)
     if ((iev % 100000 == 0) && (iev != 0))
     {
       cout << ">>>>> EVENT " << iev << " / " << nTot
-                << " (" << int(100. * iev / max<Long64_t>(1, nTot)) << "%)\n";
+                << " (" << int(100. * iev / std::max<Long64_t>(1, nTot)) << "%)\n";
       cout << "Saved dimuon: " << count_dimuon << "\n";
     }
     if (VERBOSE_EVENT) {
@@ -294,25 +347,17 @@ void acceptance_1d(long nEvt = 10000, bool isPr = true, bool isMC = true)
     lumi = LS;
     vz = zVtx;
 
-    // centrality
-    int cBin_ = -999; // no centrality
-    // if(isMC) cBin_ = Centrality;
-    // else if(!isMC) {
-    //   cBin_ = getHiBinFromhiHF(SumET_HF);
-    //   // if(hiHFBinEdge ==0) cBin_ = getHiBinFromhiHF(SumET_HF);
-    //   // else if(hiHFBinEdge == 1) cBin_ = getHiBinFromhiHF_Up(SumET_HF);
-    //   // else if(hiHFBinEdge == -1) cBin_ = getHiBinFromhiHF_Down(SumET_HF);
-    // } 
-    // if(cBin_==-999){ cout << "ERROR!!! No HF Centrality Matching!!" << endl; return;}
-    // if(cBin_ < cLow || cBin_ > cHigh) continue;
-    
-    // NColl - MC only, Galuber model
-    double Ncoll_weight = 0, Gen_weight_ = 0;
-    // if(isMC){
-    //   weight = findNcoll(Centrality) * Gen_weight;
-    //   Ncoll_weight = findNcoll(Centrality);
-    //   Gen_weight_ = Gen_weight;
-    // }
+    double Ncoll_weight = 1.0;
+    if (isNCollW)
+    {
+      Ncoll_weight = 1.0;
+    }
+    double Gen_weight_ = 1.0;
+    if (isGenW)
+    {
+      Gen_weight_ = Gen_weight;
+    }
+    const double eventWeightBase = Ncoll_weight * Gen_weight_;
 
     // check dimoun number
     if (Gen_QQ_size<0) continue;
@@ -356,22 +401,26 @@ void acceptance_1d(long nEvt = 10000, bool isPr = true, bool isMC = true)
       TLorentzVector JP;
       JP.SetPtEtaPhiM(pt_, eta_, phi_, mass_);
       float y_ = JP.Rapidity();
+      const bool isMidRap = std::abs(y_) < 1.6;
+      TF1 *fPtW = isMidRap ? fPtW_mid : fPtW_fwd;
+      const double ptWeight = isPtW ? GetPtWeight(fPtW, pt_, y_) : 1.0;
       
       if (mass_ < massLow || mass_ > massHigh) continue;
+      if (Gen_mu_charge[iMuPl] * Gen_mu_charge[iMuMi] > 0) continue;
 
       // ===== Acceptance denominator cut =====
       if (!(TMath::Abs(y_) < 2.4))
         continue;
       
       // fill the denominator
-      if (std::abs(y_) < 1.6) {
+      if (isMidRap) {
         const int ptBin = hist_den_mid->FindBin(pt_);
         if (ptBin > 0 && ptBin <= hist_den_mid->GetNbinsX())
-          hist_den_mid->Fill(pt_);
+          hist_den_mid->Fill(pt_, eventWeightBase * ptWeight);
       } else {
         const int ptBin = hist_den_fwd->FindBin(pt_);
         if (ptBin > 0 && ptBin <= hist_den_fwd->GetNbinsX())
-          hist_den_fwd->Fill(pt_);
+          hist_den_fwd->Fill(pt_, eventWeightBase * ptWeight);
       }
       
       // ===== Acceptance numerator =====
@@ -379,20 +428,19 @@ void acceptance_1d(long nEvt = 10000, bool isPr = true, bool isMC = true)
            !IsAcceptanceQQ(pt2_, eta2_)) continue;
       
       // fill the numerator
-      if (std::abs(y_) < 1.6) {
+      if (isMidRap) {
         const int ptBin = hist_num_mid->FindBin(pt_);
         if (ptBin > 0 && ptBin <= hist_num_mid->GetNbinsX())
-          hist_num_mid->Fill(pt_);
+          hist_num_mid->Fill(pt_, eventWeightBase * ptWeight);
       } else {
         const int ptBin = hist_num_fwd->FindBin(pt_);
         if (ptBin > 0 && ptBin <= hist_num_fwd->GetNbinsX())
-          hist_num_fwd->Fill(pt_);
+          hist_num_fwd->Fill(pt_, eventWeightBase * ptWeight);
       }
 
 
       // init weights
-      weight = 1.;
-      // if(isMC) weight = findNcoll(Centrality) * Gen_weight; // need it for PbPb23
+      weight = eventWeightBase;
       Double_t tnp_weight = 1.0;
       Double_t tnp_trig_w_pl = -1.0;
       Double_t tnp_trig_w_mi = -1.0;
