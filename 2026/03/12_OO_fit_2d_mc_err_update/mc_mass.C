@@ -156,10 +156,9 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	gSystem->mkdir(resultDir, true);
 	gROOT->Macro("/data/users/pjgwak/input_files/rootlogon.C");
 
-	RooRealVar &obs_mass = *static_cast<RooRealVar *>(dataSel->get()->find("mass"));
-	obs_mass.SetTitle("mass");
-	obs_mass.setUnit("GeV/c^{2}");
-	const int massPlotBins = 200;
+		RooRealVar &obs_mass = *static_cast<RooRealVar *>(dataSel->get()->find("mass"));
+		obs_mass.SetTitle("mass");
+		obs_mass.setUnit("GeV/c^{2}");
 
 	RooDataSet *data = dataSel.get();
 	auto findObj = [&](RooPlot *fr, const char *n) -> TObject *
@@ -400,11 +399,11 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	pad1->Draw();
 	pad1->cd();
 
-	RooPlot *massplot = obs_mass.frame(Title(""));
-	if (isWeight)
-		data->plotOn(massplot, Binning(massPlotBins), DataError(RooAbsData::SumW2), Name("data"));
-	else
-		data->plotOn(massplot, Binning(massPlotBins), Name("data"));
+		RooPlot *massplot = obs_mass.frame(Title(""));
+		if (isWeight)
+			data->plotOn(massplot, DataError(RooAbsData::SumW2), Name("data"));
+		else
+			data->plotOn(massplot, Name("data"));
 	mass_pdf->plotOn(massplot, LineColor(kBlack), LineWidth(2), Name("model"));
 	if (nSignalGaussComponents >= 1)
 		mass_pdf->plotOn(massplot, Components(signal_mass_gaus), LineColor(kBlue + 1), LineStyle(kDashed), LineWidth(2), Name("signal_gaus_component"));
@@ -629,4 +628,6 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	std::cout << "------------------ FIT RESULT FOR MASS ONLY --------------" << std::endl;
 	if (frMass)
 		frMass->Print("v");
+	const TString figMass = figName("mass_fit");
+	std::cout << "[FIG] mc_mass fit : " << figMass << std::endl;
 }

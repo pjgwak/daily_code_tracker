@@ -11,6 +11,7 @@
 #include "RooLognormal.h"
 #include "RooProdPdf.h"
 #include "RooHistPdf.h"
+#include "RooParametricStepFunction.h"
 #include "RooLandau.h"
 #include "RooChebychev.h"
 #include "RooCBShape.h"
@@ -25,6 +26,7 @@
 #include "TH1D.h"
 #include "TH2.h"
 #include "TH2D.h"
+#include "TArrayD.h"
 #include "TFile.h"
 #include "TKey.h"
 #include "TTree.h"
@@ -47,6 +49,78 @@
 #include <vector>
 
 using namespace RooFit;
+
+static RooParametricStepFunction *makeStepPdfFromHist(
+	const char *pdfName,
+	RooRealVar &x,
+	TH1 *h,
+	RooArgList &ownedCoeffs,
+	double floorFrac = 1e-6,
+	double minCoeff = 1e-8,
+	double maxCoeff = 1.0)
+{
+	if (!h)
+		return nullptr;
+
+	const int nBins = h->GetNbinsX();
+	if (nBins < 2)
+		return nullptr;
+
+	std::vector<double> boundaries(nBins + 1);
+	for (int i = 1; i <= nBins; ++i)
+		boundaries[i - 1] = h->GetXaxis()->GetBinLowEdge(i);
+	boundaries[nBins] = h->GetXaxis()->GetBinUpEdge(nBins);
+
+	TArrayD boundaryArray(static_cast<int>(boundaries.size()), boundaries.data());
+
+	double totalYield = 0.0;
+	double minWidth = std::numeric_limits<double>::infinity();
+	for (int i = 1; i <= nBins; ++i)
+	{
+		double c = h->GetBinContent(i);
+		if (!std::isfinite(c) || c < 0.0)
+			c = 0.0;
+		totalYield += c;
+		minWidth = std::min(minWidth, h->GetBinWidth(i));
+	}
+	if (!(totalYield > 0.0) || !(minWidth > 0.0))
+		return nullptr;
+
+	ownedCoeffs.removeAll();
+	double maxHeight = minCoeff;
+	double usedArea = 0.0;
+	for (int i = 1; i <= nBins - 1; ++i)
+	{
+		double c = h->GetBinContent(i);
+		if (!std::isfinite(c) || c <= 0.0)
+			c = floorFrac * totalYield;
+
+		const double width = h->GetBinWidth(i);
+		double frac = c / totalYield;
+		double hgt = frac / width;
+		hgt = std::max(minCoeff, hgt);
+		maxHeight = std::max(maxHeight, hgt);
+		usedArea += hgt * width;
+
+		auto *coef = new RooRealVar(
+			Form("%s_coef_%02d", pdfName, i - 1),
+			Form("%s_coef_%02d", pdfName, i - 1),
+			hgt, minCoeff, std::max(maxCoeff, 5.0 * maxHeight));
+		coef->setConstant(true);
+		ownedCoeffs.add(*coef);
+	}
+
+	const double remainingArea = std::max(0.0, 1.0 - usedArea);
+	const double impliedLastHeight = remainingArea / h->GetBinWidth(nBins);
+	std::cout << "[DEBUG] " << pdfName
+	          << " totalYield = " << totalYield
+	          << ", usedArea = " << usedArea
+	          << ", remainingArea = " << remainingArea
+	          << ", impliedLastHeight = " << impliedLastHeight
+	          << std::endl;
+
+	return new RooParametricStepFunction(pdfName, pdfName, x, ownedCoeffs, boundaryArray, nBins);
+}
 
 static std::pair<double, int> chi2_from_pull(RooHist *hpull)
 {
@@ -103,10 +177,17 @@ void ctau_bkg(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh =
 	// ------------------------------------------------------------------
 	// model control
 	// ------------------------------------------------------------------
+	enum ErrPdfChoice
+	{
+		kErrPdfAnalytic = 0,
+		kErrPdfHist = 1,
+	};
 	// Choose how many background components to use in each (pt, y) bin.
 	int nSignalSSComponents = 2;
 	int nSignalFlipComponents = 2;
 	int nSignalDSComponents = 1;
+	int errPdfOpt = 1; // 0: analytic, 1: RooHistPdf
+	const int histPdfInterpolationOrder = 1;
 	if (yLow == 0.0f)
 	{
 		if (ptLow == 200.0f && ptHigh == 350.0f)
@@ -264,8 +345,8 @@ void ctau_bkg(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh =
 	obs_time.setRange(ctRange.first, ctRange.second);
 	obs_timeErr.setRange(errRange.first, errRange.second);
 	obs_timeErr.setMin(errRange.first);
-	const int timePlotBins = std::max(2, obs_time.getBins() * 2);
-	const int timeErrPlotBins = std::max(2, obs_timeErr.getBins() * 2);
+	const int timePlotBins = std::max(2, obs_time.getBins());
+	const int timeErrPlotBins = std::max(2, obs_timeErr.getBins());
 	const TString resolutionFileName = TString::Format("%s/ctau_resolution_%s.root", prResultDir.Data(), figTag.Data());
 	const TString fitResultFileName = TString::Format("%s/ctau_bkg_fitresult_%s.root", bkgResultDir.Data(), figTag.Data());
 
@@ -311,34 +392,51 @@ void ctau_bkg(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh =
 	RooLandau timeErrTail("timeErrTail", "timeErrTail", obs_timeErr, timeErrTailMpv, timeErrTailWidth);
 	RooLandau timeErrTail2("timeErrTail2", "timeErrTail2", obs_timeErr, timeErrTail2Mpv, timeErrTail2Width);
 	RooLognormal timeErrLogn("timeErrLogn", "timeErrLogn", obs_timeErr, timeErrLognM0, timeErrLognK);
-	RooAddPdf timeErrPdf(
+	std::unique_ptr<RooAddPdf> timeErrPdfAnalytic = std::make_unique<RooAddPdf>(
 		"timeErrPdf", "timeErrPdf",
 		RooArgList(timeErrTail, timeErrTail2, timeErrLogn, timeErrGaus1, timeErrGaus2),
 		RooArgList(timeErrTailFrac, timeErrTail2Frac, timeErrLognFrac, timeErrCore1Frac),
 		true
 	);
-	RooAddPdf timeErrPdfCoreOnly(
-		"timeErrPdfCoreOnly", "timeErrPdfCoreOnly",
-		RooArgList(timeErrGaus1, timeErrGaus2),
-		RooArgList(timeErrCore1Frac),
-		true
-	);
-	timeErrPdfCoreOnly.fitTo(*timeErrData, PrintLevel(-1), SumW2Error(isWeight));
-	std::unique_ptr<RooFitResult> timeErrResult(timeErrPdf.fitTo(*timeErrData, Save(), PrintLevel(-1), SumW2Error(isWeight)));
-	timeErrGaus1Mean.setConstant(true);
-	timeErrGaus1Sigma.setConstant(true);
-	timeErrGaus2Mean.setConstant(true);
-	timeErrGaus2Sigma.setConstant(true);
-	timeErrTailMpv.setConstant(true);
-	timeErrTailWidth.setConstant(true);
-	timeErrTail2Mpv.setConstant(true);
-	timeErrTail2Width.setConstant(true);
-	timeErrLognM0.setConstant(true);
-	timeErrLognK.setConstant(true);
-	timeErrCore1Frac.setConstant(true);
-	timeErrTailFrac.setConstant(true);
-	timeErrTail2Frac.setConstant(true);
-	timeErrLognFrac.setConstant(true);
+	std::unique_ptr<RooDataHist> timeErrHistData;
+	std::unique_ptr<RooHistPdf> timeErrPdfHist;
+	RooAbsPdf *timeErrPdf = timeErrPdfAnalytic.get();
+	std::unique_ptr<RooFitResult> timeErrResult;
+	if (errPdfOpt == kErrPdfHist)
+	{
+		timeErrHistData = std::make_unique<RooDataHist>(
+			"timeErrHistData", "timeErrHistData",
+			RooArgSet(obs_timeErr), *timeErrData);
+		timeErrPdfHist = std::make_unique<RooHistPdf>(
+			"timeErrHistPdf", "timeErrHistPdf",
+			RooArgSet(obs_timeErr), *timeErrHistData, histPdfInterpolationOrder);
+		timeErrPdf = timeErrPdfHist.get();
+	}
+	else
+	{
+		RooAddPdf timeErrPdfCoreOnly(
+			"timeErrPdfCoreOnly", "timeErrPdfCoreOnly",
+			RooArgList(timeErrGaus1, timeErrGaus2),
+			RooArgList(timeErrCore1Frac),
+			true
+		);
+		timeErrPdfCoreOnly.fitTo(*timeErrData, PrintLevel(-1), SumW2Error(isWeight));
+		timeErrResult.reset(timeErrPdfAnalytic->fitTo(*timeErrData, Save(), PrintLevel(-1), SumW2Error(isWeight)));
+		timeErrGaus1Mean.setConstant(true);
+		timeErrGaus1Sigma.setConstant(true);
+		timeErrGaus2Mean.setConstant(true);
+		timeErrGaus2Sigma.setConstant(true);
+		timeErrTailMpv.setConstant(true);
+		timeErrTailWidth.setConstant(true);
+		timeErrTail2Mpv.setConstant(true);
+		timeErrTail2Width.setConstant(true);
+		timeErrLognM0.setConstant(true);
+		timeErrLognK.setConstant(true);
+		timeErrCore1Frac.setConstant(true);
+		timeErrTailFrac.setConstant(true);
+		timeErrTail2Frac.setConstant(true);
+		timeErrLognFrac.setConstant(true);
+	}
 
 	auto findObj = [&](RooPlot *fr, const char *n) -> TObject *
 	{
@@ -360,12 +458,15 @@ void ctau_bkg(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh =
 		timeErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins), DataError(RooAbsData::SumW2), Name("data"));
 	else
 		timeErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins), Name("data"));
-	timeErrPdf.plotOn(timeErrPlot, LineColor(kBlack), LineWidth(2), Name("model"));
-	timeErrPdf.plotOn(timeErrPlot, Components(timeErrTail), LineColor(kBlue + 2), LineStyle(kDashed), LineWidth(2), Name("tail"));
-	timeErrPdf.plotOn(timeErrPlot, Components(timeErrTail2), LineColor(kOrange + 7), LineStyle(kDashed), LineWidth(2), Name("tail2"));
-	timeErrPdf.plotOn(timeErrPlot, Components(timeErrLogn), LineColor(kMagenta + 1), LineStyle(kDashed), LineWidth(2), Name("logn"));
-	timeErrPdf.plotOn(timeErrPlot, Components(timeErrGaus1), LineColor(kGreen + 2), LineStyle(kDashed), LineWidth(2), Name("gaus1"));
-	timeErrPdf.plotOn(timeErrPlot, Components(timeErrGaus2), LineColor(kRed + 1), LineStyle(kDashed), LineWidth(2), Name("gaus2"));
+	timeErrPdf->plotOn(timeErrPlot, LineColor(kBlack), LineWidth(2), Name("model"));
+	if (errPdfOpt == kErrPdfAnalytic)
+	{
+		timeErrPdf->plotOn(timeErrPlot, Components(timeErrTail), LineColor(kBlue + 2), LineStyle(kDashed), LineWidth(2), Name("tail"));
+		timeErrPdf->plotOn(timeErrPlot, Components(timeErrTail2), LineColor(kOrange + 7), LineStyle(kDashed), LineWidth(2), Name("tail2"));
+		timeErrPdf->plotOn(timeErrPlot, Components(timeErrLogn), LineColor(kMagenta + 1), LineStyle(kDashed), LineWidth(2), Name("logn"));
+		timeErrPdf->plotOn(timeErrPlot, Components(timeErrGaus1), LineColor(kGreen + 2), LineStyle(kDashed), LineWidth(2), Name("gaus1"));
+		timeErrPdf->plotOn(timeErrPlot, Components(timeErrGaus2), LineColor(kRed + 1), LineStyle(kDashed), LineWidth(2), Name("gaus2"));
+	}
 	apply_logy_auto_range(timeErrPlot, "data");
 	timeErrPlot->GetYaxis()->SetTitle("Events");
 	timeErrPlot->GetYaxis()->SetTitleOffset(1.6);
@@ -379,17 +480,20 @@ void ctau_bkg(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh =
 	if (auto *o = findObj(timeErrPlot, "data"))
 		timeErrLeg.AddEntry(o, "Data", "lep");
 	if (auto *o = findObj(timeErrPlot, "model"))
-		timeErrLeg.AddEntry(o, "Fit", "l");
-	if (auto *o = findObj(timeErrPlot, "tail"))
-		timeErrLeg.AddEntry(o, "Landau tail", "l");
-	if (auto *o = findObj(timeErrPlot, "tail2"))
-		timeErrLeg.AddEntry(o, "Landau tail 2", "l");
-	if (auto *o = findObj(timeErrPlot, "logn"))
-		timeErrLeg.AddEntry(o, "Log-normal tail", "l");
-	if (auto *o = findObj(timeErrPlot, "gaus1"))
-		timeErrLeg.AddEntry(o, "Gauss 1", "l");
-	if (auto *o = findObj(timeErrPlot, "gaus2"))
-		timeErrLeg.AddEntry(o, "Gauss 2", "l");
+		timeErrLeg.AddEntry(o, errPdfOpt == kErrPdfHist ? "RooHistPdf" : "Fit", "l");
+	if (errPdfOpt == kErrPdfAnalytic)
+	{
+		if (auto *o = findObj(timeErrPlot, "tail"))
+			timeErrLeg.AddEntry(o, "Landau tail", "l");
+		if (auto *o = findObj(timeErrPlot, "tail2"))
+			timeErrLeg.AddEntry(o, "Landau tail 2", "l");
+		if (auto *o = findObj(timeErrPlot, "logn"))
+			timeErrLeg.AddEntry(o, "Log-normal tail", "l");
+		if (auto *o = findObj(timeErrPlot, "gaus1"))
+			timeErrLeg.AddEntry(o, "Gauss 1", "l");
+		if (auto *o = findObj(timeErrPlot, "gaus2"))
+			timeErrLeg.AddEntry(o, "Gauss 2", "l");
+	}
 	timeErrLeg.Draw("same");
 
 	{
@@ -441,7 +545,10 @@ void ctau_bkg(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh =
 				}
 			}
 		}
-		tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", minimize, hesse));
+		if (errPdfOpt == kErrPdfHist)
+			tx.DrawLatex(0.19, 0.765, Form("Status : RooHistPdf template (%d)", histPdfInterpolationOrder));
+		else
+			tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", minimize, hesse));
 	}
 	{
 		TLatex tp;
@@ -466,20 +573,29 @@ void ctau_bkg(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh =
 			else
 				tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g", title, var.getVal()));
 		};
-		printVar("#mu_{1}", timeErrGaus1Mean);
-		printVar("#sigma_{1}", timeErrGaus1Sigma);
-		printVar("#mu_{2}", timeErrGaus2Mean);
-		printVar("#sigma_{2}", timeErrGaus2Sigma);
-		printVar("mpv_{L}", timeErrTailMpv);
-		printVar("#sigma_{L}", timeErrTailWidth);
-		printVar("mpv_{L2}", timeErrTail2Mpv);
-		printVar("#sigma_{L2}", timeErrTail2Width);
-		printVar("m_{LN}", timeErrLognM0);
-		printVar("k_{LN}", timeErrLognK);
-		printVar("f_{tail}", timeErrTailFrac);
-		printVar("f_{tail2}", timeErrTail2Frac);
-		printVar("f_{LN}", timeErrLognFrac);
-		printVar("f_{G1}", timeErrCore1Frac);
+		if (errPdfOpt == kErrPdfHist)
+		{
+			tp.DrawLatex(xtext, y0 + dy * k++, Form("errPdfOpt = %d", errPdfOpt));
+			tp.DrawLatex(xtext, y0 + dy * k++, Form("interp = %d", histPdfInterpolationOrder));
+			tp.DrawLatex(xtext, y0 + dy * k++, Form("bins = %d", obs_timeErr.getBins()));
+		}
+		else
+		{
+				printVar("mean_{1}", timeErrGaus1Mean);
+				printVar("#sigma_{1}", timeErrGaus1Sigma);
+				printVar("mean_{2}", timeErrGaus2Mean);
+				printVar("#sigma_{2}", timeErrGaus2Sigma);
+				printVar("mpv_{L}", timeErrTailMpv);
+				printVar("#sigma_{L}", timeErrTailWidth);
+				printVar("mpv_{L2}", timeErrTail2Mpv);
+				printVar("#sigma_{L2}", timeErrTail2Width);
+				printVar("m0_{LN}", timeErrLognM0);
+				printVar("k_{LN}", timeErrLognK);
+				printVar("f_{tail}", timeErrTailFrac);
+				printVar("f_{tail2}", timeErrTail2Frac);
+				printVar("f_{LN}", timeErrLognFrac);
+				printVar("f_{core1}", timeErrCore1Frac);
+		}
 	}
 
 	cTimeErr->cd();
@@ -853,7 +969,7 @@ void ctau_bkg(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh =
 	// ------------------------------------------------------------------
 	// fit background ctau model
 	// ------------------------------------------------------------------
-	RooProdPdf time_pdf("time_pdf", "time_pdf", RooArgSet(timeErrPdf), Conditional(RooArgSet(bkg_time), RooArgSet(obs_time)));
+	RooProdPdf time_pdf("time_pdf", "time_pdf", RooArgSet(*timeErrPdf), Conditional(RooArgSet(bkg_time), RooArgSet(obs_time)));
 	RooFitResult *time_result = time_pdf.fitTo(*data, Extended(), Save(), SumW2Error(isWeight));
 	if (time_result && (time_result->status() != 0 || time_result->covQual() < 2))
 	{
@@ -892,43 +1008,43 @@ void ctau_bkg(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh =
 
 	RooProdPdf time_pdf_ss1(
 		"time_pdf_ss1", "time_pdf_ss1",
-		RooArgSet(timeErrPdf),
+		RooArgSet(*timeErrPdf),
 		Conditional(RooArgSet(bkg_time_ss), RooArgSet(obs_time)));
 	RooProdPdf time_pdf_plb(
 		"time_pdf_plb", "time_pdf_plb",
-		RooArgSet(timeErrPdf),
+		RooArgSet(*timeErrPdf),
 		Conditional(RooArgSet(bkg_time_plb), RooArgSet(obs_time)));
 	RooProdPdf time_pdf_ss2(
 		"time_pdf_ss2", "time_pdf_ss2",
-		RooArgSet(timeErrPdf),
+		RooArgSet(*timeErrPdf),
 		Conditional(RooArgSet(bkg_time_ss2), RooArgSet(obs_time)));
 	RooProdPdf time_pdf_ss3(
 		"time_pdf_ss3", "time_pdf_ss3",
-		RooArgSet(timeErrPdf),
+		RooArgSet(*timeErrPdf),
 		Conditional(RooArgSet(bkg_time_ss3), RooArgSet(obs_time)));
 	RooProdPdf time_pdf_ds(
 		"time_pdf_ds", "time_pdf_ds",
-		RooArgSet(timeErrPdf),
+		RooArgSet(*timeErrPdf),
 		Conditional(RooArgSet(bkg_time_ds), RooArgSet(obs_time)));
 	RooProdPdf time_pdf_ds2(
 		"time_pdf_ds2", "time_pdf_ds2",
-		RooArgSet(timeErrPdf),
+		RooArgSet(*timeErrPdf),
 		Conditional(RooArgSet(bkg_time_ds2), RooArgSet(obs_time)));
 	RooProdPdf time_pdf_ds3(
 		"time_pdf_ds3", "time_pdf_ds3",
-		RooArgSet(timeErrPdf),
+		RooArgSet(*timeErrPdf),
 		Conditional(RooArgSet(bkg_time_ds3), RooArgSet(obs_time)));
 	RooProdPdf time_pdf_flip(
 		"time_pdf_flip", "time_pdf_flip",
-		RooArgSet(timeErrPdf),
+		RooArgSet(*timeErrPdf),
 		Conditional(RooArgSet(bkg_time_flip), RooArgSet(obs_time)));
 	RooProdPdf time_pdf_flip2(
 		"time_pdf_flip2", "time_pdf_flip2",
-		RooArgSet(timeErrPdf),
+		RooArgSet(*timeErrPdf),
 		Conditional(RooArgSet(bkg_time_flip2), RooArgSet(obs_time)));
 	RooProdPdf time_pdf_flip3(
 		"time_pdf_flip3", "time_pdf_flip3",
-		RooArgSet(timeErrPdf),
+		RooArgSet(*timeErrPdf),
 		Conditional(RooArgSet(bkg_time_flip3), RooArgSet(obs_time)));
 
 	// ------------------------------------------------------------------
@@ -1117,7 +1233,7 @@ void ctau_bkg(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh =
 			printVar("N_{Flip2}", Nflip2);
 		if (nSignalFlipComponents >= 3)
 			printVar("N_{Flip3}", Nflip3);
-		printVar("#sigma_{1}^{res}", ctauTime1Scale);
+			printVar("resScale_{1}", ctauTime1Scale);
 		if (nSignalSSComponents >= 1)
 			printVar("#tau_{SS1}", bkg_lifetime);
 		if (nSignalSSComponents >= 2)
@@ -1204,6 +1320,8 @@ void ctau_bkg(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh =
 	std::cout << "Saved ctau background fit results to " << fitResultFileName << std::endl;
 
 	cout << "------------------ FIT RESULT FOR TIME ONLY --------------" << endl;
+	cout << "errPdfOpt in BKG fit: " << errPdfOpt
+			 << (errPdfOpt == kErrPdfHist ? " (RooHistPdf)" : " (analytic)") << endl;
 	if (timeErrResult)
 	{
 		cout << "------------------ FIT RESULT FOR TIME ERR ---------------" << endl;
@@ -1211,4 +1329,8 @@ void ctau_bkg(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh =
 	}
 	time_result->Print("v");
 	cout << "Prompt resolution components used in BKG fit: " << nResolutionComponents << endl;
+	const TString figTimeErr = figName("timeerr_model");
+	const TString figLifetime = figName("lifetime_fit");
+	std::cout << "[FIG] ctau_bkg err fit : " << figTimeErr << std::endl;
+	std::cout << "[FIG] ctau_bkg lifetime fit : " << figLifetime << std::endl;
 }
