@@ -167,13 +167,6 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	};
 
 	/**********************THE MASS FIT********************************
-	 * Some hints: The signal mass is a simple gaussian, you can use a
-	 * RooGaussian PDF for the signal model. The background is an O(1)
-	 * polynomial with a negative gradient. Polynomials are
-	 * surprisingly hard to fit, so to help you out I'll tell you that
-	 * the zero order term is 5500 and should be _fixed_, allowing only
-	 * the gradient to float. Limits are important: Is it worth trying
-	 * to fit the first order term on a range >0? Try the range -2.0 -> 0.0
 	 */
 
 	RooRealVar signal_mass_mean("signal_mass_mean", "signal_mass_mean", 3.096, 3.05, 3.15, "GeV/c^{2}");
@@ -220,15 +213,15 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 			std::log(1.0));
 	RooFormulaVar signal_mass_cb_sigma2("signal_mass_cb_sigma2", Form("%g + exp(@0)", sigmaFloor), RooArgList(signal_mass_cb_sigma2_log_offset));
 	RooFormulaVar signal_mass_cb_sigma_delta2("signal_mass_cb_sigma_delta2", "@0-@1", RooArgList(signal_mass_cb_sigma2, *signal_mass_cb_sigma));
-	RooRealVar signal_mass_cb_alpha("signal_mass_cb_alpha", "signal_mass_cb_alpha", 1.5, 0.1, 10.0);
-	RooRealVar signal_mass_cb_alpha2("signal_mass_cb_alpha2", "signal_mass_cb_alpha2", 2.0, 0.1, 10.0);
-	RooRealVar signal_mass_cb_n("signal_mass_cb_n", "signal_mass_cb_n", 2.0, 0.1, 20.0);
-	RooRealVar signal_mass_cb_n2("signal_mass_cb_n2", "signal_mass_cb_n2", 1.0, 0.01, 10.0);
+	RooRealVar signal_mass_cb_alpha("signal_mass_cb_alpha", "signal_mass_cb_alpha", 1.5, 0.001, 30.0);
+	RooRealVar signal_mass_cb_alpha2("signal_mass_cb_alpha2", "signal_mass_cb_alpha2", 2.0, 0.001, 30.0);
+	RooRealVar signal_mass_cb_n("signal_mass_cb_n", "signal_mass_cb_n", 3.0, 0.001, 20.0);
+	RooRealVar signal_mass_cb_n2("signal_mass_cb_n2", "signal_mass_cb_n2", 4.0, 0.001, 10.0);
 	RooRealVar signal_mass_frac_ratio1("signal_mass_frac_ratio1", "signal_mass_frac_ratio1", 1.86, 1e-3, 1e3);
 	RooFormulaVar signal_mass_frac1("signal_mass_frac1", "@0/(1.0+@0)", RooArgList(signal_mass_frac_ratio1));
-	RooRealVar signal_mass_frac_ratio2("signal_mass_frac_ratio2", "signal_mass_frac_ratio2", 1.5, 1e-3, 1e3);
+	RooRealVar signal_mass_frac_ratio2("signal_mass_frac_ratio2", "signal_mass_frac_ratio2", 0.25, 1e-3, 1e3);
 	RooFormulaVar signal_mass_frac2("signal_mass_frac2", "@0/(1.0+@0)", RooArgList(signal_mass_frac_ratio2));
-	RooRealVar signal_mass_frac_ratio3("signal_mass_frac_ratio3", "signal_mass_frac_ratio3", 3, 1e-3, 1e3);
+	RooRealVar signal_mass_frac_ratio3("signal_mass_frac_ratio3", "signal_mass_frac_ratio3", 0.5, 1e-3, 1e3);
 	RooFormulaVar signal_mass_frac3("signal_mass_frac3", "@0/(1.0+@0)", RooArgList(signal_mass_frac_ratio3));
 
 	RooGaussian signal_mass_gaus("signal_mass_gaus", "signal_mass_gaus", obs_mass, signal_mass_mean, signal_mass_sigma);
@@ -408,11 +401,11 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	if (nSignalGaussComponents >= 1)
 		mass_pdf->plotOn(massplot, Components(signal_mass_gaus), LineColor(kBlue + 1), LineStyle(kDashed), LineWidth(2), Name("signal_gaus_component"));
 	if (nSignalCBComponents >= 1)
-		mass_pdf->plotOn(massplot, Components(*signal_mass_cb), LineColor(kGreen + 2), LineStyle(kDashed), LineWidth(2), Name("signal_cb_component"));
+		mass_pdf->plotOn(massplot, Components(*signal_mass_cb), LineColor(kRed + 1), LineStyle(kDashed), LineWidth(2), Name("signal_cb_component"));
 	if (nSignalGaussComponents >= 2)
-		mass_pdf->plotOn(massplot, Components(signal_mass_gaus2), LineColor(kAzure + 2), LineStyle(kDashed), LineWidth(2), Name("signal_gaus2_component"));
+		mass_pdf->plotOn(massplot, Components(signal_mass_gaus2), LineColor(kMagenta + 2), LineStyle(kDashed), LineWidth(2), Name("signal_gaus2_component"));
 	if (isBkg)
-		mass_pdf->plotOn(massplot, Components(*bkg_mass), LineColor(kRed + 1), LineStyle(kDashed), LineWidth(2), Name("bkg_component"));
+		mass_pdf->plotOn(massplot, Components(*bkg_mass), LineColor(kGreen + 2), LineStyle(kDashed), LineWidth(2), Name("bkg_component"));
 
 	double ymax = -1e300;
 	if (auto *hdata = dynamic_cast<RooHist *>(massplot->getHist("data")))

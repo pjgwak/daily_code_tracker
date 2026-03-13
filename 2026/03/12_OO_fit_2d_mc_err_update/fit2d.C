@@ -103,14 +103,32 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	// ------------------------------------------------------------------
 	// model control
 	// ------------------------------------------------------------------
-		enum ErrPdfChoice
+	enum ErrPdfChoice
 	{
 		kErrPdfAnalytic = 0,
 		kErrPdfHist = 1,
+		kErrPdfHistPrMc = 2,
 	};
+	const int overrideBkgErrPdfOpt = -1; // -1: automatic choice, default
+	const int overrideSigErrPdfOpt = 2; // set to kErrPdfHistPrMc to build sig err RooHistPdf directly from PR_MC_ROOT
 	const int histPdfInterpolationOrder = 1;
+	auto isHistErrPdfChoice = [](int choice) {
+		return choice == kErrPdfHist || choice == kErrPdfHistPrMc;
+	};
+	auto errPdfChoiceLabel = [&](int choice) -> const char * {
+		switch (choice) {
+		case kErrPdfHist:
+			return "RooHistPdf";
+		case kErrPdfHistPrMc:
+			return "RooHistPdf(PR_MC_ROOT)";
+		default:
+			return "analytic";
+		}
+	};
 
-	// First we open the actual RooDataSet used in the prompt ctau analysis.
+	// ------------------------------------------------------------------
+	// load dataset
+	// ------------------------------------------------------------------
 	const char *DATA_ROOT = "/data/users/pjgwak/work/daily_code_tracker/2026/02/00_OO_oniaskim/onia_to_skim/roodataset_roots/RooDataSet_miniAOD_isMC0_Jpsi_cent0_200_Effw0_Accw0_PtW0_TnP0_OO25_HLT_OxyL1SingleMuOpen_v1.root";
 	const char *PR_MC_ROOT = "/data/users/pjgwak/work/daily_code_tracker/2026/02/00_OO_oniaskim/onia_to_skim/roodataset_roots/RooDataSet_miniAOD_isMC1_PR_Jpsi_cent0_200_Effw0_Accw0_PtW0_TnP0_OO25_HLT_OxyL1SingleMuOpen_v1.root";
 	const char *DSET_NAME = "dataset";
@@ -278,8 +296,10 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			std::unique_ptr<TFile> errFile(openFile(errFileName));
 			if (!massFile || !prFile || !npFile || !bkgFile || !errFile) return;
 			const int timeErrPlotBins = std::max(2, readIntParam(*errFile, "timeErrPlotBins", timeErrPlotBinsDefault));
-			const int bkgErrPdfOpt = readIntParam(*errFile, "bkgErrPdfOpt", kErrPdfAnalytic);
-			const int sigErrPdfOpt = readIntParam(*errFile, "sigErrPdfOpt", kErrPdfAnalytic);
+			const int savedBkgErrPdfOpt = readIntParam(*errFile, "bkgErrPdfOpt", kErrPdfAnalytic);
+			const int savedSigErrPdfOpt = readIntParam(*errFile, "sigErrPdfOpt", kErrPdfAnalytic);
+			const int bkgErrPdfOpt = overrideBkgErrPdfOpt >= 0 ? overrideBkgErrPdfOpt : savedBkgErrPdfOpt;
+			const int sigErrPdfOpt = overrideSigErrPdfOpt >= 0 ? overrideSigErrPdfOpt : savedSigErrPdfOpt;
 			const int nErrBkgGauss = std::clamp(readIntParam(*errFile, "nBkgTimeErrGaussComponents", 2), 0, 2);
 			const int nErrBkgLandau = std::clamp(readIntParam(*errFile, "nBkgTimeErrLandauComponents", 2), 0, 2);
 			const int nErrBkgLogn = std::clamp(readIntParam(*errFile, "nBkgTimeErrLognormalComponents", 1), 0, 1);
@@ -334,8 +354,26 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 
 	auto bkgErrData = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(dataSB->reduce(RooArgSet(obs_timeErr))));
 	auto dataSR = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(data->reduce(cutSignalRegion)));
+	auto prMcSel = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(prMcInput->reduce(cutAll)));
+	auto prMcErrData = std::unique_ptr<RooDataSet>();
 	if (!dataSR || dataSR->numEntries() <= 0) {
 		std::cerr << "ERROR: no entries after signal-region selection: " << cutSignalRegion << std::endl;
+		return;
+	}
+	if (!prMcSel || prMcSel->numEntries() <= 0) {
+		std::cerr << "ERROR: no entries after prompt-MC selection: " << cutAll << std::endl;
+		return;
+	}
+	auto *prMcTimeErr = dynamic_cast<RooRealVar *>(prMcSel->get()->find("ctau3DErr"));
+	if (!prMcTimeErr) {
+		std::cerr << "ERROR: ctau3DErr is missing in selected prompt-MC dataset" << std::endl;
+		return;
+	}
+	prMcTimeErr->setRange(errFitLow, errFitHigh);
+	prMcTimeErr->setMin(errFitLow);
+	prMcErrData.reset(static_cast<RooDataSet *>(prMcSel->reduce(RooArgSet(*prMcTimeErr))));
+	if (!prMcErrData || prMcErrData->numEntries() <= 0) {
+		std::cerr << "ERROR: no prompt-MC ctau3DErr entries available after selection" << std::endl;
 		return;
 	}
 
@@ -936,33 +974,43 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 
 	std::unique_ptr<RooAbsData> signalErrData;
 	{
-		const double scaleBkg = std::isfinite(savedScaleBkg) ? savedScaleBkg : 0.0;
-		if (scaleBkg <= 0.0) {
-			std::cerr << "ERROR: invalid saved scaleBkg in " << errFileName << std::endl;
-			return;
-		}
-		auto hErrSigSR = std::unique_ptr<TH1>(dataSR->createHistogram("fit2d_hErrSigSR", obs_timeErr, Binning(timeErrPlotBins, errFitLow, errFitHigh)));
-		auto hErrBkgSB = std::unique_ptr<TH1>(dataSB->createHistogram("fit2d_hErrBkgSB", obs_timeErr, Binning(timeErrPlotBins, errFitLow, errFitHigh)));
-		if (!hErrSigSR || !hErrBkgSB) {
-			std::cerr << "ERROR: failed to build err histograms for signal-region subtraction" << std::endl;
-			return;
-		}
-		hErrSigSR->Add(hErrBkgSB.get(), -scaleBkg);
-		for (int i = 1; i <= hErrSigSR->GetNbinsX(); ++i)
-		{
-			if (hErrSigSR->GetBinContent(i) < 0.0)
-			{
-				hErrSigSR->SetBinContent(i, 0.0);
-				hErrSigSR->SetBinError(i, 0.0);
+		if (sigErrPdfOpt == kErrPdfHistPrMc) {
+			auto hErrSigPrMc = std::unique_ptr<TH1>(prMcErrData->createHistogram(
+				"fit2d_hErrSigPrMc", obs_timeErr, Binning(timeErrPlotBins, errFitLow, errFitHigh)));
+			if (!hErrSigPrMc) {
+				std::cerr << "ERROR: failed to build prompt-MC err histogram" << std::endl;
+				return;
 			}
+			signalErrData = std::make_unique<RooDataHist>("signalErrDataPrMc", "", RooArgSet(obs_timeErr), hErrSigPrMc.get());
+		} else {
+			const double scaleBkg = std::isfinite(savedScaleBkg) ? savedScaleBkg : 0.0;
+			if (scaleBkg <= 0.0) {
+				std::cerr << "ERROR: invalid saved scaleBkg in " << errFileName << std::endl;
+				return;
+			}
+			auto hErrSigSR = std::unique_ptr<TH1>(dataSR->createHistogram("fit2d_hErrSigSR", obs_timeErr, Binning(timeErrPlotBins, errFitLow, errFitHigh)));
+			auto hErrBkgSB = std::unique_ptr<TH1>(dataSB->createHistogram("fit2d_hErrBkgSB", obs_timeErr, Binning(timeErrPlotBins, errFitLow, errFitHigh)));
+			if (!hErrSigSR || !hErrBkgSB) {
+				std::cerr << "ERROR: failed to build err histograms for signal-region subtraction" << std::endl;
+				return;
+			}
+			hErrSigSR->Add(hErrBkgSB.get(), -scaleBkg);
+			for (int i = 1; i <= hErrSigSR->GetNbinsX(); ++i)
+			{
+				if (hErrSigSR->GetBinContent(i) < 0.0)
+				{
+					hErrSigSR->SetBinContent(i, 0.0);
+					hErrSigSR->SetBinError(i, 0.0);
+				}
+			}
+			signalErrData = std::make_unique<RooDataHist>("signalErrDataSub", "", RooArgSet(obs_timeErr), hErrSigSR.get());
 		}
-		signalErrData = std::make_unique<RooDataHist>("signalErrDataSub", "", RooArgSet(obs_timeErr), hErrSigSR.get());
 	}
 	if (!signalErrData || signalErrData->sumEntries() <= 0.0) {
-		std::cerr << "ERROR: empty SR-SB*scale err distribution" << std::endl;
+		std::cerr << "ERROR: empty signal ctau3DErr template/input distribution" << std::endl;
 		return;
 	}
-		if (bkgErrPdfOpt == kErrPdfHist) {
+		if (isHistErrPdfChoice(bkgErrPdfOpt)) {
 			bkgErrHistData = std::make_unique<RooDataHist>(
 				"bkgErrHistData", "bkgErrHistData",
 				RooArgSet(obs_timeErr), *bkgErrData);
@@ -971,7 +1019,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 				RooArgSet(obs_timeErr), *bkgErrHistData, histPdfInterpolationOrder);
 			bkgErrPdf = bkgErrPdfHist.get();
 		}
-		if (sigErrPdfOpt == kErrPdfHist) {
+		if (isHistErrPdfChoice(sigErrPdfOpt)) {
 			auto *signalErrHist = dynamic_cast<RooDataHist *>(signalErrData.get());
 			if (!signalErrHist) {
 				std::cerr << "ERROR: signalErrData is not a RooDataHist for RooHistPdf mode" << std::endl;
@@ -1151,7 +1199,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	if (auto *o = findObj(sigTimeErrPlot, "data"))
 		sigTimeErrLeg.AddEntry(o, "Data", "lep");
 	if (auto *o = findObj(sigTimeErrPlot, "model"))
-		sigTimeErrLeg.AddEntry(o, sigErrPdfOpt == kErrPdfHist ? "RooHistPdf" : "Fit", "l");
+		sigTimeErrLeg.AddEntry(o, isHistErrPdfChoice(sigErrPdfOpt) ? errPdfChoiceLabel(sigErrPdfOpt) : "Fit", "l");
 	if (sigErrPdfOpt == kErrPdfAnalytic) {
 		if (auto *o = findObj(sigTimeErrPlot, "tail"))
 			sigTimeErrLeg.AddEntry(o, "Landau tail", "l");
@@ -1191,7 +1239,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		tx.SetTextFont(42);
 		double xtext = 0.19, y0 = 0.865, dy = -0.05;
 		int k = 0;
-		tx.DrawLatex(xtext, y0 + dy * k++, "SR - scaled SB");
+		tx.DrawLatex(xtext, y0 + dy * k++, sigErrPdfOpt == kErrPdfHistPrMc ? "Prompt MC" : "SR - scaled SB");
 		if (yLow == 0)
 			tx.DrawLatex(xtext, y0 + dy * k++, Form("%.1f < p_{T} < %.1f, |y| < %.1f", ptLow, ptHigh, yHigh));
 		else
@@ -1218,8 +1266,8 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 				}
 			}
 		}
-		if (sigErrPdfOpt == kErrPdfHist)
-			tx.DrawLatex(0.19, 0.765, Form("Status : RooHistPdf template (%d)", histPdfInterpolationOrder));
+		if (isHistErrPdfChoice(sigErrPdfOpt))
+			tx.DrawLatex(0.19, 0.765, Form("Status : %s template (%d)", errPdfChoiceLabel(sigErrPdfOpt), histPdfInterpolationOrder));
 		else
 			tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", minimize, hesse));
 	}
@@ -1248,7 +1296,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	sigTimeErrPullPlot->Draw();
 
 	auto sigTimeErrChi = chi2_from_pull(sigTimeErrPull);
-	const int sigTimeErrNPar = (sigErrPdfOpt == kErrPdfHist || !signalErrResult) ? 0 : signalErrResult->floatParsFinal().getSize();
+	const int sigTimeErrNPar = (isHistErrPdfChoice(sigErrPdfOpt) || !signalErrResult) ? 0 : signalErrResult->floatParsFinal().getSize();
 	const int sigTimeErrNdf = std::max(1, sigTimeErrChi.second - sigTimeErrNPar);
 	const double sigTimeErrPvalue = TMath::Prob(sigTimeErrChi.first, sigTimeErrNdf);
 	{
@@ -1300,7 +1348,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	if (auto *o = findObj(timeErrPlot, "data"))
 		timeErrLeg.AddEntry(o, "Data", "lep");
 	if (auto *o = findObj(timeErrPlot, "model"))
-		timeErrLeg.AddEntry(o, bkgErrPdfOpt == kErrPdfHist ? "RooHistPdf" : "Fit", "l");
+		timeErrLeg.AddEntry(o, isHistErrPdfChoice(bkgErrPdfOpt) ? errPdfChoiceLabel(bkgErrPdfOpt) : "Fit", "l");
 	if (bkgErrPdfOpt == kErrPdfAnalytic) {
 		if (auto *o = findObj(timeErrPlot, "tail"))
 			timeErrLeg.AddEntry(o, "Landau tail", "l");
@@ -1367,8 +1415,8 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 				}
 			}
 		}
-		if (bkgErrPdfOpt == kErrPdfHist)
-			tx.DrawLatex(0.19, 0.765, Form("Status : RooHistPdf template (%d)", histPdfInterpolationOrder));
+		if (isHistErrPdfChoice(bkgErrPdfOpt))
+			tx.DrawLatex(0.19, 0.765, Form("Status : %s template (%d)", errPdfChoiceLabel(bkgErrPdfOpt), histPdfInterpolationOrder));
 		else
 			tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", minimize, hesse));
 	}
@@ -1397,7 +1445,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	timeErrPullPlot->Draw();
 
 	auto timeErrChi = chi2_from_pull(timeErrPull);
-	const int timeErrNPar = bkgErrPdfOpt == kErrPdfHist ? 0 : (bkgErrResult ? bkgErrResult->floatParsFinal().getSize() : 0);
+	const int timeErrNPar = isHistErrPdfChoice(bkgErrPdfOpt) ? 0 : (bkgErrResult ? bkgErrResult->floatParsFinal().getSize() : 0);
 	const int timeErrNdf = std::max(1, timeErrChi.second - timeErrNPar);
 	const double timeErrPvalue = TMath::Prob(timeErrChi.first, timeErrNdf);
 	{
@@ -1809,9 +1857,9 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 
 	cout << "----------------- FIT RESULT FOR THE 2D MODEL ------------" << endl;
 	cout << "bkgErrPdfOpt in fit2d: " << bkgErrPdfOpt
-			 << (bkgErrPdfOpt == kErrPdfHist ? " (RooHistPdf)" : " (analytic)") << endl;
+			 << " (" << errPdfChoiceLabel(bkgErrPdfOpt) << ")" << endl;
 	cout << "sigErrPdfOpt in fit2d: " << sigErrPdfOpt
-			 << (sigErrPdfOpt == kErrPdfHist ? " (RooHistPdf)" : " (analytic)") << endl;
+			 << " (" << errPdfChoiceLabel(sigErrPdfOpt) << ")" << endl;
 	model_result->Print("v");
 	const TString figErrSig = figName("errSig");
 	const TString figErrBkg = figName("errBkg");
