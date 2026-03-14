@@ -68,23 +68,24 @@ void bFraction_OO_mid_pp()
   }
 
   // ===== OO |y|<1.6 (2d fit) =====
-  const int NooY16 = 8;
-  double pt_low_oo_y16[NooY16] = {7.0, 8.0, 9.0, 10.0, 12.0, 14.0, 16.0, 20.0};
-  double pt_high_oo_y16[NooY16] = {8.0, 9.0, 10.0, 12.0, 14.0, 16.0, 20.0, 35.0};
+const int NooY16 = 8;
+double pt_low_oo_y16[NooY16] = {7.0, 8.0, 9.0, 10.0, 12.0, 14.0, 16.0, 20.0};
+double pt_high_oo_y16[NooY16] = {8.0, 9.0, 10.0, 12.0, 14.0, 16.0, 20.0, 35.0};
 
-  double val_oo_y16[NooY16] = {0.22840, 0.27097, 0.27958, 0.32038, 0.39109, 0.39249, 0.48134, 0.55070};
-  double stat_oo_y16[NooY16] = {0.00876, 0.00938, 0.01088, 0.00996, 0.01375, 0.01858, 0.01936, 0.02429};
+double val_oo_y16[NooY16] = {0.23372, 0.27245, 0.28691, 0.33018, 0.39376, 0.40207, 0.48004, 0.55821};
+double stat_oo_y16[NooY16] = {0.00864, 0.00931, 0.01069, 0.00985, 0.01361, 0.01840, 0.01913, 0.02386};
 
-  double sys_oo_y16[NooY16];
-  for (int i = 0; i < NooY16; ++i)
-    sys_oo_y16[i] = 0.0; // sys=0
+double sys_oo_y16[NooY16];
+for (int i = 0; i < NooY16; ++i)
+  sys_oo_y16[i] = 0.0; // sys=0
 
-  double x_oo_y16[NooY16], ex_oo_y16[NooY16];
-  for (int i = 0; i < NooY16; ++i)
-  {
-    x_oo_y16[i] = 0.5 * (pt_low_oo_y16[i] + pt_high_oo_y16[i]);
-    ex_oo_y16[i] = 0.5 * (pt_high_oo_y16[i] - pt_low_oo_y16[i]);
-  }
+double x_oo_y16[NooY16], ex_oo_y16[NooY16];
+for (int i = 0; i < NooY16; ++i)
+{
+  x_oo_y16[i] = 0.5 * (pt_low_oo_y16[i] + pt_high_oo_y16[i]);
+  ex_oo_y16[i] = 0.5 * (pt_high_oo_y16[i] - pt_low_oo_y16[i]);
+}
+
 
   // ===== BPH pp (8 bins) =====
   // pp BPH results

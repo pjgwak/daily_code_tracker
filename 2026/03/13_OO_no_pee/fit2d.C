@@ -21,7 +21,7 @@
 #include "RooAddPdf.h"
 #include "RooConstVar.h"
 #include "RooFormulaVar.h"
-#include "RooMsgService.h"
+#include "RooMinimizer.h"
 #include "TH1.h"
 #include "TH1D.h"
 #include "TH2.h"
@@ -101,55 +101,10 @@ static void apply_logy_auto_range(RooPlot *plot, const char *histName, double to
 
 void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4){
 	bool isWeight = false;
-	bool isVerbose = false;
-	const int fitPrintLevel = isVerbose ? 0 : -1;
-	const int fitEvalErrorPrintLevel = isVerbose ? 10 : -1;
-	const double recoverFromUndefinedRegionsStrength = 1.5;
-	auto &msg = RooMsgService::instance();
-	if (!isVerbose)
-	{
-		msg.setGlobalKillBelow(RooFit::FATAL);
-		for (int i = 0; i < msg.numStreams(); ++i)
-		{
-			msg.getStream(i).removeTopic(RooFit::Minimization);
-			msg.getStream(i).removeTopic(RooFit::Fitting);
-			msg.getStream(i).removeTopic(RooFit::Integration);
-			msg.getStream(i).removeTopic(RooFit::NumIntegration);
-			msg.getStream(i).removeTopic(RooFit::Tracing);
-			msg.getStream(i).removeTopic(RooFit::Eval);
-		}
-	}
-	// ------------------------------------------------------------------
-	// model control
-	// ------------------------------------------------------------------
-	enum ErrPdfChoice
-	{
-		kErrPdfAnalytic = 0,
-		kErrPdfHist = 1,
-		kErrPdfHistPrMc = 2,
-	};
-	const int overrideBkgErrPdfOpt = -1; // -1: automatic choice, default
-	const int overrideSigErrPdfOpt = 2; // set to kErrPdfHistPrMc to build sig err RooHistPdf directly from PR_MC_ROOT
-	const int histPdfInterpolationOrder = 1;
-	auto isHistErrPdfChoice = [](int choice) {
-		return choice == kErrPdfHist || choice == kErrPdfHistPrMc;
-	};
-	auto errPdfChoiceLabel = [&](int choice) -> const char * {
-		switch (choice) {
-		case kErrPdfHist:
-			return "RooHistPdf";
-		case kErrPdfHistPrMc:
-			return "RooHistPdf(PR_MC_ROOT)";
-		default:
-			return "analytic";
-		}
-	};
-
 	// ------------------------------------------------------------------
 	// load dataset
 	// ------------------------------------------------------------------
 	const char *DATA_ROOT = "/data/users/pjgwak/work/daily_code_tracker/2026/02/00_OO_oniaskim/onia_to_skim/roodataset_roots/RooDataSet_miniAOD_isMC0_Jpsi_cent0_200_Effw0_Accw0_PtW0_TnP0_OO25_HLT_OxyL1SingleMuOpen_v1.root";
-	const char *PR_MC_ROOT = "/data/users/pjgwak/work/daily_code_tracker/2026/02/00_OO_oniaskim/onia_to_skim/roodataset_roots/RooDataSet_miniAOD_isMC1_PR_Jpsi_cent0_200_Effw0_Accw0_PtW0_TnP0_OO25_HLT_OxyL1SingleMuOpen_v1.root";
 	const char *DSET_NAME = "dataset";
 	TFile *inputFile = TFile::Open(DATA_ROOT);
 	if (!inputFile || inputFile->IsZombie()) {
@@ -163,17 +118,6 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		return;
 	}
 
-	TFile *prMcFile = TFile::Open(PR_MC_ROOT);
-	if (!prMcFile || prMcFile->IsZombie()) {
-		std::cerr << "ERROR: cannot open prompt-MC file: " << PR_MC_ROOT << std::endl;
-		return;
-	}
-	RooDataSet *prMcInput = dynamic_cast<RooDataSet *>(prMcFile->Get(DSET_NAME));
-	if (!prMcInput) {
-		std::cerr << "ERROR: RooDataSet '" << DSET_NAME << "' not found in " << PR_MC_ROOT << std::endl;
-		return;
-	}
-
 	TString cutBasic = Form("(mass>2.6 && mass<3.5) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g)",
 		ptLow, ptHigh, yLow, yHigh);
 	auto dataBasic = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(inputData->reduce(cutBasic)));
@@ -184,9 +128,8 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 
 	auto *massTmp = dynamic_cast<RooRealVar *>(dataBasic->get()->find("mass"));
 	auto *timeTmp = dynamic_cast<RooRealVar *>(dataBasic->get()->find("ctau3D"));
-	auto *timeErrTmp = dynamic_cast<RooRealVar *>(dataBasic->get()->find("ctau3DErr"));
-	if (!massTmp || !timeTmp || !timeErrTmp) {
-		std::cerr << "ERROR: required variables mass/ctau3D/ctau3DErr are missing in dataset." << std::endl;
+	if (!massTmp || !timeTmp) {
+		std::cerr << "ERROR: required variables mass/ctau3D are missing in dataset." << std::endl;
 		return;
 	}
 
@@ -211,10 +154,9 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		return std::make_pair(qAt(qLo), qAt(qHi));
 	};
 
-	const auto ctRange = quantileRange(*dataBasic, *timeTmp, 0.001, 0.999, false);
-	auto errRange = quantileRange(*dataBasic, *timeErrTmp, 0.001, 0.995, true);
-	if (errRange.first < 1e-6) errRange.first = 1e-6;
-	const double errMin = 0.0;
+	const std::pair<double, double> ctRange = (yLow == 0.0f)
+		? std::pair<double, double>{-1.0, 3.0}
+		: std::pair<double, double>{-6.0, 6.0};
 	auto formatTag = [](double value) { return TString::Format("%.2f", value); };
 	const TString yTag = TString::Format("y%s_%s", formatTag(yLow).Data(), formatTag(yHigh).Data());
 	const TString ptTag = TString::Format("pt%s_%s", formatTag(ptLow).Data(), formatTag(ptHigh).Data());
@@ -222,21 +164,11 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	const TString figDir = TString::Format("figs/%s/fit2d", yTag.Data());
 	const TString fitRootDir = TString::Format("roots/%s/fit2d", yTag.Data());
 	const TString fitRootName = TString::Format("%s/fit2d_result_%s.root", fitRootDir.Data(), figTag.Data());
-	const TString errFileName = TString::Format("roots/%s/err2/err2_model_%s.root", yTag.Data(), figTag.Data());
-
-	auto readErrFileDouble = [](const TString &path, const char *name, double fallback) {
-		std::unique_ptr<TFile> f(TFile::Open(path));
-		if (!f || f->IsZombie()) return fallback;
-		auto *param = dynamic_cast<TParameter<double> *>(f->Get(name));
-		return param ? param->GetVal() : fallback;
-	};
-	const double errFitLow = readErrFileDouble(errFileName, "errLow", errMin);
-	const double errFitHigh = readErrFileDouble(errFileName, "errHigh", errRange.second);
 
 	TString cutAll = Form(
 		"(mass>2.6 && mass<3.5) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g) && "
-		"(ctau3D >= %g && ctau3D <= %g) && (ctau3DErr >= %g && ctau3DErr <= %g)",
-		ptLow, ptHigh, yLow, yHigh, ctRange.first, ctRange.second, errFitLow, errFitHigh
+		"(ctau3D >= %g && ctau3D <= %g)",
+		ptLow, ptHigh, yLow, yHigh, ctRange.first, ctRange.second
 	);
 	auto dataSel = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(inputData->reduce(cutAll)));
 	if (!dataSel || dataSel->numEntries() <= 0) {
@@ -246,21 +178,16 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 
 	RooRealVar &obs_mass = *static_cast<RooRealVar *>(dataSel->get()->find("mass"));
 	RooRealVar &obs_time = *static_cast<RooRealVar *>(dataSel->get()->find("ctau3D"));
-	RooRealVar &obs_timeErr = *static_cast<RooRealVar *>(dataSel->get()->find("ctau3DErr"));
 	obs_mass.SetTitle("mass");
 	obs_mass.setUnit("GeV/c^{2}");
 	obs_time.SetTitle("ctau3D");
 	obs_time.setUnit("mm");
-	obs_timeErr.SetTitle("event-by-event ctau error");
-	obs_timeErr.setUnit("mm");
 	obs_time.setRange(ctRange.first, ctRange.second);
-	obs_timeErr.setRange(errFitLow, errFitHigh);
-	obs_timeErr.setMin(errFitLow);
 	const int timePlotBins = std::max(2, obs_time.getBins());
 
 	// Keep the decay constants away from the numerically unstable tau -> 0 limit.
-	const double signalLifetimeFloor = std::max(1.0 * errRange.first, 1e-2);
-	const double bkgLifetimeFloor = std::max(1.0 * errRange.first, 1e-2);
+	const double signalLifetimeFloor = 2e-3;
+	const double bkgLifetimeFloor = 5e-3;
 	const double maxStableLifetime = std::max(ctRange.second - ctRange.first, 20.0 * bkgLifetimeFloor);
 
 	RooDataSet *data = dataSel.get();
@@ -270,9 +197,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	TString cutSignalRegion = Form("(mass >= %g && mass <= %g)", sidebandLeftMax, sidebandRightMin);
 	TString cutSideband = Form("(mass >= 2.6 && mass < %g) || (mass > %g && mass <= 3.5)", sidebandLeftMax, sidebandRightMin);
 	auto dataSB = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(data->reduce(cutSideband)));
-	if (!dataSB || dataSB->numEntries() <= 0) dataSB.reset(static_cast<RooDataSet *>(data->reduce(RooArgSet(obs_mass, obs_time, obs_timeErr))));
-
-	const int timeErrPlotBinsDefault = std::max(2, obs_timeErr.getBins());
+	if (!dataSB || dataSB->numEntries() <= 0) dataSB.reset(static_cast<RooDataSet *>(data->reduce(RooArgSet(obs_mass, obs_time))));
 	auto figName = [&](const char *name)
 	{
 		return TString::Format("%s/%s_%s.pdf", figDir.Data(), name, figTag.Data());
@@ -307,203 +232,27 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		if (!var) var = dynamic_cast<RooRealVar *>(fr.constPars().find(name));
 		return var ? var->getVal() : fallback;
 	};
+	auto readResultError = [](RooFitResult &fr, const char *name, double fallback = std::numeric_limits<double>::quiet_NaN()) {
+		auto *var = dynamic_cast<RooRealVar *>(fr.floatParsFinal().find(name));
+		if (!var) var = dynamic_cast<RooRealVar *>(fr.constPars().find(name));
+		return var ? var->getError() : fallback;
+	};
 
 	std::unique_ptr<TFile> massFile(openFile(massFileName));
 	std::unique_ptr<TFile> prFile(openFile(prFileName));
-		std::unique_ptr<TFile> npFile(openFile(npFileName));
-			std::unique_ptr<TFile> bkgFile(openFile(bkgFileName));
-			std::unique_ptr<TFile> errFile(openFile(errFileName));
-			if (!massFile || !prFile || !npFile || !bkgFile || !errFile) return;
-			const int timeErrPlotBins = std::max(2, readIntParam(*errFile, "timeErrPlotBins", timeErrPlotBinsDefault));
-			const int savedBkgErrPdfOpt = readIntParam(*errFile, "bkgErrPdfOpt", kErrPdfAnalytic);
-			const int savedSigErrPdfOpt = readIntParam(*errFile, "sigErrPdfOpt", kErrPdfAnalytic);
-			const int bkgErrPdfOpt = overrideBkgErrPdfOpt >= 0 ? overrideBkgErrPdfOpt : savedBkgErrPdfOpt;
-			const int sigErrPdfOpt = overrideSigErrPdfOpt >= 0 ? overrideSigErrPdfOpt : savedSigErrPdfOpt;
-			const int nErrBkgGauss = std::clamp(readIntParam(*errFile, "nBkgTimeErrGaussComponents", 2), 0, 2);
-			const int nErrBkgLandau = std::clamp(readIntParam(*errFile, "nBkgTimeErrLandauComponents", 2), 0, 2);
-			const int nErrBkgLogn = std::clamp(readIntParam(*errFile, "nBkgTimeErrLognormalComponents", 1), 0, 1);
-			const int nErrSigGauss = std::clamp(readIntParam(*errFile, "nSigTimeErrGaussComponents", 2), 0, 2);
-			const int nErrSigLandau = std::clamp(readIntParam(*errFile, "nSigTimeErrLandauComponents", 2), 0, 2);
-			const int nErrSigLogn = std::clamp(readIntParam(*errFile, "nSigTimeErrLognormalComponents", 1), 0, 1);
-			const double savedScaleBkg = readDoubleParam(*errFile, "scaleBkg", std::numeric_limits<double>::quiet_NaN());
-
-		RooFitResult *bkgErrResult = dynamic_cast<RooFitResult *>(errFile->Get("timeErrResult"));
-		RooFitResult *signalErrResult = dynamic_cast<RooFitResult *>(errFile->Get("sigTimeErrResult"));
-		if ((bkgErrPdfOpt == kErrPdfAnalytic && !bkgErrResult) ||
-		    (sigErrPdfOpt == kErrPdfAnalytic && !signalErrResult)) {
-			std::cerr << "ERROR: required analytic err fit results not found in " << errFileName << std::endl;
-			return;
-		}
+	std::unique_ptr<TFile> npFile(openFile(npFileName));
+	std::unique_ptr<TFile> bkgFile(openFile(bkgFileName));
+	if (!massFile || !prFile || !npFile || !bkgFile) return;
+	auto *massFitResult = dynamic_cast<RooFitResult *>(massFile->Get("fit_result"));
 	if (!dataSB || dataSB->numEntries() <= 0) {
 		std::cerr << "ERROR: no entries after sideband selection: " << cutSideband << std::endl;
 		return;
 	}
-		auto readErrVar = [&](RooFitResult *fr, const char *name, double fallback = 0.0) {
-			return fr ? readResultValue(*fr, name, fallback) : fallback;
-		};
-		obs_timeErr.setRange(errFitLow, errFitHigh);
-		obs_timeErr.setMin(errFitLow);
-		const bool useErrBkgGaus1 = (nErrBkgGauss >= 1);
-		const bool useErrBkgGaus2 = (nErrBkgGauss >= 2);
-		const bool useErrBkgLandau1 = (nErrBkgLandau >= 1);
-		const bool useErrBkgLandau2 = (nErrBkgLandau >= 2);
-		const bool useErrBkgLogn = (nErrBkgLogn >= 1);
-		const int nErrBkgComponents =
-			static_cast<int>(useErrBkgGaus1) + static_cast<int>(useErrBkgGaus2) +
-			static_cast<int>(useErrBkgLandau1) + static_cast<int>(useErrBkgLandau2) +
-			static_cast<int>(useErrBkgLogn);
-		const bool useErrSigGaus1 = (nErrSigGauss >= 1);
-		const bool useErrSigGaus2 = (nErrSigGauss >= 2);
-		const bool useErrSigLandau1 = (nErrSigLandau >= 1);
-		const bool useErrSigLandau2 = (nErrSigLandau >= 2);
-		const bool useErrSigLogn = (nErrSigLogn >= 1);
-		const int nErrSigComponents =
-			static_cast<int>(useErrSigGaus1) + static_cast<int>(useErrSigGaus2) +
-			static_cast<int>(useErrSigLandau1) + static_cast<int>(useErrSigLandau2) +
-			static_cast<int>(useErrSigLogn);
-		auto fracToRatio = [](double frac) {
-			const double f = std::clamp(frac, 1e-6, 1.0 - 1e-6);
-			return f / (1.0 - f);
-		};
-		if ((bkgErrPdfOpt == kErrPdfAnalytic && nErrBkgComponents <= 0) ||
-		    (sigErrPdfOpt == kErrPdfAnalytic && nErrSigComponents <= 0)) {
-			std::cerr << "ERROR: invalid saved err2 component configuration in " << errFileName << std::endl;
-			return;
-		}
-
-	auto bkgErrData = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(dataSB->reduce(RooArgSet(obs_timeErr))));
 	auto dataSR = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(data->reduce(cutSignalRegion)));
-	auto prMcSel = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(prMcInput->reduce(cutAll)));
-	auto prMcErrData = std::unique_ptr<RooDataSet>();
 	if (!dataSR || dataSR->numEntries() <= 0) {
 		std::cerr << "ERROR: no entries after signal-region selection: " << cutSignalRegion << std::endl;
 		return;
 	}
-	if (!prMcSel || prMcSel->numEntries() <= 0) {
-		std::cerr << "ERROR: no entries after prompt-MC selection: " << cutAll << std::endl;
-		return;
-	}
-	auto *prMcTimeErr = dynamic_cast<RooRealVar *>(prMcSel->get()->find("ctau3DErr"));
-	if (!prMcTimeErr) {
-		std::cerr << "ERROR: ctau3DErr is missing in selected prompt-MC dataset" << std::endl;
-		return;
-	}
-	prMcTimeErr->setRange(errFitLow, errFitHigh);
-	prMcTimeErr->setMin(errFitLow);
-	prMcErrData.reset(static_cast<RooDataSet *>(prMcSel->reduce(RooArgSet(*prMcTimeErr))));
-	if (!prMcErrData || prMcErrData->numEntries() <= 0) {
-		std::cerr << "ERROR: no prompt-MC ctau3DErr entries available after selection" << std::endl;
-		return;
-	}
-
-	const double errUpper = std::max(errFitHigh, 1e-3);
-		RooRealVar bkgTimeErrGaus1Mean("timeErrGaus1Mean", "timeErrGaus1Mean", readErrVar(bkgErrResult, "timeErrGaus1Mean", 0.02), errFitLow, errUpper);
-		RooRealVar bkgTimeErrGaus1Sigma("timeErrGaus1Sigma", "timeErrGaus1Sigma", readErrVar(bkgErrResult, "timeErrGaus1Sigma", 0.005), 1e-6, errUpper);
-		RooRealVar bkgTimeErrGaus2Mean("timeErrGaus2Mean", "timeErrGaus2Mean", readErrVar(bkgErrResult, "timeErrGaus2Mean", bkgTimeErrGaus1Mean.getVal()), errFitLow, errUpper);
-		RooRealVar bkgTimeErrGaus2Sigma("timeErrGaus2Sigma", "timeErrGaus2Sigma", readErrVar(bkgErrResult, "timeErrGaus2Sigma", bkgTimeErrGaus1Sigma.getVal()), 1e-6, errUpper);
-			RooRealVar bkgTimeErrTailMpv("timeErrTailMpv", "timeErrTailMpv", readErrVar(bkgErrResult, "timeErrTailMpv", 0.02), errFitLow, errUpper);
-			RooRealVar bkgTimeErrTailWidth("timeErrTailWidth", "timeErrTailWidth", readErrVar(bkgErrResult, "timeErrTailWidth", 0.002), 1e-6, errUpper);
-			RooRealVar bkgTimeErrTail2Mpv("timeErrTail2Mpv", "timeErrTail2Mpv", readErrVar(bkgErrResult, "timeErrTail2Mpv", bkgTimeErrTailMpv.getVal()), errFitLow, errUpper);
-			RooRealVar bkgTimeErrTail2Width("timeErrTail2Width", "timeErrTail2Width", readErrVar(bkgErrResult, "timeErrTail2Width", bkgTimeErrTailWidth.getVal()), 1e-6, errUpper);
-			RooRealVar bkgTimeErrLognM0("timeErrLognM0", "timeErrLognM0", readErrVar(bkgErrResult, "timeErrLognM0", 0.02), errFitLow, errUpper);
-			RooRealVar bkgTimeErrLognK("timeErrLognK", "timeErrLognK", readErrVar(bkgErrResult, "timeErrLognK", 0.35), 0.05, 0.95);
-			RooRealVar bkgTimeErrCore1FracRatio("timeErrCore1FracRatio", "timeErrCore1FracRatio", readErrVar(bkgErrResult, "timeErrCore1FracRatio", fracToRatio(0.6)), 1e-6, 1e6);
-			RooFormulaVar bkgTimeErrCore1Frac("timeErrCore1Frac", "@0/(1.0+@0)", RooArgList(bkgTimeErrCore1FracRatio));
-			RooRealVar bkgTimeErrTailFracRatio("timeErrTailFracRatio", "timeErrTailFracRatio", readErrVar(bkgErrResult, "timeErrTailFracRatio", fracToRatio(0.08)), 1e-6, 1e6);
-			RooFormulaVar bkgTimeErrTailFrac("timeErrTailFrac", "@0/(1.0+@0)", RooArgList(bkgTimeErrTailFracRatio));
-			RooRealVar bkgTimeErrTail2FracRatio("timeErrTail2FracRatio", "timeErrTail2FracRatio", readErrVar(bkgErrResult, "timeErrTail2FracRatio", fracToRatio(0.05)), 1e-6, 1e6);
-			RooFormulaVar bkgTimeErrTail2Frac("timeErrTail2Frac", "@0/(1.0+@0)", RooArgList(bkgTimeErrTail2FracRatio));
-			RooRealVar bkgTimeErrLognFracRatio("timeErrLognFracRatio", "timeErrLognFracRatio", readErrVar(bkgErrResult, "timeErrLognFracRatio", fracToRatio(0.03)), 1e-6, 1e6);
-			RooFormulaVar bkgTimeErrLognFrac("timeErrLognFrac", "@0/(1.0+@0)", RooArgList(bkgTimeErrLognFracRatio));
-		RooGaussian bkgTimeErrGaus1("gausBkg", "gausBkg", obs_timeErr, bkgTimeErrGaus1Mean, bkgTimeErrGaus1Sigma);
-		RooGaussian bkgTimeErrGaus2("gausBkg2", "gausBkg2", obs_timeErr, bkgTimeErrGaus2Mean, bkgTimeErrGaus2Sigma);
-		RooLandau bkgTimeErrTail("landauBkg", "landauBkg", obs_timeErr, bkgTimeErrTailMpv, bkgTimeErrTailWidth);
-		RooLandau bkgTimeErrTail2("landauBkg2", "landauBkg2", obs_timeErr, bkgTimeErrTail2Mpv, bkgTimeErrTail2Width);
-		RooLognormal bkgTimeErrLogn("lognBkg", "lognBkg", obs_timeErr, bkgTimeErrLognM0, bkgTimeErrLognK);
-		RooArgList bkgErrPdfList;
-		RooArgList bkgErrFracList;
-		if (useErrBkgLandau1) {
-			bkgErrPdfList.add(bkgTimeErrTail);
-			if (nErrBkgComponents > 1) bkgErrFracList.add(bkgTimeErrTailFrac);
-		}
-		if (useErrBkgLandau2) {
-			bkgErrPdfList.add(bkgTimeErrTail2);
-			if (bkgErrPdfList.getSize() < nErrBkgComponents) bkgErrFracList.add(bkgTimeErrTail2Frac);
-		}
-		if (useErrBkgLogn) {
-			bkgErrPdfList.add(bkgTimeErrLogn);
-			if (bkgErrPdfList.getSize() < nErrBkgComponents) bkgErrFracList.add(bkgTimeErrLognFrac);
-		}
-		if (useErrBkgGaus1) {
-			bkgErrPdfList.add(bkgTimeErrGaus1);
-			if (bkgErrPdfList.getSize() < nErrBkgComponents) bkgErrFracList.add(bkgTimeErrCore1Frac);
-		}
-		if (useErrBkgGaus2)
-			bkgErrPdfList.add(bkgTimeErrGaus2);
-		std::unique_ptr<RooAddPdf> bkgErrPdfAnalytic = std::make_unique<RooAddPdf>(
-			"pdfErr", "pdfErr", bkgErrPdfList, bkgErrFracList, true);
-	std::unique_ptr<RooDataHist> bkgErrHistData;
-	std::unique_ptr<RooHistPdf> bkgErrPdfHist;
-	RooAbsPdf *bkgErrPdf = bkgErrPdfAnalytic.get();
-
-		RooRealVar sigTimeErrGaus1Mean("sigErrGaus1Mean", "sigErrGaus1Mean", readErrVar(signalErrResult, "sigErrGaus1Mean", 0.02), errFitLow, errUpper);
-		RooRealVar sigTimeErrGaus1Sigma("sigErrGaus1Sigma", "sigErrGaus1Sigma", readErrVar(signalErrResult, "sigErrGaus1Sigma", 0.003), 1e-6, errUpper);
-		RooRealVar sigTimeErrGaus2Mean("sigErrGaus2Mean", "sigErrGaus2Mean", readErrVar(signalErrResult, "sigErrGaus2Mean", sigTimeErrGaus1Mean.getVal()), errFitLow, errUpper);
-		RooRealVar sigTimeErrGaus2Sigma("sigErrGaus2Sigma", "sigErrGaus2Sigma", readErrVar(signalErrResult, "sigErrGaus2Sigma", sigTimeErrGaus1Sigma.getVal()), 1e-6, errUpper);
-			RooRealVar sigTimeErrTailMpv("sigErrTailMpv", "sigErrTailMpv", readErrVar(signalErrResult, "sigErrTailMpv", 0.02), errFitLow, errUpper);
-			RooRealVar sigTimeErrTailWidth("sigErrTailWidth", "sigErrTailWidth", readErrVar(signalErrResult, "sigErrTailWidth", 0.002), 1e-6, errUpper);
-			RooRealVar sigTimeErrTail2Mpv("sigErrTail2Mpv", "sigErrTail2Mpv", readErrVar(signalErrResult, "sigErrTail2Mpv", sigTimeErrTailMpv.getVal()), errFitLow, errUpper);
-			RooRealVar sigTimeErrTail2Width("sigErrTail2Width", "sigErrTail2Width", readErrVar(signalErrResult, "sigErrTail2Width", sigTimeErrTailWidth.getVal()), 1e-6, errUpper);
-			RooRealVar sigTimeErrLognM0("sigErrLognM0", "sigErrLognM0", readErrVar(signalErrResult, "sigErrLognM0", 0.02), errFitLow, errUpper);
-			RooRealVar sigTimeErrLognK("sigErrLognK", "sigErrLognK", readErrVar(signalErrResult, "sigErrLognK", 0.35), 0.05, 0.95);
-			RooRealVar sigTimeErrCore1FracRatio("sigErrCore1FracRatio", "sigErrCore1FracRatio", readErrVar(signalErrResult, "sigErrCore1FracRatio", fracToRatio(0.6)), 1e-6, 1e6);
-			RooFormulaVar sigTimeErrCore1Frac("sigErrCore1Frac", "@0/(1.0+@0)", RooArgList(sigTimeErrCore1FracRatio));
-			RooRealVar sigTimeErrTailFracRatio("sigErrTailFracRatio", "sigErrTailFracRatio", readErrVar(signalErrResult, "sigErrTailFracRatio", fracToRatio(0.08)), 1e-6, 1e6);
-			RooFormulaVar sigTimeErrTailFrac("sigErrTailFrac", "@0/(1.0+@0)", RooArgList(sigTimeErrTailFracRatio));
-			RooRealVar sigTimeErrTail2FracRatio("sigErrTail2FracRatio", "sigErrTail2FracRatio", readErrVar(signalErrResult, "sigErrTail2FracRatio", fracToRatio(0.05)), 1e-6, 1e6);
-			RooFormulaVar sigTimeErrTail2Frac("sigErrTail2Frac", "@0/(1.0+@0)", RooArgList(sigTimeErrTail2FracRatio));
-			RooRealVar sigTimeErrLognFracRatio("sigErrLognFracRatio", "sigErrLognFracRatio", readErrVar(signalErrResult, "sigErrLognFracRatio", fracToRatio(0.03)), 1e-6, 1e6);
-			RooFormulaVar sigTimeErrLognFrac("sigErrLognFrac", "@0/(1.0+@0)", RooArgList(sigTimeErrLognFracRatio));
-		RooGaussian sigTimeErrGaus1("gausSig", "gausSig", obs_timeErr, sigTimeErrGaus1Mean, sigTimeErrGaus1Sigma);
-		RooGaussian sigTimeErrGaus2("gausSig2", "gausSig2", obs_timeErr, sigTimeErrGaus2Mean, sigTimeErrGaus2Sigma);
-		RooLandau sigTimeErrTail("landauSig", "landauSig", obs_timeErr, sigTimeErrTailMpv, sigTimeErrTailWidth);
-		RooLandau sigTimeErrTail2("landauSig2", "landauSig2", obs_timeErr, sigTimeErrTail2Mpv, sigTimeErrTail2Width);
-		RooLognormal sigTimeErrLogn("lognSig", "lognSig", obs_timeErr, sigTimeErrLognM0, sigTimeErrLognK);
-		RooArgList sigErrPdfList;
-		RooArgList sigErrFracList;
-		if (useErrSigLandau1) {
-			sigErrPdfList.add(sigTimeErrTail);
-			if (nErrSigComponents > 1) sigErrFracList.add(sigTimeErrTailFrac);
-		}
-		if (useErrSigLandau2) {
-			sigErrPdfList.add(sigTimeErrTail2);
-			if (sigErrPdfList.getSize() < nErrSigComponents) sigErrFracList.add(sigTimeErrTail2Frac);
-		}
-		if (useErrSigLogn) {
-			sigErrPdfList.add(sigTimeErrLogn);
-			if (sigErrPdfList.getSize() < nErrSigComponents) sigErrFracList.add(sigTimeErrLognFrac);
-		}
-		if (useErrSigGaus1) {
-			sigErrPdfList.add(sigTimeErrGaus1);
-			if (sigErrPdfList.getSize() < nErrSigComponents) sigErrFracList.add(sigTimeErrCore1Frac);
-		}
-		if (useErrSigGaus2)
-			sigErrPdfList.add(sigTimeErrGaus2);
-		std::unique_ptr<RooAddPdf> signalErrPdfAnalytic = std::make_unique<RooAddPdf>("pdfErrSig", "pdfErrSig",
-			sigErrPdfList, sigErrFracList, true);
-	std::unique_ptr<RooDataHist> signalErrHistTemplate;
-	std::unique_ptr<RooHistPdf> signalErrPdfHist;
-	RooAbsPdf *signalErrPdf = signalErrPdfAnalytic.get();
-
-		auto fixVar = [](RooRealVar &var) { var.setConstant(true); };
-		fixVar(bkgTimeErrGaus1Mean); fixVar(bkgTimeErrGaus1Sigma); fixVar(bkgTimeErrGaus2Mean); fixVar(bkgTimeErrGaus2Sigma);
-		fixVar(bkgTimeErrTailMpv); fixVar(bkgTimeErrTailWidth); fixVar(bkgTimeErrTail2Mpv); fixVar(bkgTimeErrTail2Width);
-		fixVar(bkgTimeErrLognM0); fixVar(bkgTimeErrLognK); fixVar(bkgTimeErrCore1FracRatio); fixVar(bkgTimeErrTailFracRatio);
-		fixVar(bkgTimeErrTail2FracRatio); fixVar(bkgTimeErrLognFracRatio);
-		fixVar(sigTimeErrGaus1Mean); fixVar(sigTimeErrGaus1Sigma); fixVar(sigTimeErrGaus2Mean); fixVar(sigTimeErrGaus2Sigma);
-		fixVar(sigTimeErrTailMpv); fixVar(sigTimeErrTailWidth); fixVar(sigTimeErrTail2Mpv); fixVar(sigTimeErrTail2Width);
-		fixVar(sigTimeErrLognM0); fixVar(sigTimeErrLognK); fixVar(sigTimeErrCore1FracRatio); fixVar(sigTimeErrTailFracRatio);
-		fixVar(sigTimeErrTail2FracRatio); fixVar(sigTimeErrLognFracRatio);
 
 	auto *bkgTimeResult = dynamic_cast<RooFitResult *>(bkgFile->Get("timeResult"));
 	if (!bkgTimeResult) {
@@ -539,7 +288,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			"signal_mass_sigma2_log_offset", "log(signal_mass_sigma2 - floor)",
 			std::log(std::max(readDoubleParam(*massFile,"signal_mass_sigma2",signal_mass_sigma2_init) - sigmaFloor, 1e-4)),
 			std::log(1e-4),
-			std::log(1.0));
+			std::log(5.0));
 	RooFormulaVar signal_mass_sigma2("signal_mass_sigma2", Form("%g + exp(@0)", sigmaFloor), RooArgList(signal_mass_sigma2_log_offset));
 	RooFormulaVar signal_mass_sigma_delta2("signal_mass_sigma_delta2","@0-@1",RooArgList(signal_mass_sigma2,signal_mass_sigma));
 	RooRealVar signal_mass_cb_sigma_base("signal_mass_cb_sigma_base","signal_mass_cb_sigma_base",readDoubleParam(*massFile,"signal_mass_cb_sigma",0.035),0.008,0.080);
@@ -554,7 +303,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 				"signal_mass_cb_sigma_log_offset", "log(signal_mass_cb_sigma - floor)",
 				std::log(std::max(signal_mass_cb_sigma_init - sigmaFloor, 1e-4)),
 				std::log(1e-4),
-				std::log(1.0));
+				std::log(5.0));
 		signal_mass_cb_sigma_from_gaus = std::make_unique<RooFormulaVar>(
 				"signal_mass_cb_sigma", Form("%g + exp(@0)", sigmaFloor),
 				RooArgList(*signal_mass_cb_sigma_log_offset));
@@ -570,13 +319,13 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			"signal_mass_cb_sigma2_log_offset", "log(signal_mass_cb_sigma2 - floor)",
 			std::log(std::max(signal_mass_cb_sigma2_init - sigmaFloor, 1e-4)),
 			std::log(1e-4),
-			std::log(1.0));
+			std::log(5.0));
 	RooFormulaVar signal_mass_cb_sigma2("signal_mass_cb_sigma2", Form("%g + exp(@0)", sigmaFloor), RooArgList(signal_mass_cb_sigma2_log_offset));
 	RooFormulaVar signal_mass_cb_sigma_delta2("signal_mass_cb_sigma_delta2","@0-@1",RooArgList(signal_mass_cb_sigma2,*signal_mass_cb_sigma));
-	RooRealVar signal_mass_cb_alpha("signal_mass_cb_alpha","signal_mass_cb_alpha",readDoubleParam(*massFile,"signal_mass_cb_alpha",1.5),0.1,10.0);
-	RooRealVar signal_mass_cb_alpha2("signal_mass_cb_alpha2","signal_mass_cb_alpha2",readDoubleParam(*massFile,"signal_mass_cb_alpha2",2.0),0.1,10.0);
-	RooRealVar signal_mass_cb_n("signal_mass_cb_n","signal_mass_cb_n",readDoubleParam(*massFile,"signal_mass_cb_n",3.0),0.1,20.0);
-	RooRealVar signal_mass_cb_n2("signal_mass_cb_n2","signal_mass_cb_n2",readDoubleParam(*massFile,"signal_mass_cb_n2",4.0),0.2,10.0);
+	RooRealVar signal_mass_cb_alpha("signal_mass_cb_alpha","signal_mass_cb_alpha",readDoubleParam(*massFile,"signal_mass_cb_alpha",1.5),0.01,50.0);
+	RooRealVar signal_mass_cb_alpha2("signal_mass_cb_alpha2","signal_mass_cb_alpha2",readDoubleParam(*massFile,"signal_mass_cb_alpha2",2.0),0.01,50.0);
+	RooRealVar signal_mass_cb_n("signal_mass_cb_n","signal_mass_cb_n",readDoubleParam(*massFile,"signal_mass_cb_n",3.0),0.01,100.0);
+	RooRealVar signal_mass_cb_n2("signal_mass_cb_n2","signal_mass_cb_n2",readDoubleParam(*massFile,"signal_mass_cb_n2",4.0),0.01,100.0);
 	RooRealVar signal_mass_frac_ratio1("signal_mass_frac_ratio1","signal_mass_frac_ratio1",readDoubleParam(*massFile,"signal_mass_frac_ratio1",1.86),1e-3,1e3);
 	RooFormulaVar signal_mass_frac1("signal_mass_frac1","@0/(1.0+@0)",RooArgList(signal_mass_frac_ratio1));
 	RooRealVar signal_mass_frac_ratio2("signal_mass_frac_ratio2","signal_mass_frac_ratio2",readDoubleParam(*massFile,"signal_mass_frac_ratio2",0.25),1e-3,1e3);
@@ -597,25 +346,23 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	signal_mass_frac_ratio2.setVal(readDoubleParam(*massFile,"signal_mass_frac_ratio2",signal_mass_frac_ratio2.getVal()));
 	signal_mass_frac_ratio3.setVal(readDoubleParam(*massFile,"signal_mass_frac_ratio3",signal_mass_frac_ratio3.getVal()));
 	signal_mass_mean.setVal(readDoubleParam(*massFile,"signal_mass_mean",signal_mass_mean.getVal()));
-
-	const auto fixMassVar = [](RooRealVar &var) {
+	auto fixSignalMassVar = [](RooRealVar &var) {
 		var.setConstant(true);
 	};
-	fixMassVar(signal_mass_mean);
-	fixMassVar(signal_mass_sigma);
-	fixMassVar(signal_mass_cb_sigma_base);
-	fixMassVar(signal_mass_cb_alpha);
-	fixMassVar(signal_mass_cb_alpha2);
-	fixMassVar(signal_mass_cb_n);
-	fixMassVar(signal_mass_cb_n2);
-	fixMassVar(signal_mass_cb_sigma2_log_offset);
-	fixMassVar(signal_mass_sigma2_log_offset);
-	fixMassVar(signal_mass_frac_ratio1);
-	fixMassVar(signal_mass_frac_ratio2);
-	fixMassVar(signal_mass_frac_ratio3);
+	fixSignalMassVar(signal_mass_mean);
+	fixSignalMassVar(signal_mass_sigma);
+	fixSignalMassVar(signal_mass_sigma2_log_offset);
+	fixSignalMassVar(signal_mass_cb_sigma_base);
+	fixSignalMassVar(signal_mass_cb_sigma2_log_offset);
+	fixSignalMassVar(signal_mass_cb_alpha);
+	fixSignalMassVar(signal_mass_cb_alpha2);
+	fixSignalMassVar(signal_mass_cb_n);
+	fixSignalMassVar(signal_mass_cb_n2);
+	fixSignalMassVar(signal_mass_frac_ratio1);
+	fixSignalMassVar(signal_mass_frac_ratio2);
+	fixSignalMassVar(signal_mass_frac_ratio3);
 	if (signal_mass_cb_sigma_log_offset)
 		signal_mass_cb_sigma_log_offset->setConstant(true);
-	
 
 	RooGaussian signal_mass_gaus("signal_mass_gaus","signal_mass_gaus",obs_mass,signal_mass_mean,signal_mass_sigma);
 	RooGaussian signal_mass_gaus2("signal_mass_gaus2","signal_mass_gaus2",obs_mass,signal_mass_mean,signal_mass_sigma2);
@@ -671,13 +418,6 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	if (nBkgChebyOrder >= 4) bkg_mass_p4_raw.setVal(readDoubleParam(*massFile,"bkg_mass_p4_raw",bkg_mass_p4_raw.getVal()));
 	if (nBkgChebyOrder >= 5) bkg_mass_p5_raw.setVal(readDoubleParam(*massFile,"bkg_mass_p5_raw",bkg_mass_p5_raw.getVal()));
 	if (nBkgChebyOrder >= 6) bkg_mass_p6_raw.setVal(readDoubleParam(*massFile,"bkg_mass_p6_raw",bkg_mass_p6_raw.getVal()));
-	if (nBkgChebyOrder >= 1) fixMassVar(bkg_mass_p1_raw);
-	if (nBkgChebyOrder >= 2) fixMassVar(bkg_mass_p2_raw);
-	if (nBkgChebyOrder >= 3) fixMassVar(bkg_mass_p3_raw);
-	if (nBkgChebyOrder >= 4) fixMassVar(bkg_mass_p4_raw);
-	if (nBkgChebyOrder >= 5) fixMassVar(bkg_mass_p5_raw);
-	if (nBkgChebyOrder >= 6) fixMassVar(bkg_mass_p6_raw);
-	fixMassVar(bkg_mass_lambda);
 	RooArgList chebyCoeffList;
 	if (nBkgChebyOrder >= 1) chebyCoeffList.add(bkg_mass_p1);
 	if (nBkgChebyOrder >= 2) chebyCoeffList.add(bkg_mass_p2);
@@ -696,28 +436,27 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	// ctau prompt resolution from ctau_pr.C
 	// ------------------------------------------------------------------
 	const int nResolutionComponents = std::clamp(readIntParam(*prFile, "nResolutionComponents", 1), 1, 4);
-	RooConstVar ctauMeanScale("ctauMeanScale","ctauMeanScale",readDoubleParam(*prFile,"ctauMeanScale",1.0));
 	RooConstVar ctauTime1Mean("ctauTime1Mean","ctauTime1Mean",readDoubleParam(*prFile,"ctauTime1Mean",0.0));
 	const double ctauTime1ScaleVal = readDoubleParam(*prFile,"ctauTime1Scale",1.0);
 	RooRealVar ctauTime1Scale("ctauTime1Scale","ctauTime1Scale",
 		ctauTime1ScaleVal,
-		0.5,
-		3.0);
+		0.005,
+		0.20);
 	RooConstVar ctauTime2Mean("ctauTime2Mean","ctauTime2Mean",readDoubleParam(*prFile,"ctauTime2Mean",0.0));
 	const double ctauTime2ScaleVal = readDoubleParam(*prFile,"ctauTime2Scale",1.0);
-	const double ctauTime2DeltaVal = std::max(0.05, ctauTime2ScaleVal - ctauTime1ScaleVal);
+	const double ctauTime2DeltaVal = std::max(0.001, ctauTime2ScaleVal - ctauTime1ScaleVal);
 	RooRealVar ctauTime2Delta("ctauTime2Delta","ctauTime2Delta",
 		ctauTime2DeltaVal,
-		0.05,
-		5.0);
+		0.001,
+		0.30);
 	RooFormulaVar ctauTime2Scale("ctauTime2Scale","@0+@1",RooArgList(ctauTime1Scale, ctauTime2Delta));
 	RooConstVar ctauTime3Mean("ctauTime3Mean","ctauTime3Mean",readDoubleParam(*prFile,"ctauTime3Mean",0.0));
 	const double ctauTime3ScaleVal = readDoubleParam(*prFile,"ctauTime3Scale",1.0);
-	const double ctauTime3DeltaVal = std::max(0.05, ctauTime3ScaleVal - ctauTime2ScaleVal);
+	const double ctauTime3DeltaVal = std::max(0.001, ctauTime3ScaleVal - ctauTime2ScaleVal);
 	RooRealVar ctauTime3Delta("ctauTime3Delta","ctauTime3Delta",
 		ctauTime3DeltaVal,
-		0.05,
-		10.0);
+		0.001,
+		0.60);
 	RooFormulaVar ctauTime3Scale("ctauTime3Scale","@0+@1",RooArgList(ctauTime2Scale, ctauTime3Delta));
 	RooConstVar ctauTime4Mean("ctauTime4Mean","ctauTime4Mean",readDoubleParam(*prFile,"ctauTime4Mean",0.0));
 	const double ctauTime4ScaleVal = readDoubleParam(*prFile,"ctauTime4Scale",1.0);
@@ -725,16 +464,27 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	RooRealVar ctauTime4Delta("ctauTime4Delta","ctauTime4Delta",
 		ctauTime4DeltaVal,
 		0.05,
-		15.0);
+		8.0);
 	RooFormulaVar ctauTime4Scale("ctauTime4Scale","@0+@1",RooArgList(ctauTime3Scale, ctauTime4Delta));
-	RooConstVar ctauFrac1("ctauFrac1","ctauFrac1",readDoubleParam(*prFile,"ctauFrac1",0.5));
-	RooConstVar ctauFrac2("ctauFrac2","ctauFrac2",readDoubleParam(*prFile,"ctauFrac2",0.2));
-	RooConstVar ctauFrac3("ctauFrac3","ctauFrac3",readDoubleParam(*prFile,"ctauFrac3",0.1));
+	const double ctauFrac1Val = readDoubleParam(*prFile,"ctauFrac1",0.5);
+	const double ctauFrac2Val = readDoubleParam(*prFile,"ctauFrac2",0.2);
+	const double ctauFrac3Val = readDoubleParam(*prFile,"ctauFrac3",0.1);
+	const double compFrac1Val = (nResolutionComponents == 1) ? 1.0 : ctauFrac1Val;
+	const double compFrac2Val = (nResolutionComponents >= 2)
+		? ((nResolutionComponents == 2) ? (1.0 - ctauFrac1Val) : (1.0 - ctauFrac1Val) * ctauFrac2Val)
+		: 0.0;
+	const double compFrac3Val = (nResolutionComponents >= 3)
+		? ((nResolutionComponents == 3) ? (1.0 - ctauFrac1Val) * (1.0 - ctauFrac2Val)
+										: (1.0 - ctauFrac1Val) * (1.0 - ctauFrac2Val) * ctauFrac3Val)
+		: 0.0;
+	RooConstVar ctauFrac1("ctauFrac1","ctauFrac1",compFrac1Val);
+	RooConstVar ctauFrac2("ctauFrac2","ctauFrac2",compFrac2Val);
+	RooConstVar ctauFrac3("ctauFrac3","ctauFrac3",compFrac3Val);
 
-	RooGaussModel ctauTime1("ctauTime1","ctauTime1",obs_time,ctauTime1Mean,ctauTime1Scale,ctauMeanScale,obs_timeErr);
-	RooGaussModel ctauTime2("ctauTime2","ctauTime2",obs_time,ctauTime2Mean,ctauTime2Scale,ctauMeanScale,obs_timeErr);
-	RooGaussModel ctauTime3("ctauTime3","ctauTime3",obs_time,ctauTime3Mean,ctauTime3Scale,ctauMeanScale,obs_timeErr);
-	RooGaussModel ctauTime4("ctauTime4","ctauTime4",obs_time,ctauTime4Mean,ctauTime4Scale,ctauMeanScale,obs_timeErr);
+	RooGaussModel ctauTime1("ctauTime1","ctauTime1",obs_time,ctauTime1Mean,ctauTime1Scale);
+	RooGaussModel ctauTime2("ctauTime2","ctauTime2",obs_time,ctauTime2Mean,ctauTime2Scale);
+	RooGaussModel ctauTime3("ctauTime3","ctauTime3",obs_time,ctauTime3Mean,ctauTime3Scale);
+	RooGaussModel ctauTime4("ctauTime4","ctauTime4",obs_time,ctauTime4Mean,ctauTime4Scale);
 
 	std::unique_ptr<RooAddModel> promptResolutionModel;
 	RooResolutionModel *promptResolutionPtr = &ctauTime1;
@@ -769,8 +519,8 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	const double signalLifetime2Val = readDoubleParam(*npFile,"signal2_lifetime",0.2);
 	const double signalLifetime3Val = readDoubleParam(*npFile,"signal3_lifetime",0.4);
 	const double signalLifetimeFloorSaved = readDoubleParam(*npFile, "signalLifetimeFloor", signalLifetimeFloor);
-	const double signalLifetime2FloorSaved = readDoubleParam(*npFile, "signalLifetime2Floor", std::max(0.75 * signalLifetimeFloorSaved, 1e-2));
-	const double signalLifetime3FloorSaved = readDoubleParam(*npFile, "signalLifetime3Floor", std::max(1.00 * signalLifetimeFloorSaved, 1e-2));
+	const double signalLifetime2FloorSaved = readDoubleParam(*npFile, "signalLifetime2Floor", std::max(0.75 * signalLifetimeFloorSaved, 2e-3));
+	const double signalLifetime3FloorSaved = readDoubleParam(*npFile, "signalLifetime3Floor", std::max(1.00 * signalLifetimeFloorSaved, 2e-3));
 	const double signalLogLifetimeOffsetVal = readDoubleParam(
 		*npFile,
 		"signal_log_lifetime_offset",
@@ -853,30 +603,30 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	RooRealVar bkg_log_lifetime_offset("bkg_log_lifetime_offset","bkg_log_lifetime_offset",readResultValue(*bkgTimeResult,"bkg_log_lifetime_offset",std::log(std::max(0.05, 1.5 * bkgLifetimeFloor) - bkgLifetimeFloor)));
 	RooRealVar bkg_log_lifetime2_offset("bkg_log_lifetime2_offset","bkg_log_lifetime2_offset",readResultValue(*bkgTimeResult,"bkg_log_lifetime2_offset",std::log(std::max(0.04, 1.5 * std::max(1.5 * bkgLifetimeFloor, 2e-2)) - std::max(1.5 * bkgLifetimeFloor, 2e-2))));
 	RooRealVar bkg_log_lifetime3_offset("bkg_log_lifetime3_offset","bkg_log_lifetime3_offset",readResultValue(*bkgTimeResult,"bkg_log_lifetime3_offset",std::log(std::max(0.10, 1.5 * std::max(2.0 * bkgLifetimeFloor, 3e-2)) - std::max(2.0 * bkgLifetimeFloor, 3e-2))));
-	RooRealVar bkg_sym_log_lifetime_offset("bkg_sym_log_lifetime_offset","bkg_sym_log_lifetime_offset",readResultValue(*bkgTimeResult,"bkg_sym_log_lifetime_offset",std::log(std::max(0.04, 1.4 * std::max(1.5 * errRange.first, 1e-2)) - std::max(1.5 * errRange.first, 1e-2))));
-	RooRealVar bkg_sym_log_lifetime2_offset("bkg_sym_log_lifetime2_offset","bkg_sym_log_lifetime2_offset",readResultValue(*bkgTimeResult,"bkg_sym_log_lifetime2_offset",std::log(std::max(0.07, 1.4 * std::max(2.0 * std::max(1.5 * errRange.first, 1e-2), 2e-2)) - std::max(2.0 * std::max(1.5 * errRange.first, 1e-2), 2e-2))));
-	RooRealVar bkg_sym_log_lifetime3_offset("bkg_sym_log_lifetime3_offset","bkg_sym_log_lifetime3_offset",readResultValue(*bkgTimeResult,"bkg_sym_log_lifetime3_offset",std::log(std::max(0.12, 1.3 * std::max(3.0 * std::max(1.5 * errRange.first, 1e-2), 4e-2)) - std::max(3.0 * std::max(1.5 * errRange.first, 1e-2), 4e-2))));
+	RooRealVar bkg_sym_log_lifetime_offset("bkg_sym_log_lifetime_offset","bkg_sym_log_lifetime_offset",readResultValue(*bkgTimeResult,"bkg_sym_log_lifetime_offset",std::log(std::max(0.04, 1.4 * 1e-2) - 1e-2)));
+	RooRealVar bkg_sym_log_lifetime2_offset("bkg_sym_log_lifetime2_offset","bkg_sym_log_lifetime2_offset",readResultValue(*bkgTimeResult,"bkg_sym_log_lifetime2_offset",std::log(std::max(0.07, 1.4 * 2e-2) - 2e-2)));
+	RooRealVar bkg_sym_log_lifetime3_offset("bkg_sym_log_lifetime3_offset","bkg_sym_log_lifetime3_offset",readResultValue(*bkgTimeResult,"bkg_sym_log_lifetime3_offset",std::log(std::max(0.12, 1.3 * 4e-2) - 4e-2)));
 	RooRealVar bkg_flip_log_lifetime_offset("bkg_flip_log_lifetime_offset","bkg_flip_log_lifetime_offset",readResultValue(*bkgTimeResult,"bkg_flip_log_lifetime_offset",std::log(std::max(0.05, 1.2 * std::max(0.75 * bkgLifetimeFloor, 5e-3)) - std::max(0.75 * bkgLifetimeFloor, 5e-3))));
 	RooRealVar bkg_flip_log_lifetime2_offset("bkg_flip_log_lifetime2_offset","bkg_flip_log_lifetime2_offset",readResultValue(*bkgTimeResult,"bkg_flip_log_lifetime2_offset",std::log(std::max(0.08, 1.3 * std::max(1.5 * std::max(0.75 * bkgLifetimeFloor, 5e-3), 1e-2)) - std::max(1.5 * std::max(0.75 * bkgLifetimeFloor, 5e-3), 1e-2))));
 	RooRealVar bkg_flip_log_lifetime3_offset("bkg_flip_log_lifetime3_offset","bkg_flip_log_lifetime3_offset",readResultValue(*bkgTimeResult,"bkg_flip_log_lifetime3_offset",std::log(std::max(0.12, 1.2 * std::max(2.5 * std::max(0.75 * bkgLifetimeFloor, 5e-3), 2e-2)) - std::max(2.5 * std::max(0.75 * bkgLifetimeFloor, 5e-3), 2e-2))));
 	bkg_log_lifetime_offset.setConstant(false);
 	bkg_log_lifetime2_offset.setConstant(false);
 	bkg_log_lifetime3_offset.setConstant(false);
-	bkg_sym_log_lifetime_offset.setConstant(true);
-	bkg_sym_log_lifetime2_offset.setConstant(true);
-	bkg_sym_log_lifetime3_offset.setConstant(true);
+	bkg_sym_log_lifetime_offset.setConstant(false);
+	bkg_sym_log_lifetime2_offset.setConstant(false);
+	bkg_sym_log_lifetime3_offset.setConstant(false);
 	bkg_flip_log_lifetime_offset.setConstant(false);
 	bkg_flip_log_lifetime2_offset.setConstant(false);
 	bkg_flip_log_lifetime3_offset.setConstant(false);
 
-	const double bkgLifetime2Floor = std::max(1.5 * bkgLifetimeFloor, 2e-2);
-	const double bkgLifetime3Floor = std::max(2.0 * bkgLifetimeFloor, 3e-2);
-	const double bkgSymLifetimeFloor = std::max(1.5 * errRange.first, 1e-2);
-	const double bkgSymLifetime2Floor = std::max(2.0 * bkgSymLifetimeFloor, 2e-2);
-	const double bkgSymLifetime3Floor = std::max(3.0 * bkgSymLifetimeFloor, 4e-2);
-	const double bkgFlipLifetimeFloor = std::max(0.75 * bkgLifetimeFloor, 5e-3);
-	const double bkgFlipLifetime2Floor = std::max(1.5 * bkgFlipLifetimeFloor, 1e-2);
-	const double bkgFlipLifetime3Floor = std::max(2.5 * bkgFlipLifetimeFloor, 2e-2);
+	const double bkgLifetime2Floor = std::max(1.5 * bkgLifetimeFloor, 1e-2);
+	const double bkgLifetime3Floor = std::max(2.0 * bkgLifetimeFloor, 1.5e-2);
+	const double bkgSymLifetimeFloor = 5e-3;
+	const double bkgSymLifetime2Floor = std::max(2.0 * bkgSymLifetimeFloor, 1e-2);
+	const double bkgSymLifetime3Floor = std::max(3.0 * bkgSymLifetimeFloor, 2e-2);
+	const double bkgFlipLifetimeFloor = 2e-3;
+	const double bkgFlipLifetime2Floor = std::max(1.5 * bkgFlipLifetimeFloor, 5e-3);
+	const double bkgFlipLifetime3Floor = std::max(2.5 * bkgFlipLifetimeFloor, 1e-2);
 	const double bkgLifetimeCeil = std::max(0.50, maxStableLifetime);
 	const double bkgLifetime2Ceil = std::max(0.50, maxStableLifetime);
 	const double bkgLifetime3Ceil = std::max(0.80, maxStableLifetime);
@@ -984,472 +734,112 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	}
 
 	// ------------------------------------------------------------------
-	// full 2D fit: all shapes fixed, only Nsig/Nbkg and bFraction free
+	// full 2D fit: let all RooRealVar parameters float
 	// ------------------------------------------------------------------
 	RooRealVar Nsig("Nsig","Nsig",readDoubleParam(*massFile,"Nsig",std::max(1.0, 0.5 * data->numEntries())),0.0,2.0 * data->numEntries());
 	RooRealVar Nbkg("Nbkg","Nbkg",readDoubleParam(*massFile,"Nbkg",std::max(1.0, 0.5 * data->numEntries())),0.0,2.0 * data->numEntries());
-	Nsig.setConstant(true);
-	Nbkg.setConstant(true);
+	Nsig.setConstant(false);
+	Nbkg.setConstant(false);
 
-	std::unique_ptr<RooAbsData> signalErrData;
-	{
-		if (sigErrPdfOpt == kErrPdfHistPrMc) {
-			auto hErrSigPrMc = std::unique_ptr<TH1>(prMcErrData->createHistogram(
-				"fit2d_hErrSigPrMc", obs_timeErr, Binning(timeErrPlotBins, errFitLow, errFitHigh)));
-			if (!hErrSigPrMc) {
-				std::cerr << "ERROR: failed to build prompt-MC err histogram" << std::endl;
-				return;
-			}
-			signalErrData = std::make_unique<RooDataHist>("signalErrDataPrMc", "", RooArgSet(obs_timeErr), hErrSigPrMc.get());
-		} else {
-			const double scaleBkg = std::isfinite(savedScaleBkg) ? savedScaleBkg : 0.0;
-			if (scaleBkg <= 0.0) {
-				std::cerr << "ERROR: invalid saved scaleBkg in " << errFileName << std::endl;
-				return;
-			}
-			auto hErrSigSR = std::unique_ptr<TH1>(dataSR->createHistogram("fit2d_hErrSigSR", obs_timeErr, Binning(timeErrPlotBins, errFitLow, errFitHigh)));
-			auto hErrBkgSB = std::unique_ptr<TH1>(dataSB->createHistogram("fit2d_hErrBkgSB", obs_timeErr, Binning(timeErrPlotBins, errFitLow, errFitHigh)));
-			if (!hErrSigSR || !hErrBkgSB) {
-				std::cerr << "ERROR: failed to build err histograms for signal-region subtraction" << std::endl;
-				return;
-			}
-			hErrSigSR->Add(hErrBkgSB.get(), -scaleBkg);
-			for (int i = 1; i <= hErrSigSR->GetNbinsX(); ++i)
-			{
-				if (hErrSigSR->GetBinContent(i) < 0.0)
-				{
-					hErrSigSR->SetBinContent(i, 0.0);
-					hErrSigSR->SetBinError(i, 0.0);
-				}
-			}
-			signalErrData = std::make_unique<RooDataHist>("signalErrDataSub", "", RooArgSet(obs_timeErr), hErrSigSR.get());
-		}
-	}
-	if (!signalErrData || signalErrData->sumEntries() <= 0.0) {
-		std::cerr << "ERROR: empty signal ctau3DErr template/input distribution" << std::endl;
-		return;
-	}
-		if (isHistErrPdfChoice(bkgErrPdfOpt)) {
-			bkgErrHistData = std::make_unique<RooDataHist>(
-				"bkgErrHistData", "bkgErrHistData",
-				RooArgSet(obs_timeErr), *bkgErrData);
-			bkgErrPdfHist = std::make_unique<RooHistPdf>(
-				"bkgErrHistPdf", "bkgErrHistPdf",
-				RooArgSet(obs_timeErr), *bkgErrHistData, histPdfInterpolationOrder);
-			bkgErrPdf = bkgErrPdfHist.get();
-		}
-		if (isHistErrPdfChoice(sigErrPdfOpt)) {
-			auto *signalErrHist = dynamic_cast<RooDataHist *>(signalErrData.get());
-			if (!signalErrHist) {
-				std::cerr << "ERROR: signalErrData is not a RooDataHist for RooHistPdf mode" << std::endl;
-				return;
-		}
-		signalErrHistTemplate = std::make_unique<RooDataHist>(*signalErrHist);
-		signalErrPdfHist = std::make_unique<RooHistPdf>(
-			"signalErrHistPdf", "signalErrHistPdf",
-			RooArgSet(obs_timeErr), *signalErrHistTemplate, histPdfInterpolationOrder);
-		signalErrPdf = signalErrPdfHist.get();
-	}
+	// ===== Plotting Only Model =====
+	// only used to plot prompt and nonprompt components separately
+	// These are not used for fitting.
+	RooProdPdf prompt_core("prompt_core","prompt_core",RooArgSet(*signal_mass_pdf, *promptTimePdf));
+	RooProdPdf np_core("np_core","np_core",RooArgSet(*signal_mass_pdf, *signal_np_time));
+	// ===============================
 
-	std::vector<std::unique_ptr<RooRealVar>> constraintConsts;
-	std::vector<std::unique_ptr<RooGaussian>> constraintPdfs;
-	RooArgSet constraints;
-	auto addConstraint = [&](const char *baseName, RooRealVar &var, double central, double sigma)
+	RooProdPdf signal_core("signal_core","signal_core",RooArgSet(*signal_mass_pdf, signal_time));
+	RooProdPdf bkg_core("bkg_core","bkg_core",RooArgSet(*bkg_mass_pdf, *bkg_time_pdf));
+	RooAddPdf model("model","model",RooArgList(signal_core,bkg_core),RooArgList(Nsig,Nbkg));
+	std::vector<std::unique_ptr<RooConstVar>> massConstraintConsts;
+	std::vector<std::unique_ptr<RooGaussian>> massConstraintPdfs;
+	RooArgSet massConstraints;
+	auto addMassConstraint = [&](const char *baseName, RooRealVar &var, double central, double sigma)
 	{
 		if (!(std::isfinite(central) && std::isfinite(sigma) && sigma > 0.0))
 			return;
 		var.setVal(central);
-		const TString meanName = TString::Format("%s_mean", baseName);
-		const TString sigmaName = TString::Format("%s_sigma", baseName);
-		const TString pdfName = TString::Format("%s_constraint", baseName);
-		constraintConsts.push_back(std::make_unique<RooRealVar>(meanName, meanName, central));
-		constraintConsts.back()->setConstant(true);
-		constraintConsts.push_back(std::make_unique<RooRealVar>(
-			sigmaName, sigmaName, sigma, 1e-9, std::max(10.0 * sigma, 1e-8)));
-		constraintConsts.back()->setConstant(true);
-		constraintPdfs.push_back(std::make_unique<RooGaussian>(pdfName, pdfName, var,
-			*constraintConsts[constraintConsts.size() - 2], *constraintConsts.back()));
-		constraints.add(*constraintPdfs.back());
+		massConstraintConsts.push_back(std::make_unique<RooConstVar>(Form("%s_mean", baseName), "", central));
+		massConstraintConsts.push_back(std::make_unique<RooConstVar>(Form("%s_sigma", baseName), "", sigma));
+		massConstraintPdfs.push_back(std::make_unique<RooGaussian>(
+			Form("%s_constraint", baseName), "",
+			var, *massConstraintConsts[massConstraintConsts.size() - 2], *massConstraintConsts.back()));
+		massConstraints.add(*massConstraintPdfs.back());
 	};
-	auto addLogLifetimeConstraint = [&](const char *baseName, RooRealVar &offsetVar, double floor, double central, double sigma)
+	auto addPositiveMassConstraint = [&](const char *baseName, RooRealVar &offsetVar, double floor, double central, double sigma)
 	{
 		if (!(std::isfinite(floor) && std::isfinite(central) && std::isfinite(sigma) && sigma > 0.0))
 			return;
 		if (central <= floor)
-			central = floor + std::max(1e-3, 0.25 * floor);
+			central = floor + std::max(1e-4, 0.25 * std::max(floor, 1e-4));
 		const double low = std::max(floor + 1e-6, central - sigma);
 		const double high = central + sigma;
 		const double centralOffset = std::log(std::max(central - floor, 1e-6));
 		const double lowOffset = std::log(std::max(low - floor, 1e-6));
 		const double highOffset = std::log(std::max(high - floor, 1e-6));
-		const double sigmaOffset = std::max(std::abs(highOffset - lowOffset) * 0.5, 1e-3);
-		addConstraint(baseName, offsetVar, centralOffset, sigmaOffset);
+		const double sigmaOffset = std::max(1e-3, 0.5 * std::abs(highOffset - lowOffset));
+		addMassConstraint(baseName, offsetVar, centralOffset, sigmaOffset);
 	};
-
-	addConstraint("ctauTime1Scale", ctauTime1Scale, ctauTime1ScaleVal, std::max(0.05, 0.10 * ctauTime1ScaleVal));
-	if (nResolutionComponents >= 2)
-		addConstraint("ctauTime2Delta", ctauTime2Delta, ctauTime2DeltaVal, std::max(0.05, 0.10 * ctauTime2DeltaVal));
-	if (nResolutionComponents >= 3)
-		addConstraint("ctauTime3Delta", ctauTime3Delta, ctauTime3DeltaVal, std::max(0.05, 0.10 * ctauTime3DeltaVal));
-	if (nResolutionComponents >= 4)
-		addConstraint("ctauTime4Delta", ctauTime4Delta, ctauTime4DeltaVal, std::max(0.05, 0.10 * ctauTime4DeltaVal));
-	addLogLifetimeConstraint("signal_lifetime", signal_log_lifetime_offset, signalLifetimeFloor, signalLifetime1Val, std::max(0.01, 0.15 * signalLifetime1Val));
-	if (useSignalSS2)
-		addLogLifetimeConstraint("signal2_lifetime", signal2_log_lifetime_offset, signalLifetime2Floor, signalLifetime2Val, std::max(0.005, 0.15 * signalLifetime2Val));
-	if (useSignalSS3)
-		addLogLifetimeConstraint("signal3_lifetime", signal3_log_lifetime_offset, signalLifetime3Floor, signalLifetime3Val, std::max(0.005, 0.15 * signalLifetime3Val));
-	addConstraint("bkg_log_lifetime_offset", bkg_log_lifetime_offset,
-		readResultValue(*bkgTimeResult, "bkg_log_lifetime_offset", bkg_log_lifetime_offset.getVal()),
-		std::max(1e-3, dynamic_cast<RooRealVar *>(bkgTimeResult->floatParsFinal().find("bkg_log_lifetime_offset")) ?
-			dynamic_cast<RooRealVar *>(bkgTimeResult->floatParsFinal().find("bkg_log_lifetime_offset"))->getError() : 0.1));
-	if (nBkgSSComponents >= 2)
-		addConstraint("bkg_log_lifetime2_offset", bkg_log_lifetime2_offset,
-			readResultValue(*bkgTimeResult, "bkg_log_lifetime2_offset", bkg_log_lifetime2_offset.getVal()),
-			std::max(1e-3, dynamic_cast<RooRealVar *>(bkgTimeResult->floatParsFinal().find("bkg_log_lifetime2_offset")) ?
-				dynamic_cast<RooRealVar *>(bkgTimeResult->floatParsFinal().find("bkg_log_lifetime2_offset"))->getError() : 0.1));
-	if (nBkgSSComponents >= 3)
-		addConstraint("bkg_log_lifetime3_offset", bkg_log_lifetime3_offset,
-			readResultValue(*bkgTimeResult, "bkg_log_lifetime3_offset", bkg_log_lifetime3_offset.getVal()),
-			std::max(1e-3, dynamic_cast<RooRealVar *>(bkgTimeResult->floatParsFinal().find("bkg_log_lifetime3_offset")) ?
-				dynamic_cast<RooRealVar *>(bkgTimeResult->floatParsFinal().find("bkg_log_lifetime3_offset"))->getError() : 0.1));
-	if (nBkgFlipComponents >= 1)
-		addConstraint("bkg_flip_log_lifetime_offset", bkg_flip_log_lifetime_offset,
-			readResultValue(*bkgTimeResult, "bkg_flip_log_lifetime_offset", bkg_flip_log_lifetime_offset.getVal()),
-			std::max(1e-3, dynamic_cast<RooRealVar *>(bkgTimeResult->floatParsFinal().find("bkg_flip_log_lifetime_offset")) ?
-				dynamic_cast<RooRealVar *>(bkgTimeResult->floatParsFinal().find("bkg_flip_log_lifetime_offset"))->getError() : 0.1));
-	if (nBkgFlipComponents >= 2)
-		addConstraint("bkg_flip_log_lifetime2_offset", bkg_flip_log_lifetime2_offset,
-			readResultValue(*bkgTimeResult, "bkg_flip_log_lifetime2_offset", bkg_flip_log_lifetime2_offset.getVal()),
-			std::max(1e-3, dynamic_cast<RooRealVar *>(bkgTimeResult->floatParsFinal().find("bkg_flip_log_lifetime2_offset")) ?
-				dynamic_cast<RooRealVar *>(bkgTimeResult->floatParsFinal().find("bkg_flip_log_lifetime2_offset"))->getError() : 0.1));
-	if (nBkgFlipComponents >= 3)
-		addConstraint("bkg_flip_log_lifetime3_offset", bkg_flip_log_lifetime3_offset,
-			readResultValue(*bkgTimeResult, "bkg_flip_log_lifetime3_offset", bkg_flip_log_lifetime3_offset.getVal()),
-			std::max(1e-3, dynamic_cast<RooRealVar *>(bkgTimeResult->floatParsFinal().find("bkg_flip_log_lifetime3_offset")) ?
-				dynamic_cast<RooRealVar *>(bkgTimeResult->floatParsFinal().find("bkg_flip_log_lifetime3_offset"))->getError() : 0.1));
-
-	// ===== Plotting Only Model =====
-	// only used to plot prompt and nonprompt components separately
-	// These are not used for fitting.
-	RooProdPdf prompt_core("prompt_core","prompt_core",RooArgSet(*signal_mass_pdf, *signalErrPdf),Conditional(RooArgSet(*promptTimePdf),RooArgSet(obs_time)));
-	RooProdPdf np_core("np_core","np_core",RooArgSet(*signal_mass_pdf, *signalErrPdf),Conditional(RooArgSet(*signal_np_time),RooArgSet(obs_time)));
-	// ===============================
-
-	RooProdPdf signal_core("signal_core","signal_core",RooArgSet(*signal_mass_pdf, *signalErrPdf),Conditional(RooArgSet(signal_time),RooArgSet(obs_time)));
-	RooProdPdf bkg_core("bkg_core","bkg_core",RooArgSet(*bkg_mass_pdf, *bkgErrPdf),Conditional(RooArgSet(*bkg_time_pdf),RooArgSet(obs_time)));
-	RooAddPdf model("model","model",RooArgList(signal_core,bkg_core),RooArgList(Nsig,Nbkg));
+	auto massErr = [&](const char *name, double fallback) {
+		double err = readDoubleParam(*massFile, Form("%s_err", name), fallback);
+		if (massFitResult)
+			err = readResultError(*massFitResult, name, err);
+		return err;
+	};
+	if (nBkgExpComponents == 1) {
+		addMassConstraint("bkg_mass_lambda", bkg_mass_lambda,
+			readDoubleParam(*massFile, "bkg_mass_lambda", bkg_mass_lambda.getVal()),
+			std::max(1e-3, massErr("bkg_mass_lambda", 0.05)));
+	} else {
+		if (nBkgChebyOrder >= 1)
+			addMassConstraint("bkg_mass_p1_raw", bkg_mass_p1_raw,
+				readDoubleParam(*massFile, "bkg_mass_p1_raw", bkg_mass_p1_raw.getVal()),
+				std::max(0.01, massErr("bkg_mass_p1_raw", 0.05)));
+		if (nBkgChebyOrder >= 2)
+			addMassConstraint("bkg_mass_p2_raw", bkg_mass_p2_raw,
+				readDoubleParam(*massFile, "bkg_mass_p2_raw", bkg_mass_p2_raw.getVal()),
+				std::max(0.01, massErr("bkg_mass_p2_raw", 0.05)));
+		if (nBkgChebyOrder >= 3)
+			addMassConstraint("bkg_mass_p3_raw", bkg_mass_p3_raw,
+				readDoubleParam(*massFile, "bkg_mass_p3_raw", bkg_mass_p3_raw.getVal()),
+				std::max(0.01, massErr("bkg_mass_p3_raw", 0.05)));
+		if (nBkgChebyOrder >= 4)
+			addMassConstraint("bkg_mass_p4_raw", bkg_mass_p4_raw,
+				readDoubleParam(*massFile, "bkg_mass_p4_raw", bkg_mass_p4_raw.getVal()),
+				std::max(0.01, massErr("bkg_mass_p4_raw", 0.05)));
+		if (nBkgChebyOrder >= 5)
+			addMassConstraint("bkg_mass_p5_raw", bkg_mass_p5_raw,
+				readDoubleParam(*massFile, "bkg_mass_p5_raw", bkg_mass_p5_raw.getVal()),
+				std::max(0.01, massErr("bkg_mass_p5_raw", 0.05)));
+		if (nBkgChebyOrder >= 6)
+			addMassConstraint("bkg_mass_p6_raw", bkg_mass_p6_raw,
+				readDoubleParam(*massFile, "bkg_mass_p6_raw", bkg_mass_p6_raw.getVal()),
+				std::max(0.01, massErr("bkg_mass_p6_raw", 0.05)));
+	}
+	int fitMinimizeStatus = -1;
+	int fitHesseStatus = -1;
+	auto nll = std::unique_ptr<RooAbsReal>(
+		massConstraints.getSize() > 0
+			? model.createNLL(*data, Extended(), Offset(true), ExternalConstraints(massConstraints))
+			: model.createNLL(*data, Extended(), Offset(true)));
 	RooFitResult *model_result = nullptr;
-	if (constraints.getSize() > 0)
-		model_result = model.fitTo(*data, Extended(), Save(), SumW2Error(isWeight),
-			PrintLevel(fitPrintLevel), Verbose(isVerbose), PrintEvalErrors(fitEvalErrorPrintLevel),
-			EvalErrorWall(isVerbose), RecoverFromUndefinedRegions(recoverFromUndefinedRegionsStrength),
-			ExternalConstraints(constraints));
-	else
-		model_result = model.fitTo(*data, Extended(), Save(), SumW2Error(isWeight),
-			PrintLevel(fitPrintLevel), Verbose(isVerbose), PrintEvalErrors(fitEvalErrorPrintLevel),
-			EvalErrorWall(isVerbose), RecoverFromUndefinedRegions(recoverFromUndefinedRegionsStrength));
+	if (nll)
+	{
+		RooMinimizer minim(*nll);
+		minim.setMinimizerType("Minuit2");
+		minim.setStrategy(2);
+		minim.optimizeConst(2);
+		minim.setPrintLevel(1);
+		fitMinimizeStatus = minim.migrad();
+		if (fitMinimizeStatus == 0)
+			fitHesseStatus = minim.hesse();
+		model_result = minim.save("model_result", "model_result");
+	}
+
 	auto findObj = [&](RooPlot *fr, const char *n) -> TObject *
 	{
 		return fr ? fr->findObject(n) : nullptr;
 	};
-
-	TCanvas *cSigTimeErr = new TCanvas("sigTimeErrModel", "sigTimeErrModel", 800, 800);
-	TPad *sigTimeErrPad1 = new TPad("sigTimeErrPad1", "sigTimeErrPad1", 0.0, 0.25, 1.0, 1.0);
-	sigTimeErrPad1->SetBottomMargin(0.00001);
-	sigTimeErrPad1->SetTopMargin(0.08);
-	sigTimeErrPad1->SetLogy();
-	sigTimeErrPad1->Draw();
-	sigTimeErrPad1->cd();
-
-	RooPlot *sigTimeErrPlot = obs_timeErr.frame(Range(errFitLow, errFitHigh), Title(""));
-	if (isWeight)
-		signalErrData->plotOn(sigTimeErrPlot, DataError(RooAbsData::SumW2), Name("data"));
-	else
-		signalErrData->plotOn(sigTimeErrPlot, Name("data"));
-	signalErrPdf->plotOn(sigTimeErrPlot, LineColor(kBlack), LineWidth(2), Name("model"));
-	if (sigErrPdfOpt == kErrPdfAnalytic) {
-		if (nErrSigLandau >= 1) signalErrPdf->plotOn(sigTimeErrPlot, Components(sigTimeErrTail), LineColor(kBlue + 2), LineStyle(kDashed), LineWidth(2), Name("tail"));
-		if (nErrSigLandau >= 2) signalErrPdf->plotOn(sigTimeErrPlot, Components(sigTimeErrTail2), LineColor(kOrange + 7), LineStyle(kDashed), LineWidth(2), Name("tail2"));
-		if (useErrSigLogn) signalErrPdf->plotOn(sigTimeErrPlot, Components(sigTimeErrLogn), LineColor(kMagenta + 1), LineStyle(kDashed), LineWidth(2), Name("logn"));
-		if (nErrSigGauss >= 1) signalErrPdf->plotOn(sigTimeErrPlot, Components(sigTimeErrGaus1), LineColor(kGreen + 2), LineStyle(kDashed), LineWidth(2), Name("gaus1"));
-		if (nErrSigGauss >= 2) signalErrPdf->plotOn(sigTimeErrPlot, Components(sigTimeErrGaus2), LineColor(kRed + 1), LineStyle(kDashed), LineWidth(2), Name("gaus2"));
-	}
-	apply_logy_auto_range(sigTimeErrPlot, "data");
-	sigTimeErrPlot->GetYaxis()->SetTitle("Events");
-	sigTimeErrPlot->GetYaxis()->SetTitleOffset(1.6);
-	sigTimeErrPlot->GetXaxis()->SetTitle("");
-	sigTimeErrPlot->Draw("e");
-
-	TLegend sigTimeErrLeg(0.50, 0.66, 0.74, 0.89);
-	sigTimeErrLeg.SetBorderSize(0);
-	sigTimeErrLeg.SetFillStyle(0);
-	sigTimeErrLeg.SetTextSize(0.03);
-	if (auto *o = findObj(sigTimeErrPlot, "data"))
-		sigTimeErrLeg.AddEntry(o, "Data", "lep");
-	if (auto *o = findObj(sigTimeErrPlot, "model"))
-		sigTimeErrLeg.AddEntry(o, isHistErrPdfChoice(sigErrPdfOpt) ? errPdfChoiceLabel(sigErrPdfOpt) : "Fit", "l");
-	if (sigErrPdfOpt == kErrPdfAnalytic) {
-		if (auto *o = findObj(sigTimeErrPlot, "tail"))
-			sigTimeErrLeg.AddEntry(o, "Landau tail", "l");
-		if (nErrSigLandau >= 2)
-			if (auto *o = findObj(sigTimeErrPlot, "tail2"))
-				sigTimeErrLeg.AddEntry(o, "Landau 2", "l");
-		if (auto *o = findObj(sigTimeErrPlot, "gaus1"))
-			sigTimeErrLeg.AddEntry(o, "Gauss 1", "l");
-		if (nErrSigGauss >= 2)
-			if (auto *o = findObj(sigTimeErrPlot, "gaus2"))
-				sigTimeErrLeg.AddEntry(o, "Gauss 2", "l");
-		if (useErrSigLogn)
-			if (auto *o = findObj(sigTimeErrPlot, "logn"))
-				sigTimeErrLeg.AddEntry(o, "Log-normal tail", "l");
-	}
-	sigTimeErrLeg.Draw("same");
-
-	{
-		TLatex tx;
-		tx.SetNDC();
-		tx.SetTextSize(0.032);
-		tx.SetTextFont(42);
-		tx.SetTextAlign(31);
-		tx.DrawLatex(0.96, 0.935, "OO #sqrt{s_{NN}} = 5.36 TeV (9 nb^{-1})");
-	}
-	{
-		TLatex tx;
-		tx.SetNDC();
-		tx.SetTextSize(0.04);
-		tx.SetTextFont(72);
-		tx.DrawLatex(0.19, 0.935, "CMS Internal");
-	}
-	{
-		TLatex tx;
-		tx.SetNDC();
-		tx.SetTextSize(0.03);
-		tx.SetTextFont(42);
-		double xtext = 0.19, y0 = 0.865, dy = -0.05;
-		int k = 0;
-		tx.DrawLatex(xtext, y0 + dy * k++, sigErrPdfOpt == kErrPdfHistPrMc ? "Prompt MC" : "SR - scaled SB");
-		if (yLow == 0)
-			tx.DrawLatex(xtext, y0 + dy * k++, Form("%.1f < p_{T} < %.1f, |y| < %.1f", ptLow, ptHigh, yHigh));
-		else
-			tx.DrawLatex(xtext, y0 + dy * k++, Form("%.1f < p_{T} < %.1f, %.1f < |y| < %.1f", ptLow, ptHigh, yLow, yHigh));
-	}
-	{
-		TLatex tx;
-		tx.SetNDC();
-		tx.SetTextSize(0.03);
-		tx.SetTextFont(42);
-		int minimize = -1;
-		int hesse = -1;
-		if (signalErrResult)
-		{
-			for (UInt_t i = 0, n = signalErrResult->numStatusHistory(); i < n; ++i)
-			{
-				const char *lab = signalErrResult->statusLabelHistory(i);
-				if (lab)
-				{
-					if (!strcmp(lab, "MINIMIZE") || !strcmp(lab, "MIGRAD"))
-						minimize = signalErrResult->statusCodeHistory(i);
-					else if (!strcmp(lab, "HESSE"))
-						hesse = signalErrResult->statusCodeHistory(i);
-				}
-			}
-		}
-		if (isHistErrPdfChoice(sigErrPdfOpt))
-			tx.DrawLatex(0.19, 0.765, Form("Status : %s template (%d)", errPdfChoiceLabel(sigErrPdfOpt), histPdfInterpolationOrder));
-		else
-			tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", minimize, hesse));
-	}
-
-	cSigTimeErr->cd();
-	TPad *sigTimeErrPad2 = new TPad("sigTimeErrPad2", "sigTimeErrPad2", 0.0, 0.0, 1.0, 0.25);
-	sigTimeErrPad2->SetTopMargin(0.00001);
-	sigTimeErrPad2->SetBottomMargin(0.4);
-	sigTimeErrPad2->Draw();
-	sigTimeErrPad2->cd();
-
-	RooPlot *sigTimeErrPullPlot = obs_timeErr.frame(Range(errFitLow, errFitHigh), Title(""));
-	RooHist *sigTimeErrPull = sigTimeErrPlot->pullHist("data", "model");
-	if (sigTimeErrPull)
-		sigTimeErrPullPlot->addPlotable(sigTimeErrPull, "P");
-	sigTimeErrPullPlot->GetYaxis()->SetTitle("Pull");
-	sigTimeErrPullPlot->GetXaxis()->SetTitle("ctau3D error [mm]");
-	sigTimeErrPullPlot->GetXaxis()->CenterTitle();
-	sigTimeErrPullPlot->SetMinimum(-8);
-	sigTimeErrPullPlot->SetMaximum(8);
-	sigTimeErrPullPlot->GetYaxis()->SetNdivisions(505);
-	sigTimeErrPullPlot->GetYaxis()->SetTitleSize(0.12);
-	sigTimeErrPullPlot->GetYaxis()->SetLabelSize(0.10);
-	sigTimeErrPullPlot->GetXaxis()->SetTitleSize(0.15);
-	sigTimeErrPullPlot->GetXaxis()->SetLabelSize(0.10);
-	sigTimeErrPullPlot->Draw();
-
-	auto sigTimeErrChi = chi2_from_pull(sigTimeErrPull);
-	const int sigTimeErrNPar = (isHistErrPdfChoice(sigErrPdfOpt) || !signalErrResult) ? 0 : signalErrResult->floatParsFinal().getSize();
-	const int sigTimeErrNdf = std::max(1, sigTimeErrChi.second - sigTimeErrNPar);
-	const double sigTimeErrPvalue = TMath::Prob(sigTimeErrChi.first, sigTimeErrNdf);
-	{
-		TLatex tc;
-		tc.SetNDC();
-		tc.SetTextSize(0.085);
-		tc.SetTextFont(42);
-		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d (%.3g)", sigTimeErrChi.first, sigTimeErrNdf, sigTimeErrPvalue));
-	}
-
-	TLine sigTimeErrLine(errFitLow, 0.0, errFitHigh, 0.0);
-	sigTimeErrLine.SetLineStyle(2);
-	sigTimeErrLine.Draw("same");
-	cSigTimeErr->Print(figName("errSig"));
-	delete cSigTimeErr;
-
-	TCanvas *cTimeErr = new TCanvas("timeErrModel", "timeErrModel", 800, 800);
-	TPad *timeErrPad1 = new TPad("timeErrPad1", "timeErrPad1", 0.0, 0.25, 1.0, 1.0);
-	timeErrPad1->SetBottomMargin(0.00001);
-	timeErrPad1->SetTopMargin(0.08);
-	timeErrPad1->SetLogy();
-	timeErrPad1->Draw();
-	timeErrPad1->cd();
-
-	RooPlot *timeErrPlot = obs_timeErr.frame(Range(errFitLow, errFitHigh), Title(""));
-	if (isWeight)
-		bkgErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins), DataError(RooAbsData::SumW2), Name("data"));
-	else
-		bkgErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins), Name("data"));
-	bkgErrPdf->plotOn(timeErrPlot, LineColor(kBlack), LineWidth(2), Name("model"));
-	if (bkgErrPdfOpt == kErrPdfAnalytic) {
-		if (nErrBkgGauss >= 1) bkgErrPdf->plotOn(timeErrPlot, Components(bkgTimeErrGaus1), LineColor(kGreen + 2), LineStyle(kDashed), LineWidth(2), Name("gaus1"));
-		if (nErrBkgGauss >= 2) bkgErrPdf->plotOn(timeErrPlot, Components(bkgTimeErrGaus2), LineColor(kRed + 1), LineStyle(kDashed), LineWidth(2), Name("gaus2"));
-		if (nErrBkgLandau >= 1) bkgErrPdf->plotOn(timeErrPlot, Components(bkgTimeErrTail), LineColor(kBlue + 2), LineStyle(kDashed), LineWidth(2), Name("tail"));
-		if (nErrBkgLandau >= 2) bkgErrPdf->plotOn(timeErrPlot, Components(bkgTimeErrTail2), LineColor(kOrange + 7), LineStyle(kDashed), LineWidth(2), Name("tail2"));
-		if (useErrBkgLogn) bkgErrPdf->plotOn(timeErrPlot, Components(bkgTimeErrLogn), LineColor(kMagenta + 1), LineStyle(kDashed), LineWidth(2), Name("logn"));
-	}
-	apply_logy_auto_range(timeErrPlot, "data");
-	timeErrPlot->GetYaxis()->SetTitle("Events");
-	timeErrPlot->GetYaxis()->SetTitleOffset(1.6);
-	timeErrPlot->GetXaxis()->SetTitle("");
-	timeErrPlot->Draw("e");
-
-	TLegend timeErrLeg(0.50, 0.66, 0.74, 0.89);
-	timeErrLeg.SetBorderSize(0);
-	timeErrLeg.SetFillStyle(0);
-	timeErrLeg.SetTextSize(0.03);
-	if (auto *o = findObj(timeErrPlot, "data"))
-		timeErrLeg.AddEntry(o, "Data", "lep");
-	if (auto *o = findObj(timeErrPlot, "model"))
-		timeErrLeg.AddEntry(o, isHistErrPdfChoice(bkgErrPdfOpt) ? errPdfChoiceLabel(bkgErrPdfOpt) : "Fit", "l");
-	if (bkgErrPdfOpt == kErrPdfAnalytic) {
-		if (auto *o = findObj(timeErrPlot, "tail"))
-			timeErrLeg.AddEntry(o, "Landau tail", "l");
-		if (nErrBkgLandau >= 2)
-			if (auto *o = findObj(timeErrPlot, "tail2"))
-				timeErrLeg.AddEntry(o, "Landau 2", "l");
-		if (auto *o = findObj(timeErrPlot, "gaus1"))
-			timeErrLeg.AddEntry(o, "Gauss 1", "l");
-		if (nErrBkgGauss >= 2)
-			if (auto *o = findObj(timeErrPlot, "gaus2"))
-				timeErrLeg.AddEntry(o, "Gauss 2", "l");
-		if (useErrBkgLogn)
-			if (auto *o = findObj(timeErrPlot, "logn"))
-				timeErrLeg.AddEntry(o, "Log-normal tail", "l");
-	}
-	timeErrLeg.Draw("same");
-
-	{
-		TLatex tx;
-		tx.SetNDC();
-		tx.SetTextSize(0.032);
-		tx.SetTextFont(42);
-		tx.SetTextAlign(31);
-		tx.DrawLatex(0.96, 0.935, "OO #sqrt{s_{NN}} = 5.36 TeV (9 nb^{-1})");
-	}
-	{
-		TLatex tx;
-		tx.SetNDC();
-		tx.SetTextSize(0.04);
-		tx.SetTextFont(72);
-		tx.DrawLatex(0.19, 0.935, "CMS Internal");
-	}
-	{
-		TLatex tx;
-		tx.SetNDC();
-		tx.SetTextSize(0.03);
-		tx.SetTextFont(42);
-		double xtext = 0.19, y0 = 0.865, dy = -0.05;
-		int k = 0;
-		tx.DrawLatex(xtext, y0 + dy * k++, "Mass sideband data");
-		if (yLow == 0)
-			tx.DrawLatex(xtext, y0 + dy * k++, Form("%.1f < p_{T} < %.1f, |y| < %.1f", ptLow, ptHigh, yHigh));
-		else
-			tx.DrawLatex(xtext, y0 + dy * k++, Form("%.1f < p_{T} < %.1f, %.1f < |y| < %.1f", ptLow, ptHigh, yLow, yHigh));
-	}
-	{
-		TLatex tx;
-		tx.SetNDC();
-		tx.SetTextSize(0.03);
-		tx.SetTextFont(42);
-		int minimize = -1;
-		int hesse = -1;
-		if (bkgErrResult)
-		{
-			for (UInt_t i = 0, n = bkgErrResult->numStatusHistory(); i < n; ++i)
-			{
-				const char *lab = bkgErrResult->statusLabelHistory(i);
-				if (lab)
-				{
-					if (!strcmp(lab, "MINIMIZE") || !strcmp(lab, "MIGRAD"))
-						minimize = bkgErrResult->statusCodeHistory(i);
-					else if (!strcmp(lab, "HESSE"))
-						hesse = bkgErrResult->statusCodeHistory(i);
-				}
-			}
-		}
-		if (isHistErrPdfChoice(bkgErrPdfOpt))
-			tx.DrawLatex(0.19, 0.765, Form("Status : %s template (%d)", errPdfChoiceLabel(bkgErrPdfOpt), histPdfInterpolationOrder));
-		else
-			tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", minimize, hesse));
-	}
-
-	cTimeErr->cd();
-	TPad *timeErrPad2 = new TPad("timeErrPad2", "timeErrPad2", 0.0, 0.0, 1.0, 0.25);
-	timeErrPad2->SetTopMargin(0.00001);
-	timeErrPad2->SetBottomMargin(0.4);
-	timeErrPad2->Draw();
-	timeErrPad2->cd();
-
-	RooPlot *timeErrPullPlot = obs_timeErr.frame(Range(errFitLow, errFitHigh), Title(""));
-	RooHist *timeErrPull = timeErrPlot->pullHist("data", "model");
-	if (timeErrPull)
-		timeErrPullPlot->addPlotable(timeErrPull, "P");
-	timeErrPullPlot->GetYaxis()->SetTitle("Pull");
-	timeErrPullPlot->GetXaxis()->SetTitle("ctau3D error [mm]");
-	timeErrPullPlot->GetXaxis()->CenterTitle();
-	timeErrPullPlot->SetMinimum(-8);
-	timeErrPullPlot->SetMaximum(8);
-	timeErrPullPlot->GetYaxis()->SetNdivisions(505);
-	timeErrPullPlot->GetYaxis()->SetTitleSize(0.12);
-	timeErrPullPlot->GetYaxis()->SetLabelSize(0.10);
-	timeErrPullPlot->GetXaxis()->SetTitleSize(0.15);
-	timeErrPullPlot->GetXaxis()->SetLabelSize(0.10);
-	timeErrPullPlot->Draw();
-
-	auto timeErrChi = chi2_from_pull(timeErrPull);
-	const int timeErrNPar = isHistErrPdfChoice(bkgErrPdfOpt) ? 0 : (bkgErrResult ? bkgErrResult->floatParsFinal().getSize() : 0);
-	const int timeErrNdf = std::max(1, timeErrChi.second - timeErrNPar);
-	const double timeErrPvalue = TMath::Prob(timeErrChi.first, timeErrNdf);
-	{
-		TLatex tc;
-		tc.SetNDC();
-		tc.SetTextSize(0.085);
-		tc.SetTextFont(42);
-		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d (%.3g)", timeErrChi.first, timeErrNdf, timeErrPvalue));
-	}
-
-	TLine timeErrLine(errFitLow, 0.0, errFitHigh, 0.0);
-	timeErrLine.SetLineStyle(2);
-	timeErrLine.Draw("same");
-	cTimeErr->Print(figName("errBkg"));
-	delete cTimeErr;
 
 	TCanvas *cMass = new TCanvas("cMass", "cMass", 800, 800);
 	TPad *massPad1 = new TPad("massPad1", "massPad1", 0.0, 0.25, 1.0, 1.0);
@@ -1531,23 +921,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		tx.SetNDC();
 		tx.SetTextSize(0.03);
 		tx.SetTextFont(42);
-		int minimize = -1;
-		int hesse = -1;
-		if (model_result)
-		{
-			for (UInt_t i = 0, n = model_result->numStatusHistory(); i < n; ++i)
-			{
-				const char *lab = model_result->statusLabelHistory(i);
-				if (lab)
-				{
-					if (!strcmp(lab, "MINIMIZE") || !strcmp(lab, "MIGRAD"))
-						minimize = model_result->statusCodeHistory(i);
-					else if (!strcmp(lab, "HESSE"))
-						hesse = model_result->statusCodeHistory(i);
-				}
-			}
-		}
-		tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", minimize, hesse));
+		tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", fitMinimizeStatus, fitHesseStatus));
 	}
 	{
 		TLatex tp;
@@ -1834,9 +1208,6 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			TParameter<double>("bFractionErr", bFraction.getError()).Write();
 			TParameter<double>("Nsig", Nsig.getVal()).Write();
 			TParameter<double>("Nbkg", Nbkg.getVal()).Write();
-			TParameter<int>("bkgErrPdfOpt", bkgErrPdfOpt).Write();
-			TParameter<int>("sigErrPdfOpt", sigErrPdfOpt).Write();
-			TParameter<int>("histPdfInterpolationOrder", histPdfInterpolationOrder).Write();
 			TParameter<int>("fitStatus", model_result ? model_result->status() : -1).Write();
 			TParameter<int>("hesseStatus", hesse).Write();
 			fitOut->Write();
@@ -1844,17 +1215,9 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	}
 
 	cout << "----------------- FIT RESULT FOR THE 2D MODEL ------------" << endl;
-	cout << "bkgErrPdfOpt in fit2d: " << bkgErrPdfOpt
-			 << " (" << errPdfChoiceLabel(bkgErrPdfOpt) << ")" << endl;
-	cout << "sigErrPdfOpt in fit2d: " << sigErrPdfOpt
-			 << " (" << errPdfChoiceLabel(sigErrPdfOpt) << ")" << endl;
 	model_result->Print("v");
-	const TString figErrSig = figName("errSig");
-	const TString figErrBkg = figName("errBkg");
 	const TString figMass = figName("mass_fit");
 	const TString figLifetime = figName("lifetime_fit");
-	std::cout << "[FIG] fit2d err sig fit : " << figErrSig << std::endl;
-	std::cout << "[FIG] fit2d err bkg fit : " << figErrBkg << std::endl;
 	std::cout << "[FIG] fit2d mass fit : " << figMass << std::endl;
 	std::cout << "[FIG] fit2d lifetime fit : " << figLifetime << std::endl;
 }
