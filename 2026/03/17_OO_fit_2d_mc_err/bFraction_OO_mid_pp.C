@@ -86,6 +86,25 @@ for (int i = 0; i < NooY16; ++i)
   ex_oo_y16[i] = 0.5 * (pt_high_oo_y16[i] - pt_low_oo_y16[i]);
 }
 
+  // ===== OO |y|<1.6 (2d fit, PR MC) =====
+  const int NooY16PrMc = 8;
+double pt_low_oo_y16_prmc[NooY16PrMc] = {7.0, 8.0, 9.0, 10.0, 12.0, 14.0, 16.0, 20.0};
+double pt_high_oo_y16_prmc[NooY16PrMc] = {8.0, 9.0, 10.0, 12.0, 14.0, 16.0, 20.0, 35.0};
+
+double val_oo_y16_prmc[NooY16PrMc] = {0.22575, 0.26810, 0.27716, 0.32069, 0.38836, 0.39361, 0.47822, 0.54934};
+double stat_oo_y16_prmc[NooY16PrMc] = {0.00883, 0.00943, 0.01087, 0.00995, 0.01387, 0.01871, 0.01961, 0.02438};
+
+double sys_oo_y16_prmc[NooY16PrMc];
+for (int i = 0; i < NooY16PrMc; ++i)
+  sys_oo_y16_prmc[i] = 0.0; // sys=0
+
+double x_oo_y16_prmc[NooY16PrMc], ex_oo_y16_prmc[NooY16PrMc];
+for (int i = 0; i < NooY16PrMc; ++i)
+{
+  x_oo_y16_prmc[i] = 0.5 * (pt_low_oo_y16_prmc[i] + pt_high_oo_y16_prmc[i]);
+  ex_oo_y16_prmc[i] = 0.5 * (pt_high_oo_y16_prmc[i] - pt_low_oo_y16_prmc[i]);
+}
+
 
   // ===== BPH pp (8 bins) =====
   // pp BPH results
@@ -212,6 +231,21 @@ for (int i = 0; i < NooY16; ++i)
   gStatOOY16->SetLineColor(kAzure + 2);
   gStatOOY16->SetLineWidth(3);
 
+  // OO |y|<1.6 with PR MC: sys (currently 0)
+  TGraphAsymmErrors *gSysOOY16PrMc = new TGraphAsymmErrors(NooY16PrMc, x_oo_y16_prmc, val_oo_y16_prmc, ex_oo_y16_prmc, ex_oo_y16_prmc, sys_oo_y16_prmc, sys_oo_y16_prmc);
+  gSysOOY16PrMc->SetFillColorAlpha(kMagenta + 2, 0.16);
+  gSysOOY16PrMc->SetFillStyle(1001);
+  gSysOOY16PrMc->SetLineColor(kMagenta + 2);
+  gSysOOY16PrMc->SetLineWidth(3);
+
+  // OO |y|<1.6 with PR MC: stat
+  TGraphErrors *gStatOOY16PrMc = new TGraphErrors(NooY16PrMc, x_oo_y16_prmc, val_oo_y16_prmc, ex_oo_y16_prmc, stat_oo_y16_prmc);
+  gStatOOY16PrMc->SetMarkerStyle(42);
+  gStatOOY16PrMc->SetMarkerSize(2.1);
+  gStatOOY16PrMc->SetMarkerColor(kMagenta + 2);
+  gStatOOY16PrMc->SetLineColor(kMagenta + 2);
+  gStatOOY16PrMc->SetLineWidth(2);
+
   // BPH: sys band
   TGraphAsymmErrors *gSysBPH = new TGraphAsymmErrors(
       Nbph, x_bph, val_bph, ex_bph, ex_bph, sys_bph, sys_bph);
@@ -335,8 +369,10 @@ for (int i = 0; i < NooY16; ++i)
   gStatPPMid->Draw("P SAME");
   gStatPPY12to16->Draw("P SAME");
   gSysOOY16->Draw("2 SAME");
+  gSysOOY16PrMc->Draw("2 SAME");
   gStatpp_old->Draw("P SAME");
   gStatOOY16->Draw("P SAME");
+  gStatOOY16PrMc->Draw("P SAME");
 
   // ------------------------------------------------------------------
   // labels (match ctau_pr.C style/positions)
@@ -365,12 +401,13 @@ for (int i = 0; i < NooY16; ++i)
     tx.DrawLatex(0.19, 0.865, "|y| < 1.6");
   }
 
-  TLegend *leg = new TLegend(0.50, 0.66, 0.90, 0.90);
+  TLegend *leg = new TLegend(0.46, 0.60, 0.90, 0.90);
   leg->SetBorderSize(0);
   leg->SetFillStyle(0);
-  leg->SetTextSize(0.018);
+  leg->SetTextSize(0.017);
   leg->SetEntrySeparation(0.01);
-  leg->AddEntry(gStatOOY16, "OO (|y| < 1.6, 2D fit, No Acc#timesEff)", "lp");
+  leg->AddEntry(gStatOOY16, "OO (|y| < 1.6, 2D fit)", "lp");
+  leg->AddEntry(gStatOOY16PrMc, "OO (|y| < 1.6, 2D fit, PR MC)", "lp");
   leg->AddEntry(gStatpp_old, "OO (|y| < 1.6, Ctau subrange)", "lp");
   leg->AddEntry(gStatPPY24, "pp (CMS 5.02 TeV, |y| < 2.4)", "lp");
   leg->AddEntry(gStatPbPbY24, "PbPb (CMS 5.02 TeV, |y| < 2.4)", "lp");
