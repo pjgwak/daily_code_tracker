@@ -270,12 +270,10 @@ void draw_eff_pt_cent_ptw_compare(bool isNCollW = true, bool isGenW = true, bool
   const TString outDir = baseDir + "/outputs/figs/eff_pt_cent_ptw_compare";
   const TString ptDir = outDir + "/pt";
   const TString centDir = outDir + "/cent";
-  const TString debugDir = outDir + "/debug";
 
   gSystem->mkdir(outDir, true);
   gSystem->mkdir(ptDir, true);
   gSystem->mkdir(centDir, true);
-  gSystem->mkdir(debugDir, true);
 
   const TString commonTagOff = Form("_ncollW%d_genW%d_ptW0_tnpW%d",
                                     isNCollW ? 1 : 0, isGenW ? 1 : 0, isTnPW ? 1 : 0);

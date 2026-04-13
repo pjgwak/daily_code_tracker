@@ -286,10 +286,6 @@ void draw_eff_pt_cent(bool isNCollW = true, bool isGenW = true, bool isPtW = tru
   const TString centPrDir = centDir + "/pr";
   const TString centNpDir = centDir + "/np";
   const TString centCompareDir = centDir + "/compare";
-  const TString yDir = outDir + "/y";
-  const TString yPrDir = yDir + "/pr";
-  const TString yNpDir = yDir + "/np";
-  const TString yCompareDir = yDir + "/compare";
   const TString summaryDir = outDir + "/summary";
   const TString summaryPtDir = summaryDir + "/pt";
   const TString summaryCentDir = summaryDir + "/cent";
@@ -306,10 +302,6 @@ void draw_eff_pt_cent(bool isNCollW = true, bool isGenW = true, bool isPtW = tru
   gSystem->mkdir(centPrDir, true);
   gSystem->mkdir(centNpDir, true);
   gSystem->mkdir(centCompareDir, true);
-  gSystem->mkdir(yDir, true);
-  gSystem->mkdir(yPrDir, true);
-  gSystem->mkdir(yNpDir, true);
-  gSystem->mkdir(yCompareDir, true);
   gSystem->mkdir(summaryDir, true);
   gSystem->mkdir(summaryPtDir, true);
   gSystem->mkdir(summaryCentDir, true);

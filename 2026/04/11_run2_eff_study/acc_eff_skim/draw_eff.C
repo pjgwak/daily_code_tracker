@@ -287,19 +287,11 @@ void draw_eff(bool isNCollW = true, bool isGenW = true, bool isPtW = false, bool
   if (figSubdir && TString(figSubdir).Length() > 0)
     effFigsDir = figsDir + "/" + TString(figSubdir);
   const TString ptDir = effFigsDir + "/pt";
-  const TString centDir = effFigsDir + "/cent";
-  const TString yDir = effFigsDir + "/y";
   const TString summaryDir = effFigsDir + "/summary";
   const TString countsDir = effFigsDir + "/counts";
   const TString countsPtDir = countsDir + "/pt";
-  const TString countsCentDir = countsDir + "/cent";
-  const TString countsYDir = countsDir + "/y";
   const TString effPtDir = ptDir + "/single";
-  const TString effCentDir = centDir + "/single";
-  const TString effYDir = yDir + "/single";
   const TString overlayPtDir = ptDir + "/overlay";
-  const TString overlayCentDir = centDir + "/overlay";
-  const TString overlayYDir = yDir + "/overlay";
   const TString weightTag = Form("_ncollW%d_genW%d_ptW%d_tnpW%d%s",
                                  isNCollW ? 1 : 0, isGenW ? 1 : 0,
                                  isPtW ? 1 : 0, isTnPW ? 1 : 0, tag.Data());
@@ -307,19 +299,11 @@ void draw_eff(bool isNCollW = true, bool isGenW = true, bool isPtW = false, bool
   gSystem->mkdir(figsDir, true);
   gSystem->mkdir(effFigsDir, true);
   gSystem->mkdir(ptDir, true);
-  gSystem->mkdir(centDir, true);
-  gSystem->mkdir(yDir, true);
   gSystem->mkdir(summaryDir, true);
   gSystem->mkdir(countsDir, true);
   gSystem->mkdir(countsPtDir, true);
-  gSystem->mkdir(countsCentDir, true);
-  gSystem->mkdir(countsYDir, true);
   gSystem->mkdir(effPtDir, true);
-  gSystem->mkdir(effCentDir, true);
-  gSystem->mkdir(effYDir, true);
   gSystem->mkdir(overlayPtDir, true);
-  gSystem->mkdir(overlayCentDir, true);
-  gSystem->mkdir(overlayYDir, true);
 
   const TString prPath =
       inputDir + "/eff_PbPb2018_isMC1_PR" + weightTag + "_Dimuon_MiniAOD.root";
@@ -516,14 +500,6 @@ void draw_eff(bool isNCollW = true, bool isGenW = true, bool isPtW = false, bool
 
     const TString suffix = plotCase.suffix;
     const TString label = plotCase.label;
-    saveSinglePlot(hPrDen.get(), countsCentDir + "/eff_den_pr_" + suffix + weightTag, "Prompt MC", label, plotCase.xTitle, "Counts", "Efficiency denominator");
-    saveSinglePlot(hNpDen.get(), countsCentDir + "/eff_den_np_" + suffix + weightTag, "Nonprompt MC", label, plotCase.xTitle, "Counts", "Efficiency denominator");
-    saveSinglePlot(hPrNum.get(), countsCentDir + "/eff_num_pr_" + suffix + weightTag, "Prompt MC", label, plotCase.xTitle, "Counts", "Efficiency numerator");
-    saveSinglePlot(hNpNum.get(), countsCentDir + "/eff_num_np_" + suffix + weightTag, "Nonprompt MC", label, plotCase.xTitle, "Counts", "Efficiency numerator");
-    saveSinglePlot(hPrEff.get(), effCentDir + "/eff_pr_" + suffix + weightTag, "Prompt MC", label, plotCase.xTitle, "Efficiency", "Efficiency");
-    saveSinglePlot(hNpEff.get(), effCentDir + "/eff_np_" + suffix + weightTag, "Nonprompt MC", label, plotCase.xTitle, "Efficiency", "Efficiency");
-    saveOverlayPlot(hPrEff.get(), hNpEff.get(), overlayCentDir + "/eff_pr_np_" + suffix + weightTag, label, plotCase.xTitle);
-
     centSummaryStore.push_back(std::unique_ptr<TH1D>(static_cast<TH1D *>(hPrEff->Clone(TString::Format("summary_cent_pr_%s", plotCase.suffix)))));
     centSummaryStore.push_back(std::unique_ptr<TH1D>(static_cast<TH1D *>(hNpEff->Clone(TString::Format("summary_cent_np_%s", plotCase.suffix)))));
     centSummaryPairs.push_back({centSummaryStore[centSummaryStore.size() - 2].get(), centSummaryStore[centSummaryStore.size() - 1].get()});

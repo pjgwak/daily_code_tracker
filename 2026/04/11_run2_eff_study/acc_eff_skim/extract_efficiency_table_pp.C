@@ -29,6 +29,34 @@ struct Query
   std::string source;
 };
 
+std::vector<Query> BuildPpQueries()
+{
+  return {
+      {3.5, 6.5, "0.0~90.0", "1.6~2.4", "fwd"},
+      {6.5, 9.0, "0.0~90.0", "1.6~2.4", "fwd"},
+      {9.0, 12.0, "0.0~90.0", "1.6~2.4", "fwd"},
+      {12.0, 40.0, "0.0~90.0", "1.6~2.4", "fwd"},
+      {3.5, 40.0, "0.0~10.0", "1.6~2.4", "fwd"},
+      {3.5, 40.0, "10.0~30.0", "1.6~2.4", "fwd"},
+      {3.5, 40.0, "30.0~50.0", "1.6~2.4", "fwd"},
+      {3.5, 40.0, "50.0~90.0", "1.6~2.4", "fwd"},
+      {3.5, 40.0, "0.0~90.0", "1.6~2.4", "fwd"},
+      {6.5, 9.0, "0.0~90.0", "0~1.6", "mid"},
+      {9.0, 12.0, "0.0~90.0", "0~1.6", "mid"},
+      {12.0, 15.0, "0.0~90.0", "0~1.6", "mid"},
+      {15.0, 20.0, "0.0~90.0", "0~1.6", "mid"},
+      {20.0, 25.0, "0.0~90.0", "0~1.6", "mid"},
+      {25.0, 40.0, "0.0~90.0", "0~1.6", "mid"},
+      {6.5, 40.0, "0.0~10.0", "0~1.6", "mid"},
+      {6.5, 40.0, "10.0~20.0", "0~1.6", "mid"},
+      {6.5, 40.0, "20.0~30.0", "0~1.6", "mid"},
+      {6.5, 40.0, "30.0~40.0", "0~1.6", "mid"},
+      {6.5, 40.0, "40.0~50.0", "0~1.6", "mid"},
+      {6.5, 40.0, "50.0~90.0", "0~1.6", "mid"},
+      {6.5, 40.0, "0.0~90.0", "0~1.6", "mid"},
+  };
+}
+
 struct SumResult
 {
   double num = 0.0;
@@ -156,20 +184,7 @@ void extract_efficiency_table_pp(const char *inputPath =
     return;
   }
 
-  const std::vector<Query> queries = {
-      {3.5, 6.5, "0~90", "1.6~2.4", "fwd"},
-      {6.5, 9.0, "0~90", "1.6~2.4", "fwd"},
-      {9.0, 12.0, "0~90", "1.6~2.4", "fwd"},
-      {12.0, 40.0, "0~90", "1.6~2.4", "fwd"},
-      {3.5, 40.0, "0~90", "1.6~2.4", "fwd"},
-      {6.5, 9.0, "0~90", "0~1.6", "mid"},
-      {9.0, 12.0, "0~90", "0~1.6", "mid"},
-      {12.0, 15.0, "0~90", "0~1.6", "mid"},
-      {15.0, 20.0, "0~90", "0~1.6", "mid"},
-      {20.0, 25.0, "0~90", "0~1.6", "mid"},
-      {25.0, 40.0, "0~90", "0~1.6", "mid"},
-      {6.5, 40.0, "0~90", "0~1.6", "mid"},
-  };
+  const std::vector<Query> queries = BuildPpQueries();
 
   const char *header = "pt\tcentrality_percent\tabsy\teff\terr\tnum\tden\n";
   fout << header;
@@ -182,6 +197,8 @@ void extract_efficiency_table_pp(const char *inputPath =
     {
       const TH1D *num = (q.source == "mid") ? numMid : numFwd;
       const TH1D *den = (q.source == "mid") ? denMid : denFwd;
+      // pp histograms are integrated over centrality. For PbPb-aligned rows,
+      // replicate the integrated value into each centrality-labelled row.
       const SumResult s = Integrate1D(num, den, q.ptLow, q.ptHigh);
       WriteResult(fout, q, s);
       if (verbose)

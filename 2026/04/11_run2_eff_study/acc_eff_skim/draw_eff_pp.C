@@ -248,9 +248,6 @@ void draw_eff_pp(bool isNCollW = true, bool isGenW = true, bool isPtW = true, bo
   const TString ptDir = outDir + "/pt";
   const TString ptSingleDir = ptDir + "/single";
   const TString ptOverlayDir = ptDir + "/overlay";
-  const TString yDir = outDir + "/y";
-  const TString ySingleDir = yDir + "/single";
-  const TString yOverlayDir = yDir + "/overlay";
   const TString summaryDir = outDir + "/summary";
   const TString weightTag = Form("_ncollW%d_genW%d_ptW%d_tnpW%d",
                                  isNCollW ? 1 : 0, isGenW ? 1 : 0,
@@ -260,9 +257,6 @@ void draw_eff_pp(bool isNCollW = true, bool isGenW = true, bool isPtW = true, bo
   gSystem->mkdir(ptDir, true);
   gSystem->mkdir(ptSingleDir, true);
   gSystem->mkdir(ptOverlayDir, true);
-  gSystem->mkdir(yDir, true);
-  gSystem->mkdir(ySingleDir, true);
-  gSystem->mkdir(yOverlayDir, true);
   gSystem->mkdir(summaryDir, true);
 
   const TString prPath =

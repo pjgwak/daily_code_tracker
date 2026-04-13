@@ -164,13 +164,10 @@ TH1D *CollapseToSingleBinHist(TH1D *src, const char *name, const char *title,
   return hist;
 }
 
-void efficiency_1d_pp_debug_compare(long nEvt = 1000, bool isPr = true,
-                                    bool isTnPW = true, bool isGenW = true,
-                                    bool isPtW = true, bool useLegacy4PtWInputs = false,
-                                    bool requireRecoMuMatched = true, // always true like PbPb
-                                    bool requireGenQQSizeEq1 = true,  // always true like PbPb
-                                    const char *outputDirOverride = "",
-                                    const char *logicTagOverride = "_debugCompare")
+void efficiency_1d_pp(long nEvt = 1000, bool isPr = true,
+                      bool isTnPW = true, bool isGenW = true,
+                      bool isPtW = true, bool useLegacy4PtWInputs = false,
+                      bool requireRecoMuMatched = true) // always true like PbPb
 {
   cout << "Start onia_to_skim_data()\n";
   // Enable Sumw2 before any fill so weighted histograms keep statistical errors.
@@ -254,7 +251,7 @@ void efficiency_1d_pp_debug_compare(long nEvt = 1000, bool isPr = true,
   // ===== labeling =====
   std::string mcLabel = isPr ? "PR" : "NP";
   const std::string collLabel = "pp5p02TeV";
-  const std::string weightLabel = Form("_genW%d_ptW%d_tnpW%d",
+  const std::string weightLabel = Form("_ncollW1_genW%d_ptW%d_tnpW%d",
                                        isGenW, isPtW, isTnPW);
 
   // ===== set Oniatree branch address (input) =====
@@ -514,20 +511,17 @@ void efficiency_1d_pp_debug_compare(long nEvt = 1000, bool isPr = true,
   Double_t weight = 1.0; // event-level weight
   Double_t TnPweight[nMaxDimu]; // per-candidate level weight
 
-  const TString outDir = (outputDirOverride && outputDirOverride[0] != '\0')
-                             ? TString(outputDirOverride)
-                             : resolveBaseDir() + "/debug_compare_outputs/skim_roots";
+  const TString outDir = resolveBaseDir() + "/skim_roots";
   if (gSystem->AccessPathName(outDir) && gSystem->mkdir(outDir, true) != 0)
   {
     cout << "[ERROR] failed to create output directory: " << outDir << "\n";
     return;
   }
 
-  const std::string logicTag = logicTagOverride ? logicTagOverride : "_debugCompare";
   std::string outFilePath = Form(
-      "%s/eff_%s_isMC1%s%s%s_Dimuon_MiniAOD.root",
+      "%s/eff_%s_isMC1%s%s_Dimuon_MiniAOD.root",
       outDir.Data(), collLabel.c_str(), mcLabel.empty() ? "" : ("_" + mcLabel).c_str(),
-      weightLabel.c_str(), logicTag.c_str());
+      weightLabel.c_str());
   TFile *fFlowSkim = TFile::Open(outFilePath.c_str(), "RECREATE");
   if (!fFlowSkim || fFlowSkim->IsZombie() || !fFlowSkim->IsWritable())
   {
@@ -735,7 +729,7 @@ void efficiency_1d_pp_debug_compare(long nEvt = 1000, bool isPr = true,
     // check dimuon number
     if (Gen_QQ_size < 0) continue;
     if (Reco_QQ_size<0) continue;
-    if (requireGenQQSizeEq1 && Gen_QQ_size != 1) continue;
+    if (Gen_QQ_size != 1) continue;
 
     const int kTrigSel = 3;
     const bool HLTPass =

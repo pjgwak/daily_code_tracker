@@ -23,6 +23,7 @@ required_macros=(
   "extract_efficiency_table_pp.C"
   "extract_acceptance_table.C"
   "extract_acceptance_table_pp.C"
+  "draw_acc.C"
   "draw_eff.C"
   "draw_eff_pp.C"
   "draw_eff_pt_cent.C"
@@ -95,6 +96,8 @@ draw_pbpb_pt_cent_log="${log_dir}/draw_eff_pt_cent.log"
 draw_pbpb_ptw_compare_log="${log_dir}/draw_eff_pt_cent_ptw_compare.log"
 draw_pbpb_summary_log="${log_dir}/draw_eff.log"
 draw_pp_log="${log_dir}/draw_eff_pp.log"
+draw_acc_pbpb_log="${log_dir}/draw_acc_pbpb.log"
+draw_acc_pp_log="${log_dir}/draw_acc_pp.log"
 
 table_pbpb_pr_log="${log_dir}/extract_eff_table_pbpb_pr.log"
 table_pbpb_np_log="${log_dir}/extract_eff_table_pbpb_np.log"
@@ -129,22 +132,22 @@ register_bg_job "${LAST_PID}"
 
 # pp efficiency
 run_root_macro_bg "pp prompt efficiency (ptW on)" \
-  "efficiency_1d_pp.C(${eff_n_evt},true,true,true,true,true,false,false)" \
+  "efficiency_1d_pp.C(${eff_n_evt},true,true,true,true,false,true)" \
   "${pp_pr_ptw1_log}"
 register_bg_job "${LAST_PID}"
 
 run_root_macro_bg "pp nonprompt efficiency (ptW on)" \
-  "efficiency_1d_pp.C(${eff_n_evt},false,true,true,true,true,false,false)" \
+  "efficiency_1d_pp.C(${eff_n_evt},false,true,true,true,false,true)" \
   "${pp_np_ptw1_log}"
 register_bg_job "${LAST_PID}"
 
 run_root_macro_bg "pp prompt efficiency (ptW off)" \
-  "efficiency_1d_pp.C(${eff_n_evt},true,true,true,true,false,false,false)" \
+  "efficiency_1d_pp.C(${eff_n_evt},true,true,true,false,false,true)" \
   "${pp_pr_ptw0_log}"
 register_bg_job "${LAST_PID}"
 
 run_root_macro_bg "pp nonprompt efficiency (ptW off)" \
-  "efficiency_1d_pp.C(${eff_n_evt},false,true,true,true,false,false,false)" \
+  "efficiency_1d_pp.C(${eff_n_evt},false,true,true,false,false,true)" \
   "${pp_np_ptw0_log}"
 register_bg_job "${LAST_PID}"
 
@@ -196,9 +199,13 @@ run_root_macro "draw_eff_pp" \
   "draw_eff_pp.C(true,true,true,true)" \
   "${draw_pp_log}"
 
-# draw_acc.C is intentionally not called here.
-# The remaining draw_acc macro expects OO2025 acceptance filenames and does not
-# match the current acceptance_1d.C outputs.
+run_root_macro "draw_acc_pbpb" \
+  "draw_acc.C(true,true,true)" \
+  "${draw_acc_pbpb_log}"
+
+run_root_macro "draw_acc_pp" \
+  "draw_acc.C(false,true,true)" \
+  "${draw_acc_pp_log}"
 
 # Efficiency tables
 run_root_macro "extract_efficiency_table_pbpb_pr" \
@@ -245,6 +252,8 @@ echo "[INFO] pp PR acceptance log: ${acc_pp_pr_log}"
 echo "[INFO] pp NP acceptance log: ${acc_pp_np_log}"
 echo "[INFO] PbPb draw log: ${draw_pbpb_summary_log}"
 echo "[INFO] pp draw log: ${draw_pp_log}"
+echo "[INFO] PbPb acceptance draw log: ${draw_acc_pbpb_log}"
+echo "[INFO] pp acceptance draw log: ${draw_acc_pp_log}"
 echo "[INFO] PbPb PR efficiency table log: ${table_pbpb_pr_log}"
 echo "[INFO] PbPb NP efficiency table log: ${table_pbpb_np_log}"
 echo "[INFO] pp PR efficiency table log: ${table_pp_pr_log}"
