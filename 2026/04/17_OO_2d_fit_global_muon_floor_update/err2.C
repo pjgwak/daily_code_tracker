@@ -12,6 +12,7 @@
 #include "RooAddPdf.h"
 #include "RooChebychev.h"
 #include "RooExponential.h"
+#include "RooConstVar.h"
 #include "RooFormulaVar.h"
 #include "TH1.h"
 #include "TFile.h"
@@ -27,6 +28,7 @@
 #include "TMath.h"
 #include "TString.h"
 #include "RooHist.h"
+#include "saved_fit_helpers.h"
 
 #include <algorithm>
 #include <cmath>
@@ -132,9 +134,11 @@ static void err2_report_params_near_limit(const RooFitResult *fr, const char *ta
   }
 }
 
-void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2.4)
+void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2.4, bool drawFromSavedFit = false, bool publish = false)
 {
   ScopedMacroTimer timer("err2", ptLow, ptHigh, yLow, yHigh);
+  if (publish)
+    drawFromSavedFit = true;
   bool isWeight = false;
 
   enum ErrPdfChoice
@@ -154,6 +158,9 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
   int nSigTimeErrLognormalComponents = 0;
   bool useStagedTimeErrFitBkg = true;
   bool useStagedTimeErrFitSig = true;
+  double bkgErrPrefitDataFraction = 0.5;
+  double sigErrPrefitDataFraction = 0.5;
+  double sigErrRetryPrefitDataFraction = 0.8;
 
   if (yLow == 1.6f)
   {
@@ -316,6 +323,16 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
     return TString::Format("%s/%s_%s.pdf", figDir.Data(), name, figTag.Data());
   };
   const TString resultFileName = TString::Format("%s/err2_model_%s.root", resultDir.Data(), figTag.Data());
+  std::unique_ptr<TFile> savedFitFile;
+  if (drawFromSavedFit && !load_saved_fit_file(savedFitFile, resultFileName, "err2"))
+    return;
+  if (drawFromSavedFit)
+  {
+    errRange.first = read_saved_double_param(savedFitFile.get(), "errLow", errRange.first);
+    errRange.second = read_saved_double_param(savedFitFile.get(), "errHigh", errRange.second);
+    bkgErrPdfOpt = read_saved_int_param(savedFitFile.get(), "bkgErrPdfOpt", bkgErrPdfOpt);
+    sigErrPdfOpt = read_saved_int_param(savedFitFile.get(), "sigErrPdfOpt", sigErrPdfOpt);
+  }
 
   gSystem->mkdir(figDir, true);
   gSystem->mkdir(resultDir, true);
@@ -438,22 +455,45 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
       true);
 
   std::unique_ptr<RooDataHist> bkgErrHistData;
+  std::unique_ptr<TH1> bkgErrHistTemplate;
   std::unique_ptr<RooHistPdf> bkgErrHistPdf;
   RooAbsPdf *timeErrPdf = &timeErrPdfAnalytic;
   std::unique_ptr<RooFitResult> timeErrResult;
   if (bkgErrPdfOpt == kErrPdfHist)
   {
-    bkgErrHistData = std::make_unique<RooDataHist>("bkgErrHistData", "", RooArgSet(obs_timeErr), *timeErrData);
+    bkgErrHistTemplate = std::unique_ptr<TH1>(timeErrData->createHistogram(
+        "err2_hErrBkgTemplate", obs_timeErr, Binning(timeErrPlotBins, errRange.first, errRange.second)));
+    if (!bkgErrHistTemplate)
+    {
+      std::cerr << "ERROR: failed to build background ctau3DErr histogram template." << std::endl;
+      return;
+    }
+    bkgErrHistData = std::make_unique<RooDataHist>("bkgErrHistData", "", RooArgSet(obs_timeErr), bkgErrHistTemplate.get());
     bkgErrHistPdf = std::make_unique<RooHistPdf>(
         "bkgErrHistPdf", "bkgErrHistPdf", RooArgSet(obs_timeErr), *bkgErrHistData, histPdfInterpolationOrder);
     timeErrPdf = bkgErrHistPdf.get();
   }
   else
   {
-    if (useStagedTimeErrFitBkg && bkgUseGaus2)
-      timeErrPdfCoreOnly.fitTo(*timeErrData, PrintLevel(-1), SumW2Error(isWeight)); // Strategy(2),
-    timeErrResult = std::unique_ptr<RooFitResult>(
-        timeErrPdfAnalytic.fitTo(*timeErrData, Save(), PrintLevel(-1), SumW2Error(isWeight)));
+    if (drawFromSavedFit)
+    {
+      timeErrResult = clone_saved_fit_result(savedFitFile.get(), "timeErrResult");
+      if (!timeErrResult)
+      {
+        std::cerr << "ERROR: timeErrResult not found in saved err2 file: " << resultFileName << std::endl;
+        return;
+      }
+      apply_saved_fit_result(timeErrResult.get(), timeErrPdfAnalytic, RooArgSet(obs_timeErr));
+    }
+    else if (useStagedTimeErrFitBkg && bkgUseGaus2)
+      timeErrPdfCoreOnly.fitTo(*timeErrData, PrintLevel(-1), SumW2Error(isWeight),
+                               PrefitDataFraction(bkgErrPrefitDataFraction),
+                               RecoverFromUndefinedRegions(1.0)); // Strategy(2),
+    if (!drawFromSavedFit)
+      timeErrResult = std::unique_ptr<RooFitResult>(
+          timeErrPdfAnalytic.fitTo(*timeErrData, Save(), PrintLevel(-1), SumW2Error(isWeight),
+                                   PrefitDataFraction(bkgErrPrefitDataFraction),
+                                   RecoverFromUndefinedRegions(1.0)));
     err2_report_params_near_limit(timeErrResult.get(), "bkg_timeErr");
   }
 
@@ -607,10 +647,40 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
   }
   else
   {
-    if (useStagedTimeErrFitSig && sigUseGaus2)
-      sigTimeErrPdfCoreOnly.fitTo(*sigErrData, PrintLevel(-1), SumW2Error(isWeight));
-    sigTimeErrResult = std::unique_ptr<RooFitResult>(
-        sigTimeErrPdfAnalytic.fitTo(*sigErrData, Save(), PrintLevel(-1), SumW2Error(isWeight)));
+    if (drawFromSavedFit)
+    {
+      sigTimeErrResult = clone_saved_fit_result(savedFitFile.get(), "sigTimeErrResult");
+      if (!sigTimeErrResult)
+      {
+        std::cerr << "ERROR: sigTimeErrResult not found in saved err2 file: " << resultFileName << std::endl;
+        return;
+      }
+      apply_saved_fit_result(sigTimeErrResult.get(), sigTimeErrPdfAnalytic, RooArgSet(obs_timeErr));
+    }
+    else if (useStagedTimeErrFitSig && sigUseGaus2)
+      sigTimeErrPdfCoreOnly.fitTo(*sigErrData, PrintLevel(-1), SumW2Error(isWeight),
+                                  PrefitDataFraction(sigErrPrefitDataFraction),
+                                  RecoverFromUndefinedRegions(1.0));
+    if (!drawFromSavedFit)
+      sigTimeErrResult = std::unique_ptr<RooFitResult>(
+          sigTimeErrPdfAnalytic.fitTo(*sigErrData, Save(), PrintLevel(-1), SumW2Error(isWeight),
+                                      PrefitDataFraction(sigErrPrefitDataFraction),
+                                      RecoverFromUndefinedRegions(1.0)));
+    if (!drawFromSavedFit && sigTimeErrResult &&
+        (sigTimeErrResult->status() != 0 || sigTimeErrResult->covQual() < 2))
+    {
+      sigTimeErrResult.reset();
+      if (useStagedTimeErrFitSig && sigUseGaus2)
+        sigTimeErrPdfCoreOnly.fitTo(*sigErrData, PrintLevel(-1), SumW2Error(isWeight),
+                                    PrefitDataFraction(sigErrRetryPrefitDataFraction),
+                                    Strategy(1), Offset(true),
+                                    RecoverFromUndefinedRegions(1.0));
+      sigTimeErrResult = std::unique_ptr<RooFitResult>(
+          sigTimeErrPdfAnalytic.fitTo(*sigErrData, Save(), PrintLevel(-1), SumW2Error(isWeight),
+                                      PrefitDataFraction(sigErrRetryPrefitDataFraction),
+                                      Strategy(2), Offset(true),
+                                      RecoverFromUndefinedRegions(1.0)));
+    }
     err2_report_params_near_limit(sigTimeErrResult.get(), "sig_timeErr");
   }
 
@@ -629,9 +699,9 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
 
   RooPlot *timeErrPlot = obs_timeErr.frame(Range(errRange.first, errRange.second), Title(""));
   if (isWeight)
-    timeErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins), DataError(RooAbsData::SumW2), Name("data"));
+    timeErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins, errRange.first, errRange.second), DataError(RooAbsData::SumW2), Name("data"));
   else
-    timeErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins), Name("data"));
+    timeErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins, errRange.first, errRange.second), Name("data"));
   timeErrPdf->plotOn(timeErrPlot, LineColor(kBlack), LineWidth(2), Name("model"));
   if (bkgErrPdfOpt == kErrPdfAnalytic)
   {
@@ -726,11 +796,15 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
         }
       }
     }
-    if (bkgErrPdfOpt == kErrPdfHist)
-      tx.DrawLatex(0.19, 0.765, Form("Status : RooHistPdf template (%d)", histPdfInterpolationOrder));
-    else
-      tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", minimize, hesse));
+    if (!publish)
+    {
+      if (bkgErrPdfOpt == kErrPdfHist)
+        tx.DrawLatex(0.19, 0.765, Form("Status : RooHistPdf template (%d)", histPdfInterpolationOrder));
+      else
+        tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", minimize, hesse));
+    }
   }
+  if (!publish)
   {
     TLatex tp;
     tp.SetNDC();
@@ -752,7 +826,7 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
       if (err > 0.0 && std::isfinite(err))
         tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g #pm %.3g", title, var.getVal(), err));
       else
-        tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g", title, var.getVal()));
+        tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g (fixed)", title, var.getVal()));
     };
     if (bkgErrPdfOpt == kErrPdfHist)
     {
@@ -831,7 +905,7 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
     tc.SetTextSize(0.085);
     tc.SetTextFont(42);
     tc.SetTextAlign(33);
-    tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d (%.3g)", timeErrChi.first, timeErrNdf, timeErrPvalue));
+    tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", timeErrChi.first, timeErrNdf));
   }
 
   TLine timeErrLine(errRange.first, 0.0, errRange.second, 0.0);
@@ -948,11 +1022,15 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
         }
       }
     }
-    if (sigErrPdfOpt == kErrPdfHist)
-      tx.DrawLatex(0.19, 0.765, Form("Status : RooHistPdf template (%d)", histPdfInterpolationOrder));
-    else
-      tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", minimize, hesse));
+    if (!publish)
+    {
+      if (sigErrPdfOpt == kErrPdfHist)
+        tx.DrawLatex(0.19, 0.765, Form("Status : RooHistPdf template (%d)", histPdfInterpolationOrder));
+      else
+        tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", minimize, hesse));
+    }
   }
+  if (!publish)
   {
     TLatex tp;
     tp.SetNDC();
@@ -974,7 +1052,7 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
       if (err > 0.0 && std::isfinite(err))
         tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g #pm %.3g", title, var.getVal(), err));
       else
-        tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g", title, var.getVal()));
+        tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g (fixed)", title, var.getVal()));
     };
     if (sigErrPdfOpt == kErrPdfHist)
     {
@@ -1053,7 +1131,7 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
     tc.SetTextSize(0.085);
     tc.SetTextFont(42);
     tc.SetTextAlign(33);
-    tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d (%.3g)", sigTimeErrChi.first, sigTimeErrNdf, sigTimeErrPvalue));
+    tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", sigTimeErrChi.first, sigTimeErrNdf));
   }
 
   TLine sigTimeErrLine(errRange.first, 0.0, errRange.second, 0.0);
@@ -1063,68 +1141,73 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
   cSigTimeErr->Print(figName("errSig"));
   delete cSigTimeErr;
 
-  TFile outFile(resultFileName, "RECREATE");
-  TParameter<double>("errLow", errRange.first).Write();
-  TParameter<double>("errHigh", errRange.second).Write();
-  TParameter<int>("timeErrPlotBins", timeErrPlotBins).Write();
-  TParameter<int>("bkgErrPdfOpt", bkgErrPdfOpt).Write();
-  TParameter<int>("sigErrPdfOpt", sigErrPdfOpt).Write();
-  TParameter<int>("nBkgTimeErrGaussComponents", nBkgTimeErrGaussComponents).Write();
-  TParameter<int>("nBkgTimeErrLandauComponents", nBkgTimeErrLandauComponents).Write();
-  TParameter<int>("nBkgTimeErrLognormalComponents", nBkgTimeErrLognormalComponents).Write();
-  TParameter<int>("nBkgTimeErrComponents", nBkgTimeErrComponents).Write();
-  TParameter<int>("nSigTimeErrGaussComponents", nSigTimeErrGaussComponents).Write();
-  TParameter<int>("nSigTimeErrLandauComponents", nSigTimeErrLandauComponents).Write();
-  TParameter<int>("nSigTimeErrLognormalComponents", nSigTimeErrLognormalComponents).Write();
-  TParameter<int>("nSigTimeErrComponents", nSigTimeErrComponents).Write();
-  TParameter<double>("scaleBkg", scaleBkg).Write();
-  if (timeErrResult)
-    timeErrResult->Write("timeErrResult");
-  if (sigTimeErrResult)
-    sigTimeErrResult->Write("sigTimeErrResult");
-  if (bkgErrPdfOpt == kErrPdfAnalytic)
+  if (!drawFromSavedFit)
   {
-    timeErrGaus1Mean.Write();
-    timeErrGaus1Sigma.Write();
-    timeErrGaus2Mean.Write();
-    timeErrGaus2Sigma.Write();
-    timeErrTailMpv.Write();
-    timeErrTailWidth.Write();
-    timeErrTail2Mpv.Write();
-    timeErrTail2Width.Write();
-    timeErrLognM0.Write();
-    timeErrLognK.Write();
-    timeErrCore1FracRatio.Write();
-    timeErrTailFracRatio.Write();
-    timeErrTail2FracRatio.Write();
-    timeErrLognFracRatio.Write();
-    timeErrCore1Frac.Write();
-    timeErrTailFrac.Write();
-    timeErrTail2Frac.Write();
-    timeErrLognFrac.Write();
+    TFile outFile(resultFileName, "RECREATE");
+    TParameter<double>("errLow", errRange.first).Write();
+    TParameter<double>("errHigh", errRange.second).Write();
+    TParameter<int>("timeErrPlotBins", timeErrPlotBins).Write();
+    TParameter<int>("bkgErrPdfOpt", bkgErrPdfOpt).Write();
+    TParameter<int>("sigErrPdfOpt", sigErrPdfOpt).Write();
+    TParameter<int>("nBkgTimeErrGaussComponents", nBkgTimeErrGaussComponents).Write();
+    TParameter<int>("nBkgTimeErrLandauComponents", nBkgTimeErrLandauComponents).Write();
+    TParameter<int>("nBkgTimeErrLognormalComponents", nBkgTimeErrLognormalComponents).Write();
+    TParameter<int>("nBkgTimeErrComponents", nBkgTimeErrComponents).Write();
+    TParameter<int>("nSigTimeErrGaussComponents", nSigTimeErrGaussComponents).Write();
+    TParameter<int>("nSigTimeErrLandauComponents", nSigTimeErrLandauComponents).Write();
+    TParameter<int>("nSigTimeErrLognormalComponents", nSigTimeErrLognormalComponents).Write();
+    TParameter<int>("nSigTimeErrComponents", nSigTimeErrComponents).Write();
+    TParameter<double>("scaleBkg", scaleBkg).Write();
+    if (timeErrResult)
+      timeErrResult->Write("timeErrResult");
+    if (sigTimeErrResult)
+      sigTimeErrResult->Write("sigTimeErrResult");
+    if (bkgErrPdfOpt == kErrPdfAnalytic)
+    {
+      timeErrGaus1Mean.Write();
+      timeErrGaus1Sigma.Write();
+      timeErrGaus2Mean.Write();
+      timeErrGaus2Sigma.Write();
+      timeErrTailMpv.Write();
+      timeErrTailWidth.Write();
+      timeErrTail2Mpv.Write();
+      timeErrTail2Width.Write();
+      timeErrLognM0.Write();
+      timeErrLognK.Write();
+      timeErrCore1FracRatio.Write();
+      timeErrTailFracRatio.Write();
+      timeErrTail2FracRatio.Write();
+      timeErrLognFracRatio.Write();
+      timeErrCore1Frac.Write();
+      timeErrTailFrac.Write();
+      timeErrTail2Frac.Write();
+      timeErrLognFrac.Write();
+    }
+    if (sigErrPdfOpt == kErrPdfAnalytic)
+    {
+      sigErrGaus1Mean.Write();
+      sigErrGaus1Sigma.Write();
+      sigErrGaus2Mean.Write();
+      sigErrGaus2Sigma.Write();
+      sigErrTailMpv.Write();
+      sigErrTailWidth.Write();
+      sigErrTail2Mpv.Write();
+      sigErrTail2Width.Write();
+      sigErrLognM0.Write();
+      sigErrLognK.Write();
+      sigErrCore1FracRatio.Write();
+      sigErrTailFracRatio.Write();
+      sigErrTail2FracRatio.Write();
+      sigErrLognFracRatio.Write();
+      sigErrCore1Frac.Write();
+      sigErrTailFrac.Write();
+      sigErrTail2Frac.Write();
+      sigErrLognFrac.Write();
+    }
+    outFile.Close();
   }
-  if (sigErrPdfOpt == kErrPdfAnalytic)
-  {
-    sigErrGaus1Mean.Write();
-    sigErrGaus1Sigma.Write();
-    sigErrGaus2Mean.Write();
-    sigErrGaus2Sigma.Write();
-    sigErrTailMpv.Write();
-    sigErrTailWidth.Write();
-    sigErrTail2Mpv.Write();
-    sigErrTail2Width.Write();
-    sigErrLognM0.Write();
-    sigErrLognK.Write();
-    sigErrCore1FracRatio.Write();
-    sigErrTailFracRatio.Write();
-    sigErrTail2FracRatio.Write();
-    sigErrLognFracRatio.Write();
-    sigErrCore1Frac.Write();
-    sigErrTailFrac.Write();
-    sigErrTail2Frac.Write();
-    sigErrLognFrac.Write();
-  }
-  outFile.Close();
+  else
+    std::cout << "[PlotOnly] Loaded saved err2 fit and left ROOT file unchanged: " << resultFileName << std::endl;
 
   std::cout << "------------------ FIT RESULT FOR BKG ERR ----------------" << std::endl;
   if (timeErrResult)

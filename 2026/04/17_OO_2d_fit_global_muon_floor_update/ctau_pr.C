@@ -52,6 +52,7 @@ https://github.com/cofitzpa/roofit_tutorial_solutions/blob/master/roofit_tutoria
 #include "TMath.h"
 #include "TString.h"
 #include "RooHist.h"
+#include "saved_fit_helpers.h"
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -129,9 +130,11 @@ static void apply_logy_auto_range(RooPlot *plot, const char *histName, double to
 	plot->SetMaximum(ymax);
 }
 
-void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4)
+void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4, bool drawFromSavedFit = false, bool publish = false)
 {
 	ScopedMacroTimer timer("ctau_pr", ptLow, ptHigh, yLow, yHigh);
+	if (publish)
+		drawFromSavedFit = true;
 	bool isWeight = false;
 
 	/************* SOME BASICS FIRST ***************
@@ -165,6 +168,24 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	int errPdfOpt = kErrPdfHist;
 	const int histPdfInterpolationOrder = 1;
 	double errPrefitDataFraction = 0.5;
+	double promptRetryPrefitDataFraction = 0.7;
+	double promptFinalPrefitDataFraction = 0.9;
+	double promptTime1ScaleSeed = 1.0;
+	double promptTime2DeltaSeed = 0.8;
+	double promptTime3DeltaSeed = 1.7;
+	double promptTime4DeltaSeed = 2.5;
+	double promptYieldFrac1Seed = 0.40;
+	double promptYieldFrac2Seed = 0.30;
+	double promptYieldFrac3Seed = 0.10;
+	double promptYieldFrac4Seed = 0.05;
+	double promptFinalTime1ScaleSeed = promptTime1ScaleSeed;
+	double promptFinalTime2DeltaSeed = promptTime2DeltaSeed;
+	double promptFinalTime3DeltaSeed = promptTime3DeltaSeed;
+	double promptFinalTime4DeltaSeed = promptTime4DeltaSeed;
+	double promptFinalYieldFrac1Seed = promptYieldFrac1Seed;
+	double promptFinalYieldFrac2Seed = promptYieldFrac2Seed;
+	double promptFinalYieldFrac3Seed = promptYieldFrac3Seed;
+	double promptFinalYieldFrac4Seed = promptYieldFrac4Seed;
 	int nTimeErrGaussComponents = 2;
 	int nTimeErrLandauComponents = 1;
 	int nTimeErrLognormalComponents = 1;
@@ -174,14 +195,51 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		{
 			nResolutionComponents = 2;
 		}
+		else if (ptLow == 12.0f && ptHigh == 14.0f)
+		{
+			promptTime1ScaleSeed = 0.85;
+			promptTime2DeltaSeed = 1.00;
+			promptTime3DeltaSeed = 4.50;
+			promptYieldFrac1Seed = 0.82;
+			promptYieldFrac2Seed = 0.17;
+			promptYieldFrac3Seed = 0.008;
+			promptYieldFrac4Seed = 0.0;
+			promptFinalTime1ScaleSeed = 0.85;
+			promptFinalTime2DeltaSeed = 0.95;
+			promptFinalTime3DeltaSeed = 6.00;
+			promptFinalYieldFrac1Seed = 0.75;
+			promptFinalYieldFrac2Seed = 0.20;
+			promptFinalYieldFrac3Seed = 0.05;
+			promptFinalYieldFrac4Seed = 0.0;
+			promptRetryPrefitDataFraction = 0.85;
+			promptFinalPrefitDataFraction = 1.0;
+		}
 	} else if(yLow==0.0f) {
-		if (ptLow == 12.0f && ptHigh == 9.0f)
+		if (ptLow == 12.0f && ptHigh == 14.0f)
 		{
 			nResolutionComponents = 2;
-
-			nTimeErrGaussComponents = 1;
-			nTimeErrLandauComponents = 1;
-			nTimeErrLognormalComponents = 1;
+			// nTimeErrGaussComponents = 1;
+			// nTimeErrLandauComponents = 1;
+			// nTimeErrLognormalComponents = 1;
+		}
+		else if (ptLow == 16.0f && ptHigh == 20.0f)
+		{
+			promptTime1ScaleSeed = 0.87;
+			promptTime2DeltaSeed = 0.73;
+			promptTime3DeltaSeed = 8.00;
+			promptYieldFrac1Seed = 0.87;
+			promptYieldFrac2Seed = 0.13;
+			promptYieldFrac3Seed = 0.0025;
+			promptYieldFrac4Seed = 0.0;
+			promptFinalTime1ScaleSeed = 0.82;
+			promptFinalTime2DeltaSeed = 0.70;
+			promptFinalTime3DeltaSeed = 10.0;
+			promptFinalYieldFrac1Seed = 0.75;
+			promptFinalYieldFrac2Seed = 0.20;
+			promptFinalYieldFrac3Seed = 0.05;
+			promptFinalYieldFrac4Seed = 0.0;
+			promptRetryPrefitDataFraction = 0.85;
+			promptFinalPrefitDataFraction = 1.0;
 		}
 	}
 	nResolutionComponents = std::clamp(nResolutionComponents, 1, 4);
@@ -302,6 +360,7 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	const TString figDir = TString::Format("figs/%s/ctau_pr", yTag.Data());
 	const TString resultDir = TString::Format("roots/%s/ctau_pr", yTag.Data());
 	const TString figTag = yTag + "_" + ptTag;
+	const TString resolutionFileName = TString::Format("%s/ctau_resolution_%s.root", resultDir.Data(), figTag.Data());
 	auto figName = [&](const char *name)
 	{
 		return TString::Format("%s/%s_%s.pdf", figDir.Data(), name, figTag.Data());
@@ -310,12 +369,64 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	gSystem->mkdir(resultDir, true);
 	gROOT->Macro("/data/users/pjgwak/input_files/rootlogon.C");
 
+	std::unique_ptr<TFile> savedFitFile;
+	if (drawFromSavedFit && !load_saved_fit_file(savedFitFile, resolutionFileName, "prompt ctau"))
+		return;
+	if (drawFromSavedFit)
+		nResolutionComponents = std::clamp(read_saved_int_param(savedFitFile.get(), "nResolutionComponents", nResolutionComponents), 1, 4);
+
 	auto *massVar = static_cast<RooRealVar *>(dataSel->get()->find("mass"));
 	auto *timeVar = static_cast<RooRealVar *>(dataSel->get()->find("ctau3D"));
 	auto *timeErrVar = static_cast<RooRealVar *>(dataSel->get()->find("ctau3DErr"));
 	if (!massVar || !timeVar || !timeErrVar)
 	{
 		std::cerr << "ERROR: required observables mass/ctau3D/ctau3DErr are missing in selected dataset." << std::endl;
+		return;
+	}
+	timeErrVar->setRange(errRange.first, errRange.second);
+	timeErrVar->setMin(errRange.first);
+	timeErrVar->setMax(errRange.second);
+	int timeErrPlotBins = std::max(2, timeErrVar->getBins() * 2);
+	int timeErrTrimBins = timeErrPlotBins;
+	auto timeErrScanData = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(dataSel->reduce(RooArgSet(*timeErrVar))));
+	auto timeErrScanHist = std::unique_ptr<TH1>(timeErrScanData ? timeErrScanData->createHistogram(
+			"timeErrScanHist", *timeErrVar, Binning(timeErrTrimBins)) : nullptr);
+	if (timeErrScanHist)
+	{
+		const double errBinWidth = timeErrScanHist->GetBinWidth(1);
+		const int peakBin = timeErrScanHist->GetMaximumBin();
+		for (int i = peakBin + 1; i <= timeErrScanHist->GetNbinsX(); ++i)
+		{
+			if (timeErrScanHist->GetBinContent(i) <= 0.0)
+			{
+				errRange.second = timeErrScanHist->GetXaxis()->GetBinLowEdge(i);
+				break;
+			}
+		}
+		const int rebinned = static_cast<int>(std::lround((errRange.second - errRange.first) / errBinWidth));
+		timeErrTrimBins = std::max(1, rebinned);
+	}
+	if (errRange.second <= errRange.first)
+	{
+		std::cerr << "ERROR: invalid ctau3DErr range after peak-side trimming: ["
+		          << errRange.first << ", " << errRange.second << "]" << std::endl;
+		return;
+	}
+	TString cutErrTrim = Form("ctau3DErr >= %g && ctau3DErr < %g", errRange.first, errRange.second);
+	dataSel.reset(static_cast<RooDataSet *>(dataSel->reduce(cutErrTrim)));
+	if (!dataSel || dataSel->numEntries() <= 0)
+	{
+		std::cerr << "ERROR: no entries after ctau3DErr trimming: " << cutErrTrim << std::endl;
+		return;
+	}
+	timeErrPlotBins = timeErrTrimBins;
+
+	massVar = static_cast<RooRealVar *>(dataSel->get()->find("mass"));
+	timeVar = static_cast<RooRealVar *>(dataSel->get()->find("ctau3D"));
+	timeErrVar = static_cast<RooRealVar *>(dataSel->get()->find("ctau3DErr"));
+	if (!massVar || !timeVar || !timeErrVar)
+	{
+		std::cerr << "ERROR: required observables mass/ctau3D/ctau3DErr are missing after trimming." << std::endl;
 		return;
 	}
 	RooRealVar obs_mass("mass", "mass", 2.6, 3.5);
@@ -336,9 +447,9 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	obs_time.setRange(ctRange.first, ctRange.second);
 	obs_timeErr.setRange(errRange.first, errRange.second);
 	obs_timeErr.setMin(errRange.first);
+	obs_timeErr.setMax(errRange.second);
 	const int massPlotBins = std::max(2, obs_mass.getBins() * 2);
 	const int timePlotBins = std::max(2, obs_time.getBins() * 2);
-	const int timeErrPlotBins = std::max(2, obs_timeErr.getBins() * 2);
 
 	RooDataSet *data = dataSel.get();
 
@@ -419,14 +530,23 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	std::unique_ptr<RooAddPdf> timeErrPdfAnalytic = std::make_unique<RooAddPdf>(
 			"timeErrPdf", "timeErrPdf", timeErrPdfList, timeErrFracList, true);
 	std::unique_ptr<RooDataHist> timeErrHistData;
+	std::unique_ptr<TH1> timeErrHistTemplate;
 	std::unique_ptr<RooHistPdf> timeErrPdfHist;
 	RooAbsPdf *timeErrPdf = timeErrPdfAnalytic.get();
 	RooFitResult *timeErrResult = nullptr;
+	std::unique_ptr<RooFitResult> savedTimeErrResult;
 	if (errPdfOpt == kErrPdfHist)
 	{
+		timeErrHistTemplate = std::unique_ptr<TH1>(timeErrData->createHistogram(
+				"ctau_pr_hTimeErr", obs_timeErr, Binning(timeErrPlotBins, errRange.first, errRange.second)));
+		if (!timeErrHistTemplate)
+		{
+			std::cerr << "ERROR: failed to build ctau3DErr histogram template." << std::endl;
+			return;
+		}
 		timeErrHistData = std::make_unique<RooDataHist>(
 				"timeErrHistData", "timeErrHistData",
-				RooArgSet(obs_timeErr), *timeErrData);
+				RooArgSet(obs_timeErr), timeErrHistTemplate.get());
 		timeErrPdfHist = std::make_unique<RooHistPdf>(
 				"timeErrHistPdf", "timeErrHistPdf",
 				RooArgSet(obs_timeErr), *timeErrHistData, histPdfInterpolationOrder);
@@ -434,8 +554,20 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	}
 	else
 	{
-		timeErrResult = timeErrPdfAnalytic->fitTo(*timeErrData, Save(true), PrintLevel(-1), SumW2Error(isWeight), PrefitDataFraction(errPrefitDataFraction));
-		if (timeErrResult && timeErrResult->status() != 0)
+		if (drawFromSavedFit)
+		{
+			savedTimeErrResult = clone_saved_fit_result(savedFitFile.get(), "timeErrResult");
+			timeErrResult = savedTimeErrResult.get();
+			if (!timeErrResult)
+			{
+				std::cerr << "ERROR: timeErrResult not found in saved prompt ctau file: " << resolutionFileName << std::endl;
+				return;
+			}
+			apply_saved_fit_result(timeErrResult, *timeErrPdfAnalytic, RooArgSet(obs_timeErr));
+		}
+		else
+			timeErrResult = timeErrPdfAnalytic->fitTo(*timeErrData, Save(true), PrintLevel(-1), SumW2Error(isWeight), PrefitDataFraction(errPrefitDataFraction));
+		if (!drawFromSavedFit && timeErrResult && timeErrResult->status() != 0)
 		{
 			std::cout << "[WARN] timeErr fit did not converge (status=" << timeErrResult->status()
 								<< "), retrying once." << std::endl;
@@ -476,9 +608,9 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	timeErrPad1->cd();
 	RooPlot *timeErrPlot = obs_timeErr.frame(Range(errRange.first, errRange.second), Title(""));
 	if (isWeight)
-		timeErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins), DataError(RooAbsData::SumW2), Name("data"));
+		timeErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins, errRange.first, errRange.second), DataError(RooAbsData::SumW2), Name("data"));
 	else
-		timeErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins), Name("data"));
+		timeErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins, errRange.first, errRange.second), Name("data"));
 	timeErrPdf->plotOn(timeErrPlot, LineColor(kBlack), LineWidth(2), Name("model"));
 	if (errPdfOpt == kErrPdfAnalytic && useLandau1)
 		timeErrPdf->plotOn(timeErrPlot, Components(timeErrTail), LineColor(kBlue + 2), LineStyle(kDashed), LineWidth(2), Name("tail"));
@@ -568,11 +700,15 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 					}
 				}
 			}
-			if (errPdfOpt == kErrPdfHist)
-				tx.DrawLatex(0.19, 0.765, Form("Status : RooHistPdf template (%d)", histPdfInterpolationOrder));
-			else
-				tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
+			if (!publish)
+			{
+				if (errPdfOpt == kErrPdfHist)
+					tx.DrawLatex(0.19, 0.765, Form("Status : RooHistPdf template (%d)", histPdfInterpolationOrder));
+				else
+					tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
+			}
 		}
+		if (!publish)
 		{
 			TLatex tp;
 			tp.SetNDC();
@@ -594,7 +730,7 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 			if (err > 0.0 && std::isfinite(err))
 				tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g #pm %.3g", title, var.getVal(), err));
 			else
-				tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g", title, var.getVal()));
+				tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g (fixed)", title, var.getVal()));
 		};
 			if (errPdfOpt == kErrPdfHist)
 			{
@@ -604,20 +740,39 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 			}
 			else
 			{
-				printVar("#mu_{1}", timeErrGaus1Mean);
-				printVar("#sigma_{1}", timeErrGaus1Sigma);
-				printVar("#mu_{2}", timeErrGaus2Mean);
-				printVar("#sigma_{2}", timeErrGaus2Sigma);
-				printVar("mpv_{L}", timeErrTailMpv);
-				printVar("#sigma_{L}", timeErrTailWidth);
-				printVar("mpv_{L2}", timeErrTail2Mpv);
-				printVar("#sigma_{L2}", timeErrTail2Width);
-				printVar("m_{LN}", timeErrLognM0);
-				printVar("k_{LN}", timeErrLognK);
-				printVar("f_{tail}", timeErrTailFrac);
-				printVar("f_{tail2}", timeErrTail2Frac);
-				printVar("f_{LN}", timeErrLognFrac);
-				printVar("f_{G1}", timeErrCore1Frac);
+				if (useGaus1)
+				{
+					printVar("#mu_{1}", timeErrGaus1Mean);
+					printVar("#sigma_{1}", timeErrGaus1Sigma);
+				}
+				if (useGaus2)
+				{
+					printVar("#mu_{2}", timeErrGaus2Mean);
+					printVar("#sigma_{2}", timeErrGaus2Sigma);
+				}
+				if (useLandau1)
+				{
+					printVar("mpv_{L}", timeErrTailMpv);
+					printVar("#sigma_{L}", timeErrTailWidth);
+					if (nTimeErrComponents > 1)
+						printVar("f_{tail}", timeErrTailFrac);
+				}
+				if (useLandau2)
+				{
+					printVar("mpv_{L2}", timeErrTail2Mpv);
+					printVar("#sigma_{L2}", timeErrTail2Width);
+					if (nTimeErrComponents > 1)
+						printVar("f_{tail2}", timeErrTail2Frac);
+				}
+				if (useLognormal)
+				{
+					printVar("m_{LN}", timeErrLognM0);
+					printVar("k_{LN}", timeErrLognK);
+					if (nTimeErrComponents > 1)
+						printVar("f_{LN}", timeErrLognFrac);
+				}
+				if (useGaus1 && nTimeErrComponents > 1)
+					printVar("f_{G1}", timeErrCore1Frac);
 			}
 	}
 
@@ -654,7 +809,7 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d (%.3g)", timeErrChi.first, timeErrNdf, timeErrPvalue));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", timeErrChi.first, timeErrNdf));
 	}
 
 	TLine timeErrLine(errRange.first, 0.0, errRange.second, 0.0);
@@ -730,21 +885,21 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	RooConstVar ctauMeanScale("ctauMeanScale", "ctauMeanScale", 1.0);
 	RooRealVar ctauTime1Mean("ctauTime1Mean", "ctauTime1Mean", 0.0, -0.5, 0.5);
 	ctauTime1Mean.setConstant(true);
-	RooRealVar ctauTime1Scale("ctauTime1Scale", "ctauTime1Scale", 1.0, 0.5, 2.0);
+	RooRealVar ctauTime1Scale("ctauTime1Scale", "ctauTime1Scale", promptTime1ScaleSeed, 0.5, 2.0);
 	RooGaussModel ctauTime1("ctauTime1", "ctauTime1", obs_time, ctauTime1Mean, ctauTime1Scale, ctauMeanScale, obs_timeErr);
 	RooRealVar ctauTime2Mean("ctauTime2Mean", "ctauTime2Mean", 0.0, -0.5, 0.5);
 	ctauTime2Mean.setConstant(true);
-	RooRealVar ctauTime2Delta("ctauTime2Delta", "ctauTime2Delta", 0.8, 0.001, 5.0);
+	RooRealVar ctauTime2Delta("ctauTime2Delta", "ctauTime2Delta", promptTime2DeltaSeed, 0.001, 5.0);
 	RooFormulaVar ctauTime2Scale("ctauTime2Scale", "@0+@1", RooArgList(ctauTime1Scale, ctauTime2Delta));
 	RooGaussModel ctauTime2("ctauTime2", "ctauTime2", obs_time, ctauTime2Mean, ctauTime2Scale, ctauMeanScale, obs_timeErr);
 	RooRealVar ctauTime3Mean("ctauTime3Mean", "ctauTime3Mean", 0.0, -0.5, 0.5);
 	ctauTime3Mean.setConstant(true);
-	RooRealVar ctauTime3Delta("ctauTime3Delta", "ctauTime3Delta", 1.7, 0.001, 10.0);
+	RooRealVar ctauTime3Delta("ctauTime3Delta", "ctauTime3Delta", promptTime3DeltaSeed, 0.001, 10.0);
 	RooFormulaVar ctauTime3Scale("ctauTime3Scale", "@0+@1", RooArgList(ctauTime2Scale, ctauTime3Delta));
 	RooGaussModel ctauTime3("ctauTime3", "ctauTime3", obs_time, ctauTime3Mean, ctauTime3Scale, ctauMeanScale, obs_timeErr);
 	RooRealVar ctauTime4Mean("ctauTime4Mean", "ctauTime4Mean", 0.0, -0.5, 0.5);
 	ctauTime4Mean.setConstant(true);
-	RooRealVar ctauTime4Delta("ctauTime4Delta", "ctauTime4Delta", 2.5, 0.05, 15.0);
+	RooRealVar ctauTime4Delta("ctauTime4Delta", "ctauTime4Delta", promptTime4DeltaSeed, 0.05, 15.0);
 	RooFormulaVar ctauTime4Scale("ctauTime4Scale", "@0+@1", RooArgList(ctauTime3Scale, ctauTime4Delta));
 	RooGaussModel ctauTime4("ctauTime4", "ctauTime4", obs_time, ctauTime4Mean, ctauTime4Scale, ctauMeanScale, obs_timeErr);
 
@@ -756,10 +911,30 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		RooRealVar Nctau2("Nctau2", "Nctau2", 0.0, data->numEntries());
 		RooRealVar Nctau3("Nctau3", "Nctau3", 0.0, data->numEntries());
 		RooRealVar Nctau4("Nctau4", "Nctau4", 0.0, data->numEntries());
-		Nctau1.setVal(data->numEntries() * 0.60);
-		Nctau2.setVal(data->numEntries() * 0.30);
-		Nctau3.setVal(data->numEntries() * 0.05);
-		Nctau4.setVal(data->numEntries() * 0.05);
+		const auto seedPromptYield = [&](double frac) {
+			return std::clamp(data->numEntries() * frac, 0.0, static_cast<double>(data->numEntries()));
+		};
+		const auto resetPromptTimeSeeds = [&]() {
+			ctauTime1Scale.setVal(promptTime1ScaleSeed);
+			ctauTime2Delta.setVal(promptTime2DeltaSeed);
+			ctauTime3Delta.setVal(promptTime3DeltaSeed);
+			ctauTime4Delta.setVal(promptTime4DeltaSeed);
+			Nctau1.setVal(seedPromptYield(promptYieldFrac1Seed));
+			Nctau2.setVal(seedPromptYield(promptYieldFrac2Seed));
+			Nctau3.setVal(seedPromptYield(promptYieldFrac3Seed));
+			Nctau4.setVal(seedPromptYield(promptYieldFrac4Seed));
+		};
+		const auto resetPromptTimeSeedsFinal = [&]() {
+			ctauTime1Scale.setVal(promptFinalTime1ScaleSeed);
+			ctauTime2Delta.setVal(promptFinalTime2DeltaSeed);
+			ctauTime3Delta.setVal(promptFinalTime3DeltaSeed);
+			ctauTime4Delta.setVal(promptFinalTime4DeltaSeed);
+			Nctau1.setVal(seedPromptYield(promptFinalYieldFrac1Seed));
+			Nctau2.setVal(seedPromptYield(promptFinalYieldFrac2Seed));
+			Nctau3.setVal(seedPromptYield(promptFinalYieldFrac3Seed));
+			Nctau4.setVal(seedPromptYield(promptFinalYieldFrac4Seed));
+		};
+		resetPromptTimeSeeds();
 
 		// THE LIFETIME FIT
 		// The total ctau model is the prompt resolution mixture conditioned on the fitted error PDF.
@@ -807,13 +982,46 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 			"time_pdf_core", "time_pdf_core",
 			promptTimePdfList, promptTimeYieldList);
 	RooProdPdf time_pdf("time_pdf", "time_pdf", RooArgSet(*timeErrPdf), Conditional(RooArgSet(*time_pdf_core), RooArgSet(obs_time)));
-	RooFitResult *time_result = time_pdf.fitTo(*data, Extended(), Save(), SumW2Error(isWeight), PrefitDataFraction(errPrefitDataFraction));
-	if (time_result && time_result->status() != 0)
+	RooFitResult *time_result = nullptr;
+	std::unique_ptr<RooFitResult> savedTimeResult;
+	if (drawFromSavedFit)
+	{
+		savedTimeResult = clone_saved_fit_result(savedFitFile.get(), "timeResult");
+		time_result = savedTimeResult.get();
+		if (!time_result)
+		{
+			std::cerr << "ERROR: timeResult not found in saved prompt ctau file: " << resolutionFileName << std::endl;
+			return;
+		}
+		apply_saved_fit_result(time_result, time_pdf, RooArgSet(obs_time, obs_timeErr));
+	}
+	else
+		time_result = time_pdf.fitTo(*data, Extended(), Save(), SumW2Error(isWeight),
+									 PrintLevel(-1), PrefitDataFraction(errPrefitDataFraction),
+									 RecoverFromUndefinedRegions(1.0));
+	if (!drawFromSavedFit && time_result && time_result->status() != 0)
 	{
 		std::cout << "[WARN] prompt time fit did not converge (status=" << time_result->status()
-							<< "), retrying once." << std::endl;
+							<< "), retrying with reset seeds and stronger fit options." << std::endl;
 		delete time_result;
-		time_result = time_pdf.fitTo(*data, Extended(), Save(), SumW2Error(isWeight), PrefitDataFraction(errPrefitDataFraction));
+		resetPromptTimeSeeds();
+		time_result = time_pdf.fitTo(*data, Extended(), Save(), SumW2Error(isWeight),
+									 PrintLevel(-1),
+									 PrefitDataFraction(promptRetryPrefitDataFraction),
+									 Strategy(1), Offset(true),
+									 RecoverFromUndefinedRegions(1.0));
+	}
+	if (!drawFromSavedFit && time_result && time_result->status() != 0)
+	{
+		std::cout << "[WARN] prompt time fit still did not converge (status=" << time_result->status()
+							<< "), retrying with Strategy(2)." << std::endl;
+		delete time_result;
+		resetPromptTimeSeedsFinal();
+		time_result = time_pdf.fitTo(*data, Extended(), Save(), SumW2Error(isWeight),
+									 PrintLevel(-1),
+									 PrefitDataFraction(promptFinalPrefitDataFraction),
+									 Strategy(2), Offset(true),
+									 RecoverFromUndefinedRegions(1.0));
 	}
 	if (time_result)
 		time_result->Print();
@@ -826,11 +1034,13 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		const double ctauFrac1 = Nctau1.getVal() / nCtauTotal;
 		const double ctauFrac2 = Nctau2.getVal() / nCtauTotal;
 		const double ctauFrac3 = Nctau3.getVal() / nCtauTotal;
-	const TString resolutionFileName = TString::Format("%s/ctau_resolution_%s.root", resultDir.Data(), figTag.Data());
+	if (!drawFromSavedFit)
 	{
 		TFile resolutionFile(resolutionFileName, "RECREATE");
 		if (!resolutionFile.IsZombie())
 		{
+			if (time_result)
+				time_result->Write("timeResult");
 			TParameter<int>("nResolutionComponents", nResolutionComponents).Write();
 			TParameter<double>("ctauMeanScale", ctauMeanScale.getVal()).Write();
 			TParameter<double>("ctauTime1Mean", ctauTime1Mean.getVal()).Write();
@@ -860,7 +1070,10 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 			std::cerr << "ERROR: cannot create resolution file: " << resolutionFileName << std::endl;
 		}
 	}
-	std::cout << "Saved ctau prompt resolution parameters to " << resolutionFileName << std::endl;
+	if (drawFromSavedFit)
+		std::cout << "[PlotOnly] Loaded saved prompt ctau fit and left ROOT file unchanged: " << resolutionFileName << std::endl;
+	else
+		std::cout << "Saved ctau prompt resolution parameters to " << resolutionFileName << std::endl;
 
 	RooProdPdf time_pdf_component1(
 			"time_pdf_component1",
@@ -1012,8 +1225,11 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 				}
 			}
 		}
-		tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
+		if (!publish)
+			if (!publish)
+				tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
 	}
+	if (!publish)
 	{
 		TLatex tp;
 		tp.SetNDC();
@@ -1090,7 +1306,7 @@ void ctau_pr(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d (%.3g)", chiM.first, ndf, pvalue));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", chiM.first, ndf));
 	}
 
 	TLine line(ctRange.first, 0.0, ctRange.second, 0.0);

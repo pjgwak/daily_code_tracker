@@ -55,6 +55,7 @@ https://github.com/cofitzpa/roofit_tutorial_solutions/blob/master/roofit_tutoria
 #include "TMath.h"
 #include "RooHist.h"
 #include "RooLognormal.h"
+#include "saved_fit_helpers.h"
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -133,8 +134,10 @@ static void apply_logy_auto_range(RooPlot *plot, const char *histName, double to
 }
 
 void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4,
-	bool fixResolutionParams = false){
+	bool fixResolutionParams = false, bool drawFromSavedFit = false, bool publish = false){
 	ScopedMacroTimer timer("fit2d", ptLow, ptHigh, yLow, yHigh);
+	if (publish)
+		drawFromSavedFit = true;
 	bool isWeight = false;
 
 	// ------------------------------------------------------------------
@@ -250,8 +253,8 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	{
 		if (ptLow == 1.0f && ptHigh == 2.0f)
 		{
-			ctRange.first = -2;
-			ctRange.second = 4;
+			ctRange.first = -6;
+			ctRange.second = 8;
 		}
 		if (ptLow == 2.0f && ptHigh == 3.0f)
 		{
@@ -269,6 +272,9 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	const TString fitRootDir = TString::Format("roots/%s/fit2d", yTag.Data());
 	const TString fitRootName = TString::Format("%s/fit2d_result_%s.root", fitRootDir.Data(), figTag.Data());
 	const TString errFileName = TString::Format("roots/%s/err2/err2_model_%s.root", yTag.Data(), baseFigTag.Data());
+	std::unique_ptr<TFile> savedFitFile;
+	if (drawFromSavedFit && !load_saved_fit_file(savedFitFile, fitRootName, "2D"))
+		return;
 
 	auto readErrFileDouble = [](const TString &path, const char *name, double fallback) {
 		std::unique_ptr<TFile> f(TFile::Open(path));
@@ -987,12 +993,19 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		return;
 	}
 	std::unique_ptr<RooDataHist> bkgErrHistData;
+	std::unique_ptr<TH1> bkgErrHistTemplate;
 	std::unique_ptr<RooHistPdf> bkgErrPdfHist;
 	RooAbsPdf *bkgErrPdfPtr = &bkgErrPdf;
 	if (isHistErrPdfChoice(bkgErrPdfOpt)) {
+		bkgErrHistTemplate = std::unique_ptr<TH1>(bkgErrData->createHistogram(
+			"fit2d_hErrBkgTemplate", obs_timeErr, Binning(timeErrPlotBins, errFitLow, errFitHigh)));
+		if (!bkgErrHistTemplate) {
+			std::cerr << "ERROR: failed to build background ctau3DErr histogram template" << std::endl;
+			return;
+		}
 		bkgErrHistData = std::make_unique<RooDataHist>(
 			"bkgErrHistData", "bkgErrHistData",
-			RooArgSet(obs_timeErr), *bkgErrData);
+			RooArgSet(obs_timeErr), bkgErrHistTemplate.get());
 		bkgErrPdfHist = std::make_unique<RooHistPdf>(
 			"bkgErrHistPdf", "bkgErrHistPdf",
 			RooArgSet(obs_timeErr), *bkgErrHistData, histPdfInterpolationOrder);
@@ -1192,13 +1205,25 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	RooProdPdf bkg_core("bkg_core","bkg_core",RooArgSet(*bkg_mass_pdf, *bkgErrPdfPtr),Conditional(RooArgSet(*bkg_time_pdf),RooArgSet(obs_time)));
 	RooAddPdf model("model","model",RooArgList(signal_core,bkg_core),RooArgList(Nsig,Nbkg));
 	RooFitResult *model_result = nullptr;
-	if (constraints.getSize() > 0)
+	std::unique_ptr<RooFitResult> savedModelResult;
+	if (drawFromSavedFit)
+	{
+		savedModelResult = clone_saved_fit_result(savedFitFile.get(), "modelResult");
+		model_result = savedModelResult.get();
+		if (!model_result)
+		{
+			std::cerr << "ERROR: modelResult not found in saved 2D fit file: " << fitRootName << std::endl;
+			return;
+		}
+		apply_saved_fit_result(model_result, model, RooArgSet(obs_mass, obs_time, obs_timeErr));
+	}
+	else if (constraints.getSize() > 0)
 		model_result = model.fitTo(*data, Extended(), Save(), SumW2Error(isWeight),
 			ExternalConstraints(constraints), RecoverFromUndefinedRegions(1.0));
 	else
 		model_result = model.fitTo(*data, Extended(), Save(), SumW2Error(isWeight),
 			RecoverFromUndefinedRegions(1.0));
-	if (model_result && (model_result->status() != 0 || model_result->covQual() < 2))
+	if (!drawFromSavedFit && model_result && (model_result->status() != 0 || model_result->covQual() < 2))
 	{
 		delete model_result;
 		if (constraints.getSize() > 0)
@@ -1312,7 +1337,9 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 				}
 			}
 		}
-		tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
+		if (!publish)
+			if (!publish)
+				tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
 	}
 
 	cSigTimeErr->cd();
@@ -1348,7 +1375,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d (%.3g)", sigTimeErrChi.first, sigTimeErrNdf, sigTimeErrPvalue));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", sigTimeErrChi.first, sigTimeErrNdf));
 	}
 
 	TLine sigTimeErrLine(errFitLow, 0.0, errFitHigh, 0.0);
@@ -1367,15 +1394,17 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 
 	RooPlot *timeErrPlot = obs_timeErr.frame(Range(errFitLow, errFitHigh), Title(""));
 	if (isWeight)
-		bkgErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins), DataError(RooAbsData::SumW2), Name("data"));
+		bkgErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins, errFitLow, errFitHigh), DataError(RooAbsData::SumW2), Name("data"));
 	else
-		bkgErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins), Name("data"));
-	bkgErrPdf.plotOn(timeErrPlot, LineColor(kBlack), LineWidth(2), Name("model"));
-	if (useErrBkgGaus1) bkgErrPdf.plotOn(timeErrPlot, Components(bkgTimeErrGaus1), LineColor(kGreen + 2), LineStyle(kDashed), LineWidth(2), Name("gaus1"));
-	if (useErrBkgGaus2) bkgErrPdf.plotOn(timeErrPlot, Components(bkgTimeErrGaus2), LineColor(kRed + 1), LineStyle(kDashed), LineWidth(2), Name("gaus2"));
-	if (useErrBkgLandau1) bkgErrPdf.plotOn(timeErrPlot, Components(bkgTimeErrTail), LineColor(kBlue + 2), LineStyle(kDashed), LineWidth(2), Name("tail"));
-	if (useErrBkgLandau2) bkgErrPdf.plotOn(timeErrPlot, Components(bkgTimeErrTail2), LineColor(kOrange + 7), LineStyle(kDashed), LineWidth(2), Name("tail2"));
-	if (useErrBkgLogn) bkgErrPdf.plotOn(timeErrPlot, Components(bkgTimeErrLogn), LineColor(kMagenta + 1), LineStyle(kDashed), LineWidth(2), Name("logn"));
+		bkgErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins, errFitLow, errFitHigh), Name("data"));
+	bkgErrPdfPtr->plotOn(timeErrPlot, LineColor(kBlack), LineWidth(2), Name("model"));
+	if (bkgErrPdfOpt == kErrPdfAnalytic) {
+		if (useErrBkgGaus1) bkgErrPdfPtr->plotOn(timeErrPlot, Components(bkgTimeErrGaus1), LineColor(kGreen + 2), LineStyle(kDashed), LineWidth(2), Name("gaus1"));
+		if (useErrBkgGaus2) bkgErrPdfPtr->plotOn(timeErrPlot, Components(bkgTimeErrGaus2), LineColor(kRed + 1), LineStyle(kDashed), LineWidth(2), Name("gaus2"));
+		if (useErrBkgLandau1) bkgErrPdfPtr->plotOn(timeErrPlot, Components(bkgTimeErrTail), LineColor(kBlue + 2), LineStyle(kDashed), LineWidth(2), Name("tail"));
+		if (useErrBkgLandau2) bkgErrPdfPtr->plotOn(timeErrPlot, Components(bkgTimeErrTail2), LineColor(kOrange + 7), LineStyle(kDashed), LineWidth(2), Name("tail2"));
+		if (useErrBkgLogn) bkgErrPdfPtr->plotOn(timeErrPlot, Components(bkgTimeErrLogn), LineColor(kMagenta + 1), LineStyle(kDashed), LineWidth(2), Name("logn"));
+	}
 	apply_logy_auto_range(timeErrPlot, "data");
 	timeErrPlot->GetYaxis()->SetTitle("Events");
 	timeErrPlot->GetYaxis()->SetTitleOffset(1.6);
@@ -1452,7 +1481,9 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 				}
 			}
 		}
-		tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
+		if (!publish)
+			if (!publish)
+				tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
 	}
 
 	cTimeErr->cd();
@@ -1488,7 +1519,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d (%.3g)", timeErrChi.first, timeErrNdf, timeErrPvalue));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", timeErrChi.first, timeErrNdf));
 	}
 
 	TLine timeErrLine(errFitLow, 0.0, errFitHigh, 0.0);
@@ -1591,7 +1622,8 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 				}
 			}
 		}
-		tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
+		if (!publish)
+			tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
 	}
 	{
 		TLatex tp;
@@ -1619,7 +1651,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 					return;
 				}
 			}
-			tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g", title, var.getVal()));
+			tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g (fixed)", title, var.getVal()));
 		};
 		auto printValue = [&](const char *title, double val, double err = -1.0, bool isFixed = false)
 		{
@@ -1630,46 +1662,55 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			else
 				tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g", title, val));
 		};
-		printReal("N_{sig}", Nsig);
-		printReal("N_{bkg}", Nbkg);
-		printReal("f_{B}", bFraction);
-		printReal("m_{0}", signal_mass_mean);
-		if (nSignalGaussComponents >= 1)
-			printReal("#sigma_{G1}", signal_mass_sigma);
-		if (nSignalGaussComponents >= 2)
-			printReal("#sigma_{G2}", signal_mass_sigma2);
-		if (nSignalCBComponents >= 1)
+		if (publish)
 		{
-			printValue("#sigma_{CB1}", signal_mass_cb_sigma.getVal(), -1.0, true);
-			printValue("#alpha_{CB1}", signal_mass_cb_alpha.getVal(), -1.0, true);
-			printValue("n_{CB1}", signal_mass_cb_n.getVal(), -1.0, true);
+			printReal("f_{B}", bFraction);
+			printReal("N_{sig}", Nsig);
+			printReal("N_{bkg}", Nbkg);
 		}
-		if (nSignalCBComponents >= 2)
+		else
 		{
-			printValue("#alpha_{CB2}", signal_mass_cb_alpha2.getVal(), -1.0, true);
-			printValue("n_{CB2}", signal_mass_cb_n2.getVal(), -1.0, true);
-			printValue("#sigma_{CB2}", signal_mass_cb_sigma2.getVal(), -1.0, true);
+			printReal("N_{sig}", Nsig);
+			printReal("N_{bkg}", Nbkg);
+			printReal("f_{B}", bFraction);
+			printReal("m_{0}", signal_mass_mean);
+			if (nSignalGaussComponents >= 1)
+				printReal("#sigma_{G1}", signal_mass_sigma);
+			if (nSignalGaussComponents >= 2)
+				printReal("#sigma_{G2}", signal_mass_sigma2);
+			if (nSignalCBComponents >= 1)
+			{
+				printValue("#sigma_{CB1}", signal_mass_cb_sigma.getVal(), -1.0, true);
+				printValue("#alpha_{CB1}", signal_mass_cb_alpha.getVal(), -1.0, true);
+				printValue("n_{CB1}", signal_mass_cb_n.getVal(), -1.0, true);
+			}
+			if (nSignalCBComponents >= 2)
+			{
+				printValue("#alpha_{CB2}", signal_mass_cb_alpha2.getVal(), -1.0, true);
+				printValue("n_{CB2}", signal_mass_cb_n2.getVal(), -1.0, true);
+				printValue("#sigma_{CB2}", signal_mass_cb_sigma2.getVal(), -1.0, true);
+			}
+			if (signalMassPdfList.getSize() >= 2)
+				printValue("f_{sig1}", signal_mass_frac1.getVal(), -1.0, true);
+			if (signalMassPdfList.getSize() >= 3)
+				printValue("f_{sig2}", signal_mass_frac2.getVal(), -1.0, true);
+			if (signalMassPdfList.getSize() >= 4)
+				printValue("f_{sig3}", signal_mass_frac3.getVal(), -1.0, true);
+			if (nBkgExpComponents == 1)
+				printValue("#lambda_{bkg}", bkg_mass_lambda.getVal(), -1.0, true);
+			if (nBkgChebyOrder >= 1)
+				printValue("p_{1}", bkg_mass_p1.getVal(), -1.0, true);
+			if (nBkgChebyOrder >= 2)
+				printValue("p_{2}", bkg_mass_p2.getVal(), -1.0, true);
+			if (nBkgChebyOrder >= 3)
+				printValue("p_{3}", bkg_mass_p3.getVal(), -1.0, true);
+			if (nBkgChebyOrder >= 4)
+				printValue("p_{4}", bkg_mass_p4.getVal(), -1.0, true);
+			if (nBkgChebyOrder >= 5)
+				printValue("p_{5}", bkg_mass_p5.getVal(), -1.0, true);
+			if (nBkgChebyOrder >= 6)
+				printValue("p_{6}", bkg_mass_p6.getVal(), -1.0, true);
 		}
-		if (signalMassPdfList.getSize() >= 2)
-			printValue("f_{sig1}", signal_mass_frac1.getVal(), -1.0, true);
-		if (signalMassPdfList.getSize() >= 3)
-			printValue("f_{sig2}", signal_mass_frac2.getVal(), -1.0, true);
-		if (signalMassPdfList.getSize() >= 4)
-			printValue("f_{sig3}", signal_mass_frac3.getVal(), -1.0, true);
-		if (nBkgExpComponents == 1)
-			printValue("#lambda_{bkg}", bkg_mass_lambda.getVal(), -1.0, true);
-		if (nBkgChebyOrder >= 1)
-			printValue("p_{1}", bkg_mass_p1.getVal(), -1.0, true);
-		if (nBkgChebyOrder >= 2)
-			printValue("p_{2}", bkg_mass_p2.getVal(), -1.0, true);
-		if (nBkgChebyOrder >= 3)
-			printValue("p_{3}", bkg_mass_p3.getVal(), -1.0, true);
-		if (nBkgChebyOrder >= 4)
-			printValue("p_{4}", bkg_mass_p4.getVal(), -1.0, true);
-		if (nBkgChebyOrder >= 5)
-			printValue("p_{5}", bkg_mass_p5.getVal(), -1.0, true);
-		if (nBkgChebyOrder >= 6)
-			printValue("p_{6}", bkg_mass_p6.getVal(), -1.0, true);
 	}
 
 	cMass->cd();
@@ -1705,7 +1746,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d (%.3g)", massChi.first, massNdf, massPvalue));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", massChi.first, massNdf));
 	}
 	TLine massLine(obs_mass.getMin(), 0.0, obs_mass.getMax(), 0.0);
 	massLine.SetLineStyle(2);
@@ -1804,7 +1845,8 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 				}
 			}
 		}
-		tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
+		if (!publish)
+			tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
 	}
 	{
 		TLatex tp;
@@ -1832,7 +1874,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 					return;
 				}
 			}
-			tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g", title, var.getVal()));
+			tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g (fixed)", title, var.getVal()));
 		};
 		auto printValue = [&](const char *title, double val, double err = -1.0, bool isFixed = false)
 		{
@@ -1843,33 +1885,42 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			else
 				tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g", title, val));
 		};
-		printReal("f_{B}", bFraction);
-		printReal("N_{sig}", Nsig);
-		printReal("N_{bkg}", Nbkg);
-		printReal("ctau s_{1}", ctauTime1Scale);
-		if (nResolutionComponents >= 2)
-			printReal("#Deltactau s_{2}", ctauTime2Delta);
-		if (nResolutionComponents >= 3)
-			printReal("#Deltactau s_{3}", ctauTime3Delta);
-		if (nResolutionComponents >= 4)
-			printReal("#Deltactau s_{4}", ctauTime4Delta);
-		printReal("#tau_{NP1}", signal_lifetime);
-		if (useSignalSS2)
-			printReal("#tau_{NP2}", signal2_lifetime);
-		if (useSignalSS3)
-			printReal("#tau_{NP3}", signal3_lifetime);
-		printReal("#tau_{Bkg}", bkg_lifetime);
-		if (nBkgSSComponents >= 2)
-			printReal("#tau_{Bkg2}", bkg_lifetime2);
-		if (nBkgSSComponents >= 3)
-			printReal("#tau_{Bkg3}", bkg_lifetime3);
-		if (nBkgFlipComponents >= 1)
-			printReal("#tau_{flip}", bkg_flip_lifetime);
-		if (nBkgFlipComponents >= 2)
-			printReal("#tau_{flip2}", bkg_flip_lifetime2);
-		if (nBkgFlipComponents >= 3)
-			printReal("#tau_{flip3}", bkg_flip_lifetime3);
-		printValue("#tau_{sym}", bkg_sym_lifetime.getVal(), -1.0, bkg_sym_lifetime.isConstant());
+		if (publish)
+		{
+			printReal("f_{B}", bFraction);
+			printReal("N_{sig}", Nsig);
+			printReal("N_{bkg}", Nbkg);
+		}
+		else
+		{
+			printReal("f_{B}", bFraction);
+			printReal("N_{sig}", Nsig);
+			printReal("N_{bkg}", Nbkg);
+			printReal("ctau s_{1}", ctauTime1Scale);
+			if (nResolutionComponents >= 2)
+				printReal("#Deltactau s_{2}", ctauTime2Delta);
+			if (nResolutionComponents >= 3)
+				printReal("#Deltactau s_{3}", ctauTime3Delta);
+			if (nResolutionComponents >= 4)
+				printReal("#Deltactau s_{4}", ctauTime4Delta);
+			printReal("#tau_{NP1}", signal_lifetime);
+			if (useSignalSS2)
+				printReal("#tau_{NP2}", signal2_lifetime);
+			if (useSignalSS3)
+				printReal("#tau_{NP3}", signal3_lifetime);
+			printReal("#tau_{Bkg}", bkg_lifetime);
+			if (nBkgSSComponents >= 2)
+				printReal("#tau_{Bkg2}", bkg_lifetime2);
+			if (nBkgSSComponents >= 3)
+				printReal("#tau_{Bkg3}", bkg_lifetime3);
+			if (nBkgFlipComponents >= 1)
+				printReal("#tau_{flip}", bkg_flip_lifetime);
+			if (nBkgFlipComponents >= 2)
+				printReal("#tau_{flip2}", bkg_flip_lifetime2);
+			if (nBkgFlipComponents >= 3)
+				printReal("#tau_{flip3}", bkg_flip_lifetime3);
+			printValue("#tau_{sym}", bkg_sym_lifetime.getVal(), -1.0, bkg_sym_lifetime.isConstant());
+		}
 	}
 
 	cLifetime->cd();
@@ -1905,7 +1956,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d (%.3g)", timeChi.first, timeNdf, timePvalue));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", timeChi.first, timeNdf));
 	}
 	TLine timeLine(ctRange.first, 0.0, ctRange.second, 0.0);
 	timeLine.SetLineStyle(2);
@@ -1913,6 +1964,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	cLifetime->Print(figName("lifetime_fit"));
 	delete cLifetime;
 
+	if (!drawFromSavedFit)
 	{
 		std::unique_ptr<TFile> fitOut(TFile::Open(fitRootName, "RECREATE"));
 		if (!fitOut || fitOut->IsZombie())
@@ -1968,6 +2020,8 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			fitOut->Write();
 		}
 	}
+	else
+		std::cout << "[PlotOnly] Loaded saved 2D fit and left ROOT file unchanged: " << fitRootName << std::endl;
 
 	const TString figErrSig = figName("errSig");
 	const TString figErrBkg = figName("errBkg");

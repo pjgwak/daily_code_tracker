@@ -51,6 +51,7 @@ https://github.com/cofitzpa/roofit_tutorial_solutions/blob/master/roofit_tutoria
 #include "TParameter.h"
 #include "TString.h"
 #include "RooHist.h"
+#include "saved_fit_helpers.h"
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -96,9 +97,11 @@ static std::pair<double, int> chi2_from_pull(RooHist *hpull)
 	return {chi2, n};
 }
 
-void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4, bool isBkg = false)
+void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4, bool isBkg = false, bool drawFromSavedFit = false, bool publish = false)
 {
 	ScopedMacroTimer timer("mc_mass", ptLow, ptHigh, yLow, yHigh);
+	if (publish)
+		drawFromSavedFit = true;
 	bool isWeight = false;
 	// ------------------------------------------------------------------
 	// model control
@@ -189,6 +192,15 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	gSystem->mkdir(figDir, true);
 	gSystem->mkdir(resultDir, true);
 	gROOT->Macro("/data/users/pjgwak/input_files/rootlogon.C");
+
+	std::unique_ptr<TFile> savedFitFile;
+	if (drawFromSavedFit && !load_saved_fit_file(savedFitFile, modelFileName, "MC mass"))
+		return;
+	if (drawFromSavedFit)
+	{
+		nSignalGaussComponents = std::clamp(read_saved_int_param(savedFitFile.get(), "nSignalGaussComponents", nSignalGaussComponents), 0, 2);
+		nSignalCBComponents = std::clamp(read_saved_int_param(savedFitFile.get(), "nSignalCBComponents", nSignalCBComponents), 0, 2);
+	}
 
 	auto *massVar = static_cast<RooRealVar *>(dataSel->get()->find("mass"));
 	if (!massVar)
@@ -363,13 +375,27 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	else
 		mass_pdf = std::make_unique<RooAddPdf>("mass_pdf", "mass_pdf", RooArgList(*signal_mass_pdf), RooArgList(Nsig));
 
-	std::unique_ptr<RooFitResult> mass_result(mass_pdf->fitTo(*data, Extended(), Save(), PrintLevel(0), SumW2Error(isWeight), Minimizer("Minuit2", "migrad")));
-	if (mass_result && (mass_result->status() != 0 || mass_result->covQual() < 2))
+	std::unique_ptr<RooFitResult> mass_result;
+	if (drawFromSavedFit)
+	{
+		mass_result = clone_saved_fit_result(savedFitFile.get(), "fit_result");
+		if (!mass_result)
+		{
+			std::cerr << "ERROR: fit_result not found in saved MC mass file: " << modelFileName << std::endl;
+			return;
+		}
+		apply_saved_fit_result(mass_result.get(), *mass_pdf, RooArgSet(obs_mass));
+	}
+	else
+		mass_result.reset(mass_pdf->fitTo(*data, Extended(), Save(), PrintLevel(0), SumW2Error(isWeight), Minimizer("Minuit2", "migrad")));
+	if (!drawFromSavedFit && mass_result && (mass_result->status() != 0 || mass_result->covQual() < 2))
 	{
 		mass_result.reset(mass_pdf->fitTo(*data, Extended(), Save(), PrintLevel(0), SumW2Error(isWeight)));
 	}
-	mass_result->Print();
+	if (mass_result)
+		mass_result->Print();
 
+	if (!drawFromSavedFit)
 	{
 		TFile outFile(modelFileName, "RECREATE");
 		if (!outFile.IsZombie())
@@ -431,6 +457,8 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 				mass_result->Write("fit_result");
 		}
 	}
+	else
+		std::cout << "[PlotOnly] Loaded saved MC mass fit and left ROOT file unchanged: " << modelFileName << std::endl;
 
 	// ------------------------------------------------------------------
 	// draw mass fit
@@ -542,8 +570,11 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 				}
 			}
 		}
-		tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
+		if (!publish)
+			if (!publish)
+				tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
 	}
+	if (!publish)
 	{
 		TLatex tp;
 		tp.SetNDC();
@@ -566,7 +597,7 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 				if (std::isfinite(err) && err > 0.0)
 					tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g #pm %.3g", title, var.getVal(), err));
 				else
-					tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g", title, var.getVal()));
+					tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g (fixed)", title, var.getVal()));
 			}
 		};
 		printVar("N_{sig}", Nsig);
@@ -650,7 +681,7 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d (%.3g)", chiM.first, ndf, pvalue));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", chiM.first, ndf));
 	}
 
 	TLine line(obs_mass.getMin(), 0.0, obs_mass.getMax(), 0.0);

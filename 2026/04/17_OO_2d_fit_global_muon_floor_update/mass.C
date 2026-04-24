@@ -51,6 +51,7 @@ https://github.com/cofitzpa/roofit_tutorial_solutions/blob/master/roofit_tutoria
 #include "TParameter.h"
 #include "TString.h"
 #include "RooHist.h"
+#include "saved_fit_helpers.h"
 #include <algorithm>
 #include <cmath>
 #include <iostream>
@@ -96,9 +97,11 @@ static std::pair<double, int> chi2_from_pull(RooHist *hpull)
 	return {chi2, n};
 }
 
-void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4)
+void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4, bool drawFromSavedFit = false, bool publish = false)
 {
 	ScopedMacroTimer timer("mass", ptLow, ptHigh, yLow, yHigh);
+	if (publish)
+		drawFromSavedFit = true;
 	// ------------------------------------------------------------------
 	// model control
 	// ------------------------------------------------------------------
@@ -230,6 +233,10 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 	gSystem->mkdir(resultDir, true);
 	gROOT->Macro("/data/users/pjgwak/input_files/rootlogon.C");
 
+	std::unique_ptr<TFile> savedFitFile;
+	if (drawFromSavedFit && !load_saved_fit_file(savedFitFile, modelFileName, "mass"))
+		return;
+
 	TFile *mcModelFile = TFile::Open(mcModelFileName);
 	if (!mcModelFile || mcModelFile->IsZombie())
 	{
@@ -248,6 +255,13 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 	};
 	nSignalGaussComponents = std::clamp(readIntParam("nSignalGaussComponents", nSignalGaussComponents), 0, 2);
 	nSignalCBComponents = std::clamp(readIntParam("nSignalCBComponents", nSignalCBComponents), 0, 2);
+	if (drawFromSavedFit)
+	{
+		nSignalGaussComponents = std::clamp(read_saved_int_param(savedFitFile.get(), "nSignalGaussComponents", nSignalGaussComponents), 0, 2);
+		nSignalCBComponents = std::clamp(read_saved_int_param(savedFitFile.get(), "nSignalCBComponents", nSignalCBComponents), 0, 2);
+		nBkgExpComponents = std::clamp(read_saved_int_param(savedFitFile.get(), "nBkgExpComponents", nBkgExpComponents), 0, 1);
+		nBkgChebyOrder = std::clamp(read_saved_int_param(savedFitFile.get(), "nBkgChebyOrder", nBkgChebyOrder), 0, 6);
+	}
 	if (nSignalCBComponents + nSignalGaussComponents <= 0)
 	{
 		std::cerr << "ERROR: invalid signal component configuration in " << mcModelFileName << std::endl;
@@ -483,12 +497,24 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 		addConstraint("signal_mass_frac3", signal_mass_frac3, false);
 
 	std::unique_ptr<RooFitResult> mass_result;
-	if (constraints.getSize() > 0)
+	if (drawFromSavedFit)
+	{
+		mass_result = clone_saved_fit_result(savedFitFile.get(), "fit_result");
+		if (!mass_result)
+		{
+			std::cerr << "ERROR: fit_result not found in saved mass file: " << modelFileName << std::endl;
+			return;
+		}
+		apply_saved_fit_result(mass_result.get(), *mass_pdf, RooArgSet(obs_mass));
+	}
+	else if (constraints.getSize() > 0)
 		mass_result.reset(mass_pdf->fitTo(*data, Extended(), Save(), PrintLevel(-1), SumW2Error(isWeight), ExternalConstraints(constraints)));
 	else
 		mass_result.reset(mass_pdf->fitTo(*data, Extended(), Save(), PrintLevel(-1), SumW2Error(isWeight)));
-	mass_result->Print();
+	if (mass_result)
+		mass_result->Print();
 
+	if (!drawFromSavedFit)
 	{
 		TFile outFile(modelFileName, "RECREATE");
 		if (!outFile.IsZombie())
@@ -568,6 +594,8 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 				mass_result->Write("fit_result");
 		}
 	}
+	else
+		std::cout << "[PlotOnly] Loaded saved mass fit and left ROOT file unchanged: " << modelFileName << std::endl;
 
 	// ------------------------------------------------------------------
 	// draw mass fit
@@ -677,7 +705,9 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 				}
 			}
 		}
-		tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
+		if (!publish)
+			if (!publish)
+				tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
 	}
 	{
 		TLatex tp;
@@ -701,12 +731,23 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 				if (std::isfinite(err) && err > 0.0)
 					tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g #pm %.3g", title, var.getVal(), err));
 				else
-					tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g", title, var.getVal()));
+					tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g (fixed)", title, var.getVal()));
 			}
 		};
-		printVar("N_{sig}", Nsig);
-		printVar("N_{bkg}", Nbkg);
-		printVar("#mu", signal_mass_mean);
+		if (publish)
+		{
+			printVar("N_{sig}", Nsig);
+			printVar("N_{bkg}", Nbkg);
+			if (nSignalGaussComponents >= 1)
+				printVar("#sigma_{G1}", signal_mass_sigma);
+			else if (nSignalCBComponents >= 1)
+				printVar("#sigma_{CB1}", *signal_mass_cb_sigma);
+		}
+		else
+		{
+			printVar("N_{sig}", Nsig);
+			printVar("N_{bkg}", Nbkg);
+			printVar("#mu", signal_mass_mean);
 			if (nSignalGaussComponents >= 1)
 				printVar("#sigma_{G1}", signal_mass_sigma);
 			if (nSignalCBComponents >= 1)
@@ -743,6 +784,7 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 			printVar("p_{5}", bkg_mass_p5);
 		if (nBkgChebyOrder >= 6)
 			printVar("p_{6}", bkg_mass_p6);
+		}
 	}
 
 	// ------------------------------------------------------------------
@@ -781,7 +823,7 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d (%.3g)", chiM.first, ndf, pvalue));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", chiM.first, ndf));
 	}
 
 	TLine line(obs_mass.getMin(), 0.0, obs_mass.getMax(), 0.0);

@@ -80,9 +80,9 @@ echo "[INFO] log monitor: max_log_mb=${max_log_mb}, check_interval=${log_check_i
 # Format:
 #   "yLow yHigh|ptLow1 ptHigh1;ptLow2 ptHigh2;..."
 bin_groups=(
-  # "0 1.6|20 35;16 20;14 16;12 14;10 12;9 10;8 9;7 8"
-  # "1.6 2.4|14 20;12 14;10 12;9 10;8 9;7 8;6 7;5 6;4 5;3 4;2 3;1 2"
-  "1.6 2.4|14 20;10 12"
+  "0 1.6|20 35;16 20;14 16;12 14;10 12;9 10;8 9;7 8"
+  "1.6 2.4|14 20;12 14;10 12;9 10;8 9;7 8;6 7;5 6;4 5;3 4;2 3;1 2"
+  # "1.6 2.4|14 20;10 12"
 )
 
 run_root_macro() {
@@ -91,7 +91,28 @@ run_root_macro() {
   local pt_high="$3"
   local y_low="$4"
   local y_high="$5"
-  local cmd="root -b -q '${macro_name}(${pt_low},${pt_high},${y_low},${y_high})'"
+  local args
+
+  case "$macro_name" in
+    mc_mass.C)
+      args="${pt_low},${pt_high},${y_low},${y_high},false,false,false"
+      ;;
+    mass.C|ctau_pr.C|ctau_np.C|err2.C)
+      args="${pt_low},${pt_high},${y_low},${y_high},false,false"
+      ;;
+    ctau_bkg.C)
+      args="${pt_low},${pt_high},${y_low},${y_high},true,false,false"
+      ;;
+    fit2d.C)
+      args="${pt_low},${pt_high},${y_low},${y_high},false,false,false"
+      ;;
+    *)
+      echo "[ERROR] unsupported macro: ${macro_name}" >&2
+      return 1
+      ;;
+  esac
+
+  local cmd="root -b -q '${macro_name}(${args})'"
 
   echo "$cmd"
   if [[ "$dry_run" -eq 0 ]]; then

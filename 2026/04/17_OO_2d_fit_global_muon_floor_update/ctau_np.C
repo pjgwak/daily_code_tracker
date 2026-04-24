@@ -53,7 +53,9 @@ https://github.com/cofitzpa/roofit_tutorial_solutions/blob/master/roofit_tutoria
 #include "TMath.h"
 #include "TString.h"
 #include "RooHist.h"
+#include "saved_fit_helpers.h"
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iostream>
 #include <limits>
@@ -130,9 +132,11 @@ static void apply_logy_auto_range(RooPlot *plot, const char *histName, double to
 	plot->SetMaximum(ymax);
 }
 
-void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4)
+void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4, bool drawFromSavedFit = false, bool publish = false)
 {
 	ScopedMacroTimer timer("ctau_np", ptLow, ptHigh, yLow, yHigh);
+	if (publish)
+		drawFromSavedFit = true;
 	bool isWeight = false;
 	// ------------------------------------------------------------------
 	// model control
@@ -280,6 +284,7 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	const TString prResultDir = TString::Format("roots/%s/ctau_pr", yTag.Data());
 	const TString resultDir = TString::Format("roots/%s/ctau_np", yTag.Data());
 	const TString figTag = yTag + "_" + ptTag;
+	const TString npModelFileName = TString::Format("%s/ctau_np_model_%s.root", resultDir.Data(), figTag.Data());
 	auto figName = [&](const char *name)
 	{
 		return TString::Format("%s/%s_%s.pdf", figDir.Data(), name, figTag.Data());
@@ -287,6 +292,12 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	gSystem->mkdir(figDir, true);
 	gSystem->mkdir(resultDir, true);
 	gROOT->Macro("/data/users/pjgwak/input_files/rootlogon.C");
+
+	std::unique_ptr<TFile> savedFitFile;
+	if (drawFromSavedFit && !load_saved_fit_file(savedFitFile, npModelFileName, "nonprompt ctau"))
+		return;
+	if (drawFromSavedFit)
+		nSignalSSComponents = std::clamp(read_saved_int_param(savedFitFile.get(), "nSignalSSComponents", nSignalSSComponents), 1, 3);
 
 	auto *obs_time_scan = static_cast<RooRealVar *>(dataSel->get()->find("ctau3D"));
 	auto *obs_timeErr_scan = static_cast<RooRealVar *>(dataSel->get()->find("ctau3DErr"));
@@ -418,14 +429,23 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	std::unique_ptr<RooAddPdf> timeErrPdfAnalytic = std::make_unique<RooAddPdf>(
 			"timeErrPdf", "timeErrPdf", timeErrPdfList, timeErrFracList, true);
 	std::unique_ptr<RooDataHist> timeErrHistData;
+	std::unique_ptr<TH1> timeErrHistTemplate;
 	std::unique_ptr<RooHistPdf> timeErrPdfHist;
 	RooAbsPdf *timeErrPdf = timeErrPdfAnalytic.get();
 	RooFitResult *timeErrResult = nullptr;
+	std::unique_ptr<RooFitResult> savedTimeErrResult;
 	if (errPdfOpt == kErrPdfHist)
 	{
+		timeErrHistTemplate = std::unique_ptr<TH1>(timeErrData->createHistogram(
+				"ctau_np_hTimeErr", obs_timeErr, Binning(timeErrPlotBins, errRange.first, errRange.second)));
+		if (!timeErrHistTemplate)
+		{
+			std::cerr << "ERROR: failed to build ctau3DErr histogram template." << std::endl;
+			return;
+		}
 		timeErrHistData = std::make_unique<RooDataHist>(
 				"timeErrHistData", "timeErrHistData",
-				RooArgSet(obs_timeErr), *timeErrData);
+				RooArgSet(obs_timeErr), timeErrHistTemplate.get());
 		timeErrPdfHist = std::make_unique<RooHistPdf>(
 				"timeErrHistPdf", "timeErrHistPdf",
 				RooArgSet(obs_timeErr), *timeErrHistData, histPdfInterpolationOrder);
@@ -433,12 +453,24 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	}
 	else
 	{
-		timeErrResult = timeErrPdfAnalytic->fitTo(
-				*timeErrData,
-				Save(true),
-				PrintLevel(-1),
-				SumW2Error(isWeight),
-				PrefitDataFraction(errPrefitDataFraction));
+		if (drawFromSavedFit)
+		{
+			savedTimeErrResult = clone_saved_fit_result(savedFitFile.get(), "timeErrResult");
+			timeErrResult = savedTimeErrResult.get();
+			if (!timeErrResult)
+			{
+				std::cerr << "ERROR: timeErrResult not found in saved nonprompt ctau file: " << npModelFileName << std::endl;
+				return;
+			}
+			apply_saved_fit_result(timeErrResult, *timeErrPdfAnalytic, RooArgSet(obs_timeErr));
+		}
+		else
+			timeErrResult = timeErrPdfAnalytic->fitTo(
+					*timeErrData,
+					Save(true),
+					PrintLevel(-1),
+					SumW2Error(isWeight),
+					PrefitDataFraction(errPrefitDataFraction));
 		timeErrGaus1Mean.setConstant(true);
 		timeErrGaus1Sigma.setConstant(true);
 		timeErrGaus2Mean.setConstant(true);
@@ -466,9 +498,9 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	timeErrPad1->cd();
 	RooPlot *timeErrPlot = obs_timeErr.frame(Range(errRange.first, errRange.second), Title(""));
 	if (isWeight)
-		timeErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins), DataError(RooAbsData::SumW2), Name("data"));
+		timeErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins, errRange.first, errRange.second), DataError(RooAbsData::SumW2), Name("data"));
 	else
-		timeErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins), Name("data"));
+		timeErrData->plotOn(timeErrPlot, Binning(timeErrPlotBins, errRange.first, errRange.second), Name("data"));
 	timeErrPdf->plotOn(timeErrPlot, LineColor(kBlack), LineWidth(2), Name("model"));
 	if (errPdfOpt == kErrPdfAnalytic && useLandau1)
 		timeErrPdf->plotOn(timeErrPlot, Components(timeErrTail), LineColor(kBlue + 2), LineStyle(kDashed), LineWidth(2), Name("tail"));
@@ -536,7 +568,8 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		tx.SetTextFont(42);
 		if (errPdfOpt == kErrPdfHist)
 		{
-			tx.DrawLatex(0.19, 0.765, Form("Status : RooHistPdf template (%d)", histPdfInterpolationOrder));
+			if (!publish)
+				tx.DrawLatex(0.19, 0.765, Form("Status : RooHistPdf template (%d)", histPdfInterpolationOrder));
 		}
 		else
 		{
@@ -554,9 +587,11 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 					}
 				}
 			}
-			tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
+			if (!publish)
+				tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
 		}
 	}
+	if (!publish)
 	{
 		TLatex tp;
 		tp.SetNDC();
@@ -578,14 +613,25 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		}
 		else
 		{
-			printVar("#mu_{1}", timeErrGaus1Mean);
-			printVar("#sigma_{1}", timeErrGaus1Sigma);
-			printVar("#mu_{2}", timeErrGaus2Mean);
-			printVar("#sigma_{2}", timeErrGaus2Sigma);
-			printVar("mpv_{L}", timeErrTailMpv);
-			printVar("#sigma_{L}", timeErrTailWidth);
-			printVar("f_{tail}", timeErrTailFrac);
-			printVar("f_{G1}", timeErrCore1Frac);
+			if (useGaus1)
+			{
+				printVar("#mu_{1}", timeErrGaus1Mean);
+				printVar("#sigma_{1}", timeErrGaus1Sigma);
+			}
+			if (useGaus2)
+			{
+				printVar("#mu_{2}", timeErrGaus2Mean);
+				printVar("#sigma_{2}", timeErrGaus2Sigma);
+			}
+			if (useLandau1)
+			{
+				printVar("mpv_{L}", timeErrTailMpv);
+				printVar("#sigma_{L}", timeErrTailWidth);
+				if (nTimeErrComponents > 1)
+					printVar("f_{tail}", timeErrTailFrac);
+			}
+			if (useGaus1 && nTimeErrComponents > 1)
+				printVar("f_{G1}", timeErrCore1Frac);
 		}
 	}
 
@@ -622,7 +668,7 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d (%.3g)", timeErrChi.first, timeErrNdf, timeErrPvalue));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", timeErrChi.first, timeErrNdf));
 	}
 
 	TLine timeErrLine(errRange.first, 0.0, errRange.second, 0.0);
@@ -701,50 +747,181 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		std::cerr << "ERROR: invalid prompt resolution parameters in " << resolutionFileName << std::endl;
 		return;
 	}
+	RooFitResult *resolutionResult = dynamic_cast<RooFitResult *>(resolutionFile->Get("timeResult"));
+	auto readResolutionFitError = [&](const char *name) -> double
+	{
+		if (!resolutionResult)
+			return std::numeric_limits<double>::quiet_NaN();
+		auto *var = dynamic_cast<RooRealVar *>(resolutionResult->floatParsFinal().find(name));
+		if (!var)
+			var = dynamic_cast<RooRealVar *>(resolutionResult->constPars().find(name));
+		return var ? var->getError() : std::numeric_limits<double>::quiet_NaN();
+	};
+	auto readResolutionYield = [&](const char *name) -> std::pair<double, double>
+	{
+		if (!resolutionResult)
+			return {std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN()};
+		auto *var = dynamic_cast<RooRealVar *>(resolutionResult->floatParsFinal().find(name));
+		if (!var)
+			var = dynamic_cast<RooRealVar *>(resolutionResult->constPars().find(name));
+		return var ? std::make_pair(var->getVal(), var->getError())
+							 : std::make_pair(std::numeric_limits<double>::quiet_NaN(), std::numeric_limits<double>::quiet_NaN());
+	};
+	auto resolutionFractionError = [&](int idx) -> double
+	{
+		std::array<std::pair<double, double>, 4> y = {
+				readResolutionYield("Nctau1"),
+				readResolutionYield("Nctau2"),
+				readResolutionYield("Nctau3"),
+				readResolutionYield("Nctau4")};
+		double total = 0.0;
+		for (int i = 0; i < nResolutionComponents; ++i)
+		{
+			if (!std::isfinite(y[i].first))
+				return std::numeric_limits<double>::quiet_NaN();
+			total += y[i].first;
+		}
+		if (!(total > 0.0))
+			return std::numeric_limits<double>::quiet_NaN();
+		double var = 0.0;
+		for (int i = 0; i < nResolutionComponents; ++i)
+		{
+			if (!(std::isfinite(y[i].second) && y[i].second > 0.0))
+				return std::numeric_limits<double>::quiet_NaN();
+			const double deriv = (i == idx ? total - y[idx].first : -y[idx].first) / (total * total);
+			var += deriv * deriv * y[i].second * y[i].second;
+		}
+		return std::sqrt(var);
+	};
 	resolutionFile->Close();
 	std::cout << "Loaded ctau prompt resolution from " << resolutionFileName << std::endl;
 
-		// ------------------------------------------------------------------
-		// build signal ctau model
-		// ------------------------------------------------------------------
-		const double signalLifetimeInit = std::max(0.08, 1.5 * signalLifetimeFloor);
-		const double signalLifetimeCeil = std::max(signalLifetimeInit * 5.0, maxStableLifetime);
-		RooRealVar signal_lifetime(
-				"signal_lifetime", "signal_lifetime",
-				signalLifetimeInit,
-				signalLifetimeFloor + 1e-2,
-				signalLifetimeCeil);
+	// ------------------------------------------------------------------
+	// build signal ctau model
+	// ------------------------------------------------------------------
+	const double signalLifetimeInit = std::max(0.08, 1.5 * signalLifetimeFloor);
+	const double signalLifetimeCeil = std::max(signalLifetimeInit * 5.0, maxStableLifetime);
+	RooRealVar signal_lifetime(
+			"signal_lifetime", "signal_lifetime",
+			signalLifetimeInit,
+			signalLifetimeFloor + 1e-2,
+			signalLifetimeCeil);
+
+	double maxPromptScaleSaved = std::max(ctauTime1ScaleVal, 0.0);
+	if (nResolutionComponents >= 2 && std::isfinite(ctauTime2ScaleVal))
+		maxPromptScaleSaved = std::max(maxPromptScaleSaved, ctauTime2ScaleVal);
+	if (nResolutionComponents >= 3 && std::isfinite(ctauTime3ScaleVal))
+		maxPromptScaleSaved = std::max(maxPromptScaleSaved, ctauTime3ScaleVal);
+	if (nResolutionComponents >= 4 && std::isfinite(ctauTime4ScaleVal))
+		maxPromptScaleSaved = std::max(maxPromptScaleSaved, ctauTime4ScaleVal);
 
 	RooConstVar ctauMeanScale("ctauMeanScale", "ctauMeanScale", ctauMeanScaleVal);
 	RooRealVar ctauTime1Mean("ctauTime1Mean", "ctauTime1Mean", ctauTime1MeanVal);
-	RooRealVar ctauTime1Scale("ctauTime1Scale", "ctauTime1Scale", ctauTime1ScaleVal);
+	RooRealVar ctauTime1Scale(
+			"ctauTime1Scale", "ctauTime1Scale",
+			ctauTime1ScaleVal,
+			std::max(0.3, 0.5 * ctauTime1ScaleVal),
+			std::max(3.0, 2.0 * ctauTime1ScaleVal));
 	RooGaussModel ctauTime1("ctauTime1", "ctauTime1", obs_time, ctauTime1Mean, ctauTime1Scale, ctauMeanScale, obs_timeErr);
 	RooRealVar ctauTime2Mean("ctauTime2Mean", "ctauTime2Mean", ctauTime2MeanVal);
-	RooRealVar ctauTime2Delta("ctauTime2Delta", "ctauTime2Delta", std::max(0.05, ctauTime2ScaleVal - ctauTime1ScaleVal));
+	const double ctauTime2DeltaVal = std::max(0.05, ctauTime2ScaleVal - ctauTime1ScaleVal);
+	RooRealVar ctauTime2Delta(
+			"ctauTime2Delta", "ctauTime2Delta",
+			ctauTime2DeltaVal,
+			0.05,
+			std::max(3.0, 2.0 * ctauTime2DeltaVal));
 	RooFormulaVar ctauTime2Scale("ctauTime2Scale", "@0+@1", RooArgList(ctauTime1Scale, ctauTime2Delta));
 	RooGaussModel ctauTime2("ctauTime2", "ctauTime2", obs_time, ctauTime2Mean, ctauTime2Scale, ctauMeanScale, obs_timeErr);
 	RooRealVar ctauFrac1("ctauFrac1", "ctauFrac1", ctauFrac1Val);
 	RooRealVar ctauTime3Mean("ctauTime3Mean", "ctauTime3Mean", ctauTime3MeanVal);
-	RooRealVar ctauTime3Delta("ctauTime3Delta", "ctauTime3Delta", std::max(0.05, ctauTime3ScaleVal - ctauTime2ScaleVal));
+	const double ctauTime3DeltaVal = std::max(0.05, ctauTime3ScaleVal - ctauTime2ScaleVal);
+	RooRealVar ctauTime3Delta(
+			"ctauTime3Delta", "ctauTime3Delta",
+			ctauTime3DeltaVal,
+			0.05,
+			std::max(3.0, 2.0 * ctauTime3DeltaVal));
 	RooFormulaVar ctauTime3Scale("ctauTime3Scale", "@0+@1", RooArgList(ctauTime2Scale, ctauTime3Delta));
 	RooGaussModel ctauTime3("ctauTime3", "ctauTime3", obs_time, ctauTime3Mean, ctauTime3Scale, ctauMeanScale, obs_timeErr);
 	RooRealVar ctauFrac2("ctauFrac2", "ctauFrac2", ctauFrac2Val);
 	RooRealVar ctauTime4Mean("ctauTime4Mean", "ctauTime4Mean", ctauTime4MeanVal);
-	RooRealVar ctauTime4Delta("ctauTime4Delta", "ctauTime4Delta", std::max(0.05, ctauTime4ScaleVal - ctauTime3ScaleVal));
+	const double ctauTime4DeltaVal = std::max(0.05, ctauTime4ScaleVal - ctauTime3ScaleVal);
+	RooRealVar ctauTime4Delta(
+			"ctauTime4Delta", "ctauTime4Delta",
+			ctauTime4DeltaVal,
+			0.05,
+			std::max(3.0, 2.0 * ctauTime4DeltaVal));
 	RooFormulaVar ctauTime4Scale("ctauTime4Scale", "@0+@1", RooArgList(ctauTime3Scale, ctauTime4Delta));
 	RooGaussModel ctauTime4("ctauTime4", "ctauTime4", obs_time, ctauTime4Mean, ctauTime4Scale, ctauMeanScale, obs_timeErr);
 	RooRealVar ctauFrac3("ctauFrac3", "ctauFrac3", ctauFrac3Val);
 	ctauTime1Mean.setConstant(true);
-	ctauTime1Scale.setConstant(true);
 	ctauTime2Mean.setConstant(true);
-	ctauTime2Delta.setConstant(true);
-	ctauFrac1.setConstant(true);
 	ctauTime3Mean.setConstant(true);
-	ctauTime3Delta.setConstant(true);
-	ctauFrac2.setConstant(true);
 	ctauTime4Mean.setConstant(true);
-	ctauTime4Delta.setConstant(true);
-	ctauFrac3.setConstant(true);
+	RooArgSet timeConstraints;
+	std::vector<std::unique_ptr<RooRealVar>> timeConstraintConsts;
+	std::vector<std::unique_ptr<RooGaussian>> timeConstraintPdfs;
+	auto constraintSigmaFloor = [&](double central, double relFloor, double absFloor)
+	{
+		return std::max(absFloor, relFloor * std::abs(central));
+	};
+	auto addConstraint = [&](const char *baseName, RooRealVar &var, double central, double sigma)
+	{
+		if (!(std::isfinite(central) && std::isfinite(sigma) && sigma > 0.0))
+			return;
+		var.setVal(central);
+		const TString meanName = TString::Format("%s_mean", baseName);
+		const TString sigmaName = TString::Format("%s_sigma", baseName);
+		const TString pdfName = TString::Format("%s_constraint", baseName);
+		timeConstraintConsts.push_back(std::make_unique<RooRealVar>(meanName, meanName, central));
+		timeConstraintConsts.back()->setConstant(true);
+		timeConstraintConsts.push_back(std::make_unique<RooRealVar>(
+				sigmaName, sigmaName, sigma, 1e-9, std::max(10.0 * sigma, 1e-8)));
+		timeConstraintConsts.back()->setConstant(true);
+		timeConstraintPdfs.push_back(std::make_unique<RooGaussian>(
+				pdfName, pdfName, var,
+				*timeConstraintConsts[timeConstraintConsts.size() - 2],
+				*timeConstraintConsts.back()));
+		timeConstraints.add(*timeConstraintPdfs.back());
+	};
+	auto constraintSigmaFromFit = [&](const char *fitName, double central, double relFloor, double absFloor)
+	{
+		double sigma = constraintSigmaFloor(central, relFloor, absFloor);
+		const double fitErr = readResolutionFitError(fitName);
+		if (std::isfinite(fitErr) && fitErr > 0.0)
+			sigma = std::max(sigma, fitErr);
+		return sigma;
+	};
+	auto fractionConstraintSigma = [&](int idx, double central)
+	{
+		double sigma = constraintSigmaFloor(central, 0.10, 0.02);
+		const double fitErr = resolutionFractionError(idx);
+		if (std::isfinite(fitErr) && fitErr > 0.0)
+			sigma = std::max(sigma, fitErr);
+		return sigma;
+	};
+	addConstraint("ctauTime1Scale", ctauTime1Scale, ctauTime1ScaleVal,
+			constraintSigmaFromFit("ctauTime1Scale", ctauTime1ScaleVal, 0.10, 0.05));
+	if (nResolutionComponents >= 2)
+	{
+		addConstraint("ctauTime2Delta", ctauTime2Delta, ctauTime2DeltaVal,
+				constraintSigmaFromFit("ctauTime2Delta", ctauTime2DeltaVal, 0.10, 0.05));
+		addConstraint("ctauFrac1", ctauFrac1, ctauFrac1Val,
+				fractionConstraintSigma(0, ctauFrac1Val));
+	}
+	if (nResolutionComponents >= 3)
+	{
+		addConstraint("ctauTime3Delta", ctauTime3Delta, ctauTime3DeltaVal,
+				constraintSigmaFromFit("ctauTime3Delta", ctauTime3DeltaVal, 0.10, 0.05));
+		addConstraint("ctauFrac2", ctauFrac2, ctauFrac2Val,
+				fractionConstraintSigma(1, ctauFrac2Val));
+	}
+	if (nResolutionComponents >= 4)
+	{
+		addConstraint("ctauTime4Delta", ctauTime4Delta, ctauTime4DeltaVal,
+				constraintSigmaFromFit("ctauTime4Delta", ctauTime4DeltaVal, 0.10, 0.05));
+		addConstraint("ctauFrac3", ctauFrac3, ctauFrac3Val,
+				fractionConstraintSigma(2, ctauFrac3Val));
+	}
 
 	std::unique_ptr<RooAddModel> promptResolutionModel;
 	RooResolutionModel *time_resolution_ptr = &ctauTime1;
@@ -771,13 +948,6 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		time_resolution_ptr = promptResolutionModel.get();
 	}
 	RooResolutionModel &time_resolution = *time_resolution_ptr;
-	double maxPromptScaleSaved = std::max(ctauTime1ScaleVal, 0.0);
-	if (nResolutionComponents >= 2 && std::isfinite(ctauTime2ScaleVal))
-		maxPromptScaleSaved = std::max(maxPromptScaleSaved, ctauTime2ScaleVal);
-	if (nResolutionComponents >= 3 && std::isfinite(ctauTime3ScaleVal))
-		maxPromptScaleSaved = std::max(maxPromptScaleSaved, ctauTime3ScaleVal);
-	if (nResolutionComponents >= 4 && std::isfinite(ctauTime4ScaleVal))
-		maxPromptScaleSaved = std::max(maxPromptScaleSaved, ctauTime4ScaleVal);
 	const double resolutionDrivenLifetimeFloor =
 		std::max(absoluteLifetimeFloor, lifetimeFloorCoeff * maxPromptScaleSaved * std::max(errRange.second, absoluteLifetimeFloor));
 	signalLifetimeFloor = std::max(signalLifetimeFloor, resolutionDrivenLifetimeFloor);
@@ -785,29 +955,102 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	maxStableLifetime = std::max(maxStableLifetime, 20.0 * bkgLifetimeFloor);
 
 	// Build up to three positive lifetime components that share the prompt resolution kernel.
-		RooDecay signal_ss1_time("signal_ss1_time", "signal_ss1_time", obs_time, signal_lifetime, time_resolution, RooDecay::SingleSided);
-		const double signalLifetime2Floor = std::max(0.75 * signalLifetimeFloor, 5e-3);
-		const double signalLifetime2Init = std::max(0.20, 2.0 * signalLifetime2Floor);
-		const double signalLifetime2Ceil = std::max(signalLifetime2Init * 5.0, maxStableLifetime);
-		RooRealVar signal2_lifetime(
-				"signal2_lifetime", "signal2_lifetime",
-				signalLifetime2Init,
-				signalLifetime2Floor + 2e-2,
-				signalLifetime2Ceil);
-		RooDecay signal_ss2_time("signal_ss2_time", "signal_ss2_time", obs_time, signal2_lifetime, time_resolution, RooDecay::SingleSided);
-		const double signalLifetime3Floor = std::max(1.00 * signalLifetimeFloor, 5e-3);
-		const double signalLifetime3Init = std::max(0.40, 2.0 * signalLifetime3Floor);
-		const double signalLifetime3Ceil = std::max(signalLifetime3Init * 5.0, maxStableLifetime);
-		RooRealVar signal3_lifetime(
-				"signal3_lifetime", "signal3_lifetime",
-				signalLifetime3Init,
-				signalLifetime3Floor + 1e-2,
-				signalLifetime3Ceil);
-		RooDecay signal_ss3_time("signal_ss3_time", "signal_ss3_time", obs_time, signal3_lifetime, time_resolution, RooDecay::SingleSided);
-		RooRealVar NsignalSS1("NsignalSS1", "NsignalSS1", 0.5 * data->numEntries(), 0.0 * data->numEntries(), std::max(1, data->numEntries()));
-		RooRealVar NsignalSS2("NsignalSS2", "NsignalSS2", 0.3 * data->numEntries(), 0.0, std::max(1, data->numEntries()));
-		RooRealVar NsignalSS3("NsignalSS3", "NsignalSS3", 0.2 * data->numEntries(), 0.0, std::max(1, data->numEntries()));
-		std::unique_ptr<RooAddPdf> signal_time;
+	RooDecay signal_ss1_time("signal_ss1_time", "signal_ss1_time", obs_time, signal_lifetime, time_resolution, RooDecay::SingleSided);
+	const double signalLifetime2Floor = std::max(0.75 * signalLifetimeFloor, 5e-3);
+	const double signalLifetime2Init = std::max(0.20, 2.0 * signalLifetime2Floor);
+	const double signalLifetime2Ceil = std::max(signalLifetime2Init * 5.0, maxStableLifetime);
+	RooRealVar signal2_lifetime(
+			"signal2_lifetime", "signal2_lifetime",
+			signalLifetime2Init,
+			signalLifetime2Floor + 2e-2,
+			signalLifetime2Ceil);
+	RooDecay signal_ss2_time("signal_ss2_time", "signal_ss2_time", obs_time, signal2_lifetime, time_resolution, RooDecay::SingleSided);
+	const double signalLifetime3Floor = std::max(1.00 * signalLifetimeFloor, 5e-3);
+	const double signalLifetime3Init = std::max(0.40, 2.0 * signalLifetime3Floor);
+	const double signalLifetime3Ceil = std::max(signalLifetime3Init * 5.0, maxStableLifetime);
+	RooRealVar signal3_lifetime(
+			"signal3_lifetime", "signal3_lifetime",
+			signalLifetime3Init,
+			signalLifetime3Floor + 1e-2,
+			signalLifetime3Ceil);
+	RooDecay signal_ss3_time("signal_ss3_time", "signal_ss3_time", obs_time, signal3_lifetime, time_resolution, RooDecay::SingleSided);
+	RooRealVar NsignalSS1("NsignalSS1", "NsignalSS1", 0.5 * data->numEntries(), 0.0 * data->numEntries(), std::max(1, data->numEntries()));
+	RooRealVar NsignalSS2("NsignalSS2", "NsignalSS2", 0.3 * data->numEntries(), 0.0, std::max(1, data->numEntries()));
+	RooRealVar NsignalSS3("NsignalSS3", "NsignalSS3", 0.2 * data->numEntries(), 0.0, std::max(1, data->numEntries()));
+	auto setSeedIfFinite = [](RooRealVar &var, double value)
+	{
+		if (!std::isfinite(value))
+			return;
+		var.setVal(std::clamp(value, var.getMin(), var.getMax()));
+	};
+	auto applyLifetimeSeedDefaults = [&]()
+	{
+		double tau1Seed = 0.30;
+		double tau2Seed = 0.46;
+		double tau3Seed = 0.80;
+		double frac1Seed = 0.60;
+		double frac2Seed = 0.25;
+		if (yLow == 0.0f)
+		{
+			tau1Seed = 0.34;
+			tau2Seed = 0.48;
+			tau3Seed = 0.90;
+			frac1Seed = 0.62;
+			frac2Seed = 0.24;
+		}
+		else if (ptHigh <= 2.0f)
+		{
+			tau1Seed = 0.05;
+			tau2Seed = 0.45;
+			tau3Seed = 0.90;
+			frac1Seed = 0.25;
+			frac2Seed = 0.20;
+		}
+		else if (ptHigh <= 6.0f)
+		{
+			tau1Seed = 0.18;
+			tau2Seed = 0.42;
+			tau3Seed = 0.85;
+			frac1Seed = 0.45;
+			frac2Seed = 0.25;
+		}
+		setSeedIfFinite(signal_lifetime, tau1Seed);
+		if (nSignalSSComponents >= 2)
+			setSeedIfFinite(signal2_lifetime, tau2Seed);
+		if (nSignalSSComponents >= 3)
+			setSeedIfFinite(signal3_lifetime, tau3Seed);
+		const double totalEntries = std::max(1.0, static_cast<double>(data->numEntries()));
+		NsignalSS1.setVal(std::clamp(frac1Seed * totalEntries, NsignalSS1.getMin(), NsignalSS1.getMax()));
+		if (nSignalSSComponents >= 2)
+		{
+			const double frac2Norm = (nSignalSSComponents >= 3) ? frac2Seed : (1.0 - frac1Seed);
+			NsignalSS2.setVal(std::clamp(frac2Norm * totalEntries, NsignalSS2.getMin(), NsignalSS2.getMax()));
+		}
+		if (nSignalSSComponents >= 3)
+		{
+			const double frac3Seed = std::max(0.05, 1.0 - frac1Seed - frac2Seed);
+			NsignalSS3.setVal(std::clamp(frac3Seed * totalEntries, NsignalSS3.getMin(), NsignalSS3.getMax()));
+		}
+	};
+	auto enforceOrderedLifetimeSeeds = [&]()
+	{
+		const double tauGap12 = 0.05;
+		const double tauGap23 = 0.08;
+		setSeedIfFinite(signal_lifetime, signal_lifetime.getVal());
+		if (nSignalSSComponents >= 2)
+		{
+			const double tau2Min = std::min(signal2_lifetime.getMax(), std::max(signal2_lifetime.getMin(), signal_lifetime.getVal() + tauGap12));
+			setSeedIfFinite(signal2_lifetime, std::max(signal2_lifetime.getVal(), tau2Min));
+		}
+		if (nSignalSSComponents >= 3)
+		{
+			const double tau3Min = std::min(signal3_lifetime.getMax(), std::max(signal3_lifetime.getMin(), signal2_lifetime.getVal() + tauGap23));
+			setSeedIfFinite(signal3_lifetime, std::max(signal3_lifetime.getVal(), tau3Min));
+		}
+	};
+	applyLifetimeSeedDefaults();
+	enforceOrderedLifetimeSeeds();
+	std::unique_ptr<RooAddPdf> signal_time;
 		if (nSignalSSComponents == 1)
 		{
 			NsignalSS2.setVal(0.0);
@@ -840,30 +1083,136 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	// fit the signal ctau model
 	// ------------------------------------------------------------------
 	RooProdPdf time_pdf("time_pdf", "time_pdf", RooArgSet(*timeErrPdf), Conditional(RooArgSet(*signal_time), RooArgSet(obs_time)));
-	RooFitResult *time_result = time_pdf.fitTo(
-			*data,
-			// Strategy(2),
-			Extended(),
-			Save(),
-			SumW2Error(isWeight),
-			PrefitDataFraction(errPrefitDataFraction),
-			RecoverFromUndefinedRegions(1.0));
-	if (time_result && time_result->status() != 0)
+	const double ctauTime1MeanSeed = ctauTime1Mean.getVal();
+	const double ctauTime1ScaleSeed = ctauTime1Scale.getVal();
+	const double ctauTime2DeltaSeed = ctauTime2Delta.getVal();
+	const double ctauTime3DeltaSeed = ctauTime3Delta.getVal();
+	const double ctauTime4DeltaSeed = ctauTime4Delta.getVal();
+	const double ctauFrac1Seed = ctauFrac1.getVal();
+	const double ctauFrac2Seed = ctauFrac2.getVal();
+	const double ctauFrac3Seed = ctauFrac3.getVal();
+	const double signalLifetimeSeed = signal_lifetime.getVal();
+	const double signalLifetime2Seed = signal2_lifetime.getVal();
+	const double signalLifetime3Seed = signal3_lifetime.getVal();
+	const double signalYield1Seed = NsignalSS1.getVal();
+	const double signalYield2Seed = NsignalSS2.getVal();
+	const double signalYield3Seed = NsignalSS3.getVal();
+	auto resetTimeFitSeeds = [&]()
 	{
-		std::cout << "[WARN] np time fit did not converge (status=" << time_result->status()
-							<< "), retrying once." << std::endl;
-		delete time_result;
-		time_result = time_pdf.fitTo(
-				*data,
-				Extended(),
-				Save(),
-				SumW2Error(isWeight),
-				PrefitDataFraction(errPrefitDataFraction),
-				RecoverFromUndefinedRegions(1.0));
+		setSeedIfFinite(ctauTime1Mean, ctauTime1MeanSeed);
+		setSeedIfFinite(ctauTime1Scale, ctauTime1ScaleSeed);
+		if (nResolutionComponents >= 2)
+		{
+			setSeedIfFinite(ctauTime2Delta, ctauTime2DeltaSeed);
+			setSeedIfFinite(ctauFrac1, ctauFrac1Seed);
+		}
+		if (nResolutionComponents >= 3)
+		{
+			setSeedIfFinite(ctauTime3Delta, ctauTime3DeltaSeed);
+			setSeedIfFinite(ctauFrac2, ctauFrac2Seed);
+		}
+		if (nResolutionComponents >= 4)
+		{
+			setSeedIfFinite(ctauTime4Delta, ctauTime4DeltaSeed);
+			setSeedIfFinite(ctauFrac3, ctauFrac3Seed);
+		}
+		setSeedIfFinite(signal_lifetime, signalLifetimeSeed);
+		setSeedIfFinite(NsignalSS1, signalYield1Seed);
+		if (nSignalSSComponents >= 2)
+		{
+			setSeedIfFinite(signal2_lifetime, signalLifetime2Seed);
+			if (!NsignalSS2.isConstant())
+				setSeedIfFinite(NsignalSS2, signalYield2Seed);
+		}
+		if (nSignalSSComponents >= 3)
+		{
+			setSeedIfFinite(signal3_lifetime, signalLifetime3Seed);
+			if (!NsignalSS3.isConstant())
+				setSeedIfFinite(NsignalSS3, signalYield3Seed);
+		}
+		enforceOrderedLifetimeSeeds();
+	};
+	RooFitResult *time_result = nullptr;
+	std::unique_ptr<RooFitResult> savedTimeResult;
+	if (drawFromSavedFit)
+	{
+		savedTimeResult = clone_saved_fit_result(savedFitFile.get(), "timeResult");
+		time_result = savedTimeResult.get();
+		if (time_result)
+		{
+			apply_saved_fit_result(time_result, time_pdf, RooArgSet(obs_time, obs_timeErr));
+		}
+		else
+		{
+			auto applySavedValue = [&](const char *name, RooRealVar &var)
+			{
+				const double value = read_saved_double_param(savedFitFile.get(), name, std::numeric_limits<double>::quiet_NaN());
+				if (std::isfinite(value))
+					var.setVal(value);
+			};
+			applySavedValue("signal_lifetime", signal_lifetime);
+			if (nSignalSSComponents >= 2)
+				applySavedValue("signal2_lifetime", signal2_lifetime);
+			if (nSignalSSComponents >= 3)
+				applySavedValue("signal3_lifetime", signal3_lifetime);
+			applySavedValue("NsignalSS1", NsignalSS1);
+			if (nSignalSSComponents >= 2)
+				applySavedValue("NsignalSS2", NsignalSS2);
+			if (nSignalSSComponents >= 3)
+				applySavedValue("NsignalSS3", NsignalSS3);
+			std::cout << "[PlotOnly] timeResult not found; loaded saved nonprompt ctau TParameters from "
+								<< npModelFileName << std::endl;
+		}
 	}
-	time_result->Print();
+	else
+	{
+		struct TimeFitAttempt
+		{
+			int strategy;
+			double prefitFraction;
+			const char *label;
+		};
+		const std::array<TimeFitAttempt, 3> attempts = {{
+			{1, errPrefitDataFraction, "nominal"},
+			{1, std::max(errPrefitDataFraction, 0.70), "prefit70"},
+			{2, std::max(errPrefitDataFraction, 0.85), "strategy2"}
+		}};
+		for (size_t i = 0; i < attempts.size(); ++i)
+		{
+			const auto &attempt = attempts[i];
+			if (i > 0)
+				resetTimeFitSeeds();
+			if (time_result)
+			{
+				delete time_result;
+				time_result = nullptr;
+			}
+			time_result = time_pdf.fitTo(
+					*data,
+					Strategy(attempt.strategy),
+					Extended(),
+					Save(),
+					SumW2Error(isWeight),
+					Offset(true),
+					ExternalConstraints(timeConstraints),
+					PrefitDataFraction(attempt.prefitFraction),
+					RecoverFromUndefinedRegions(1.0));
+			const bool fitOk = time_result && time_result->status() == 0 && time_result->covQual() >= 2;
+			if (fitOk)
+				break;
+			if (time_result && i + 1 < attempts.size())
+			{
+				std::cout << "[WARN] np time fit attempt '" << attempt.label
+						  << "' ended with status=" << time_result->status()
+						  << " covQual=" << time_result->covQual()
+						  << ", retrying." << std::endl;
+			}
+		}
+	}
+	if (time_result)
+		time_result->Print();
 
-	const TString npModelFileName = TString::Format("%s/ctau_np_model_%s.root", resultDir.Data(), figTag.Data());
+	if (!drawFromSavedFit)
 	{
 		TFile modelFile(npModelFileName, "RECREATE");
 		if (!modelFile.IsZombie())
@@ -875,19 +1224,19 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 			TParameter<double>("ctauTime1Scale", ctauTime1Scale.getVal()).Write();
 			if (nResolutionComponents >= 2)
 			{
-				TParameter<double>("ctauTime2Mean", ctauTime2Mean.getVal()).Write();
+				TParameter<double>("ctauTime2Mean", ctauTime1Mean.getVal()).Write();
 				TParameter<double>("ctauTime2Scale", ctauTime2Scale.getVal()).Write();
 				TParameter<double>("ctauFrac1", ctauFrac1.getVal()).Write();
 			}
 			if (nResolutionComponents >= 3)
 			{
-				TParameter<double>("ctauTime3Mean", ctauTime3Mean.getVal()).Write();
+				TParameter<double>("ctauTime3Mean", ctauTime1Mean.getVal()).Write();
 				TParameter<double>("ctauTime3Scale", ctauTime3Scale.getVal()).Write();
 				TParameter<double>("ctauFrac2", ctauFrac2.getVal()).Write();
 			}
 			if (nResolutionComponents >= 4)
 			{
-				TParameter<double>("ctauTime4Mean", ctauTime4Mean.getVal()).Write();
+				TParameter<double>("ctauTime4Mean", ctauTime1Mean.getVal()).Write();
 				TParameter<double>("ctauTime4Scale", ctauTime4Scale.getVal()).Write();
 				TParameter<double>("ctauFrac3", ctauFrac3.getVal()).Write();
 			}
@@ -918,7 +1267,10 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 			std::cerr << "ERROR: cannot create NP model file: " << npModelFileName << std::endl;
 		}
 	}
-	std::cout << "Saved ctau NP model parameters to " << npModelFileName << std::endl;
+	if (drawFromSavedFit)
+		std::cout << "[PlotOnly] Loaded saved nonprompt ctau fit and left ROOT file unchanged: " << npModelFileName << std::endl;
+	else
+		std::cout << "Saved ctau NP model parameters to " << npModelFileName << std::endl;
 
 	// Build component-only PDFs for plotting with the same conditional structure.
 	std::unique_ptr<RooProdPdf> time_pdf_ss1;
@@ -1061,8 +1413,10 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 				}
 			}
 		}
-		tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
+		if (!publish)
+			tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", status, hesse));
 	}
+	if (!publish)
 	{
 		TLatex tp;
 		tp.SetNDC();
@@ -1078,7 +1432,14 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 			else if (rrv)
 				tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g #pm %.3g", title, rrv->getVal(), rrv->getError()));
 			else
-				tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g", title, var.getVal()));
+				tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g (fixed)", title, var.getVal()));
+		};
+		auto printFloatingVar = [&](const char *title, const RooAbsReal &var)
+		{
+			const RooRealVar *rrv = dynamic_cast<const RooRealVar *>(&var);
+			if (rrv && rrv->isConstant())
+				return;
+			printVar(title, var);
 		};
 			printVar("N_{SS1}", NsignalSS1);
 			if (nSignalSSComponents >= 2)
@@ -1090,12 +1451,19 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 			printVar("#tau_{SS2}", signal2_lifetime);
 		if (nSignalSSComponents == 3)
 			printVar("#tau_{SS3}", signal3_lifetime);
+			printFloatingVar("#sigma_{1}^{res}", ctauTime1Scale);
 			if (nResolutionComponents >= 2)
-				printVar("f_{res1}", ctauFrac1);
+				printFloatingVar("#Delta s_{21}^{res}", ctauTime2Delta);
 			if (nResolutionComponents >= 3)
-				printVar("f_{res2}", ctauFrac2);
+				printFloatingVar("#Delta s_{32}^{res}", ctauTime3Delta);
 			if (nResolutionComponents >= 4)
-				printVar("f_{res3}", ctauFrac3);
+				printFloatingVar("#Delta s_{43}^{res}", ctauTime4Delta);
+			if (nResolutionComponents >= 2)
+				printFloatingVar("f_{res1}", ctauFrac1);
+			if (nResolutionComponents >= 3)
+				printFloatingVar("f_{res2}", ctauFrac2);
+			if (nResolutionComponents >= 4)
+				printFloatingVar("f_{res3}", ctauFrac3);
 	}
 
 	// ------------------------------------------------------------------
@@ -1134,7 +1502,7 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d (%.3g)", chiM.first, ndf, pvalue));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", chiM.first, ndf));
 	}
 
 	TLine line(ctRange.first, 0.0, ctRange.second, 0.0);
@@ -1154,7 +1522,8 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		cout << "------------------ FIT RESULT FOR TIME ERR ---------------" << endl;
 		timeErrResult->Print("v");
 	}
-	time_result->Print("v");
+	if (time_result)
+		time_result->Print("v");
 	{
 		auto printFloorVsValue2Sigma = [&](const char *name, RooAbsReal &var, double floor)
 		{
