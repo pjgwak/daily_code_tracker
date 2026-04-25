@@ -321,8 +321,8 @@ void ctau_bkg(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh =
 		return;
 	}
 
-	const double sidebandLeftMax = 2.9;
-	const double sidebandRightMin = 3.2;
+	const double sidebandLeftMax = 2.8;
+	const double sidebandRightMin = 3.3;
 	TString cutSideband = Form("(mass >= 2.6 && mass < %g) || (mass > %g && mass <= 3.5)",
 		sidebandLeftMax, sidebandRightMin);
 	auto dataSB = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(dataSel->reduce(cutSideband)));

@@ -335,9 +335,11 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 
 	RooDataSet *data = dataSel.get();
 
-	const double sidebandLeftMax = 2.9;
-	const double sidebandRightMin = 3.2;
-	TString cutSignalRegion = Form("(mass >= %g && mass <= %g)", sidebandLeftMax, sidebandRightMin);
+	const double jpsiMassLow = 2.9;
+	const double jpsiMassHigh = 3.3;
+	const double sidebandLeftMax = 2.8;
+	const double sidebandRightMin = 3.3;
+	TString cutSignalRegion = Form("(mass >= %g && mass <= %g)", jpsiMassLow, jpsiMassHigh);
 	TString cutSideband = Form("(mass >= 2.6 && mass < %g) || (mass > %g && mass <= 3.5)", sidebandLeftMax, sidebandRightMin);
 	auto dataSB = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(data->reduce(cutSideband)));
 	if (!dataSB || dataSB->numEntries() <= 0) dataSB.reset(static_cast<RooDataSet *>(data->reduce(RooArgSet(obs_mass, obs_time, obs_timeErr))));
@@ -954,7 +956,48 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	Nsig.setConstant(true);
 	Nbkg.setConstant(true);
 
+	auto floor_empty_template_bins = [](TH1 *hist)
+	{
+		if (!hist)
+			return;
+		double minPositive = std::numeric_limits<double>::infinity();
+		double total = 0.0;
+		for (int i = 1; i <= hist->GetNbinsX(); ++i)
+		{
+			const double content = hist->GetBinContent(i);
+			if (content > 0.0)
+			{
+				minPositive = std::min(minPositive, content);
+				total += content;
+			}
+		}
+		const double floor = std::max({0.2, std::isfinite(minPositive) ? 0.1 * minPositive : 0.0, 1e-7 * total});
+		for (int i = 1; i <= hist->GetNbinsX(); ++i)
+		{
+			if (hist->GetBinContent(i) <= 0.0)
+			{
+				hist->SetBinContent(i, floor);
+				hist->SetBinError(i, 0.0);
+			}
+		}
+	};
+	auto make_smoothed_template = [&](TH1 *source, const char *name) -> std::unique_ptr<TH1>
+	{
+		if (!source)
+			return nullptr;
+		const int rebinFactor = source->GetNbinsX() >= 80 ? 4 : 2;
+		std::unique_ptr<TH1> templ;
+		if (source->GetNbinsX() % rebinFactor == 0)
+			templ = std::unique_ptr<TH1>(source->Rebin(rebinFactor, name));
+		else
+			templ = std::unique_ptr<TH1>(static_cast<TH1 *>(source->Clone(name)));
+		templ->SetDirectory(nullptr);
+		templ->Smooth(1);
+		floor_empty_template_bins(templ.get());
+		return templ;
+	};
 	std::unique_ptr<RooAbsData> signalErrData;
+	std::unique_ptr<TH1> signalErrPdfTemplateHist;
 	{
 		if (sigErrPdfOpt == kErrPdfHistPrMc) {
 			auto hErrSigPrMc = std::unique_ptr<TH1>(prMcErrData->createHistogram(
@@ -986,6 +1029,9 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 				}
 			}
 			signalErrData = std::make_unique<RooDataHist>("signalErrDataSub", "", RooArgSet(obs_timeErr), hErrSigSR.get());
+			if (sigErrPdfOpt == kErrPdfHist) {
+				signalErrPdfTemplateHist = make_smoothed_template(hErrSigSR.get(), "fit2d_hErrSigPdfTemplate");
+			}
 		}
 	}
 	if (!signalErrData || signalErrData->sumEntries() <= 0.0) {
@@ -1020,7 +1066,12 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			std::cerr << "ERROR: signalErrData is not a RooDataHist for RooHistPdf mode" << std::endl;
 			return;
 		}
-		signalErrHistTemplate = std::make_unique<RooDataHist>(*signalErrHist);
+		if (signalErrPdfTemplateHist)
+			signalErrHistTemplate = std::make_unique<RooDataHist>(
+				"signalErrHistTemplate", "signalErrHistTemplate",
+				RooArgSet(obs_timeErr), signalErrPdfTemplateHist.get());
+		else
+			signalErrHistTemplate = std::make_unique<RooDataHist>(*signalErrHist);
 		signalErrPdfHist = std::make_unique<RooHistPdf>(
 			"signalErrHistPdf", "signalErrHistPdf",
 			RooArgSet(obs_timeErr), *signalErrHistTemplate, histPdfInterpolationOrder);

@@ -169,12 +169,18 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
       nBkgTimeErrGaussComponents = 2;
       nBkgTimeErrLandauComponents = 2;
       nBkgTimeErrLognormalComponents = 0;
+      nSigTimeErrGaussComponents = 2;
+      nSigTimeErrLandauComponents = 2;
+      nSigTimeErrLognormalComponents = 0;
     }
     if (ptLow == 2.0f && ptHigh == 3.0f)
     {
       nBkgTimeErrGaussComponents = 2;
       nBkgTimeErrLandauComponents = 1;
       nBkgTimeErrLognormalComponents = 1;
+      nSigTimeErrGaussComponents = 2;
+      nSigTimeErrLandauComponents = 2;
+      nSigTimeErrLognormalComponents = 0;
     }
     if (ptLow == 4.0f && ptHigh == 5.0f)
     {
@@ -300,8 +306,10 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
     return;
   }
 
-  const double sidebandLeftMax = 2.9;
-  const double sidebandRightMin = 3.2;
+  const double jpsiMassLow = 2.9;
+  const double jpsiMassHigh = 3.3;
+  const double sidebandLeftMax = 2.8;
+  const double sidebandRightMin = 3.3;
   TString cutSideband = Form("(mass >= 2.6 && mass < %g) || (mass > %g && mass <= 3.5)",
                              sidebandLeftMax, sidebandRightMin);
   auto dataSB = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(dataSel->reduce(cutSideband)));
@@ -368,7 +376,7 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
 
   RooDataSet *data = dataSB.get();
   auto timeErrData = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(data->reduce(RooArgSet(obs_timeErr))));
-  auto dataSR = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(dataSel->reduce(Form("(mass >= %g && mass <= %g)", sidebandLeftMax, sidebandRightMin))));
+  auto dataSR = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(dataSel->reduce(Form("(mass >= %g && mass <= %g)", jpsiMassLow, jpsiMassHigh))));
 
   const double errSpan = errRange.second - errRange.first;
   const double errMeanMin = errRange.first;
@@ -538,7 +546,7 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
 
   const double massSb1Low = 2.6, massSb1High = 2.8;
   const double massSb2Low = 3.3, massSb2High = 3.5;
-  const double massSigLow = 2.8, massSigHigh = 3.3;
+  const double massSigLow = 2.9, massSigHigh = 3.3;
   obs_mass.setRange("SR", massSigLow, massSigHigh);
   obs_mass.setRange("SB1", massSb1Low, massSb1High);
   obs_mass.setRange("SB2", massSb2Low, massSb2High);
@@ -555,7 +563,49 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
 
   auto hErrSigSR = std::unique_ptr<TH1>(dataSR ? dataSR->createHistogram("hErrSigSR", obs_timeErr, Binning(timeErrPlotBins, errRange.first, errRange.second)) : nullptr);
   auto hErrBkgSB = std::unique_ptr<TH1>(dataSB->createHistogram("hErrBkgSB", obs_timeErr, Binning(timeErrPlotBins, errRange.first, errRange.second)));
+  auto floor_empty_template_bins = [](TH1 *hist)
+  {
+    if (!hist)
+      return;
+    double minPositive = std::numeric_limits<double>::infinity();
+    double total = 0.0;
+    for (int i = 1; i <= hist->GetNbinsX(); ++i)
+    {
+      const double content = hist->GetBinContent(i);
+      if (content > 0.0)
+      {
+        minPositive = std::min(minPositive, content);
+        total += content;
+      }
+    }
+    const double floor = std::max({0.2, std::isfinite(minPositive) ? 0.1 * minPositive : 0.0, 1e-7 * total});
+    for (int i = 1; i <= hist->GetNbinsX(); ++i)
+    {
+      if (hist->GetBinContent(i) <= 0.0)
+      {
+        hist->SetBinContent(i, floor);
+        hist->SetBinError(i, 0.0);
+      }
+    }
+  };
+  auto make_smoothed_template = [&](TH1 *source, const char *name) -> std::unique_ptr<TH1>
+  {
+    if (!source)
+      return nullptr;
+    const int rebinFactor = source->GetNbinsX() >= 80 ? 4 : 2;
+    std::unique_ptr<TH1> templ;
+    if (source->GetNbinsX() % rebinFactor == 0)
+      templ = std::unique_ptr<TH1>(source->Rebin(rebinFactor, name));
+    else
+      templ = std::unique_ptr<TH1>(static_cast<TH1 *>(source->Clone(name)));
+    templ->SetDirectory(nullptr);
+    templ->Smooth(1);
+    floor_empty_template_bins(templ.get());
+    return templ;
+  };
   std::unique_ptr<RooDataHist> sigErrData;
+  std::unique_ptr<RooDataHist> sigErrHistData;
+  std::unique_ptr<TH1> sigErrHistTemplate;
   if (hErrSigSR && hErrBkgSB)
   {
     hErrSigSR->Add(hErrBkgSB.get(), -scaleBkg);
@@ -568,6 +618,11 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
       }
     }
     sigErrData = std::make_unique<RooDataHist>("sigErrData", "", RooArgSet(obs_timeErr), hErrSigSR.get());
+    if (sigErrPdfOpt == kErrPdfHist)
+    {
+      sigErrHistTemplate = make_smoothed_template(hErrSigSR.get(), "hErrSigPdfTemplate");
+      sigErrHistData = std::make_unique<RooDataHist>("sigErrHistData", "", RooArgSet(obs_timeErr), sigErrHistTemplate.get());
+    }
   }
   if (!sigErrData || sigErrData->sumEntries() <= 0.0)
   {
@@ -641,8 +696,9 @@ void err2(float ptLow = 14, float ptHigh = 20, float yLow = 1.6, float yHigh = 2
   std::unique_ptr<RooFitResult> sigTimeErrResult;
   if (sigErrPdfOpt == kErrPdfHist)
   {
+    RooDataHist *histDataForPdf = sigErrHistData ? sigErrHistData.get() : sigErrData.get();
     sigErrHistPdf = std::make_unique<RooHistPdf>(
-        "sigErrHistPdf", "sigErrHistPdf", RooArgSet(obs_timeErr), *sigErrData, histPdfInterpolationOrder);
+        "sigErrHistPdf", "sigErrHistPdf", RooArgSet(obs_timeErr), *histDataForPdf, histPdfInterpolationOrder);
     sigTimeErrPdf = sigErrHistPdf.get();
   }
   else
