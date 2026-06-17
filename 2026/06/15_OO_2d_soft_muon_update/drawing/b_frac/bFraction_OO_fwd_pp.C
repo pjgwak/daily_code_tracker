@@ -8,6 +8,24 @@
 #include "TLatex.h"
 #include "TBox.h"
 #include "TStopwatch.h"
+#include "TString.h"
+#include "TSystem.h"
+
+namespace
+{
+TString macroDir()
+{
+  TString path = __FILE__;
+  if (!gSystem->IsAbsoluteFileName(path))
+    path = TString(gSystem->WorkingDirectory()) + "/" + path;
+  return gSystem->DirName(path);
+}
+
+TString outputPath(const char *fileName)
+{
+  return macroDir() + "/" + fileName;
+}
+} // namespace
 
 void bFraction_OO_fwd_pp()
 {
@@ -237,6 +255,6 @@ void bFraction_OO_fwd_pp()
   leg->AddEntry(gStatBPH, "pp (BPH-10-002)", "lp");
   leg->Draw();
 
-  c1->SaveAs("plot_OO_fwd.pdf");
-  c1->SaveAs("plot_OO_fwd.png");
+  c1->SaveAs(outputPath("plot_OO_fwd.pdf"));
+  // c1->SaveAs(outputPath("plot_OO_fwd.png"));
 }

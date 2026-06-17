@@ -1,9 +1,9 @@
 /*  Use this command line
 // Fwd
-root -l -b -q 'collect_bfrac_code.C(1.6,2.4,"roots","oo_y16to24","NooY16to24",true)'
+root -l -b -q 'collect_bfrac_code.C(1.6,2.4,"../../roots","oo_y16to24","NooY16to24",false)'
 
 // Mid
-root -l -b -q 'collect_bfrac_code.C(0.0,1.6,"roots","oo_y16","NooY16",true)'
+root -l -b -q 'collect_bfrac_code.C(0.0,1.6,"../../roots","oo_y16","NooY16",false)'
 */ 
 
 
@@ -25,6 +25,48 @@ root -l -b -q 'collect_bfrac_code.C(0.0,1.6,"roots","oo_y16","NooY16",true)'
 
 namespace
 {
+TString macroDir()
+{
+  TString path = __FILE__;
+  if (!gSystem->IsAbsoluteFileName(path))
+    path = TString(gSystem->WorkingDirectory()) + "/" + path;
+  return gSystem->DirName(path);
+}
+
+TString existingDir(const TString &path)
+{
+  void *dirp = gSystem->OpenDirectory(path);
+  if (!dirp)
+    return "";
+  gSystem->FreeDirectory(dirp);
+  return path;
+}
+
+TString resolveRootsDir(const TString &rootsDir)
+{
+  TString dir = existingDir(rootsDir);
+  if (!dir.IsNull())
+    return dir;
+
+  if (!gSystem->IsAbsoluteFileName(rootsDir))
+  {
+    const TString fromMacro = macroDir() + "/" + rootsDir;
+    dir = existingDir(fromMacro);
+    if (!dir.IsNull())
+      return dir;
+  }
+
+  if (rootsDir == "roots")
+  {
+    const TString fromMovedBFracDir = macroDir() + "/../../roots";
+    dir = existingDir(fromMovedBFracDir);
+    if (!dir.IsNull())
+      return dir;
+  }
+
+  return "";
+}
+
 struct BinResult
 {
   double yLow;
@@ -107,16 +149,15 @@ void collect_bfrac_code(double yLow = 1.6,
                         TString countName = "Npp",
                         bool showSources = false)
 {
-  void *dirp = gSystem->OpenDirectory(rootsDir);
-  if (!dirp)
+  const TString resolvedRootsDir = resolveRootsDir(rootsDir);
+  if (resolvedRootsDir.IsNull())
   {
     std::cerr << "[ERROR] roots directory not found: " << rootsDir << std::endl;
     return;
   }
-  gSystem->FreeDirectory(dirp);
 
   std::vector<TString> files;
-  const TString cmd = Form("find %s -type f -name 'fit2d_result_*.root'", rootsDir.Data());
+  const TString cmd = Form("find %s -type f -name 'fit2d_result_*.root'", resolvedRootsDir.Data());
   std::unique_ptr<TObjArray> lines(gSystem->GetFromPipe(cmd).Tokenize("\n"));
   for (int i = 0; lines && i < lines->GetEntriesFast(); ++i)
   {
@@ -148,7 +189,7 @@ void collect_bfrac_code(double yLow = 1.6,
   if (selected.empty())
   {
     std::cerr << Form("[ERROR] no fit2d ROOT results found for y=%.2f-%.2f under %s",
-                      yLow, yHigh, rootsDir.Data())
+                      yLow, yHigh, resolvedRootsDir.Data())
               << std::endl;
     return;
   }
