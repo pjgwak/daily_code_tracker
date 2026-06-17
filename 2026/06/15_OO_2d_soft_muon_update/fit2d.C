@@ -674,14 +674,14 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		signal_np_owned = std::make_unique<RooAddPdf>("signal_np_time","signal_np_time",RooArgList(signal_ss1_time,signal_ss2_time,signal_ss3_time),RooArgList(NsignalSS1,NsignalSS2,NsignalSS3));
 		signal_np_time = signal_np_owned.get();
 	}
-	const double bFractionTarget =
+	const double bFractionSeed =
 		(yLow == 1.6f && ptLow == 1.0f && ptHigh == 2.0f) ? 0.08 :
 		(yLow == 1.6f && ptLow == 2.0f && ptHigh == 3.0f) ? 0.11 : 0.10;
-	const double bFractionMin = 0.05;
-	const double bFractionMax = 0.12;
+	const double bFractionMin = 0.06;
+	const double bFractionMax = 0.6;
 	RooRealVar bFraction(
 		"bFraction", "bFraction",
-		std::clamp(bFractionTarget, bFractionMin, bFractionMax),
+		std::clamp(bFractionSeed, bFractionMin, bFractionMax),
 		bFractionMin, bFractionMax);
 
 	RooAddPdf signal_time("signal_time","signal_time",RooArgList(*signal_np_time,*promptTimePdf),RooArgList(bFraction),true);
@@ -1012,7 +1012,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			? model.fitTo(*data,
 				Save(true),
 				Extended(true),
-				Offset(true),
+				// Offset(true),
 				RecoverFromUndefinedRegions(1.0),
 				Strategy(2),
 				Minimizer("Minuit2"),
@@ -1022,7 +1022,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			: model.fitTo(*data,
 				Save(true),
 				Extended(true),
-				Offset(true),
+				// Offset(true),
 				RecoverFromUndefinedRegions(1.0),
 				Strategy(2),
 				Minimizer("Minuit2"),

@@ -188,10 +188,10 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	const bool isLowPtForward = (ptLow < 2.0f && ptHigh <= 2.0f && yLow >= 1.6f);
 	if (yLow == 0.0f)
 	{
-		if (ptLow == 200.0f && ptHigh == 350.0f)
+		if (ptLow == 20.0f && ptHigh == 30.0f)
 		{
 			nSignalSSComponents = 1; // 0~3
-			nSignalFlipComponents = 1; // 0~3
+			nSignalFlipComponents = 0; // 0~3
 			nSignalDSComponents = 1; // 0~3
 		}
 	}
