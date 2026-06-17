@@ -38,6 +38,7 @@
 #include "TSystem.h"
 #include "TParameter.h"
 #include "TMath.h"
+#include "saved_fit_helpers.h"
 #include "TString.h"
 #include "RooHist.h"
 #include <algorithm>
@@ -180,8 +181,8 @@ static void apply_logy_auto_range(RooPlot *plot, const char *histName, double to
 void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 2.4,
 	bool drawFromSavedFit = false, bool publish = false)
 {
-	(void)drawFromSavedFit;
-	(void)publish;
+	if (publish)
+		drawFromSavedFit = true;
 	bool isWeight = false;
 	// ------------------------------------------------------------------
 	// model control
@@ -289,9 +290,18 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 	};
 	const TString yTag = TString::Format("y%s_%s", formatTag(yLow).Data(), formatTag(yHigh).Data());
 	const TString ptTag = TString::Format("pt%s_%s", formatTag(ptLow).Data(), formatTag(ptHigh).Data());
-	const TString figDir = TString::Format("figs/%s/ctau_pr", yTag.Data());
+	const TString figBaseDir = publish ? "figs_publish" : "figs";
+	const TString figDir = TString::Format("%s/%s/ctau_pr", figBaseDir.Data(), yTag.Data());
 	const TString resultDir = TString::Format("roots/%s/ctau_pr", yTag.Data());
 	const TString figTag = yTag + "_" + ptTag;
+	const TString resolutionFileName = TString::Format("%s/ctau_resolution_%s.root", resultDir.Data(), figTag.Data());
+	std::unique_ptr<TFile> savedResolutionFile;
+	if (drawFromSavedFit)
+	{
+		if (!load_saved_fit_file(savedResolutionFile, resolutionFileName, "prompt ctau"))
+			return;
+		nResolutionComponents = std::clamp(read_saved_int_param(savedResolutionFile.get(), "nResolutionComponents", nResolutionComponents), 1, 4);
+	}
 	auto figName = [&](const char *name)
 	{
 		return TString::Format("%s/%s_%s.pdf", figDir.Data(), name, figTag.Data());
@@ -382,8 +392,40 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 			ctauFrac1Var.setVal(0.0);
 		}
 	RooAddPdf time_pdf("time_pdf", "time_pdf", promptTimePdfList, promptTimeFracList, true);
-	RooFitResult *time_result = time_pdf.fitTo(*data, Save(), SumW2Error(isWeight));
-	time_result->Print();
+	if (drawFromSavedFit)
+	{
+		ctauTime1Mean.setVal(read_saved_double_param(savedResolutionFile.get(), "ctauTime1Mean", ctauTime1Mean.getVal()));
+		ctauTime1Scale.setVal(read_saved_double_param(savedResolutionFile.get(), "ctauTime1Scale", ctauTime1Scale.getVal()));
+		if (nResolutionComponents >= 2)
+		{
+			const double savedScale = read_saved_double_param(savedResolutionFile.get(), "ctauTime2Scale", ctauTime2Scale.getVal());
+			ctauTime2Delta.setVal(std::max(1e-6, savedScale - ctauTime1Scale.getVal()));
+			ctauFrac1Var.setVal(read_saved_double_param(savedResolutionFile.get(), "ctauFrac1", ctauFrac1Var.getVal()));
+		}
+		if (nResolutionComponents >= 3)
+		{
+			const double savedScale = read_saved_double_param(savedResolutionFile.get(), "ctauTime3Scale", ctauTime3Scale.getVal());
+			ctauTime3Delta.setVal(std::max(1e-6, savedScale - ctauTime2Scale.getVal()));
+			ctauFrac2Var.setVal(read_saved_double_param(savedResolutionFile.get(), "ctauFrac2", ctauFrac2Var.getVal()));
+		}
+		if (nResolutionComponents >= 4)
+		{
+			const double savedScale = read_saved_double_param(savedResolutionFile.get(), "ctauTime4Scale", ctauTime4Scale.getVal());
+			ctauTime4Delta.setVal(std::max(1e-6, savedScale - ctauTime3Scale.getVal()));
+			ctauFrac3Var.setVal(read_saved_double_param(savedResolutionFile.get(), "ctauFrac3", ctauFrac3Var.getVal()));
+		}
+	}
+	std::unique_ptr<RooFitResult> timeResultHolder;
+	RooFitResult *time_result = nullptr;
+	if (!drawFromSavedFit)
+	{
+		timeResultHolder.reset(time_pdf.fitTo(*data, Save(), SumW2Error(isWeight)));
+		time_result = timeResultHolder.get();
+		if (time_result)
+			time_result->Print();
+	}
+	else
+		std::cout << "[PlotOnly] Loaded saved prompt ctau parameters and skipped fit: " << resolutionFileName << std::endl;
 
 	const double ctauFrac1 = (nResolutionComponents >= 2) ? ctauFrac1Var.getVal() : 1.0;
 	const double ctauFrac2 = (nResolutionComponents >= 3) ? ctauFrac2Var.getVal() : 0.0;
@@ -393,7 +435,7 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 	const double compFrac3 = (nResolutionComponents >= 3) ? ((nResolutionComponents == 3) ? (1.0 - ctauFrac1) * (1.0 - ctauFrac2) : (1.0 - ctauFrac1) * (1.0 - ctauFrac2) * ctauFrac3) : 0.0;
 	const double compFrac4 = (nResolutionComponents >= 4) ? ((1.0 - ctauFrac1) * (1.0 - ctauFrac2) * (1.0 - ctauFrac3)) : 0.0;
 	const double nEntries = data->numEntries();
-	const TString resolutionFileName = TString::Format("%s/ctau_resolution_%s.root", resultDir.Data(), figTag.Data());
+	if (!drawFromSavedFit)
 	{
 		TFile resolutionFile(resolutionFileName, "RECREATE");
 		if (!resolutionFile.IsZombie())
@@ -426,8 +468,8 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 		{
 			std::cerr << "ERROR: cannot create resolution file: " << resolutionFileName << std::endl;
 		}
+		std::cout << "Saved ctau prompt resolution parameters to " << resolutionFileName << std::endl;
 	}
-	std::cout << "Saved ctau prompt resolution parameters to " << resolutionFileName << std::endl;
 
 	RooAbsPdf &time_pdf_component1 = ctauTime1;
 	RooAbsPdf &time_pdf_component2 = ctauTime2;
@@ -544,6 +586,7 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 			else
 				tx.DrawLatex(xtext, y0 + dy * k++, Form("%.1f < p_{T} < %.1f, %.1f < |y| < %.1f", ptLow, ptHigh, yLow, yHigh));
 	}
+	if (!publish)
 	{
 		TLatex tx;
 		tx.SetNDC();
@@ -567,6 +610,7 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 		}
 		tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", minimize, hesse));
 	}
+	if (!publish)
 	{
 		TLatex tp;
 		tp.SetNDC();
@@ -660,7 +704,10 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 	cout << "Prompt resolution components used in PR fit: " << nResolutionComponents << endl;
 	cout << Form("Prompt ctau chi2/ndf: %.1f/%d = %.3f, p=%.3g", chiM.first, ndf, ndf > 0 ? chiM.first / ndf : 0.0, pvalue) << endl;
 	cout << "------------------ FIT RESULT FOR TIME ONLY --------------" << endl;
-	time_result->Print();
+	if (time_result)
+		time_result->Print();
+	else
+		cout << "[PlotOnly] fit result print skipped; using saved prompt ctau parameters." << endl;
 	const TString figLifetime = figName("lifetime_fit");
 	std::cout << "[FIG] ctau_pr lifetime fit : " << figLifetime << std::endl;
 	// time_pdf.Print("V");

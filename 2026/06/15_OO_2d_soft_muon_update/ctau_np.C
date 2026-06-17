@@ -39,6 +39,7 @@
 #include "TSystem.h"
 #include "TParameter.h"
 #include "TMath.h"
+#include "saved_fit_helpers.h"
 #include "TString.h"
 #include "RooHist.h"
 #include <algorithm>
@@ -305,8 +306,8 @@ static void apply_logy_auto_range(RooPlot *plot, const char *histName, double to
 void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4,
 	bool drawFromSavedFit = false, bool publish = false, int ssOverride = -1)
 {
-	(void)drawFromSavedFit;
-	(void)publish;
+	if (publish)
+		drawFromSavedFit = true;
 	bool isWeight = false;
 	// ------------------------------------------------------------------
 	// model control
@@ -422,10 +423,19 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	};
 	const TString yTag = TString::Format("y%s_%s", formatTag(yLow).Data(), formatTag(yHigh).Data());
 	const TString ptTag = TString::Format("pt%s_%s", formatTag(ptLow).Data(), formatTag(ptHigh).Data());
-	const TString figDir = TString::Format("figs/%s/ctau_np", yTag.Data());
+	const TString figBaseDir = publish ? "figs_publish" : "figs";
+	const TString figDir = TString::Format("%s/%s/ctau_np", figBaseDir.Data(), yTag.Data());
 	const TString prResultDir = TString::Format("roots/%s/ctau_pr", yTag.Data());
 	const TString resultDir = TString::Format("roots/%s/ctau_np", yTag.Data());
 	const TString figTag = yTag + "_" + ptTag;
+	const TString npModelFileName = TString::Format("%s/ctau_np_model_%s.root", resultDir.Data(), figTag.Data());
+	std::unique_ptr<TFile> savedNpModelFile;
+	if (drawFromSavedFit)
+	{
+		if (!load_saved_fit_file(savedNpModelFile, npModelFileName, "nonprompt ctau"))
+			return;
+		nSignalSSComponents = std::clamp(read_saved_int_param(savedNpModelFile.get(), "nSignalSSComponents", nSignalSSComponents), 1, 3);
+	}
 	auto figName = [&](const char *name)
 	{
 		return TString::Format("%s/%s_%s.pdf", figDir.Data(), name, figTag.Data());
@@ -671,11 +681,35 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	}
 
 	// ------------------------------------------------------------------
-	// fit the signal ctau model
+	// fit or restore the signal ctau model
 	// ------------------------------------------------------------------
-	RooFitResult *time_result = signal_time->fitTo(*data, Extended(), Save(), SumW2Error(isWeight));
-	time_result->Print();
-	const TString npModelFileName = TString::Format("%s/ctau_np_model_%s.root", resultDir.Data(), figTag.Data());
+	if (drawFromSavedFit)
+	{
+		signal_log_lifetime_offset.setVal(read_saved_double_param(savedNpModelFile.get(), "signal_log_lifetime_offset", signal_log_lifetime_offset.getVal()));
+		NsignalSS1.setVal(read_saved_double_param(savedNpModelFile.get(), "NsignalSS1", NsignalSS1.getVal()));
+		if (nSignalSSComponents >= 2)
+		{
+			signal2_log_lifetime_offset.setVal(read_saved_double_param(savedNpModelFile.get(), "signal2_log_lifetime_offset", signal2_log_lifetime_offset.getVal()));
+			NsignalSS2.setVal(read_saved_double_param(savedNpModelFile.get(), "NsignalSS2", NsignalSS2.getVal()));
+		}
+		if (nSignalSSComponents >= 3)
+		{
+			signal3_log_lifetime_offset.setVal(read_saved_double_param(savedNpModelFile.get(), "signal3_log_lifetime_offset", signal3_log_lifetime_offset.getVal()));
+			NsignalSS3.setVal(read_saved_double_param(savedNpModelFile.get(), "NsignalSS3", NsignalSS3.getVal()));
+		}
+	}
+	std::unique_ptr<RooFitResult> timeResultHolder;
+	RooFitResult *time_result = nullptr;
+	if (!drawFromSavedFit)
+	{
+		timeResultHolder.reset(signal_time->fitTo(*data, Extended(), Save(), SumW2Error(isWeight)));
+		time_result = timeResultHolder.get();
+		if (time_result)
+			time_result->Print();
+	}
+	else
+		std::cout << "[PlotOnly] Loaded saved nonprompt ctau parameters and skipped fit: " << npModelFileName << std::endl;
+	if (!drawFromSavedFit)
 	{
 		TFile modelFile(npModelFileName, "RECREATE");
 		if (!modelFile.IsZombie())
@@ -727,8 +761,10 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		{
 			std::cerr << "ERROR: cannot create NP model file: " << npModelFileName << std::endl;
 		}
+		std::cout << "Saved ctau NP model parameters to " << npModelFileName << std::endl;
 	}
-	std::cout << "Saved ctau NP model parameters to " << npModelFileName << std::endl;
+	else
+		std::cout << "[PlotOnly] Left saved ctau NP ROOT file unchanged: " << npModelFileName << std::endl;
 
 	// Build component-only PDFs for plotting.
 	RooAbsPdf *time_pdf_ss1 = &signal_ss1_time;
@@ -831,6 +867,7 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		else
 			tx.DrawLatex(xtext, y0 + dy * k++, Form("%.1f < p_{T} < %.1f, %.1f < |y| < %.1f", ptLow, ptHigh, yLow, yHigh));
 	}
+	if (!publish)
 	{
 		TLatex tx;
 		tx.SetNDC();
@@ -854,6 +891,7 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		}
 		tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", minimize, hesse));
 	}
+	if (!publish)
 	{
 		TLatex tp;
 		tp.SetNDC();
@@ -943,7 +981,10 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	delete cLifetime;
 	cout << "------------------ FIT RESULT SUMMARY --------------------" << endl;
 	cout << "------------------ FIT RESULT FOR TIME ONLY --------------" << endl;
-	time_result->Print("v");
+	if (time_result)
+		time_result->Print("v");
+	else
+		cout << "[PlotOnly] fit result print skipped; using saved nonprompt ctau parameters." << endl;
 	cout << "Prompt resolution components used in NP fit: " << nResolutionComponents << endl;
 	cout << "SingleSided components used in NP fit: " << nSignalSSComponents << endl;
 	const TString figLifetime = figName("lifetime_fit");

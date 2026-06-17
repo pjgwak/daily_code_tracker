@@ -219,7 +219,8 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 	};
 	const TString yTag = TString::Format("y%s_%s", formatTag(yLow).Data(), formatTag(yHigh).Data());
 	const TString ptTag = TString::Format("pt%s_%s", formatTag(ptLow).Data(), formatTag(ptHigh).Data());
-	const TString figDir = TString::Format("figs/%s/mass", yTag.Data());
+	const TString figBaseDir = publish ? "figs_publish" : "figs";
+	const TString figDir = TString::Format("%s/%s/mass", figBaseDir.Data(), yTag.Data());
 	const TString resultDir = TString::Format("roots/%s/mass", yTag.Data());
 	const TString figTag = yTag + "_" + ptTag;
 	const TString mcResultDir = TString::Format("roots/%s/mc_mass", yTag.Data());

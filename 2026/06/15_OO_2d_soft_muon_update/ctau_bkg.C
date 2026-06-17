@@ -39,6 +39,7 @@
 #include "TROOT.h"
 #include "TSystem.h"
 #include "TParameter.h"
+#include "saved_fit_helpers.h"
 #include "TMath.h"
 #include "TString.h"
 #include "RooHist.h"
@@ -176,8 +177,8 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	bool isSilence = true, bool drawFromSavedFit = false, bool publish = false)
 {
 	(void)isSilence;
-	(void)drawFromSavedFit;
-	(void)publish;
+	if (publish)
+		drawFromSavedFit = true;
 	bool isWeight = false;
 	// ------------------------------------------------------------------
 	// model control
@@ -322,7 +323,8 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	};
 	const TString yTag = TString::Format("y%s_%s", formatTag(yLow).Data(), formatTag(yHigh).Data());
 	const TString ptTag = TString::Format("pt%s_%s", formatTag(ptLow).Data(), formatTag(ptHigh).Data());
-	const TString figDir = TString::Format("figs/%s/ctau_bkg", yTag.Data());
+	const TString figBaseDir = publish ? "figs_publish" : "figs";
+	const TString figDir = TString::Format("%s/%s/ctau_bkg", figBaseDir.Data(), yTag.Data());
 	const TString prResultDir = TString::Format("roots/%s/ctau_pr", yTag.Data());
 	const TString bkgResultDir = TString::Format("roots/%s/ctau_bkg", yTag.Data());
 	const TString figTag = yTag + "_" + ptTag;
@@ -752,15 +754,32 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	// fit background ctau model
 	// ------------------------------------------------------------------
 	RooAbsPdf &time_pdf = bkg_time;
-	std::unique_ptr<RooFitResult> timeResultHolder(
-		time_pdf.fitTo(*data, Extended(), Save(), SumW2Error(isWeight),
-			Strategy(1), Offset(true), RecoverFromUndefinedRegions(1.0),
-			ExternalConstraints(externalConstraints)));
-	if (timeResultHolder && timeResultHolder->status() != 0)
+	std::unique_ptr<TFile> savedBkgFitFile;
+	std::unique_ptr<RooFitResult> timeResultHolder;
+	if (drawFromSavedFit)
+	{
+		if (!load_saved_fit_file(savedBkgFitFile, fitResultFileName, "background ctau"))
+			return;
+		timeResultHolder = clone_saved_fit_result(savedBkgFitFile.get(), "timeResult");
+		if (!timeResultHolder)
+		{
+			std::cerr << "ERROR: timeResult not found in saved background ctau file: " << fitResultFileName << std::endl;
+			return;
+		}
+		apply_saved_fit_result(timeResultHolder.get(), time_pdf, RooArgSet(obs_time));
+		std::cout << "[PlotOnly] Loaded saved background ctau fit and skipped fit: " << fitResultFileName << std::endl;
+	}
+	else
 	{
 		timeResultHolder.reset(time_pdf.fitTo(*data, Extended(), Save(), SumW2Error(isWeight),
-			Strategy(2), Offset(true), RecoverFromUndefinedRegions(1.0),
+			Strategy(1), Offset(true), RecoverFromUndefinedRegions(1.0),
 			ExternalConstraints(externalConstraints)));
+		if (timeResultHolder && timeResultHolder->status() != 0)
+		{
+			timeResultHolder.reset(time_pdf.fitTo(*data, Extended(), Save(), SumW2Error(isWeight),
+				Strategy(2), Offset(true), RecoverFromUndefinedRegions(1.0),
+				ExternalConstraints(externalConstraints)));
+		}
 	}
 	RooFitResult *time_result = timeResultHolder.get();
 	if (time_result)
@@ -896,6 +915,7 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		else
 			tx.DrawLatex(xtext, y0 + dy * k++, Form("%.1f < p_{T} < %.1f, %.1f < |y| < %.1f", ptLow, ptHigh, yLow, yHigh));
 	}
+	if (!publish)
 	{
 		TLatex tx;
 		tx.SetNDC();
@@ -919,6 +939,7 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		}
 		tx.DrawLatex(0.19, 0.765, Form("Status : MINIMIZE=%d HESSE=%d", minimize, hesse));
 	}
+	if (!publish)
 	{
 		TLatex tp;
 		tp.SetNDC();
@@ -1029,6 +1050,8 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	cLifetime->Print(figName("lifetime_fit"));
 	delete cLifetime;
 
+	if (!drawFromSavedFit)
+	{
 	TFile *fitResultFile = TFile::Open(fitResultFileName, "RECREATE");
 	if (!fitResultFile || fitResultFile->IsZombie())
 	{
@@ -1055,6 +1078,9 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	fitResultFile->Write();
 	fitResultFile->Close();
 	std::cout << "Saved ctau background fit results to " << fitResultFileName << std::endl;
+	}
+	else
+		std::cout << "[PlotOnly] Left saved background ctau ROOT file unchanged: " << fitResultFileName << std::endl;
 
 	cout << "------------------ FIT RESULT SUMMARY --------------------" << endl;
 	cout << "------------------ FIT RESULT FOR TIME ONLY --------------" << endl;

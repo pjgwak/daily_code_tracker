@@ -39,6 +39,7 @@
 #include "TString.h"
 #include "TParameter.h"
 #include "TMath.h"
+#include "saved_fit_helpers.h"
 #include "RooHist.h"
 #include "RooLognormal.h"
 #include "RooMsgService.h"
@@ -102,8 +103,8 @@ static void apply_logy_auto_range(RooPlot *plot, const char *histName, double to
 
 void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4,
 	bool fixResolutionParams = false, bool drawFromSavedFit = false, bool publish = false){
-	(void)drawFromSavedFit;
-	(void)publish;
+	if (publish)
+		drawFromSavedFit = true;
 	RooMsgService::instance().setGlobalKillBelow(RooFit::WARNING);
 	bool isWeight = false;
 	// ------------------------------------------------------------------
@@ -172,7 +173,8 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	const TString yTag = TString::Format("y%s_%s", formatTag(yLow).Data(), formatTag(yHigh).Data());
 	const TString ptTag = TString::Format("pt%s_%s", formatTag(ptLow).Data(), formatTag(ptHigh).Data());
 	const TString figTag = yTag + "_" + ptTag;
-	const TString figDir = TString::Format("figs/%s/fit2d", yTag.Data());
+	const TString figBaseDir = publish ? "figs_publish" : "figs";
+	const TString figDir = TString::Format("%s/%s/fit2d", figBaseDir.Data(), yTag.Data());
 	const TString fitRootDir = TString::Format("roots/%s/fit2d", yTag.Data());
 	const TString fitRootName = TString::Format("%s/fit2d_result_%s.root", fitRootDir.Data(), figTag.Data());
 
@@ -677,8 +679,12 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	const double bFractionSeed =
 		(yLow == 1.6f && ptLow == 1.0f && ptHigh == 2.0f) ? 0.08 :
 		(yLow == 1.6f && ptLow == 2.0f && ptHigh == 3.0f) ? 0.11 : 0.10;
-	const double bFractionMin = 0.06;
-	const double bFractionMax = 0.6;
+	double bFractionMin = 0.06;
+	double bFractionMax = 0.6;
+	if (ptLow>=3.0f) {
+		double bFractionMin = 0.1;
+		double bFractionMax = 0.6;
+	}
 	RooRealVar bFraction(
 		"bFraction", "bFraction",
 		std::clamp(bFractionSeed, bFractionMin, bFractionMax),
@@ -981,6 +987,8 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		}
 		int fitMinimizeStatus = -1;
 		int fitHesseStatus = -1;
+		std::unique_ptr<TFile> saved2dFitFile;
+		std::unique_ptr<RooFitResult> modelResultHolder;
 		RooFitResult *model_result = nullptr;
 
 		/* ------------------------------------------------------------------
@@ -1006,15 +1014,31 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	------------------------------------------------------------------ */
 
 		// ------------------------------------------------------------------
-		// Active fit path using RooAbsPdf::fitTo(...)
+		// Active fit path, or plot-only restoration from saved fit result.
 		// ------------------------------------------------------------------
+		if (drawFromSavedFit)
+		{
+			if (!load_saved_fit_file(saved2dFitFile, fitRootName, "2D fit"))
+				return;
+			modelResultHolder = clone_saved_fit_result(saved2dFitFile.get(), "modelResult");
+			if (!modelResultHolder)
+			{
+				std::cerr << "ERROR: modelResult not found in saved 2D fit file: " << fitRootName << std::endl;
+				return;
+			}
+			apply_saved_fit_result(modelResultHolder.get(), model, RooArgSet(obs_mass, obs_time));
+			model_result = modelResultHolder.get();
+			std::cout << "[PlotOnly] Loaded saved 2D fit and skipped fit: " << fitRootName << std::endl;
+		}
+		else
+		{
 		model_result = (massConstraints.getSize() > 0)
 			? model.fitTo(*data,
 				Save(true),
 				Extended(true),
-				// Offset(true),
+				Offset(true),
 				RecoverFromUndefinedRegions(1.0),
-				Strategy(2),
+				Strategy(1),
 				Minimizer("Minuit2"),
 				Optimize(false),
 				PrintLevel(1),
@@ -1022,12 +1046,13 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			: model.fitTo(*data,
 				Save(true),
 				Extended(true),
-				// Offset(true),
+				Offset(true),
 				RecoverFromUndefinedRegions(1.0),
 				Strategy(2),
 				Minimizer("Minuit2"),
 				Optimize(false),
 				PrintLevel(1));
+		}
 		if (model_result)
 		{
 			for (UInt_t i = 0, n = model_result->numStatusHistory(); i < n; ++i)
@@ -1123,6 +1148,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		else
 			tx.DrawLatex(xtext, y0 + dy * k++, Form("%.1f < p_{T} < %.1f, %.1f < |y| < %.1f", ptLow, ptHigh, yLow, yHigh));
 	}
+	if (!publish)
 	{
 		TLatex tx;
 		tx.SetNDC();
@@ -1158,35 +1184,44 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			}
 			tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g", title, var.getVal()));
 		};
-		printVar("N_{sig}", Nsig);
-		printVar("N_{bkg}", Nbkg);
-		printVar("f_{B}", bFraction);
-		printVar("s_{1}", ctauTime1Scale);
-		if (nResolutionComponents >= 2)
+		if (publish)
 		{
-			printVar("s_{2}", ctauTime2Scale);
-			printVar("#Delta s_{21}", ctauTime2Delta);
+			printVar("N_{sig}", Nsig);
+			printVar("N_{bkg}", Nbkg);
+			printVar("f_{B}", bFraction);
 		}
-		if (nResolutionComponents >= 3)
+		else
 		{
-			printVar("s_{3}", ctauTime3Scale);
-			printVar("#Delta s_{32}", ctauTime3Delta);
+			printVar("N_{sig}", Nsig);
+			printVar("N_{bkg}", Nbkg);
+			printVar("f_{B}", bFraction);
+			printVar("s_{1}", ctauTime1Scale);
+			if (nResolutionComponents >= 2)
+			{
+				printVar("s_{2}", ctauTime2Scale);
+				printVar("#Delta s_{21}", ctauTime2Delta);
+			}
+			if (nResolutionComponents >= 3)
+			{
+				printVar("s_{3}", ctauTime3Scale);
+				printVar("#Delta s_{32}", ctauTime3Delta);
+			}
+			if (nResolutionComponents >= 4)
+			{
+				printVar("s_{4}", ctauTime4Scale);
+				printVar("#Delta s_{43}", ctauTime4Delta);
+			}
+			printVar("#tau_{sig1}", signal_lifetime);
+			if (useSignalSS2)
+				printVar("#tau_{sig2}", signal2_lifetime);
+			if (useSignalSS3)
+				printVar("#tau_{sig3}", signal3_lifetime);
+			printVar("#tau_{bkg1}", bkg_lifetime);
+			if (nBkgSSComponents >= 2)
+				printVar("#tau_{bkg2}", bkg_lifetime2);
+			if (nBkgSSComponents >= 3)
+				printVar("#tau_{bkg3}", bkg_lifetime3);
 		}
-		if (nResolutionComponents >= 4)
-		{
-			printVar("s_{4}", ctauTime4Scale);
-			printVar("#Delta s_{43}", ctauTime4Delta);
-		}
-		printVar("#tau_{sig1}", signal_lifetime);
-		if (useSignalSS2)
-			printVar("#tau_{sig2}", signal2_lifetime);
-		if (useSignalSS3)
-			printVar("#tau_{sig3}", signal3_lifetime);
-		printVar("#tau_{bkg1}", bkg_lifetime);
-		if (nBkgSSComponents >= 2)
-			printVar("#tau_{bkg2}", bkg_lifetime2);
-		if (nBkgSSComponents >= 3)
-			printVar("#tau_{bkg3}", bkg_lifetime3);
 	}
 
 	cMass->cd();
@@ -1302,6 +1337,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		else
 			tx.DrawLatex(xtext, y0 + dy * k++, Form("%.1f < p_{T} < %.1f, %.1f < |y| < %.1f", ptLow, ptHigh, yLow, yHigh));
 	}
+	if (!publish)
 	{
 		TLatex tx;
 		tx.SetNDC();
@@ -1339,9 +1375,18 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			else
 				tp.DrawLatex(xtext, y0 + dy * k++, Form("%s = %.4g", title, val));
 		};
-		printVal("f_{B}", bFraction.getVal(), bFractionErr);
-		printVal("N_{sig}", Nsig.getVal());
-		printVal("N_{bkg}", Nbkg.getVal());
+		if (publish)
+		{
+			printVal("N_{sig}", Nsig.getVal());
+			printVal("N_{bkg}", Nbkg.getVal());
+			printVal("f_{B}", bFraction.getVal(), bFractionErr);
+		}
+		else
+		{
+			printVal("f_{B}", bFraction.getVal(), bFractionErr);
+			printVal("N_{sig}", Nsig.getVal());
+			printVal("N_{bkg}", Nbkg.getVal());
+		}
 	}
 
 	cLifetime->cd();
@@ -1389,6 +1434,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	cLifetime->Print(figName("lifetime_fit"));
 	delete cLifetime;
 
+	if (!drawFromSavedFit)
 	{
 		std::unique_ptr<TFile> fitOut(TFile::Open(fitRootName, "RECREATE"));
 		if (!fitOut || fitOut->IsZombie())
@@ -1430,6 +1476,8 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			fitOut->Write();
 		}
 	}
+	else
+		std::cout << "[PlotOnly] Left saved 2D ROOT file unchanged: " << fitRootName << std::endl;
 
 	cout << "----------------- FIT RESULT FOR THE 2D MODEL ------------" << endl;
 	if (model_result)
