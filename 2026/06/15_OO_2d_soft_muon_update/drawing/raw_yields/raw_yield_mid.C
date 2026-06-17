@@ -1,0 +1,222 @@
+#include "TCanvas.h"
+#include "TGraphErrors.h"
+#include "TGraphAsymmErrors.h"
+#include "TAxis.h"
+#include "TLegend.h"
+#include "TROOT.h"
+#include "TStyle.h"
+#include "TLatex.h"
+#include "TBox.h"
+#include "TStopwatch.h"
+#include "TString.h"
+#include "TSystem.h"
+
+namespace
+{
+TString macroDir()
+{
+  TString path = __FILE__;
+  if (!gSystem->IsAbsoluteFileName(path))
+    path = TString(gSystem->WorkingDirectory()) + "/" + path;
+  return gSystem->DirName(path);
+}
+
+TString outputPath(const char *fileName)
+{
+  return macroDir() + "/" + fileName;
+}
+} // namespace
+
+void raw_yield_mid()
+{
+  TStopwatch __execTimer;
+  __execTimer.Start();
+  struct __ExecTimerGuard {
+    TStopwatch *sw;
+    explicit __ExecTimerGuard(TStopwatch *timer) : sw(timer) {}
+    ~__ExecTimerGuard() {
+      sw->Stop();
+      sw->Print();
+    }
+  } __execTimerGuard(&__execTimer);
+
+  // =====  CMS plot style =====
+  gROOT->Macro("/data/users/pjgwak/input_files/rootlogon.C");
+
+  // ===== OO raw yields =====
+  // OO, ctau subrange method (updated bins)
+  const int n_old = 8;
+
+  double pt_low_old[n_old] = {7.0, 8.0, 9.0, 10.0, 12.0, 14.0, 16.0, 20.0};
+  double pt_high_old[n_old] = {8.0, 9.0, 10.0, 12.0, 14.0, 16.0, 20.0, 30.0};
+
+  // nominal raw yields
+  double val_pp_old[n_old] = {
+      6253.0, 5021.8, 3571.2, 4250.2,
+      2208.2, 1185.7, 1081.6, 602.8};
+
+  // statistical errors
+  double stat_pp_old[n_old] = {
+      95.1, 81.1, 67.1, 72.3,
+      51.4, 37.2, 35.6, 27.3};
+
+  // systematics not provided
+  double sys_pp_old[n_old];
+  for (int i = 0; i < n_old; ++i)
+    sys_pp_old[i] = 0.0; // sys=0
+
+  double x_old[n_old], ex_old[n_old];
+  for (int i = 0; i < n_old; ++i)
+  {
+    const double width = pt_high_old[i] - pt_low_old[i];
+    x_old[i] = 0.5 * (pt_low_old[i] + pt_high_old[i]);
+    ex_old[i] = 0.5 * width;
+    val_pp_old[i] /= width;
+    stat_pp_old[i] /= width;
+    sys_pp_old[i] /= width;
+  }
+
+  // ===== OO |y|<1.6 (2d fit) =====
+  // y = 0.00-1.60
+  const int NooY16 = 8;
+  double pt_low_oo_y16[NooY16] = {7.0, 8.0, 9.0, 10.0, 12.0, 14.0, 16.0, 20.0};
+  double pt_high_oo_y16[NooY16] = {8.0, 9.0, 10.0, 12.0, 14.0, 16.0, 20.0, 30.0};
+
+  double val_oo_y16[NooY16] = {6235.66174, 4952.02330, 3520.25537, 4194.49078, 2189.92997, 1155.23667, 1057.88985, 613.67446};
+  double stat_oo_y16[NooY16] = {65.67722, 55.71501, 46.21290, 49.83469, 34.71538, 25.63542, 20.57938, 18.96371};
+
+  double sys_oo_y16[NooY16];
+  for (int i = 0; i < NooY16; ++i)
+    sys_oo_y16[i] = 0.0; // sys=0
+
+  double x_oo_y16[NooY16], ex_oo_y16[NooY16];
+  for (int i = 0; i < NooY16; ++i)
+  {
+    const double width = pt_high_oo_y16[i] - pt_low_oo_y16[i];
+    x_oo_y16[i] = 0.5 * (pt_low_oo_y16[i] + pt_high_oo_y16[i]);
+    ex_oo_y16[i] = 0.5 * width;
+    val_oo_y16[i] /= width;
+    stat_oo_y16[i] /= width;
+    sys_oo_y16[i] /= width;
+  }
+
+  double yMin = 1.0e30;
+  double yMax = 0.0;
+  for (int i = 0; i < n_old; ++i)
+  {
+    const double yLow = val_pp_old[i] - stat_pp_old[i];
+    const double yHigh = val_pp_old[i] + stat_pp_old[i];
+    if (yLow > 0.0 && yLow < yMin)
+      yMin = yLow;
+    if (yHigh > yMax)
+      yMax = yHigh;
+  }
+  for (int i = 0; i < NooY16; ++i)
+  {
+    const double yLow = val_oo_y16[i] - stat_oo_y16[i];
+    const double yHigh = val_oo_y16[i] + stat_oo_y16[i];
+    if (yLow > 0.0 && yLow < yMin)
+      yMin = yLow;
+    if (yHigh > yMax)
+      yMax = yHigh;
+  }
+
+  // ===== Graphs =====
+  // pp_old: sys band
+  TGraphAsymmErrors *gSyspp_old = new TGraphAsymmErrors(n_old, x_old, val_pp_old, ex_old, ex_old, sys_pp_old, sys_pp_old);
+  gSyspp_old->SetFillStyle(0);
+  gSyspp_old->SetLineColor(kRed + 1);
+  gSyspp_old->SetLineWidth(2);
+
+  // pp_old: stat
+  TGraphErrors *gStatpp_old = new TGraphErrors(n_old, x_old, val_pp_old, ex_old, stat_pp_old);
+  gStatpp_old->SetMarkerStyle(24);
+  gStatpp_old->SetMarkerSize(1.7);
+  gStatpp_old->SetMarkerColor(kRed + 1);
+  gStatpp_old->SetLineColor(kRed + 1);
+  gStatpp_old->SetLineWidth(3);
+
+  // OO |y|<1.6: sys (currently 0)
+  TGraphAsymmErrors *gSysOOY16 = new TGraphAsymmErrors(NooY16, x_oo_y16, val_oo_y16, ex_oo_y16, ex_oo_y16, sys_oo_y16, sys_oo_y16);
+  gSysOOY16->SetFillColorAlpha(kAzure + 2, 0.20);
+  gSysOOY16->SetFillStyle(1001);
+  gSysOOY16->SetLineColor(kAzure + 2);
+  gSysOOY16->SetLineWidth(3);
+
+  // OO |y|<1.6: stat
+  TGraphErrors *gStatOOY16 = new TGraphErrors(NooY16, x_oo_y16, val_oo_y16, ex_oo_y16, stat_oo_y16);
+  gStatOOY16->SetMarkerStyle(20);
+  gStatOOY16->SetMarkerSize(1.7);
+  gStatOOY16->SetMarkerColor(kAzure + 2);
+  gStatOOY16->SetLineColor(kAzure + 2);
+  gStatOOY16->SetLineWidth(3);
+
+  // ===== Draw =====
+  TCanvas *c1 = new TCanvas("c1", "pp vs pp_old", 800, 800);
+  c1->SetTitle("");
+  TPad pad1("pad1", "pad1", 0.0, 0.0, 1.0, 1.0);
+  pad1.SetTopMargin(0.08);
+  pad1.SetBottomMargin(0.13);
+  pad1.SetLogy();
+  pad1.Draw();
+  pad1.cd();
+  gStyle->SetOptStat(0);
+  gSyspp_old->SetTitle("");
+  gSyspp_old->Draw("A2");
+  gSyspp_old->GetXaxis()->SetTitle("p_{T} (GeV/c)");
+  gSyspp_old->GetYaxis()->SetTitle("dN/dp_{T}");
+  gSyspp_old->GetXaxis()->CenterTitle();
+  gSyspp_old->GetYaxis()->CenterTitle();
+  gSyspp_old->GetXaxis()->SetTitleSize(0.05);
+  gSyspp_old->GetYaxis()->SetTitleSize(0.05);
+  gSyspp_old->GetXaxis()->SetLabelSize(0.042);
+  gSyspp_old->GetYaxis()->SetLabelSize(0.042);
+  gSyspp_old->GetYaxis()->SetTitleOffset(1.25);
+  gSyspp_old->GetXaxis()->SetLimits(pt_low_old[0], pt_high_old[n_old - 1]);
+  gSyspp_old->SetMinimum(0.8 * yMin);
+  gSyspp_old->SetMaximum(4 * yMax);
+
+  gSyspp_old->Draw("A2");
+  gSysOOY16->Draw("2 SAME");
+  gStatpp_old->Draw("P SAME");
+  gStatOOY16->Draw("P SAME");
+
+  // ------------------------------------------------------------------
+  // labels (match ctau_pr.C style/positions)
+  // ------------------------------------------------------------------
+  {
+    TLatex tx;
+    tx.SetNDC();
+    tx.SetTextSize(0.032);
+    tx.SetTextFont(42);
+    tx.SetTextAlign(31);
+    tx.DrawLatex(0.96, 0.935, "OO 5.36 TeV (9 nb^{-1})");
+  }
+  {
+    TLatex tx;
+    tx.SetNDC();
+    tx.SetTextSize(0.04);
+    tx.SetTextFont(72);
+    tx.DrawLatex(0.19, 0.935, "CMS Internal");
+  }
+  {
+    TLatex tx;
+    tx.SetNDC();
+    tx.SetTextSize(0.03);
+    tx.SetTextFont(42);
+    // tx.SetTextColor(kRed + 1);
+    tx.DrawLatex(0.19, 0.865, "|y| < 1.6");
+  }
+
+  TLegend *leg = new TLegend(0.7, 0.8, 0.90, 0.90);
+  leg->SetBorderSize(0);
+  leg->SetFillStyle(0);
+  leg->SetTextSize(0.024);
+  leg->SetEntrySeparation(0.01);
+  leg->AddEntry(gStatOOY16, "OO (2D fit)", "lp");
+  leg->AddEntry(gStatpp_old, "OO (Nominal)", "lp");
+  leg->Draw();
+
+  c1->SaveAs(outputPath("raw_yield_OO_mid.pdf"));
+  // c1->SaveAs(outputPath("plot_OO_mid.png"));
+}
