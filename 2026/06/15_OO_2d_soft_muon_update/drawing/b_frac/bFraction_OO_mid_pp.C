@@ -100,8 +100,8 @@ void bFraction_OO_mid_pp()
   double pt_low_oo_y16[NooY16] = {7.0, 8.0, 9.0, 10.0, 12.0, 14.0, 16.0, 20.0};
   double pt_high_oo_y16[NooY16] = {8.0, 9.0, 10.0, 12.0, 14.0, 16.0, 20.0, 30.0};
 
-  double val_oo_y16[NooY16] = {0.23126, 0.25802, 0.27354, 0.30368, 0.37434, 0.39103, 0.46657, 0.53904};
-  double stat_oo_y16[NooY16] = {0.00713, 0.00803, 0.00953, 0.00893, 0.01285, 0.01745, 0.02080, 0.02379};
+  double val_oo_y16[NooY16] = {0.23110, 0.25791, 0.27355, 0.30370, 0.37362, 0.39081, 0.46623, 0.53881};
+  double stat_oo_y16[NooY16] = {0.00573, 0.00803, 0.00951, 0.00892, 0.01260, 0.01743, 0.01834, 0.02377};
 
   double sys_oo_y16[NooY16];
   for (int i = 0; i < NooY16; ++i)
@@ -410,6 +410,6 @@ void bFraction_OO_mid_pp()
   leg->AddEntry(gStatBPH, "pp (CMS 7 TeV, 1.6 < |y| < 2.4)", "lp");
   leg->Draw();
 
-  c1->SaveAs(outputPath("plot_OO_mid.pdf"));
+  c1->SaveAs(outputPath("bFrac_OO_mid.pdf"));
   // c1->SaveAs(outputPath("plot_OO_mid.png"));
 }

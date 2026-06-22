@@ -109,8 +109,8 @@ void bFraction_OO_fwd_pp()
   double pt_low_oo_y16to24[NooY16to24] = {1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 12.0, 14.0};
   double pt_high_oo_y16to24[NooY16to24] = {2.0, 3.0, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0, 12.0, 14.0, 20.0};
 
-  double val_oo_y16to24[NooY16to24] = {0.10352, 0.13986, 0.14112, 0.16629, 0.17334, 0.18463, 0.21691, 0.24759, 0.27884, 0.28734, 0.36467, 0.37166};
-  double stat_oo_y16to24[NooY16to24] = {0.00781, 0.00601, 0.00558, 0.00600, 0.00660, 0.00759, 0.00925, 0.01186, 0.01497, 0.01379, 0.02177, 0.02035};
+  double val_oo_y16to24[NooY16to24] = {0.10352, 0.13963, 0.14085, 0.16588, 0.17327, 0.18430, 0.21810, 0.24755, 0.27855, 0.28704, 0.36397, 0.37144};
+  double stat_oo_y16to24[NooY16to24] = {0.00788, 0.00595, 0.00556, 0.00598, 0.00662, 0.00758, 0.00922, 0.01186, 0.01497, 0.01378, 0.02177, 0.02041};
 
   double sys_oo_y16to24[NooY16to24];
   for (int i = 0; i < NooY16to24; ++i)
@@ -267,6 +267,6 @@ void bFraction_OO_fwd_pp()
   leg->AddEntry(gStatBPH, "pp (BPH-10-002)", "lp");
   leg->Draw();
 
-  c1->SaveAs(outputPath("plot_OO_fwd.pdf"));
+  c1->SaveAs(outputPath("bFrac_OO_fwd.pdf"));
   // c1->SaveAs(outputPath("plot_OO_fwd.png"));
 }

@@ -82,8 +82,8 @@ void raw_yield_mid()
   double pt_low_oo_y16[NooY16] = {7.0, 8.0, 9.0, 10.0, 12.0, 14.0, 16.0, 20.0};
   double pt_high_oo_y16[NooY16] = {8.0, 9.0, 10.0, 12.0, 14.0, 16.0, 20.0, 30.0};
 
-  double val_oo_y16[NooY16] = {6235.66174, 4952.02330, 3520.25537, 4194.49078, 2189.92997, 1155.23667, 1057.88985, 613.67446};
-  double stat_oo_y16[NooY16] = {65.67722, 55.71501, 46.21290, 49.83469, 34.71538, 25.63542, 20.57938, 18.96371};
+  double val_oo_y16[NooY16] = {6234.91103, 4952.74756, 3520.56338, 4194.00577, 2190.46370, 1155.36848, 1057.98157, 613.70716};
+  double stat_oo_y16[NooY16] = {53.19574, 55.71661, 46.20836, 49.83197, 35.74219, 25.63441, 24.78039, 18.96410};
 
   double sys_oo_y16[NooY16];
   for (int i = 0; i < NooY16; ++i)
@@ -100,6 +100,7 @@ void raw_yield_mid()
     sys_oo_y16[i] /= width;
   }
 
+  // ===== adjust yMin and yMax =====
   double yMin = 1.0e30;
   double yMax = 0.0;
   for (int i = 0; i < n_old; ++i)
@@ -172,7 +173,7 @@ void raw_yield_mid()
   gSyspp_old->GetXaxis()->SetLabelSize(0.042);
   gSyspp_old->GetYaxis()->SetLabelSize(0.042);
   gSyspp_old->GetYaxis()->SetTitleOffset(1.25);
-  gSyspp_old->GetXaxis()->SetLimits(pt_low_old[0], pt_high_old[n_old - 1]);
+  gSyspp_old->GetXaxis()->SetLimits(pt_low_old[0], pt_high_oo_y16[NooY16 - 1]);
   gSyspp_old->SetMinimum(0.8 * yMin);
   gSyspp_old->SetMaximum(4 * yMax);
 
