@@ -448,11 +448,17 @@ void mc_mass(
         tx.DrawLatex(0.96, 0.935, "pp #sqrt{s} = 5.02 TeV (28.0 pb^{-1})");
     }
     {
-        TLatex tx;
-        tx.SetNDC();
-        tx.SetTextSize(0.04);
-        tx.SetTextFont(72);
-        tx.DrawLatex(0.19, 0.935, "CMS Internal");
+        TLatex cms;
+        cms.SetNDC();
+        cms.SetTextSize(0.04);
+        cms.SetTextFont(62);
+        cms.DrawLatex(0.19, 0.935, "CMS");
+
+        TLatex extra;
+        extra.SetNDC();
+        extra.SetTextSize(0.04);
+        extra.SetTextFont(52);
+        extra.DrawLatex(0.295, 0.935, "Internal");
     }
     {
         TLatex tx;

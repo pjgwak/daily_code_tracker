@@ -266,7 +266,7 @@ void mass(float ptLow = 6.5, float ptHigh = 9.0, float yLow = 0.0, float yHigh =
 	obs_mass.setRange(2.6, 3.5);
 	obs_mass.setMin(2.6);
 	obs_mass.setMax(3.5);
-	const int massPlotBins = 10000;
+	const int massPlotBins = 2000;
 
 	RooDataSet *data = dataSel.get();
 	auto findObj = [&](RooPlot *fr, const char *n) -> TObject *
@@ -679,18 +679,19 @@ void mass(float ptLow = 6.5, float ptHigh = 9.0, float yLow = 0.0, float yHigh =
 		tx.DrawLatex(0.96, 0.935, "pp #sqrt{s} = 5.02 TeV (28.0 pb^{-1})");
 	}
 	{
-		TLatex tx;
-		tx.SetNDC();
-		tx.SetTextSize(0.04);
-		tx.SetTextFont(62);
-		tx.DrawLatex(0.21, 0.935, "CMS");
-	}
-	{
-		TLatex tx;
-		tx.SetNDC();
-		tx.SetTextSize(0.04);
-		tx.SetTextFont(52);
-		tx.DrawLatex(0.315, 0.935, "Internal");
+		TLatex cms;
+		cms.SetNDC();
+		cms.SetTextAlign(11);
+		cms.SetTextSize(0.040);
+		cms.SetTextFont(62);
+		cms.DrawLatex(0.21, 0.935, "CMS");
+
+		TLatex extra;
+		extra.SetNDC();
+		extra.SetTextAlign(11);
+		extra.SetTextSize(0.040);
+		extra.SetTextFont(52);
+		extra.DrawLatex(0.315, 0.935, "Internal");
 	}
 	{
 		TLatex tx;

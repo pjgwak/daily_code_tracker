@@ -1,3 +1,24 @@
+/*
+ * Draw dimuon mass spectra in ctau3D slices for a selected pp J/psi
+ * kinematic bin.
+ *
+ * Workflow:
+ *   - Load the pp J/psi RooDataSet from kDataRoot.
+ *   - Apply the mass, pT, |y|, opposite-sign, muon acceptance, and finite
+ *     ctau3D/ctau3DRes selections.
+ *   - Split the selected sample into fixed ctau3D bins from -20 to 20 mm.
+ *   - For each ctau3D slice, draw the m_mumu spectrum, mark the J/psi mass,
+ *     and count entries in the signal-window and sideband regions.
+ *
+ * Outputs:
+ *   - Per-slice mass PDFs under figs/<y-bin>/<pt-bin>/.
+ *   - Per-slice histograms in roots/<y-bin>/<pt-bin>/ctau_binned_mass_*.root.
+ *   - A TSV summary with entries, mass binning, signal-window counts,
+ *     sideband counts, and J/side ratios.
+ *
+ * Example:
+ *   root -l -b -q "draw_ctau_binned_mass.C(3.5,6.5,1.6,2.4,false)"
+ */
 #include "TCanvas.h"
 #include "TFile.h"
 #include "TH1D.h"
@@ -19,6 +40,10 @@
 #include <vector>
 
 namespace {
+
+// ------------------------------------------------------------------
+// input configuration and helper utilities
+// ------------------------------------------------------------------
 const char *kDataRoot = "/data/users/pjgwak/work/raa_pb18/run2_raa_pbpb2018/skimmedFiles/OniaRooDataSet_isMC0_JPsi_pp_y0.00_2.40_Effw0_Accw0_PtW1_TnP1_260303_root634.root";
 const char *kDatasetName = "dataset";
 const char *kAccCut = "(((abs(eta1) <= 1.2) && (pt1 >= 3.5)) || ((abs(eta2) <= 1.2) && (pt2 >= 3.5)) || ((abs(eta1) > 1.2) && (abs(eta1) <= 2.1) && (pt1 >= 5.47-1.89*(abs(eta1)))) || ((abs(eta2) > 1.2) && (abs(eta2) <= 2.1) && (pt2 >= 5.47-1.89*(abs(eta2)))) || ((abs(eta1) > 2.1) && (abs(eta1) <= 2.4) && (pt1 >= 1.5)) || ((abs(eta2) > 2.1) && (abs(eta2) <= 2.4) && (pt2 >= 1.5)))";
@@ -72,7 +97,7 @@ SliceCount fill_mass_hist(RooDataSet &ds, TH1D &h)
 		const double m = mass->getVal();
 		h.Fill(m);
 		++count.entries;
-		if (m >= 2.976 && m <= 3.216)
+		if (m >= 2.9 && m <= 3.2)
 			++count.jpsi;
 		if (m >= 2.60 && m < 2.90)
 			++count.leftSide;
@@ -83,13 +108,22 @@ SliceCount fill_mass_hist(RooDataSet &ds, TH1D &h)
 }
 }
 
+// ------------------------------------------------------------------
+// main macro
+// ------------------------------------------------------------------
 void draw_ctau_binned_mass(double ptLow = 3.5, double ptHigh = 6.5,
 	double yLow = 1.6, double yHigh = 2.4,
 	bool useLogY = false)
 {
+	// ------------------------------------------------------------------
+	// ROOT style setup
+	// ------------------------------------------------------------------
 	gROOT->Macro("/data/users/pjgwak/input_files/rootlogon.C");
 	gStyle->SetOptStat(0);
 
+	// ------------------------------------------------------------------
+	// load input dataset
+	// ------------------------------------------------------------------
 	TFile input(kDataRoot, "READ");
 	if (input.IsZombie()) {
 		std::cerr << "ERROR: cannot open input data file: " << kDataRoot << std::endl;
@@ -101,6 +135,9 @@ void draw_ctau_binned_mass(double ptLow = 3.5, double ptHigh = 6.5,
 		return;
 	}
 
+	// ------------------------------------------------------------------
+	// output directory and file-name tags
+	// ------------------------------------------------------------------
 	const TString yTag = y_tag(yLow, yHigh);
 	const TString pTag = pt_tag(ptLow, ptHigh);
 	const TString tag = bin_tag(ptLow, ptHigh, yLow, yHigh);
@@ -109,6 +146,9 @@ void draw_ctau_binned_mass(double ptLow = 3.5, double ptHigh = 6.5,
 	gSystem->mkdir(outFigDir, true);
 	gSystem->mkdir(outRootDir, true);
 
+	// ------------------------------------------------------------------
+	// event selection
+	// ------------------------------------------------------------------
 	const TString baseCut = Form(
 		"(mass>2.6 && mass<3.5) && (pt > %.12g && pt < %.12g) && "
 		"(fabs(y) > %.12g && fabs(y) < %.12g) && (recoQQsign==0) && %s && "
@@ -121,6 +161,9 @@ void draw_ctau_binned_mass(double ptLow = 3.5, double ptHigh = 6.5,
 		return;
 	}
 
+	// ------------------------------------------------------------------
+	// ctau3D binning and output handles
+	// ------------------------------------------------------------------
 	const std::vector<double> edges = {
 		-20.0, -10.0, -5.0, -3.0, -2.0, -1.0, -0.5, -0.25, -0.10,
 		0.0, 0.10, 0.25, 0.50, 1.0, 2.0, 3.0, 5.0, 10.0, 20.0
@@ -143,6 +186,9 @@ void draw_ctau_binned_mass(double ptLow = 3.5, double ptHigh = 6.5,
 	std::cout << Form("[INFO] selected entries: %d", selected->numEntries()) << std::endl;
 	std::cout << Form("[INFO] ctau binning: %zu bins from %.1f to %.1f mm", edges.size() - 1, edges.front(), edges.back()) << std::endl;
 
+	// ------------------------------------------------------------------
+	// loop over ctau3D slices
+	// ------------------------------------------------------------------
 	TCanvas c("c_ctau_binned_mass", "c_ctau_binned_mass", 800, 800);
 
 	for (size_t i = 0; i + 1 < edges.size(); ++i) {
@@ -157,6 +203,7 @@ void draw_ctau_binned_mass(double ptLow = 3.5, double ptHigh = 6.5,
 			continue;
 		}
 
+		// Build the mass histogram and count signal-window/sideband entries.
 		TH1D h(Form("hMass_ct_%02zu", i),
 			Form(";m_{#mu#mu} [GeV/c^{2}];Events / %.1f MeV", 900.0 / massBins),
 			massBins, 2.6, 3.5);
@@ -173,6 +220,7 @@ void draw_ctau_binned_mass(double ptLow = 3.5, double ptHigh = 6.5,
 		outFile.cd();
 		h.Write();
 
+		// Draw the per-slice mass spectrum and mark the nominal J/psi mass.
 		c.Clear();
 		c.SetFillStyle(4000);
 		c.SetFrameFillStyle(4000);
@@ -219,6 +267,7 @@ void draw_ctau_binned_mass(double ptLow = 3.5, double ptHigh = 6.5,
 		leg.AddEntry(&jpsiLine, "J/#psi mean", "l");
 		leg.Draw("same");
 
+		// Add CMS-style labels and per-slice bookkeeping text.
 		{
 			TLatex tx;
 			tx.SetNDC();
@@ -234,7 +283,7 @@ void draw_ctau_binned_mass(double ptLow = 3.5, double ptHigh = 6.5,
 			tx.SetTextSize(0.042);
 			tx.SetTextFont(62);
 			tx.DrawLatex(0.23, 0.930, "CMS");
-			tx.SetTextFont(72);
+			tx.SetTextFont(52);
 			tx.SetTextSize(0.032);
 			tx.DrawLatex(0.325, 0.930, "Internal");
 		}
@@ -269,11 +318,15 @@ void draw_ctau_binned_mass(double ptLow = 3.5, double ptHigh = 6.5,
 			tp.DrawLatex(xtext, y0 + dy * k++, Form("J/side = %.3f", jpsiOverSide));
 		}
 
+		// Save the current ctau3D slice as an individual PDF.
 		TString slicePdf = TString::Format("%s/mass_%s_ct%s_%s.pdf",
 			outFigDir.Data(), tag.Data(), tag_value(ctLow).Data(), tag_value(ctHigh).Data());
 		c.Print(slicePdf);
 	}
 
+	// ------------------------------------------------------------------
+	// finalize outputs
+	// ------------------------------------------------------------------
 	fclose(counts);
 	outFile.Write();
 	outFile.Close();
