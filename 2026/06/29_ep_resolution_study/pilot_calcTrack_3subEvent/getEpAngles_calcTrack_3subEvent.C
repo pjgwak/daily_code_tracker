@@ -1,26 +1,25 @@
-/* check
+/* check 할 거.
 --- Current cut ---
 opposite-sign dimuon:
 Reco_QQ_sign[iQQ] != 0 continue
 dimuon |eta| < 2.4
 daughter track 제거:
-|deta| < 0.03, |dphi| < 0.03
+  |deta| < 0.03, |dphi| < 0.03 -> 0.001로 수정?
 tracker Q-vector track:
 |eta| <= 2.4, 0.3 < pt < 3
 
 
 --- Exist in the referecne but not this code ---
-trigger cut:csTree.trigHLT()[10]
-
-event selection:csTree.evtSel()[2]
+trigger cut:csTree.trigHLT()[10] -> 이건 MinBias에 맞게 수정해서 apply?
+event selection:csTree.evtSel()[2] -> Oniatree EventSelection에 있으니까 생략?
 csTree.evtSel()[3]
 
-centrality:100 <= centrality < 160
+centrality:100 <= centrality < 160 -> Need
 
-J/psi candidate condition:softCand
-|y| < 2.4
-2.5 < mass < 4.3
-0.2 <= pt < 20
+J/psi candidate condition:softCand -> cutBasedSoftMuonID? -> Track base?
+|y| < 2.4 -> basic
+2.5 < mass < 4.3 -> Maybe...
+0.2 <= pt < 20 -> Why do we need it? We want to see up to 50 GeV
 
 track quality: highPurity
 ptError/pt < 0.10
@@ -266,7 +265,117 @@ double SafeResolution(double numerator, double denominator)
   return std::sqrt(numerator / denominator);
 }
 
-void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_t maxEvents = 300000, const char *outDirOverride = "", const char *nameTag = "", bool useSingleFileInput = true)
+void AccumulateTrackQ(float pt, float phi, float &qxNum, float &qyNum, float &qWeight)
+{
+  qxNum += pt * cos(2.0 * phi);
+  qyNum += pt * sin(2.0 * phi);
+  qWeight += pt;
+}
+
+void FinalizeTrackQ(float qxNum, float qyNum, float qWeight,
+                    Float_t &qxTree, Float_t &qyTree, Float_t &epOut,
+                    Int_t &hasEp, TH2F *qHist)
+{
+  if (qWeight > 0)
+  {
+    hasEp = 1;
+    qxTree = qxNum / qWeight;
+    qyTree = qyNum / qWeight;
+    epOut = 0.5 * atan2(qyTree, qxTree);
+    if (qHist)
+      qHist->Fill(qxTree, qyTree);
+  }
+  else
+  {
+    hasEp = 0;
+    qxTree = 0.f;
+    qyTree = 0.f;
+    epOut = -99.f;
+  }
+}
+
+Float_t RecenterTrackEp(Float_t qxTree, Float_t qyTree, double meanQx, double meanQy)
+{
+  return 0.5 * atan2(qyTree - meanQy, qxTree - meanQx);
+}
+
+void FillFlatteningMoments(Float_t epRec, TH1F *meansSin[], TH1F *meansCos[], int nMax)
+{
+  for (int n = 0; n < nMax; n++)
+  {
+    const int j = n + 1;
+    meansSin[n]->Fill(sin(2.0 * j * epRec));
+    meansCos[n]->Fill(cos(2.0 * j * epRec));
+  }
+}
+
+void ReadFlatteningMeans(TH1F *meansSin[], TH1F *meansCos[], double meanSin[], double meanCos[], int nMax)
+{
+  for (int n = 0; n < nMax; n++)
+  {
+    meanSin[n] = meansSin[n]->GetMean();
+    meanCos[n] = meansCos[n]->GetMean();
+  }
+}
+
+Float_t FlattenTrackEp(Float_t epRec, const double meanSin[], const double meanCos[], int nMax)
+{
+  double deltaPsi2 = 0.0;
+  for (int n = 0; n < nMax; n++)
+  {
+    const int j = n + 1;
+    deltaPsi2 += (2.0 / j) * (-meanSin[n] * cos(2.0 * j * epRec) + meanCos[n] * sin(2.0 * j * epRec));
+  }
+  return epRec + 0.5 * deltaPsi2;
+}
+
+const int kNCentFineBins = 18;
+const int kNCentIntegratedBins = 6;
+const int kNCentBins = kNCentFineBins + kNCentIntegratedBins;
+const int kCentLow[kNCentBins] = {
+    0, 10, 20, 30, 40, 50, 60, 70, 80,
+    90, 100, 110, 120, 130, 140, 150, 160, 170,
+    0, 0, 20, 40, 20, 80};
+const int kCentHigh[kNCentBins] = {
+    10, 20, 30, 40, 50, 60, 70, 80, 90,
+    100, 110, 120, 130, 140, 150, 160, 170, 180,
+    20, 40, 40, 80, 80, 180};
+const char *kCentLabel[kNCentBins] = {
+    "0-5%", "5-10%", "10-15%", "15-20%", "20-25%", "25-30%", "30-35%", "35-40%", "40-45%",
+    "45-50%", "50-55%", "55-60%", "60-65%", "65-70%", "70-75%", "75-80%", "80-85%", "85-90%",
+    "0-10%", "0-20%", "10-20%", "20-40%", "10-40%", "40-90%"};
+
+bool IsInCentBin(Int_t centrality, Int_t centBin)
+{
+  if (centBin < 0 || centBin >= kNCentBins)
+    return false;
+  return centrality >= kCentLow[centBin] && centrality < kCentHigh[centBin];
+}
+
+Int_t GetCentBin(Int_t centrality)
+{
+  for (int ic = 0; ic < kNCentBins; ++ic)
+    if (IsInCentBin(centrality, ic))
+      return ic;
+  return -1;
+}
+
+TString GetCentBinLabel(Int_t centBin)
+{
+  if (centBin < 0 || centBin >= kNCentBins)
+    return "invalid";
+  return kCentLabel[centBin];
+}
+
+void SetupCentralityHist(TH1F *h)
+{
+  if (!h)
+    return;
+  for (int i = 0; i < kNCentBins; ++i)
+    h->GetXaxis()->SetBinLabel(i + 1, GetCentBinLabel(i));
+}
+
+void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_t maxEvents = 1000000, const char *outDirOverride = "", const char *nameTag = "", bool useSingleFileInput = true)
 {
   // ===== input files ===== //
   // gErrorIgnoreLevel = kError;
@@ -286,12 +395,12 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
     mcLabel = isPr ? "PR" : "NP";
   TString safeNameTag = MakeSafeNameTag(nameTag);
 
-  // we create and remove a buffer output file to avoid 
+  // we create and remove a buffer output file to avoid
   TString bufferFileName = TString::Format(
       "out_buffer_very_long_strange_file_name_never_be_used_MC_%s_pid%d.root",
       safeNameTag.Data(),
       gSystem->GetPid());
-  
+
   // prepare to connect to input TTree
   TString nameOldTree = "hionia/myTree";
   TChain myChain(nameOldTree);
@@ -313,7 +422,7 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
     trkChain.Add(inputFile);
   }
   else
-  { 
+  {
     // check unmerged many root files
     TString base_folder = isPr ? prompt_base_folder : nonprompt_base_folder;
     vector<TString> inputFiles = GetInputRootFiles(base_folder);
@@ -343,6 +452,8 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
   TClonesArray *Reco_mu_4mom = nullptr;
   Short_t Reco_trk_size;
   Int_t nEP = 0;
+  Int_t Centrality = -1;
+  Int_t centBin = -1;
   Float_t rpAng[12];
 
   // variables in input tree. They will be used for calculatin but will not saved
@@ -352,7 +463,10 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
 
   // new variables
   Float_t Q2x_tree, Q2y_tree, ep, ep_rec, ep_flat;
-  Int_t has_trk_ep;
+  Float_t Q2x_trackmid_tree, Q2y_trackmid_tree, ep_trackmid, ep_trackmid_rec, ep_trackmid_flat;
+  Float_t Q2x_trackm_tree, Q2y_trackm_tree, ep_trackm, ep_trackm_rec, ep_trackm_flat;
+  Float_t Q2x_trackp_tree, Q2y_trackp_tree, ep_trackp, ep_trackp_rec, ep_trackp_flat;
+  Int_t has_trk_ep, has_trk_mid_ep, has_trk_m_ep, has_trk_p_ep;
   Float_t ep_hfm2, ep_hfp2;
   Float_t cos2_trk_hfp, cos2_trk_hfm, cos2_hfp_hfm;
   const int kHFm2 = 0;
@@ -379,6 +493,10 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
   myChain.SetBranchAddress("Reco_mu_4mom", &Reco_mu_4mom);
   if (myChain.GetBranch("nEP"))
     myChain.SetBranchAddress("nEP", &nEP);
+  if (myChain.GetBranch("Centrality"))
+    myChain.SetBranchAddress("Centrality", &Centrality);
+  else
+    cout << "[WARN] Centrality branch is missing; centrality-binned split will be skipped" << endl;
   if (myChain.GetBranch("rpAng"))
     myChain.SetBranchAddress("rpAng", rpAng);
 
@@ -407,6 +525,19 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
   tempTree->Branch("Q2y_tree", &Q2y_tree, "Q2y_tree/F");
   tempTree->Branch("ep", &ep, "ep/F");
   tempTree->Branch("has_trk_ep", &has_trk_ep, "has_trk_ep/I");
+  tempTree->Branch("centBin", &centBin, "centBin/I");
+  tempTree->Branch("Q2x_trackmid_tree", &Q2x_trackmid_tree, "Q2x_trackmid_tree/F");
+  tempTree->Branch("Q2y_trackmid_tree", &Q2y_trackmid_tree, "Q2y_trackmid_tree/F");
+  tempTree->Branch("ep_trackmid", &ep_trackmid, "ep_trackmid/F");
+  tempTree->Branch("has_trk_mid_ep", &has_trk_mid_ep, "has_trk_mid_ep/I");
+  tempTree->Branch("Q2x_trackm_tree", &Q2x_trackm_tree, "Q2x_trackm_tree/F");
+  tempTree->Branch("Q2y_trackm_tree", &Q2y_trackm_tree, "Q2y_trackm_tree/F");
+  tempTree->Branch("ep_trackm", &ep_trackm, "ep_trackm/F");
+  tempTree->Branch("has_trk_m_ep", &has_trk_m_ep, "has_trk_m_ep/I");
+  tempTree->Branch("Q2x_trackp_tree", &Q2x_trackp_tree, "Q2x_trackp_tree/F");
+  tempTree->Branch("Q2y_trackp_tree", &Q2y_trackp_tree, "Q2y_trackp_tree/F");
+  tempTree->Branch("ep_trackp", &ep_trackp, "ep_trackp/F");
+  tempTree->Branch("has_trk_p_ep", &has_trk_p_ep, "has_trk_p_ep/I");
 
   // local TLorentz vectors
   TLorentzVector *qq4mom = nullptr;
@@ -415,6 +546,9 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
 
   // ===== additional variables ===== //
   TH2F *hQ2xy = new TH2F("hQ2xy", " ", 80, -4.0, 4.0, 80, -4.0, 4.0);
+  TH2F *hQ2xyTrackMid = new TH2F("hQ2xyTrackMid", " ", 80, -4.0, 4.0, 80, -4.0, 4.0);
+  TH2F *hQ2xyTrackM = new TH2F("hQ2xyTrackM", " ", 80, -4.0, 4.0, 80, -4.0, 4.0);
+  TH2F *hQ2xyTrackP = new TH2F("hQ2xyTrackP", " ", 80, -4.0, 4.0, 80, -4.0, 4.0);
 
   // Dimuon daughter coordinates used to remove autocorrelation tracks.
   float d1Phi[MAXCAN], d1Eta[MAXCAN];
@@ -436,6 +570,7 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
 
     myChain.GetEntry(ievt);
     trkChain.GetEntry(ievt);
+    centBin = GetCentBin(Centrality);
 
     Long64_t N = 0;
     Long64_t nsize = Reco_QQ_size;
@@ -443,6 +578,15 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
     float Q2x_num = 0;
     float Q2y_num = 0;
     float Qw_pt_num = 0;
+    float Q2x_trackmid_num = 0;
+    float Q2y_trackmid_num = 0;
+    float Qw_trackmid_num = 0;
+    float Q2x_trackm_num = 0;
+    float Q2y_trackm_num = 0;
+    float Qw_trackm_num = 0;
+    float Q2x_trackp_num = 0;
+    float Q2y_trackp_num = 0;
+    float Qw_trackp_num = 0;
 
     // Collect dimuon daughter tracks for autocorrelation removal.
     for (int iQQ = 0; iQQ < nsize; iQQ++)
@@ -499,30 +643,25 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
 
       // cout << "\n\n ===========: " <<it << endl;
       if (fabs(eta) <= 2.4 && pt > 0.3 && pt < 3)
+        AccumulateTrackQ(pt, phi, Q2x_num, Q2y_num, Qw_pt_num);
+
+      // Track subevents follow the rpAng[3/4/5] definitions in epAngle_info.h.
+      if (pt > 0.5 && pt < 3)
       {
-        Q2x_num += pt * cos(2 * phi);
-        Q2y_num += pt * sin(2 * phi);
-        Qw_pt_num += pt;
+        if (eta > -0.5 && eta < 0.5)
+          AccumulateTrackQ(pt, phi, Q2x_trackmid_num, Q2y_trackmid_num, Qw_trackmid_num);
+        if (eta > -2.0 && eta < -1.0)
+          AccumulateTrackQ(pt, phi, Q2x_trackm_num, Q2y_trackm_num, Qw_trackm_num);
+        if (eta > 1.0 && eta < 2.0)
+          AccumulateTrackQ(pt, phi, Q2x_trackp_num, Q2y_trackp_num, Qw_trackp_num);
       }
     }
 
-    if (Qw_pt_num > 0)
-    {
-      has_trk_ep = 1;
-      Q2x_tree = Q2x_num / Qw_pt_num;
-      Q2y_tree = Q2y_num / Qw_pt_num;
-      ep = 0.5 * atan2(Q2y_tree, Q2x_tree);
-      hQ2xy->Fill(Q2x_tree, Q2y_tree);
-    }
-    else
-    {
-      // Keep event order; invalid tracker EP entries are skipped in later calculations.
-      has_trk_ep = 0;
-      Q2x_tree = 0;
-      Q2y_tree = 0;
-      ep = -99.f;
-    }
-
+    // To keep event order; invalid tracker EP entries will be skipped in later calculations
+    FinalizeTrackQ(Q2x_num, Q2y_num, Qw_pt_num, Q2x_tree, Q2y_tree, ep, has_trk_ep, hQ2xy);
+    FinalizeTrackQ(Q2x_trackmid_num, Q2y_trackmid_num, Qw_trackmid_num, Q2x_trackmid_tree, Q2y_trackmid_tree, ep_trackmid, has_trk_mid_ep, hQ2xyTrackMid);
+    FinalizeTrackQ(Q2x_trackm_num, Q2y_trackm_num, Qw_trackm_num, Q2x_trackm_tree, Q2y_trackm_tree, ep_trackm, has_trk_m_ep, hQ2xyTrackM);
+    FinalizeTrackQ(Q2x_trackp_num, Q2y_trackp_num, Qw_trackp_num, Q2x_trackp_tree, Q2y_trackp_tree, ep_trackp, has_trk_p_ep, hQ2xyTrackP);
     // cout << Q2x_tree << "  " << Q2y_tree << endl ;
 
     tempTree->Fill();
@@ -531,56 +670,89 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
   PrintStopwatch("loop 1", loop1Timer);
 
   // ===== main loop 2 - Recentering and flattening inputs ===== //
-  // Use the valid track-Q distribution from loop 1 to recenter each event.
+  // Use each valid track-Q distribution from loop 1 to recenter the matching event-plane angle.
   float mean_Q2x = hQ2xy->GetMean(1);
   float mean_Q2y = hQ2xy->GetMean(2);
-  cout << mean_Q2x << "  " << mean_Q2y << endl;
+  float mean_Q2x_trackmid = hQ2xyTrackMid->GetMean(1);
+  float mean_Q2y_trackmid = hQ2xyTrackMid->GetMean(2);
+  float mean_Q2x_trackm = hQ2xyTrackM->GetMean(1);
+  float mean_Q2y_trackm = hQ2xyTrackM->GetMean(2);
+  float mean_Q2x_trackp = hQ2xyTrackP->GetMean(1);
+  float mean_Q2y_trackp = hQ2xyTrackP->GetMean(2);
+  cout << std::defaultfloat << std::setprecision(6);
+  cout << "full tracker mean Q: " << mean_Q2x << "  " << mean_Q2y << endl;
+  cout << "trackmid mean Q: " << mean_Q2x_trackmid << "  " << mean_Q2y_trackmid << endl;
+  cout << "trackm mean Q: " << mean_Q2x_trackm << "  " << mean_Q2y_trackm << endl;
+  cout << "trackp mean Q: " << mean_Q2x_trackp << "  " << mean_Q2y_trackp << endl;
 
+  tempTree->SetBranchAddress("Centrality", &Centrality);
+  tempTree->SetBranchAddress("centBin", &centBin);
   tempTree->SetBranchAddress("Q2x_tree", &Q2x_tree);
   tempTree->SetBranchAddress("Q2y_tree", &Q2y_tree);
   tempTree->SetBranchAddress("has_trk_ep", &has_trk_ep);
+  tempTree->SetBranchAddress("Q2x_trackmid_tree", &Q2x_trackmid_tree);
+  tempTree->SetBranchAddress("Q2y_trackmid_tree", &Q2y_trackmid_tree);
+  tempTree->SetBranchAddress("has_trk_mid_ep", &has_trk_mid_ep);
+  tempTree->SetBranchAddress("Q2x_trackm_tree", &Q2x_trackm_tree);
+  tempTree->SetBranchAddress("Q2y_trackm_tree", &Q2y_trackm_tree);
+  tempTree->SetBranchAddress("has_trk_m_ep", &has_trk_m_ep);
+  tempTree->SetBranchAddress("Q2x_trackp_tree", &Q2x_trackp_tree);
+  tempTree->SetBranchAddress("Q2y_trackp_tree", &Q2y_trackp_tree);
+  tempTree->SetBranchAddress("has_trk_p_ep", &has_trk_p_ep);
 
   TTree *recTree = tempTree->CloneTree(0);
   recTree->SetName("recTree");
   recTree->Branch("ep_rec", &ep_rec, "ep_rec/F");
+  recTree->Branch("ep_trackmid_rec", &ep_trackmid_rec, "ep_trackmid_rec/F");
+  recTree->Branch("ep_trackm_rec", &ep_trackm_rec, "ep_trackm_rec/F");
+  recTree->Branch("ep_trackp_rec", &ep_trackp_rec, "ep_trackp_rec/F");
 
   const int N = 10;   // Flattening uses harmonics j = 1..10.
   TH1F *means_sin[N]; // Distributions used to extract <sin(2*j*Psi_rec)>.
   TH1F *means_cos[N]; // Distributions used to extract <cos(2*j*Psi_rec)>.
+  TH1F *means_sin_trackmid[N];
+  TH1F *means_cos_trackmid[N];
+  TH1F *means_sin_trackm[N];
+  TH1F *means_cos_trackm[N];
+  TH1F *means_sin_trackp[N];
+  TH1F *means_cos_trackp[N];
 
   for (int i = 0; i < N; i++)
   {
     means_sin[i] = new TH1F(Form("means_sin_%d", i), Form("<sin(2*%d*Psi_rec)>", i + 1), 20, -1, 1);
     means_cos[i] = new TH1F(Form("means_cos_%d", i), Form("<cos(2*%d*Psi_rec)>", i + 1), 20, -1, 1);
+    means_sin_trackmid[i] = new TH1F(Form("means_sin_trackmid_%d", i), Form("<sin(2*%d*Psi_trackmid_rec)>", i + 1), 20, -1, 1);
+    means_cos_trackmid[i] = new TH1F(Form("means_cos_trackmid_%d", i), Form("<cos(2*%d*Psi_trackmid_rec)>", i + 1), 20, -1, 1);
+    means_sin_trackm[i] = new TH1F(Form("means_sin_trackm_%d", i), Form("<sin(2*%d*Psi_trackm_rec)>", i + 1), 20, -1, 1);
+    means_cos_trackm[i] = new TH1F(Form("means_cos_trackm_%d", i), Form("<cos(2*%d*Psi_trackm_rec)>", i + 1), 20, -1, 1);
+    means_sin_trackp[i] = new TH1F(Form("means_sin_trackp_%d", i), Form("<sin(2*%d*Psi_trackp_rec)>", i + 1), 20, -1, 1);
+    means_cos_trackp[i] = new TH1F(Form("means_cos_trackp_%d", i), Form("<cos(2*%d*Psi_trackp_rec)>", i + 1), 20, -1, 1);
   }
 
   TStopwatch loop2Timer;
   loop2Timer.Start();
   cout << "\n\nStart loop 2\n\n";
-  // Apply tracker flattening, read HF subevent angles, and fill 3-subevent correlations.
+  // Recenter each calculated tracker angle, then accumulate Fourier moments for flattening.
   for (Int_t i = 0; i < nEvent; i++)
   {
     PrintLoopProgress("loop 2", i, nEvent, reportEvery, loop2Timer);
     tempTree->GetEntry(i);
     recTree->GetEntry(i);
-    if (has_trk_ep)
-    {
-      float ep1 = 0.5 * atan2(Q2y_tree - mean_Q2y, Q2x_tree - mean_Q2x);
-      ep_rec = ep1;
-      float j = 1.;
 
-      // Store j = 1..10 Fourier moments; their means become flattening constants.
-      for (int i = 0; i < N; i++)
-      {
-        means_sin[i]->Fill(sin(2 * j * ep_rec));
-        means_cos[i]->Fill(cos(2 * j * ep_rec));
-        j += 1;
-      }
-    }
-    else
-    {
-      ep_rec = -99.f;
-    }
+    ep_rec = has_trk_ep ? RecenterTrackEp(Q2x_tree, Q2y_tree, mean_Q2x, mean_Q2y) : -99.f;
+    ep_trackmid_rec = has_trk_mid_ep ? RecenterTrackEp(Q2x_trackmid_tree, Q2y_trackmid_tree, mean_Q2x_trackmid, mean_Q2y_trackmid) : -99.f;
+    ep_trackm_rec = has_trk_m_ep ? RecenterTrackEp(Q2x_trackm_tree, Q2y_trackm_tree, mean_Q2x_trackm, mean_Q2y_trackm) : -99.f;
+    ep_trackp_rec = has_trk_p_ep ? RecenterTrackEp(Q2x_trackp_tree, Q2y_trackp_tree, mean_Q2x_trackp, mean_Q2y_trackp) : -99.f;
+
+    if (has_trk_ep)
+      FillFlatteningMoments(ep_rec, means_sin, means_cos, N);
+    if (has_trk_mid_ep)
+      FillFlatteningMoments(ep_trackmid_rec, means_sin_trackmid, means_cos_trackmid, N);
+    if (has_trk_m_ep)
+      FillFlatteningMoments(ep_trackm_rec, means_sin_trackm, means_cos_trackm, N);
+    if (has_trk_p_ep)
+      FillFlatteningMoments(ep_trackp_rec, means_sin_trackp, means_cos_trackp, N);
+
     recTree->Fill();
   }
   cout << "loop 2 done" << endl;
@@ -624,13 +796,32 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
   TTree *myTree = recTree->CloneTree(0);
   myTree->SetName("myTree");
   myTree->Branch("ep_flat", &ep_flat, "ep_flat/F");
+  myTree->Branch("ep_trackmid_flat", &ep_trackmid_flat, "ep_trackmid_flat/F");
+  myTree->Branch("ep_trackm_flat", &ep_trackm_flat, "ep_trackm_flat/F");
+  myTree->Branch("ep_trackp_flat", &ep_trackp_flat, "ep_trackp_flat/F");
   myTree->Branch("ep_hfm2", &ep_hfm2, "ep_hfm2/F");
   myTree->Branch("ep_hfp2", &ep_hfp2, "ep_hfp2/F");
   myTree->Branch("cos2_trk_hfp", &cos2_trk_hfp, "cos2_trk_hfp/F");
   myTree->Branch("cos2_trk_hfm", &cos2_trk_hfm, "cos2_trk_hfm/F");
   myTree->Branch("cos2_hfp_hfm", &cos2_hfp_hfm, "cos2_hfp_hfm/F");
+  recTree->SetBranchAddress("Centrality", &Centrality);
+  recTree->SetBranchAddress("centBin", &centBin);
+  recTree->SetBranchAddress("Q2x_tree", &Q2x_tree);
+  recTree->SetBranchAddress("Q2y_tree", &Q2y_tree);
+  recTree->SetBranchAddress("Q2x_trackmid_tree", &Q2x_trackmid_tree);
+  recTree->SetBranchAddress("Q2y_trackmid_tree", &Q2y_trackmid_tree);
+  recTree->SetBranchAddress("Q2x_trackm_tree", &Q2x_trackm_tree);
+  recTree->SetBranchAddress("Q2y_trackm_tree", &Q2y_trackm_tree);
+  recTree->SetBranchAddress("Q2x_trackp_tree", &Q2x_trackp_tree);
+  recTree->SetBranchAddress("Q2y_trackp_tree", &Q2y_trackp_tree);
   recTree->SetBranchAddress("ep_rec", &ep_rec);
+  recTree->SetBranchAddress("ep_trackmid_rec", &ep_trackmid_rec);
+  recTree->SetBranchAddress("ep_trackm_rec", &ep_trackm_rec);
+  recTree->SetBranchAddress("ep_trackp_rec", &ep_trackp_rec);
   recTree->SetBranchAddress("has_trk_ep", &has_trk_ep);
+  recTree->SetBranchAddress("has_trk_mid_ep", &has_trk_mid_ep);
+  recTree->SetBranchAddress("has_trk_m_ep", &has_trk_m_ep);
+  recTree->SetBranchAddress("has_trk_p_ep", &has_trk_p_ep);
   if (recTree->GetBranch("nEP"))
     recTree->SetBranchAddress("nEP", &nEP);
   if (recTree->GetBranch("rpAng"))
@@ -639,21 +830,44 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
   // Flattening constants extracted from loop 2 Fourier-moment histograms.
   double mean_sin[N];
   double mean_cos[N];
+  double mean_sin_trackmid[N];
+  double mean_cos_trackmid[N];
+  double mean_sin_trackm[N];
+  double mean_cos_trackm[N];
+  double mean_sin_trackp[N];
+  double mean_cos_trackp[N];
 
   TH1F *hCos2TrkHFp = new TH1F("hCos2TrkHFp", ";cos 2(#Psi_{trk}-#Psi_{HF+});Entries", 200, -1, 1);
   TH1F *hCos2TrkHFm = new TH1F("hCos2TrkHFm", ";cos 2(#Psi_{trk}-#Psi_{HF-});Entries", 200, -1, 1);
   TH1F *hCos2HFpHFm = new TH1F("hCos2HFpHFm", ";cos 2(#Psi_{HF+}-#Psi_{HF-});Entries", 200, -1, 1);
   TH1F *hResolution3Sub = new TH1F("hResolution3Sub", "3-subevent resolution summary", 7, 0.5, 7.5);
+  TH1F *hCos2TrkHFpCent[kNCentBins];
+  TH1F *hCos2TrkHFmCent[kNCentBins];
+  TH1F *hCos2HFpHFmCent[kNCentBins];
+  for (int ic = 0; ic < kNCentBins; ++ic)
+  {
+    hCos2TrkHFpCent[ic] = new TH1F(Form("hCos2TrkHFp_cent%d", ic), Form("%s;cos 2(#Psi_{trk}-#Psi_{HF+});Entries", GetCentBinLabel(ic).Data()), 200, -1, 1);
+    hCos2TrkHFmCent[ic] = new TH1F(Form("hCos2TrkHFm_cent%d", ic), Form("%s;cos 2(#Psi_{trk}-#Psi_{HF-});Entries", GetCentBinLabel(ic).Data()), 200, -1, 1);
+    hCos2HFpHFmCent[ic] = new TH1F(Form("hCos2HFpHFm_cent%d", ic), Form("%s;cos 2(#Psi_{HF+}-#Psi_{HF-});Entries", GetCentBinLabel(ic).Data()), 200, -1, 1);
+  }
+  TH1F *hResolution3SubCent = new TH1F("hResolution3SubCent", ";Centrality;R_{trk}", kNCentBins, 0.5, kNCentBins + 0.5);
+  TH1F *hCos2TrkHFpCentMean = new TH1F("hCos2TrkHFpCentMean", ";Centrality;<cos2 Trk-HF+>", kNCentBins, 0.5, kNCentBins + 0.5);
+  TH1F *hCos2TrkHFmCentMean = new TH1F("hCos2TrkHFmCentMean", ";Centrality;<cos2 Trk-HF->", kNCentBins, 0.5, kNCentBins + 0.5);
+  TH1F *hCos2HFpHFmCentMean = new TH1F("hCos2HFpHFmCentMean", ";Centrality;<cos2 HF+-HF->", kNCentBins, 0.5, kNCentBins + 0.5);
+  TH1F *hCos2CentEntries = new TH1F("hCos2CentEntries", ";Centrality;Entries", kNCentBins, 0.5, kNCentBins + 0.5);
+  SetupCentralityHist(hResolution3SubCent);
+  SetupCentralityHist(hCos2TrkHFpCentMean);
+  SetupCentralityHist(hCos2TrkHFmCentMean);
+  SetupCentralityHist(hCos2HFpHFmCentMean);
+  SetupCentralityHist(hCos2CentEntries);
 
   TStopwatch loop3Timer;
   loop3Timer.Start();
   cout << "\n\nStart loop 3\n\n";
-  for (int i = 0; i < N; i++)
-  {
-    mean_sin[i] = means_sin[i]->GetMean();
-    mean_cos[i] = means_cos[i]->GetMean();
-  }
-
+  ReadFlatteningMeans(means_sin, means_cos, mean_sin, mean_cos, N);
+  ReadFlatteningMeans(means_sin_trackmid, means_cos_trackmid, mean_sin_trackmid, mean_cos_trackmid, N);
+  ReadFlatteningMeans(means_sin_trackm, means_cos_trackm, mean_sin_trackm, mean_cos_trackm, N);
+  ReadFlatteningMeans(means_sin_trackp, means_cos_trackp, mean_sin_trackp, mean_cos_trackp, N);
   // Apply tracker flattening, read HF subevent angles, and fill 3-subevent correlations.
   for (Int_t i = 0; i < nEvent; i++)
   {
@@ -662,6 +876,9 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
     recTree->GetEntry(i);
     // cout << i << endl ;
     ep_flat = -99.f;
+    ep_trackmid_flat = -99.f;
+    ep_trackm_flat = -99.f;
+    ep_trackp_flat = -99.f;
     ep_hfm2 = -99.f;
     ep_hfp2 = -99.f;
     cos2_trk_hfp = -99.f;
@@ -669,17 +886,13 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
     cos2_hfp_hfm = -99.f;
 
     if (has_trk_ep)
-    {
-      // Flatten calculated tracker EP using j = 1..10 Fourier terms.
-      double deltaPsi2 = 0.0;
-      for (int n = 0; n < N; n++)
-      {
-        const int j = n + 1;
-        double term = (2.0 / j) * (-mean_sin[n] * cos(2.0 * j * ep_rec) + mean_cos[n] * sin(2.0 * j * ep_rec));
-        deltaPsi2 += term;
-      }
-      ep_flat = ep_rec + 0.5 * deltaPsi2;
-    }
+      ep_flat = FlattenTrackEp(ep_rec, mean_sin, mean_cos, N);
+    if (has_trk_mid_ep)
+      ep_trackmid_flat = FlattenTrackEp(ep_trackmid_rec, mean_sin_trackmid, mean_cos_trackmid, N);
+    if (has_trk_m_ep)
+      ep_trackm_flat = FlattenTrackEp(ep_trackm_rec, mean_sin_trackm, mean_cos_trackm, N);
+    if (has_trk_p_ep)
+      ep_trackp_flat = FlattenTrackEp(ep_trackp_rec, mean_sin_trackp, mean_cos_trackp, N);
 
     // HF angles come from the input EP array; require indices 0 and 1 to exist.
     if (nEP > kHFp2)
@@ -697,6 +910,15 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
       hCos2TrkHFp->Fill(cos2_trk_hfp);
       hCos2TrkHFm->Fill(cos2_trk_hfm);
       hCos2HFpHFm->Fill(cos2_hfp_hfm);
+
+      for (int ic = 0; ic < kNCentBins; ++ic)
+      {
+        if (!IsInCentBin(Centrality, ic))
+          continue;
+        hCos2TrkHFpCent[ic]->Fill(cos2_trk_hfp);
+        hCos2TrkHFmCent[ic]->Fill(cos2_trk_hfm);
+        hCos2HFpHFmCent[ic]->Fill(cos2_hfp_hfm);
+      }
     }
     myTree->Fill();
   }
@@ -726,14 +948,42 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
   hResolution3Sub->SetBinContent(6, hCos2TrkHFm->GetEntries());
   hResolution3Sub->SetBinContent(7, hCos2HFpHFm->GetEntries());
 
+  for (int ic = 0; ic < kNCentBins; ++ic)
+  {
+    const Double_t meanTrkHFpCent = hCos2TrkHFpCent[ic]->GetMean(1);
+    const Double_t meanTrkHFmCent = hCos2TrkHFmCent[ic]->GetMean(1);
+    const Double_t meanHFpHFmCent = hCos2HFpHFmCent[ic]->GetMean(1);
+    const Double_t rTrkCent = SafeResolution(meanTrkHFpCent * meanTrkHFmCent, meanHFpHFmCent);
+    hResolution3SubCent->SetBinContent(ic + 1, rTrkCent);
+    hCos2TrkHFpCentMean->SetBinContent(ic + 1, meanTrkHFpCent);
+    hCos2TrkHFmCentMean->SetBinContent(ic + 1, meanTrkHFmCent);
+    hCos2HFpHFmCentMean->SetBinContent(ic + 1, meanHFpHFmCent);
+    hCos2CentEntries->SetBinContent(ic + 1, hCos2TrkHFpCent[ic]->GetEntries());
+    cout << "R_Trk " << GetCentBinLabel(ic) << " = sqrt(" << meanTrkHFpCent << " * " << meanTrkHFmCent << " / " << meanHFpHFmCent << ") = " << rTrkCent << endl;
+  }
+
   // ===== saving and cleaning ===== //
   myTree->Write();
   outFile->cd();
   hQ2xy->Write();
+  hQ2xyTrackMid->Write();
+  hQ2xyTrackM->Write();
+  hQ2xyTrackP->Write();
   hCos2TrkHFp->Write();
   hCos2TrkHFm->Write();
   hCos2HFpHFm->Write();
   hResolution3Sub->Write();
+  for (int ic = 0; ic < kNCentBins; ++ic)
+  {
+    hCos2TrkHFpCent[ic]->Write();
+    hCos2TrkHFmCent[ic]->Write();
+    hCos2HFpHFmCent[ic]->Write();
+  }
+  hResolution3SubCent->Write();
+  hCos2TrkHFpCentMean->Write();
+  hCos2TrkHFmCentMean->Write();
+  hCos2HFpHFmCentMean->Write();
+  hCos2CentEntries->Write();
 
   outTemp->Close();
   outFile->Close();
