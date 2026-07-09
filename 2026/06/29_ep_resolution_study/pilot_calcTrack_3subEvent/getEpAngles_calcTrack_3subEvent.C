@@ -1,4 +1,4 @@
-/* check 할 거.
+/* check Todo later.
 --- Current cut ---
 opposite-sign dimuon:
 Reco_QQ_sign[iQQ] != 0 continue
@@ -10,11 +10,11 @@ tracker Q-vector track:
 
 
 --- Exist in the referecne but not this code ---
-trigger cut:csTree.trigHLT()[10] -> 이건 MinBias에 맞게 수정해서 apply?
-event selection:csTree.evtSel()[2] -> Oniatree EventSelection에 있으니까 생략?
-csTree.evtSel()[3]
+trigger cut:csTree.trigHLT()[10] -> change for MinBias?
+event selection:csTree.evtSel()[2] -> Does Oniatree EventSelection include it?
+csTree.evtSel()[3] -> Does Oniatree EventSelection include it?
 
-centrality:100 <= centrality < 160 -> Need
+centrality:100 <= centrality < 160 -> Need?
 
 J/psi candidate condition:softCand -> cutBasedSoftMuonID? -> Track base?
 |y| < 2.4 -> basic
@@ -657,7 +657,7 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
       }
     }
 
-    // To keep event order; invalid tracker EP entries will be skipped in later calculations
+    // To keep event order; Will invalid tracker EP entries will be skipped in later calculations
     FinalizeTrackQ(Q2x_num, Q2y_num, Qw_pt_num, Q2x_tree, Q2y_tree, ep, has_trk_ep, hQ2xy);
     FinalizeTrackQ(Q2x_trackmid_num, Q2y_trackmid_num, Qw_trackmid_num, Q2x_trackmid_tree, Q2y_trackmid_tree, ep_trackmid, has_trk_mid_ep, hQ2xyTrackMid);
     FinalizeTrackQ(Q2x_trackm_num, Q2y_trackm_num, Qw_trackm_num, Q2x_trackm_tree, Q2y_trackm_tree, ep_trackm, has_trk_m_ep, hQ2xyTrackM);
@@ -840,7 +840,7 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
   TH1F *hCos2TrkHFp = new TH1F("hCos2TrkHFp", ";cos 2(#Psi_{trk}-#Psi_{HF+});Entries", 200, -1, 1);
   TH1F *hCos2TrkHFm = new TH1F("hCos2TrkHFm", ";cos 2(#Psi_{trk}-#Psi_{HF-});Entries", 200, -1, 1);
   TH1F *hCos2HFpHFm = new TH1F("hCos2HFpHFm", ";cos 2(#Psi_{HF+}-#Psi_{HF-});Entries", 200, -1, 1);
-  TH1F *hResolution3Sub = new TH1F("hResolution3Sub", "3-subevent resolution summary", 7, 0.5, 7.5);
+  // TH1F *hResolution3Sub = new TH1F("hResolution3Sub", "3-subevent resolution summary", 7, 0.5, 7.5);
   TH1F *hCos2TrkHFpCent[kNCentBins];
   TH1F *hCos2TrkHFmCent[kNCentBins];
   TH1F *hCos2HFpHFmCent[kNCentBins];
@@ -933,20 +933,21 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
   cout << std::setprecision(12)
        << "Cos2TrkR_Mean = sqrt(" << Cos2TrkHFp_Mean << " * " << Cos2TrkHFm_Mean << " / " << Cos2HFpHFm_Mean << ") = " << Cos2TrkR_Mean << endl;
 
-  hResolution3Sub->GetXaxis()->SetBinLabel(1, "<TrkHFp>");
-  hResolution3Sub->GetXaxis()->SetBinLabel(2, "<TrkHFm>");
-  hResolution3Sub->GetXaxis()->SetBinLabel(3, "<HFpHFm>");
-  hResolution3Sub->GetXaxis()->SetBinLabel(4, "R_Trk");
-  hResolution3Sub->GetXaxis()->SetBinLabel(5, "entries TrkHFp");
-  hResolution3Sub->GetXaxis()->SetBinLabel(6, "entries TrkHFm");
-  hResolution3Sub->GetXaxis()->SetBinLabel(7, "entries HFpHFm");
-  hResolution3Sub->SetBinContent(1, Cos2TrkHFp_Mean);
-  hResolution3Sub->SetBinContent(2, Cos2TrkHFm_Mean);
-  hResolution3Sub->SetBinContent(3, Cos2HFpHFm_Mean);
-  hResolution3Sub->SetBinContent(4, Cos2TrkR_Mean);
-  hResolution3Sub->SetBinContent(5, hCos2TrkHFp->GetEntries());
-  hResolution3Sub->SetBinContent(6, hCos2TrkHFm->GetEntries());
-  hResolution3Sub->SetBinContent(7, hCos2HFpHFm->GetEntries());
+  // for quick check
+  // hResolution3Sub->GetXaxis()->SetBinLabel(1, "<TrkHFp>");
+  // hResolution3Sub->GetXaxis()->SetBinLabel(2, "<TrkHFm>");
+  // hResolution3Sub->GetXaxis()->SetBinLabel(3, "<HFpHFm>");
+  // hResolution3Sub->GetXaxis()->SetBinLabel(4, "R_Trk");
+  // hResolution3Sub->GetXaxis()->SetBinLabel(5, "entries TrkHFp");
+  // hResolution3Sub->GetXaxis()->SetBinLabel(6, "entries TrkHFm");
+  // hResolution3Sub->GetXaxis()->SetBinLabel(7, "entries HFpHFm");
+  // hResolution3Sub->SetBinContent(1, Cos2TrkHFp_Mean);
+  // hResolution3Sub->SetBinContent(2, Cos2TrkHFm_Mean);
+  // hResolution3Sub->SetBinContent(3, Cos2HFpHFm_Mean);
+  // hResolution3Sub->SetBinContent(4, Cos2TrkR_Mean);
+  // hResolution3Sub->SetBinContent(5, hCos2TrkHFp->GetEntries());
+  // hResolution3Sub->SetBinContent(6, hCos2TrkHFm->GetEntries());
+  // hResolution3Sub->SetBinContent(7, hCos2HFpHFm->GetEntries());
 
   for (int ic = 0; ic < kNCentBins; ++ic)
   {
@@ -972,7 +973,7 @@ void getEpAngles_calcTrack_3subEvent(bool isMC = true, bool isPr = true, Long64_
   hCos2TrkHFp->Write();
   hCos2TrkHFm->Write();
   hCos2HFpHFm->Write();
-  hResolution3Sub->Write();
+  // hResolution3Sub->Write();
   for (int ic = 0; ic < kNCentBins; ++ic)
   {
     hCos2TrkHFpCent[ic]->Write();
