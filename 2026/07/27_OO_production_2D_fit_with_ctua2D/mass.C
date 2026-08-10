@@ -1,16 +1,3 @@
-/* RooFit tutorial
-https://github.com/cofitzpa/roofit_tutorial_solutions/blob/master/roofit_tutorial_solution.C
- *
- * Highlights some of the basic features of RooFit by making
- * fits to the data provided in dataset.root, increasing in complexity
- *
- * This tutorial written by Conor Fitzpatrick
- * conor.fitzpatrick@cern.ch
- * with thanks to Wouter Verkerke and David Kirkby
- * If you spot any bugs or have any problems working through this, let me know...
- *
- */
-
 #include "TStyle.h"
 #include "RooGlobalFunc.h"
 #include "RooRealVar.h"
@@ -79,24 +66,6 @@ struct ScopedMacroTimer
 	}
 };
 
-static std::pair<double, int> chi2_from_pull(RooHist *hpull)
-{
-	double chi2 = 0.;
-	int n = 0;
-	if (!hpull)
-		return {0., 0};
-	double x = 0., y = 0.;
-	for (int i = 0; i < hpull->GetN(); ++i)
-	{
-		hpull->GetPoint(i, x, y);
-		if (!std::isfinite(y))
-			continue;
-		chi2 += y * y;
-		++n;
-	}
-	return {chi2, n};
-}
-
 void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4, bool drawFromSavedFit = false, bool publish = false)
 {
 	ScopedMacroTimer timer("mass", ptLow, ptHigh, yLow, yHigh);
@@ -112,7 +81,6 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 	int nBkgChebyOrder = 2;
 	if (yLow == 1.6f)
 	{
-		// 2026-07-31 11:45 KST: include the adjacent 3-4 bin whose mass chi2/ndf was 2.618 with order 2.
 		if (ptHigh <= 4.0f) //dummy
 		{ // && ptHigh == 350.0f
 			// nSignalCBComponents = 1;    // 0~2, automatic
@@ -178,6 +146,10 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 		return;
 	}
 
+	// ------------------------------------------------------------------
+	// ctau range cut
+	// remove 0.1% of from the peak.
+	// ------------------------------------------------------------------
 	auto quantileRange = [&](RooDataSet &ds, RooRealVar &var) {
 		std::vector<double> vals;
 		vals.reserve(ds.numEntries());
@@ -212,7 +184,7 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 	}
 
 	// ------------------------------------------------------------------
-	// output and observable setup
+	// preapre name tags
 	// ------------------------------------------------------------------
 	auto formatTag = [](double value)
 	{
@@ -239,6 +211,9 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 	if (drawFromSavedFit && !load_saved_fit_file(savedFitFile, modelFileName, "mass"))
 		return;
 
+	// ------------------------------------------------------------------
+	// help function to read MC fit result
+	// ------------------------------------------------------------------
 	TFile *mcModelFile = TFile::Open(mcModelFileName);
 	if (!mcModelFile || mcModelFile->IsZombie())
 	{
@@ -255,6 +230,8 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 		auto *param = dynamic_cast<TParameter<double> *>(mcModelFile->Get(name));
 		return param ? param->GetVal() : fallback;
 	};
+
+	// get number of PDFs
 	nSignalGaussComponents = std::clamp(readIntParam("nSignalGaussComponents", nSignalGaussComponents), 0, 2);
 	nSignalCBComponents = std::clamp(readIntParam("nSignalCBComponents", nSignalCBComponents), 0, 2);
 	if (drawFromSavedFit)
@@ -270,6 +247,9 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 		return;
 	}
 
+	// ------------------------------------------------------------------
+	// connect observable
+	// ------------------------------------------------------------------
 	auto *massVar = static_cast<RooRealVar *>(dataSel->get()->find("mass"));
 	if (!massVar)
 	{
@@ -291,21 +271,20 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 		return fr ? fr->findObject(n) : nullptr;
 	};
 
-	/**********************THE MASS FIT********************************
-	 * Some hints: The signal mass is a simple gaussian, you can use a
-	 * RooGaussian PDF for the signal model. The background is an O(1)
-	 * polynomial with a negative gradient. Polynomials are
-	 * surprisingly hard to fit, so to help you out I'll tell you that
-	 * the zero order term is 5500 and should be _fixed_, allowing only
-	 * the gradient to float. Limits are important: Is it worth trying
-	 * to fit the first order term on a range >0? Try the range -2.0 -> 0.0
-	 */
-
+	// ------------------------------------------------------------------
+	// build mass signal model
+	// ------------------------------------------------------------------
+	// Signal peak position and the width of the first Gaussian component.
 	RooRealVar signal_mass_mean("signal_mass_mean", "signal_mass_mean", 3.096, 3.05, 3.15, "GeV/c^{2}");
+	signal_mass_mean.setVal(readDoubleParam("signal_mass_mean", signal_mass_mean.getVal()));
+
 	RooRealVar signal_mass_sigma("signal_mass_sigma", "signal_mass_sigma", 0.03, 0.001, 0.080, "GeV/c^{2}");
-	const double sigmaFloor = 1e-4;
 	const double signal_mass_sigma_mc = readDoubleParam("signal_mass_sigma", signal_mass_sigma.getVal());
 	signal_mass_sigma.setVal(signal_mass_sigma_mc);
+
+	// Additional widths use sigmaFloor + exp(log_offset) to remain positive. 
+	// Delta variables are recorded for diagnostics only and do not constrain the ordering of widths.
+	const double sigmaFloor = 1e-4;
 	const double signal_mass_sigma2_mc = readDoubleParam("signal_mass_sigma2", std::max(signal_mass_sigma_mc + 0.03, sigmaFloor + 1e-4));
 	RooRealVar signal_mass_sigma2_log_offset(
 			"signal_mass_sigma2_log_offset", "log(signal_mass_sigma2 - floor)",
@@ -314,10 +293,13 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 			std::log(1.0));
 	RooFormulaVar signal_mass_sigma2("signal_mass_sigma2", Form("%g + exp(@0)", sigmaFloor), RooArgList(signal_mass_sigma2_log_offset));
 	RooFormulaVar signal_mass_sigma_delta2("signal_mass_sigma_delta2", "@0-@1", RooArgList(signal_mass_sigma2, signal_mass_sigma));
+
+	// CB width is independent, but its MC seed is
+	// initialized near the first Gaussian width when that component is present.
 	RooRealVar signal_mass_cb_sigma_base("signal_mass_cb_sigma_base", "signal_mass_cb_sigma_base", 0.035, 0.008, 0.080, "GeV/c^{2}");
 	std::unique_ptr<RooRealVar> signal_mass_cb_sigma_log_offset;
-	std::unique_ptr<RooFormulaVar> signal_mass_cb_sigma_delta_from_gaus;
 	std::unique_ptr<RooFormulaVar> signal_mass_cb_sigma_from_gaus;
+	std::unique_ptr<RooFormulaVar> signal_mass_cb_sigma_delta_from_gaus;
 	RooAbsReal *signal_mass_cb_sigma = &signal_mass_cb_sigma_base;
 	RooAbsReal *signal_mass_cb_sigma_delta = nullptr;
 	if (nSignalGaussComponents >= 1)
@@ -340,6 +322,8 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 		signal_mass_cb_sigma_base.setVal(readDoubleParam("signal_mass_cb_sigma", signal_mass_cb_sigma_base.getVal()));
 		signal_mass_cb_sigma_delta = &signal_mass_cb_sigma_base;
 	}
+
+	// Second CB width is used only by the DSCB PDF.
 	const double signal_mass_cb_sigma2_mc = readDoubleParam("signal_mass_cb_sigma2", std::max(signal_mass_cb_sigma->getVal() + 0.02, sigmaFloor + 1e-4));
 	RooRealVar signal_mass_cb_sigma2_log_offset(
 			"signal_mass_cb_sigma2_log_offset", "log(signal_mass_cb_sigma2 - floor)",
@@ -348,10 +332,16 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 			std::log(1.0));
 	RooFormulaVar signal_mass_cb_sigma2("signal_mass_cb_sigma2", Form("%g + exp(@0)", sigmaFloor), RooArgList(signal_mass_cb_sigma2_log_offset));
 	RooFormulaVar signal_mass_cb_sigma_delta2("signal_mass_cb_sigma_delta2", "@0-@1", RooArgList(signal_mass_cb_sigma2, *signal_mass_cb_sigma));
+
+	// Crystal Ball tail parameters: alpha sets the
+	// core-to-tail transition and n controls the power-law falloff.
 	RooRealVar signal_mass_cb_alpha("signal_mass_cb_alpha", "signal_mass_cb_alpha", readDoubleParam("signal_mass_cb_alpha", 1.5), 0.001, 30.0);
-	RooRealVar signal_mass_cb_alpha2("signal_mass_cb_alpha2", "signal_mass_cb_alpha2", readDoubleParam("signal_mass_cb_alpha2", 2.0), 0.001, 30.0);
 	RooRealVar signal_mass_cb_n("signal_mass_cb_n", "signal_mass_cb_n", readDoubleParam("signal_mass_cb_n", 3.0), 0.001, 20.0);
+	RooRealVar signal_mass_cb_alpha2("signal_mass_cb_alpha2", "signal_mass_cb_alpha2", readDoubleParam("signal_mass_cb_alpha2", 2.0), 0.001, 30.0);
 	RooRealVar signal_mass_cb_n2("signal_mass_cb_n2", "signal_mass_cb_n2", readDoubleParam("signal_mass_cb_n2", 4.0), 0.001, 10.0);
+
+	// Positive ratios are converted to r/(1+r), so
+	// each recursive RooAddPdf fraction remains between zero and one.
 	RooRealVar signal_mass_frac_ratio1("signal_mass_frac_ratio1", "signal_mass_frac_ratio1", readDoubleParam("signal_mass_frac_ratio1", 1.86), 1e-3, 1e3);
 	RooFormulaVar signal_mass_frac1("signal_mass_frac1", "@0/(1.0+@0)", RooArgList(signal_mass_frac_ratio1));
 	RooRealVar signal_mass_frac_ratio2("signal_mass_frac_ratio2", "signal_mass_frac_ratio2", readDoubleParam("signal_mass_frac_ratio2", 0.25), 1e-3, 1e3);
@@ -359,21 +349,24 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 	RooRealVar signal_mass_frac_ratio3("signal_mass_frac_ratio3", "signal_mass_frac_ratio3", readDoubleParam("signal_mass_frac_ratio3", 0.5), 1e-3, 1e3);
 	RooFormulaVar signal_mass_frac3("signal_mass_frac3", "@0/(1.0+@0)", RooArgList(signal_mass_frac_ratio3));
 
-	signal_mass_mean.setVal(readDoubleParam("signal_mass_mean", signal_mass_mean.getVal()));
-	// 2026-07-31 07:26 KST
-	// Start the two failed forward low-pT bins near their previous stable values.
+	// Low-pT seed override.
 	if (yLow >= 1.6f && ptHigh <= 3.0f)
 	{
 		signal_mass_mean.setVal(3.091);
 		signal_mass_sigma.setVal(0.044);
 	}
+
+	// Keep MC-derived CB tail shapes fixed in data fits.
 	signal_mass_cb_alpha.setConstant(true);
 	signal_mass_cb_alpha2.setConstant(true);
 	signal_mass_cb_n.setConstant(true);
 	signal_mass_cb_n2.setConstant(true);
 
+	// Build the Gaussian signal components.
 	RooGaussian signal_mass_gaus("signal_mass_gaus", "signal_mass_gaus", obs_mass, signal_mass_mean, signal_mass_sigma);
 	RooGaussian signal_mass_gaus2("signal_mass_gaus2", "signal_mass_gaus2", obs_mass, signal_mass_mean, signal_mass_sigma2);
+
+	// Build a single- or double-sided Crystal Ball PDF.
 	std::unique_ptr<RooAbsPdf> signal_mass_cb_owned;
 	if (nSignalCBComponents >= 2)
 	{
@@ -392,6 +385,7 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 	}
 	RooAbsPdf *signal_mass_cb = signal_mass_cb_owned.get();
 
+	// the model controls, then attach the corresponding recursive fractions.
 	std::vector<RooAbsPdf *> signalComponents;
 	if (nSignalGaussComponents >= 1)
 		signalComponents.push_back(&signal_mass_gaus);
@@ -422,12 +416,10 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 		signal_mass_pdf = signal_mass_owned.get();
 	}
 
-	// 2026-07-31 07:17 KST
-	// Data mass fits are background dominated, especially in the failed forward low-pT bins.
-	// 2026-07-31 07:24 KST
-	const double signalYieldFractionInit = (yLow >= 1.6f && ptHigh <= 3.0f) ? 0.055 : 0.10;
-	RooRealVar Nsig("Nsig", "Nsig", std::max(1.0, signalYieldFractionInit * data->numEntries()), 0.0, 1.05 * data->numEntries());
-	RooRealVar Nbkg("Nbkg", "Nbkg", std::max(1.0, (1.0 - signalYieldFractionInit) * data->numEntries()), 0.0, 1.05 * data->numEntries());
+	// ------------------------------------------------------------------
+	// build mass bkg model
+	// ------------------------------------------------------------------
+	// Bkg pdf exists for test. Not used for nominal fit
 	RooRealVar bkg_mass_p1("bkg_mass_p1", "bkg_mass_p1", 0.0, -1, 1);
 	RooRealVar bkg_mass_p2("bkg_mass_p2", "bkg_mass_p2", 0.0, -1, 1);
 	RooRealVar bkg_mass_p3("bkg_mass_p3", "bkg_mass_p3", 0.0, -1, 1);
@@ -435,6 +427,8 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 	RooRealVar bkg_mass_p5("bkg_mass_p5", "bkg_mass_p5", 0.0, -1, 1);
 	RooRealVar bkg_mass_p6("bkg_mass_p6", "bkg_mass_p6", 0.0, -1, 1);
 	RooRealVar bkg_mass_lambda("bkg_mass_lambda", "bkg_mass_lambda", -1.0, -10.0, -1e-4);
+	
+	// fill the ChebyCoefficient
 	RooArgList chebyCoeffList;
 	if (nBkgChebyOrder >= 1)
 		chebyCoeffList.add(bkg_mass_p1);
@@ -448,6 +442,8 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 		chebyCoeffList.add(bkg_mass_p5);
 	if (nBkgChebyOrder >= 6)
 		chebyCoeffList.add(bkg_mass_p6);
+	
+	// implement bkg model
 	std::unique_ptr<RooAbsPdf> bkg_mass;
 	if (nBkgExpComponents == 1)
 		bkg_mass = std::make_unique<RooExponential>("bkg_mass", "bkg_mass", obs_mass, bkg_mass_lambda);
@@ -455,34 +451,69 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 		bkg_mass = std::make_unique<RooChebychev>("bkg_mass", "bkg_mass", obs_mass, chebyCoeffList);
 	else
 		bkg_mass = std::make_unique<RooExponential>("bkg_mass", "bkg_mass", obs_mass, bkg_mass_lambda);
+
+	// bkg model tag
 	const TString bkgLegendLabel = nBkgExpComponents == 1 ? "Background (E)" : TString::Format("Background (%d)", nBkgChebyOrder);
+
+	// ------------------------------------------------------------------
+	// build total mass model
+	// ------------------------------------------------------------------
+	// change sig, bkg fraction in low pT region
+	const double signalYieldFractionInit = (yLow >= 1.6f && ptHigh <= 3.0f) ? 0.055 : 0.10;
+	RooRealVar Nsig("Nsig", "Nsig", std::max(1.0, signalYieldFractionInit * data->numEntries()), 0.0, 1.05 * data->numEntries());
+	RooRealVar Nbkg("Nbkg", "Nbkg", std::max(1.0, (1.0 - signalYieldFractionInit) * data->numEntries()), 0.0, 1.05 * data->numEntries());
 
 	std::unique_ptr<RooAbsPdf> mass_pdf;
 	mass_pdf = std::make_unique<RooAddPdf>("mass_pdf", "mass_pdf", RooArgList(*signal_mass_pdf, *bkg_mass), RooArgList(Nsig, Nbkg));
 
+	// ------------------------------------------------------------------
+	// implement Gaussian constraint
+	// ------------------------------------------------------------------
+	// Add MC-derived Gaussian priors to selected shape
+	// parameters. A constraint centers a parameter at its MC value but does not
+	// fix it; the data fit can move it with a Gaussian likelihood penalty.
+
+	// RooArgSet does not own its contents, so retain the constants and PDFs for
+	// the full fit lifetime in these containers.
 	std::vector<std::unique_ptr<RooRealVar>> constraintConsts;
 	std::vector<std::unique_ptr<RooGaussian>> constraintPdfs;
 	RooArgSet constraints;
+
+	// Build G(var; central, error) for an ordinary fit parameter.
+	// Invalid or missing MC uncertainties deliberately leave the parameter free.
 	auto addRealConstraint = [&](const char *name, RooRealVar &var, double central, double error)
 	{
 		if (!std::isfinite(central) || !std::isfinite(error) || error <= 0.0)
 			return;
+
+		// Use the MC central value as the fit seed; this is not a fixed value.
 		var.setVal(central);
+
 		const TString meanName = TString::Format("%s_mc_mean", name);
 		const TString sigmaName = TString::Format("%s_mc_sigma", name);
 		const TString pdfName = TString::Format("%s_constraint", name);
-		constraintConsts.push_back(std::make_unique<RooRealVar>(meanName, meanName, central));
-		constraintConsts.back()->setConstant(true);
+
+		auto constraintMean = std::make_unique<RooRealVar>(meanName, meanName, central);
+		constraintMean->setConstant(true);
+
 		const double sigmaVal = std::max(error, 1e-6);
-		constraintConsts.push_back(std::make_unique<RooRealVar>(sigmaName, sigmaName, sigmaVal));
-		constraintConsts.back()->setConstant(true);
-		constraintPdfs.push_back(std::make_unique<RooGaussian>(pdfName, pdfName, var, *constraintConsts[constraintConsts.size() - 2], *constraintConsts.back()));
+		auto constraintSigma = std::make_unique<RooRealVar>(sigmaName, sigmaName, sigmaVal);
+		constraintSigma->setConstant(true);
+
+		constraintPdfs.push_back(std::make_unique<RooGaussian>(pdfName, pdfName, var, *constraintMean, *constraintSigma));
+		constraintConsts.push_back(std::move(constraintMean));
+		constraintConsts.push_back(std::move(constraintSigma));
 		constraints.add(*constraintPdfs.back());
 	};
+
+	// Read an ordinary parameter and its uncertainty from the saved MC fit.
 	auto addStoredRealConstraint = [&](const char *name, RooRealVar &var)
 	{
 		addRealConstraint(name, var, readDoubleParam(name, var.getVal()), readDoubleParam((TString(name) + "_err").Data(), 0.0));
 	};
+
+	// Widths are fitted as sigma = sigmaFloor + exp(logVar). Transform the MC
+	// central value and propagate its uncertainty to the logVar coordinate.
 	auto addPositiveLogConstraint = [&](const char *storedName, RooRealVar &logVar)
 	{
 		const double value = readDoubleParam(storedName, sigmaFloor + std::exp(logVar.getVal()));
@@ -490,14 +521,18 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 		const double delta = value - sigmaFloor;
 		if (!std::isfinite(delta) || delta <= 0.0 || !std::isfinite(error) || error <= 0.0)
 			return;
+
 		const double central = std::log(delta);
 		const double logError = std::max(error / delta, 1e-4);
 		addRealConstraint((TString(storedName) + "_log_offset").Data(), logVar, central, logError);
 	};
 
+	// Keep the first active signal width free. Constrain only subsequent widths
+	// and mixture ratios to their MC measurements.
 	bool firstSigmaFreed = false;
 	if (nSignalGaussComponents >= 1)
 		firstSigmaFreed = true;
+
 	if (nSignalCBComponents >= 1)
 	{
 		if (firstSigmaFreed)
@@ -509,10 +544,13 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 		}
 		firstSigmaFreed = true;
 	}
+
 	if (nSignalGaussComponents >= 2)
 		addPositiveLogConstraint("signal_mass_sigma2", signal_mass_sigma2_log_offset);
 	if (nSignalCBComponents >= 2)
 		addPositiveLogConstraint("signal_mass_cb_sigma2", signal_mass_cb_sigma2_log_offset);
+
+	// Recursive RooAddPdf fraction ratios are ordinary positive fit variables.
 	if (signalComponents.size() >= 2)
 		addStoredRealConstraint("signal_mass_frac_ratio1", signal_mass_frac_ratio1);
 	if (signalComponents.size() >= 3)
@@ -520,7 +558,11 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 	if (signalComponents.size() >= 4)
 		addStoredRealConstraint("signal_mass_frac_ratio3", signal_mass_frac_ratio3);
 
+	// ------------------------------------------------------------------
+	// fitting
+	// ------------------------------------------------------------------
 	std::unique_ptr<RooFitResult> mass_result;
+	// publish mode: not fit, just re-draw plots
 	if (drawFromSavedFit)
 	{
 		mass_result = clone_saved_fit_result(savedFitFile.get(), "fit_result");
@@ -531,12 +573,14 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 		}
 		apply_saved_fit_result(mass_result.get(), *mass_pdf, RooArgSet(obs_mass));
 	}
+	// fitting mode 1: with constraint
 	else if (constraints.getSize() > 0)
-		mass_result.reset(mass_pdf->fitTo(*data, Extended(), Save(), PrintLevel(-1), SumW2Error(isWeight), ExternalConstraints(constraints), Offset(true))); // 2026-07-31 07:43 KST
+		mass_result.reset(mass_pdf->fitTo(*data, Extended(), Save(), PrintLevel(-1), SumW2Error(isWeight), ExternalConstraints(constraints), Offset(true)));
+	// fitting mode 2: without constraint
 	else
 		mass_result.reset(mass_pdf->fitTo(*data, Extended(), Save(), PrintLevel(-1), SumW2Error(isWeight), Offset(true)));
-	// 2026-07-31 07:30 KST
-	// Reuse the first fit's final values as the initial values for one convergence retry.
+
+	// Retry once from the first result when any convergence criterion is not met.
 	if (!drawFromSavedFit && mass_result &&
 		(mass_result->status() != 0 || mass_result->covQual() < 3 || mass_result->edm() > 1e-3))
 	{
@@ -545,9 +589,12 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 		else
 			mass_result.reset(mass_pdf->fitTo(*data, Extended(), Save(), PrintLevel(-1), SumW2Error(isWeight), Offset(true)));
 	}
+
+	// print fit result
 	if (mass_result)
 		mass_result->Print();
 
+	// save fit results
 	if (!drawFromSavedFit)
 	{
 		TFile outFile(modelFileName, "RECREATE");
@@ -628,6 +675,7 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 				mass_result->Write("fit_result");
 		}
 	}
+	// skip writing in publish mode
 	else
 		std::cout << "[PlotOnly] Loaded saved mass fit and left ROOT file unchanged: " << modelFileName << std::endl;
 
@@ -847,17 +895,20 @@ void mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4
 	fpull->GetXaxis()->SetLabelSize(0.10);
 	fpull->Draw();
 
-	auto chiM = chi2_from_pull(hpull);
-	int npar = mass_result ? mass_result->floatParsFinal().getSize() : 0;
-	int ndf = std::max(1, chiM.second - npar);
-	double pvalue = TMath::Prob(chiM.first, ndf);
+	const int npar = mass_result ? mass_result->floatParsFinal().getSize() : 0;
+	RooHist *hdataForChi2 = dynamic_cast<RooHist *>(massplot->getHist("data"));
+	const int ndataBins = hdataForChi2 ? hdataForChi2->GetN() : massPlotBins;
+	const int ndf = std::max(1, ndataBins - npar);
+	const double chi2ndf = massplot->chiSquare("model", "data", npar);
+	const double chi2 = chi2ndf * ndf;
+	const double pvalue = TMath::Prob(chi2, ndf);
 	{
 		TLatex tc;
 		tc.SetNDC();
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", chiM.first, ndf));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", chi2, ndf));
 	}
 
 	TLine line(obs_mass.getMin(), 0.0, obs_mass.getMax(), 0.0);

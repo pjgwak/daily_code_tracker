@@ -38,6 +38,7 @@
 #include "TLine.h"
 #include "TROOT.h"
 #include "TSystem.h"
+#include "TStopwatch.h"
 #include "TParameter.h"
 #include "saved_fit_helpers.h"
 #include "TMath.h"
@@ -52,95 +53,24 @@
 
 using namespace RooFit;
 
-static RooParametricStepFunction *makeStepPdfFromHist(
-	const char *pdfName,
-	RooRealVar &x,
-	TH1 *h,
-	RooArgList &ownedCoeffs,
-	double floorFrac = 1e-6,
-	double minCoeff = 1e-8,
-	double maxCoeff = 1.0)
+struct ScopedMacroTimer
 {
-	if (!h)
-		return nullptr;
+	TStopwatch sw;
+	TString label;
 
-	const int nBins = h->GetNbinsX();
-	if (nBins < 2)
-		return nullptr;
-
-	std::vector<double> boundaries(nBins + 1);
-	for (int i = 1; i <= nBins; ++i)
-		boundaries[i - 1] = h->GetXaxis()->GetBinLowEdge(i);
-	boundaries[nBins] = h->GetXaxis()->GetBinUpEdge(nBins);
-
-	TArrayD boundaryArray(static_cast<int>(boundaries.size()), boundaries.data());
-
-	double totalYield = 0.0;
-	double minWidth = std::numeric_limits<double>::infinity();
-	for (int i = 1; i <= nBins; ++i)
+	ScopedMacroTimer(const char *macroName, float ptLow, float ptHigh, float yLow, float yHigh)
+		: label(TString::Format("%s(pt=%.2f-%.2f, |y|=%.2f-%.2f)", macroName, ptLow, ptHigh, yLow, yHigh))
 	{
-		double c = h->GetBinContent(i);
-		if (!std::isfinite(c) || c < 0.0)
-			c = 0.0;
-		totalYield += c;
-		minWidth = std::min(minWidth, h->GetBinWidth(i));
-	}
-	if (!(totalYield > 0.0) || !(minWidth > 0.0))
-		return nullptr;
-
-	ownedCoeffs.removeAll();
-	double maxHeight = minCoeff;
-	double usedArea = 0.0;
-	for (int i = 1; i <= nBins - 1; ++i)
-	{
-		double c = h->GetBinContent(i);
-		if (!std::isfinite(c) || c <= 0.0)
-			c = floorFrac * totalYield;
-
-		const double width = h->GetBinWidth(i);
-		double frac = c / totalYield;
-		double hgt = frac / width;
-		hgt = std::max(minCoeff, hgt);
-		maxHeight = std::max(maxHeight, hgt);
-		usedArea += hgt * width;
-
-		auto *coef = new RooRealVar(
-			Form("%s_coef_%02d", pdfName, i - 1),
-			Form("%s_coef_%02d", pdfName, i - 1),
-			hgt, minCoeff, std::max(maxCoeff, 5.0 * maxHeight));
-		coef->setConstant(true);
-		ownedCoeffs.add(*coef);
+		sw.Start();
+		std::cout << "[TIMER] start " << label << std::endl;
 	}
 
-	const double remainingArea = std::max(0.0, 1.0 - usedArea);
-	const double impliedLastHeight = remainingArea / h->GetBinWidth(nBins);
-	std::cout << "[DEBUG] " << pdfName
-	          << " totalYield = " << totalYield
-	          << ", usedArea = " << usedArea
-	          << ", remainingArea = " << remainingArea
-	          << ", impliedLastHeight = " << impliedLastHeight
-	          << std::endl;
-
-	return new RooParametricStepFunction(pdfName, pdfName, x, ownedCoeffs, boundaryArray, nBins);
-}
-
-static std::pair<double, int> chi2_from_pull(RooHist *hpull)
-{
-	double chi2 = 0.;
-	int n = 0;
-	if (!hpull)
-		return {0., 0};
-	double x = 0., y = 0.;
-	for (int i = 0; i < hpull->GetN(); ++i)
+	~ScopedMacroTimer()
 	{
-		hpull->GetPoint(i, x, y);
-		if (!std::isfinite(y))
-			continue;
-		chi2 += y * y;
-		++n;
+		sw.Stop();
+		std::cout << Form("[TIMER] done %s | real %.2f s | cpu %.2f s", label.Data(), sw.RealTime(), sw.CpuTime()) << std::endl;
 	}
-	return {chi2, n};
-}
+};
 
 static void apply_logy_auto_range(RooPlot *plot, const char *histName, double topScale = 20.0, double bottomScale = 1e3)
 {
@@ -176,17 +106,18 @@ static void apply_logy_auto_range(RooPlot *plot, const char *histName, double to
 void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 2.4,
 	bool isSilence = true, bool drawFromSavedFit = false, bool publish = false)
 {
+	ScopedMacroTimer timer("ctau_bkg", ptLow, ptHigh, yLow, yHigh);
 	(void)isSilence;
 	if (publish)
 		drawFromSavedFit = true;
 	bool isWeight = false;
+
 	// ------------------------------------------------------------------
 	// model control
 	// ------------------------------------------------------------------
 	int nSignalSSComponents = 2;
 	int nSignalFlipComponents = 2;
 	int nSignalDSComponents = 1;
-	const bool isLowPtForward = (ptLow < 2.0f && ptHigh <= 2.0f && yLow >= 1.6f);
 	if (yLow == 0.0f)
 	{
 		if (ptLow == 20.0f && ptHigh == 30.0f)
@@ -240,6 +171,7 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		return;
 	}
 
+	// basic cuts
 	TString cutBasic = Form("(mass>2.6 && mass<3.5) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g)",
 		ptLow, ptHigh, yLow, yHigh);
 	auto dataBasic = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(inputData->reduce(cutBasic)));
@@ -249,6 +181,7 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		return;
 	}
 
+	// temporal observable - to decide ctau fit range
 	auto *massTmp = dynamic_cast<RooRealVar *>(dataBasic->get()->find("mass"));
 	auto *timeTmp = dynamic_cast<RooRealVar *>(dataBasic->get()->find("ctau"));
 	if (!massTmp || !timeTmp)
@@ -257,6 +190,10 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		return;
 	}
 
+	// ------------------------------------------------------------------
+	// set ctau fit range
+	// ------------------------------------------------------------------
+	// Trim plotting/fit ranges with robust quantiles to suppress extreme outliers.
 	auto quantileRange = [&](RooDataSet &ds, RooRealVar &var, double qLo, double qHi, bool positiveOnly)
 	{
 		std::vector<double> vals;
@@ -286,11 +223,11 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		return std::make_pair(qAt(qLo), qAt(qHi));
 	};
 
-	// ------------------------------------------------------------------
-	// determine fit ranges
-	// ------------------------------------------------------------------
 	const auto ctRangeQuantile = quantileRange(*dataBasic, *timeTmp, 0.0005, 0.9995, false);
-	const auto ctRange = isLowPtForward ? std::make_pair(-20.0, 20.0) : ctRangeQuantile;
+	// The lowest forward-pT bin needs the validated wide ctau fit range.
+	auto ctRange = ctRangeQuantile;
+	if (ptLow < 2.0f && ptHigh <= 2.0f && yLow >= 1.6f)
+		ctRange = std::make_pair(-20.0, 20.0);
 
 	TString cutAll = Form(
 		"(mass>2.6 && mass<3.5) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g) && "
@@ -303,6 +240,9 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		return;
 	}
 
+	// ------------------------------------------------------------------
+	// make sideband dataset
+	// ------------------------------------------------------------------
 	const double sidebandLeftMax = 2.9;
 	const double sidebandRightMin = 3.2;
 	TString cutSideband = Form("(mass >= 2.6 && mass < %g) || (mass > %g && mass <= 3.5)",
@@ -315,7 +255,7 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	}
 
 	// ------------------------------------------------------------------
-	// output and observable setup
+	// preapre name tags
 	// ------------------------------------------------------------------
 	auto formatTag = [](double value)
 	{
@@ -336,6 +276,9 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	gSystem->mkdir(bkgResultDir, true);
 	gROOT->Macro("/data/users/pjgwak/input_files/rootlogon.C");
 
+	// ------------------------------------------------------------------
+	// connect observable
+	// ------------------------------------------------------------------
 	RooRealVar &obs_mass = *static_cast<RooRealVar *>(dataSel->get()->find("mass"));
 	RooRealVar &obs_time = *static_cast<RooRealVar *>(dataSel->get()->find("ctau"));
 		obs_mass.SetTitle("mass");
@@ -356,14 +299,18 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	};
 
 	// ------------------------------------------------------------------
-	// load prompt resolution model from ctau_pr
+	// Load the prompt-resolution calibration saved by ctau_pr.
 	// ------------------------------------------------------------------
+	// The file contains one required Gaussian core and up to three optional
+	// wider cores, selected by nResolutionComponents.
 	TFile *resolutionFile = TFile::Open(resolutionFileName);
 	if (!resolutionFile || resolutionFile->IsZombie())
 	{
 		std::cerr << "ERROR: cannot open prompt resolution file: " << resolutionFileName << std::endl;
 		return;
 	}
+
+	// Read a named double parameter and mark missing values as invalid.
 	auto readDoubleParam = [&](const char *name) -> double
 	{
 		auto *param = dynamic_cast<TParameter<double> *>(resolutionFile->Get(name));
@@ -374,6 +321,8 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		}
 		return param->GetVal();
 	};
+
+	// Check how many Gaussian cores should be reconstructed.
 	auto *nCompParam = dynamic_cast<TParameter<int> *>(resolutionFile->Get("nResolutionComponents"));
 	if (!nCompParam)
 	{
@@ -386,9 +335,13 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		std::cerr << "ERROR: unsupported number of resolution components: " << nResolutionComponents << std::endl;
 		return;
 	}
+
+	// Core 1 is always present.
 	const double ctauMeanScaleVal = readDoubleParam("ctauMeanScale");
 	const double ctauTime1MeanVal = readDoubleParam("ctauTime1Mean");
 	const double ctauTime1ScaleVal = readDoubleParam("ctauTime1Scale");
+
+	// Later cores and their stored recursive mixture fractions are optional.
 	double ctauTime2MeanVal = 0.0;
 	double ctauTime2ScaleVal = 0.0;
 	double ctauFrac1Val = 0.0;
@@ -398,6 +351,7 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	double ctauTime4MeanVal = 0.0;
 	double ctauTime4ScaleVal = 0.0;
 	double ctauFrac3Val = 0.0;
+
 	if (nResolutionComponents >= 2)
 	{
 		ctauTime2MeanVal = readDoubleParam("ctauTime2Mean");
@@ -416,10 +370,12 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		ctauTime4ScaleVal = readDoubleParam("ctauTime4Scale");
 		ctauFrac3Val = readDoubleParam("ctauFrac3");
 	}
+
+	// Reject incomplete or non-finite calibrations before building the model.
 	if (!std::isfinite(ctauMeanScaleVal) || !std::isfinite(ctauTime1MeanVal) || !std::isfinite(ctauTime1ScaleVal) ||
-			(nResolutionComponents >= 2 && (!std::isfinite(ctauTime2MeanVal) || !std::isfinite(ctauTime2ScaleVal) || !std::isfinite(ctauFrac1Val))) ||
-			(nResolutionComponents >= 3 && (!std::isfinite(ctauTime3MeanVal) || !std::isfinite(ctauTime3ScaleVal) || !std::isfinite(ctauFrac2Val))) ||
-			(nResolutionComponents >= 4 && (!std::isfinite(ctauTime4MeanVal) || !std::isfinite(ctauTime4ScaleVal) || !std::isfinite(ctauFrac3Val))))
+		(nResolutionComponents >= 2 && (!std::isfinite(ctauTime2MeanVal) || !std::isfinite(ctauTime2ScaleVal) || !std::isfinite(ctauFrac1Val))) ||
+		(nResolutionComponents >= 3 && (!std::isfinite(ctauTime3MeanVal) || !std::isfinite(ctauTime3ScaleVal) || !std::isfinite(ctauFrac2Val))) ||
+		(nResolutionComponents >= 4 && (!std::isfinite(ctauTime4MeanVal) || !std::isfinite(ctauTime4ScaleVal) || !std::isfinite(ctauFrac3Val))))
 	{
 		std::cerr << "ERROR: invalid prompt resolution parameters in " << resolutionFileName << std::endl;
 		return;
@@ -427,63 +383,103 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	resolutionFile->Close();
 	std::cout << "Loaded ctau prompt resolution from " << resolutionFileName << std::endl;
 
+	// RooAddModel needs absolute weights; its final core receives the remainder.
 	const double compFrac1Val = (nResolutionComponents == 1) ? 1.0 : ctauFrac1Val;
 	const double compFrac2Val = (nResolutionComponents >= 2)
 		? ((nResolutionComponents == 2) ? (1.0 - ctauFrac1Val) : (1.0 - ctauFrac1Val) * ctauFrac2Val)
 		: 0.0;
 	const double compFrac3Val = (nResolutionComponents >= 3)
 		? ((nResolutionComponents == 3) ? (1.0 - ctauFrac1Val) * (1.0 - ctauFrac2Val)
-										: (1.0 - ctauFrac1Val) * (1.0 - ctauFrac2Val) * ctauFrac3Val)
+			: (1.0 - ctauFrac1Val) * (1.0 - ctauFrac2Val) * ctauFrac3Val)
 		: 0.0;
 
+	// set initial value
 	const double ctauScale1Seed = std::max(ctauTime1ScaleVal, 1e-3);
 	const double ctauScale2Seed = (nResolutionComponents >= 2) ? std::max(ctauTime2ScaleVal, ctauScale1Seed) : ctauScale1Seed;
 	const double ctauScale3Seed = (nResolutionComponents >= 3) ? std::max(ctauTime3ScaleVal, ctauScale2Seed) : ctauScale2Seed;
 	const double ctauScale4Seed = (nResolutionComponents >= 4) ? std::max(ctauTime4ScaleVal, ctauScale3Seed) : ctauScale3Seed;
-	const bool useResolutionTailFloor = isLowPtForward || nResolutionComponents >= 4;
-	const double floorScaleSeed = useResolutionTailFloor ? ctauScale4Seed : ctauScale1Seed;
-	const double resolutionDrivenLifetimeFloor = useResolutionTailFloor
-		? std::max(1e-2, 0.35 * floorScaleSeed)
-		: 1e-2;
-	const double bkgLifetimeFloor = resolutionDrivenLifetimeFloor;
-	const double bkgLifetime2Floor = useResolutionTailFloor ? std::max(1.5 * bkgLifetimeFloor, 8e-2) : std::max(1.5 * bkgLifetimeFloor, 2e-2);
-	const double bkgSymLifetimeFloor = useResolutionTailFloor ? std::max(1.5 * bkgLifetimeFloor, 5e-2) : 1e-2;
-	const double bkgFlipLifetimeFloor = useResolutionTailFloor ? std::max(0.75 * bkgLifetimeFloor, 3e-2) : 5e-3;
+
+	// scale to set conservative lifetime floors.
+	double bkgLifetimeFloor = 1e-2;
+	double bkgLifetime2Floor = std::max(1.5 * bkgLifetimeFloor, 2e-2);
+	double bkgSymLifetimeFloor = 1e-2;
+	double bkgFlipLifetimeFloor = 5e-3;
+	if ((ptLow < 2.0f && ptHigh <= 2.0f && yLow >= 1.6f) || nResolutionComponents >= 4)
+	{
+		const double floorScaleSeed = ctauScale4Seed;
+		bkgLifetimeFloor = std::max(1e-2, 0.35 * floorScaleSeed);
+		bkgLifetime2Floor = std::max(1.5 * bkgLifetimeFloor, 8e-2);
+		bkgSymLifetimeFloor = std::max(1.5 * bkgLifetimeFloor, 5e-2);
+		bkgFlipLifetimeFloor = std::max(0.75 * bkgLifetimeFloor, 3e-2);
+	}
 	const double maxStableLifetime = std::max(ctRange.second - ctRange.first, 20.0 * bkgLifetimeFloor);
 
 	// ------------------------------------------------------------------
-	// build background ctau model
+	// Build the prompt ctau-resolution parameters imported from ctau_pr.
+	//
+	// The model contains one to four Gaussian cores. Each later core is
+	// expressed as a positive width increment relative to the preceding core,
+	// preserving the physical ordering sigma_1 <= sigma_2 <= ... . Imported
+	// means and mixture weights are fixed; only widths vary with constraints.
 	// ------------------------------------------------------------------
+	// Kept for compatibility with the ctau_pr output parameter schema.
 	RooConstVar ctauMeanScale("ctauMeanScale", "ctauMeanScale", ctauMeanScaleVal);
+
+	// Core 1: the narrowest Gaussian resolution component.
 	RooRealVar ctauTime1Mean("ctauTime1Mean", "ctauTime1Mean", ctauTime1MeanVal);
 	RooRealVar ctauTime1Scale(
 		"ctauTime1Scale", "ctauTime1Scale",
 		ctauTime1ScaleVal,
-		// 2026-07-31 07:17 KST
 		std::max(0.35 * ctauTime1ScaleVal, 1e-3),
 		std::max(2.0 * ctauTime1ScaleVal, 5e-3));
 	RooGaussModel ctauTime1("ctauTime1", "ctauTime1", obs_time, ctauTime1Mean, ctauTime1Scale);
+
+	// The low-pT forward bin uses the validated wider delta limits.
+	double ctauTime2DeltaMax = std::max(0.10, 4.0 * std::max(1e-6, ctauTime2ScaleVal - ctauTime1ScaleVal));
+	double ctauTime3DeltaMax = std::max(0.20, 4.0 * std::max(1e-6, ctauTime3ScaleVal - ctauTime2ScaleVal));
+	double ctauTime4DeltaMax = std::max(0.40, 4.0 * std::max(1e-6, ctauTime4ScaleVal - ctauTime3ScaleVal));
+	if (ptLow < 2.0f && ptHigh <= 2.0f && yLow >= 1.6f)
+	{
+		ctauTime2DeltaMax = 0.70;
+		ctauTime3DeltaMax = 1.50;
+		ctauTime4DeltaMax = 2.00;
+	}
+
+	// Core 2: a non-negative increment makes its width no smaller than Core 1.
 	RooRealVar ctauTime2Mean("ctauTime2Mean", "ctauTime2Mean", ctauTime2MeanVal);
-	RooRealVar ctauTime2Delta("ctauTime2Delta", "ctauTime2Delta",
+	RooRealVar ctauTime2Delta(
+		"ctauTime2Delta", "ctauTime2Delta",
 		std::max(1e-6, ctauTime2ScaleVal - ctauTime1ScaleVal),
-		1e-6, isLowPtForward ? 0.70 : std::max(0.10, 4.0 * std::max(1e-6, ctauTime2ScaleVal - ctauTime1ScaleVal)));
+		1e-6,
+		ctauTime2DeltaMax);
 	RooFormulaVar ctauTime2Scale("ctauTime2Scale", "@0+@1", RooArgList(ctauTime1Scale, ctauTime2Delta));
 	RooGaussModel ctauTime2("ctauTime2", "ctauTime2", obs_time, ctauTime2Mean, ctauTime2Scale);
+	// Absolute weight of Core 1 in RooAddModel; the final core gets the remainder.
 	RooRealVar ctauFrac1("ctauFrac1", "ctauFrac1", compFrac1Val);
+
+	// Core 3
 	RooRealVar ctauTime3Mean("ctauTime3Mean", "ctauTime3Mean", ctauTime3MeanVal);
-	RooRealVar ctauTime3Delta("ctauTime3Delta", "ctauTime3Delta",
+	RooRealVar ctauTime3Delta(
+		"ctauTime3Delta", "ctauTime3Delta",
 		std::max(1e-6, ctauTime3ScaleVal - ctauTime2ScaleVal),
-		1e-6, isLowPtForward ? 1.50 : std::max(0.20, 4.0 * std::max(1e-6, ctauTime3ScaleVal - ctauTime2ScaleVal)));
+		1e-6,
+		ctauTime3DeltaMax);
 	RooFormulaVar ctauTime3Scale("ctauTime3Scale", "@0+@1", RooArgList(ctauTime2Scale, ctauTime3Delta));
 	RooGaussModel ctauTime3("ctauTime3", "ctauTime3", obs_time, ctauTime3Mean, ctauTime3Scale);
 	RooRealVar ctauFrac2("ctauFrac2", "ctauFrac2", compFrac2Val);
+
+	// Core 4
 	RooRealVar ctauTime4Mean("ctauTime4Mean", "ctauTime4Mean", ctauTime4MeanVal);
-	RooRealVar ctauTime4Delta("ctauTime4Delta", "ctauTime4Delta",
+	RooRealVar ctauTime4Delta(
+		"ctauTime4Delta", "ctauTime4Delta",
 		std::max(1e-6, ctauTime4ScaleVal - ctauTime3ScaleVal),
-		1e-6, isLowPtForward ? 2.00 : std::max(0.40, 4.0 * std::max(1e-6, ctauTime4ScaleVal - ctauTime3ScaleVal)));
+		1e-6,
+		ctauTime4DeltaMax);
 	RooFormulaVar ctauTime4Scale("ctauTime4Scale", "@0+@1", RooArgList(ctauTime3Scale, ctauTime4Delta));
 	RooGaussModel ctauTime4("ctauTime4", "ctauTime4", obs_time, ctauTime4Mean, ctauTime4Scale);
 	RooRealVar ctauFrac3("ctauFrac3", "ctauFrac3", compFrac3Val);
+
+	// Freeze the prompt calibration except for the width parameters constrained below.
 	ctauTime1Mean.setConstant(true);
 	ctauTime1Scale.setConstant(false);
 	ctauTime2Mean.setConstant(true);
@@ -496,18 +492,31 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	ctauTime4Delta.setConstant(false);
 	ctauFrac3.setConstant(true);
 
+	// ------------------------------------------------------------------
+	// Constrain floating resolution widths near the ctau_pr calibration.
+	// ------------------------------------------------------------------
 	RooArgSet externalConstraints;
+
+	// Own the fixed Gaussian means, widths, and PDFs passed to fitTo().
 	std::vector<std::unique_ptr<RooRealVar>> constraintMeans;
 	std::vector<std::unique_ptr<RooRealVar>> constraintSigmas;
 	std::vector<std::unique_ptr<RooGaussian>> constraintPdfs;
-	auto addResConstraint = [&](RooRealVar &var, const char *name, double center, double sigma)
+
+	// Clamp each seed to its bounds, then add a fixed-centre Gaussian constraint.
+	auto addResConstraint = [&](RooRealVar &var,
+		const char *name,
+		double center,
+		double sigma)
 	{
 		if (!std::isfinite(center) || !std::isfinite(sigma) || sigma <= 0.0)
 			return;
+
+		// Keep the initial value strictly inside the allowed fit range.
 		const double low = var.getMin();
 		const double high = var.getMax();
 		const double eps = std::max(1e-9, 1e-4 * (high - low));
 		var.setVal(std::min(std::max(center, low + eps), high - eps));
+
 		constraintMeans.push_back(std::make_unique<RooRealVar>(
 			Form("%s_constraint_mean", name), Form("%s constraint mean", name), center));
 		constraintSigmas.push_back(std::make_unique<RooRealVar>(
@@ -515,103 +524,270 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 			sigma, 1e-9, std::max(10.0 * sigma, 1e-8)));
 		constraintMeans.back()->setConstant(true);
 		constraintSigmas.back()->setConstant(true);
+
 		constraintPdfs.push_back(std::make_unique<RooGaussian>(
 			Form("%s_constraint", name), Form("%s constraint", name),
 			var, *constraintMeans.back(), *constraintSigmas.back()));
 		externalConstraints.add(*constraintPdfs.back());
 	};
+
+	// Later cores are constrained through their positive width increments.
 	const double ctauTime2DeltaVal = std::max(1e-6, ctauTime2ScaleVal - ctauTime1ScaleVal);
 	const double ctauTime3DeltaVal = std::max(1e-6, ctauTime3ScaleVal - ctauTime2ScaleVal);
 	const double ctauTime4DeltaVal = std::max(1e-6, ctauTime4ScaleVal - ctauTime3ScaleVal);
-	addResConstraint(ctauTime1Scale, "ctauTime1Scale", ctauTime1ScaleVal,
-		isLowPtForward ? std::max(0.004, 0.12 * ctauTime1ScaleVal) : std::max(0.012, 0.35 * ctauTime1ScaleVal));
-	if (nResolutionComponents >= 2)
-		addResConstraint(ctauTime2Delta, "ctauTime2Delta", ctauTime2DeltaVal,
-			isLowPtForward ? std::max(0.010, 0.30 * ctauTime2DeltaVal) : std::max(0.010, 0.35 * ctauTime2DeltaVal));
-	if (nResolutionComponents >= 3)
-		addResConstraint(ctauTime3Delta, "ctauTime3Delta", ctauTime3DeltaVal,
-			isLowPtForward ? std::max(0.020, 0.30 * ctauTime3DeltaVal) : std::max(0.020, 0.35 * ctauTime3DeltaVal));
-	if (nResolutionComponents >= 4)
-		addResConstraint(ctauTime4Delta, "ctauTime4Delta", ctauTime4DeltaVal,
-			isLowPtForward ? std::max(0.040, 0.30 * ctauTime4DeltaVal) : std::max(0.040, 0.35 * ctauTime4DeltaVal));
 
+	// Use tighter resolution constraints only in the lowest forward-pT bin.
+	double ctauTime1ConstraintSigma = std::max(0.012, 0.35 * ctauTime1ScaleVal);
+	double ctauTime2ConstraintSigma = std::max(0.010, 0.35 * ctauTime2DeltaVal);
+	double ctauTime3ConstraintSigma = std::max(0.020, 0.35 * ctauTime3DeltaVal);
+	double ctauTime4ConstraintSigma = std::max(0.040, 0.35 * ctauTime4DeltaVal);
+	if (ptLow < 2.0f && ptHigh <= 2.0f && yLow >= 1.6f)
+	{
+		ctauTime1ConstraintSigma = std::max(0.004, 0.12 * ctauTime1ScaleVal);
+		ctauTime2ConstraintSigma = std::max(0.010, 0.30 * ctauTime2DeltaVal);
+		ctauTime3ConstraintSigma = std::max(0.020, 0.30 * ctauTime3DeltaVal);
+		ctauTime4ConstraintSigma = std::max(0.040, 0.30 * ctauTime4DeltaVal);
+	}
+
+	// Apply only the constraints for enabled resolution cores.
+	addResConstraint(ctauTime1Scale, "ctauTime1Scale", ctauTime1ScaleVal, ctauTime1ConstraintSigma);
+	if (nResolutionComponents >= 2)
+		addResConstraint(ctauTime2Delta, "ctauTime2Delta", ctauTime2DeltaVal, ctauTime2ConstraintSigma);
+	if (nResolutionComponents >= 3)
+		addResConstraint(ctauTime3Delta, "ctauTime3Delta", ctauTime3DeltaVal, ctauTime3ConstraintSigma);
+	if (nResolutionComponents >= 4)
+		addResConstraint(ctauTime4Delta, "ctauTime4Delta", ctauTime4DeltaVal, ctauTime4ConstraintSigma);
+
+
+	// ------------------------------------------------------------------
+	// Assemble the prompt ctau-resolution PDF
+	//
+	// A single Gaussian core is already a RooResolutionModel. For two to four
+	// cores, RooAddModel combines the enabled Gaussian cores with their fixed
+	// imported mixture weights. RooAddModel assigns the remaining probability
+	// to its final core, so the fraction list has one fewer entry than the PDF
+	// list.
+	// ------------------------------------------------------------------
 	std::unique_ptr<RooAddModel> promptResolutionModel;
+
+	// Use the single core directly unless a multi-core mixture is required.
 	RooResolutionModel *time_resolution_ptr = &ctauTime1;
 	RooAbsPdf *bkg_time_plb_ptr = &ctauTime1;
+
 	if (nResolutionComponents >= 2)
 	{
+		// Add the mandatory first two cores and their first absolute weight.
 		RooArgList resolutionPdfList;
-		RooArgList resolutionFracList;
+		RooArgList resolutionFractionList;
 		resolutionPdfList.add(ctauTime1);
 		resolutionPdfList.add(ctauTime2);
-		resolutionFracList.add(ctauFrac1);
+		resolutionFractionList.add(ctauFrac1);
+
+		// Append optional wider cores in increasing-width order.
 		if (nResolutionComponents >= 3)
 		{
 			resolutionPdfList.add(ctauTime3);
-			resolutionFracList.add(ctauFrac2);
+			resolutionFractionList.add(ctauFrac2);
 		}
 		if (nResolutionComponents >= 4)
 		{
 			resolutionPdfList.add(ctauTime4);
-			resolutionFracList.add(ctauFrac3);
+			resolutionFractionList.add(ctauFrac3);
 		}
+
 		promptResolutionModel = std::make_unique<RooAddModel>(
-			"promptResolutionModel", "promptResolutionModel",
-			resolutionPdfList, resolutionFracList
-		);
+			"promptResolutionModel",
+			"promptResolutionModel",
+			resolutionPdfList,
+			resolutionFractionList);
+
+		// The mixture is used both for decay convolution and the prompt PDF term.
 		time_resolution_ptr = promptResolutionModel.get();
 		bkg_time_plb_ptr = promptResolutionModel.get();
 	}
+
 	RooResolutionModel &time_resolution = *time_resolution_ptr;
 	RooAbsPdf &bkg_time_plb = *bkg_time_plb_ptr;
 
-	// 2026-07-31 07:17 KST
-	// The shortest background lifetime repeatedly approached its old 1e-4 offset floor.
-	const double bkgLifetimeInit = isLowPtForward ? 0.18 : std::max(0.02, 1.2 * bkgLifetimeFloor);
-	const double bkgLifetimeCeil = isLowPtForward ? 5.0 : std::max(0.50, maxStableLifetime);
-	// 2026-07-31 11:53 KST: retain the validated wide lifetime range only for forward pT 3-4.
-	const bool useForward34LifetimeRange = (yLow == 1.6f && ptLow == 3.0f && ptHigh == 4.0f);
-	// 2026-07-31 12:35 KST: pT 4-5 also needs its 08:30 wide weak-lifetime range to avoid a boundary status.
-	const bool useForward45LifetimeRange = (yLow == 1.6f && ptLow == 4.0f && ptHigh == 5.0f);
-	// 2026-07-31 12:38 KST: restore the 08:30 weak-lifetime floor only for the failed forward high-pT bins.
-	const bool useForwardHighPtLifetimeRange = (yLow == 1.6f && (ptLow == 9.0f || ptLow >= 12.0f));
-	// 2026-07-31 12:40 KST: keep the two single-sided lifetime labels on the 08:30 pT 9-10 solution.
-	const bool useForward910Seed = (yLow == 1.6f && ptLow == 9.0f && ptHigh == 10.0f);
-	// 2026-07-31 12:43 KST: preserve the non-degenerate 08:30 component ordering for pT 14-20.
-	const bool useForward1420Seed = (yLow == 1.6f && ptLow == 14.0f && ptHigh == 20.0f);
-	// 2026-07-31 22:58 KST: reuse the 08:30 full-covariance lifetime seed only for forward pT 5-6.
-	const bool useForward56Seed = (yLow == 1.6f && ptLow == 5.0f && ptHigh == 6.0f);
-	const bool useWideForwardLifetimeRange = useForward34LifetimeRange || useForward45LifetimeRange || useForwardHighPtLifetimeRange;
-	// 2026-07-31 08:10 KST: narrow only the weak lifetime offset; keep the PDF unchanged.
-	const double bkgLifetimeOffsetMin = isLowPtForward ? 1e-3 : (useForward45LifetimeRange ? 1e-6 : (useWideForwardLifetimeRange ? 1e-4 : 3e-3));
-	const double bkgLifetimeOffsetMax = (isLowPtForward || useWideForwardLifetimeRange)
-		? bkgLifetimeCeil - bkgLifetimeFloor : 3e-2;
+	// ------------------------------------------------------------------
+	// build ctau bkg model
+	// ------------------------------------------------------------------
+	// Background-lifetime ranges and special-bin seeds
+	// Start from the common configuration, then override only validated bins.
+	double bkgLifetimeInit = std::max(0.02, 1.2 * bkgLifetimeFloor);
+	double bkgLifetimeCeil = std::max(0.50, maxStableLifetime);
+	double bkgLifetime2Init = std::max(0.04, 1.5 * bkgLifetime2Floor);
+	double bkgLifetime2Ceil = std::max(0.50, maxStableLifetime);
+
+	double bkgLifetime3Floor = std::max(2.0 * bkgLifetimeFloor, 3e-2);
+	if ((ptLow < 2.0f && ptHigh <= 2.0f && yLow >= 1.6f) || nResolutionComponents >= 4)
+		bkgLifetime3Floor = std::max(2.0 * bkgLifetimeFloor, 0.15);
+	double bkgLifetime3Init = std::max(0.10, 1.5 * bkgLifetime3Floor);
+	double bkgLifetime3Ceil = std::max(0.80, maxStableLifetime);
+
+	double bkgSymLifetimeInit = std::max(0.04, 1.4 * bkgSymLifetimeFloor);
+	double bkgSymLifetimeCeil = std::max(0.30, 0.5 * maxStableLifetime);
+
+	double bkgFlipLifetimeInit = std::max(0.05, 1.2 * bkgFlipLifetimeFloor);
+	double bkgFlipLifetimeCeil = std::max(0.50, maxStableLifetime);
+
+	// The lowest forward-pT bin has a separately validated broad lifetime range.
+	if (ptLow < 2.0f && ptHigh <= 2.0f && yLow >= 1.6f)
+	{
+		bkgLifetimeInit = 0.18;
+		bkgLifetimeCeil = 5.0;
+		bkgLifetime2Init = 0.50;
+		bkgLifetime2Ceil = 10.0;
+		bkgLifetime3Init = 3.0;
+		bkgLifetime3Ceil = 80.0;
+		bkgSymLifetimeInit = 1.40;
+		bkgSymLifetimeCeil = 20.0;
+		bkgFlipLifetimeInit = 0.28;
+		bkgFlipLifetimeCeil = 8.0;
+	}
+
+	// Allow the weak prompt and flipped lifetimes to explore the wider range in the forward bins
+	double bkgLifetimeOffsetMin = 3e-3;
+	double bkgLifetimeOffsetMax = 3e-2;
+	double bkgFlipLifetimeOffsetMin = 1e-2;
+	double bkgFlipLifetimeOffsetMax = 1.5e-1;
+	if (ptLow < 2.0f && ptHigh <= 2.0f && yLow >= 1.6f)
+	{
+		bkgLifetimeOffsetMin = 1e-3;
+		bkgLifetimeOffsetMax = bkgLifetimeCeil - bkgLifetimeFloor;
+		bkgFlipLifetimeOffsetMin = 1e-4;
+		bkgFlipLifetimeOffsetMax = bkgFlipLifetimeCeil - bkgFlipLifetimeFloor;
+	}
+	else if (yLow == 1.6f && ptLow == 4.0f && ptHigh == 5.0f)
+	{
+		bkgLifetimeOffsetMin = 1e-6;
+		bkgLifetimeOffsetMax = bkgLifetimeCeil - bkgLifetimeFloor;
+		bkgFlipLifetimeOffsetMin = 1e-4;
+		bkgFlipLifetimeOffsetMax = bkgFlipLifetimeCeil - bkgFlipLifetimeFloor;
+	}
+	else if (yLow == 1.6f &&
+		((ptLow == 3.0f && ptHigh == 4.0f) || ptLow == 9.0f || ptLow >= 12.0f))
+	{
+		bkgLifetimeOffsetMin = 1e-4;
+		bkgLifetimeOffsetMax = bkgLifetimeCeil - bkgLifetimeFloor;
+		bkgFlipLifetimeOffsetMin = 1e-4;
+		bkgFlipLifetimeOffsetMax = bkgFlipLifetimeCeil - bkgFlipLifetimeFloor;
+	}
+
+	// Constrain bkg_sym_lifetime = floor + exp(log_offset) away from its floor.
+	// The gap bounds prevent an unstable near-zero lifetime and fit-boundary sticking.
+	// this is the value to avoid nan error of RooDecay. Got from experience for OO collisions
+	const double bkgSymLifetimeMinGap = std::max(0.30 * bkgSymLifetimeFloor, 2e-3);
+	const double bkgSymLifetimeMaxGap = std::max(bkgSymLifetimeCeil - bkgSymLifetimeFloor, 2.0 * bkgSymLifetimeMinGap);
+	const double bkgSymLifetime2Floor = std::max(2.0 * bkgSymLifetimeFloor, 2e-2);
+	const double bkgSymLifetime2Init = std::max(0.07, 1.4 * bkgSymLifetime2Floor);
+	const double bkgSymLifetime2Ceil = std::max(0.50, maxStableLifetime);
+	const double bkgSymLifetime2MinGap = std::max(0.25 * bkgSymLifetime2Floor, 3e-3);
+	const double bkgSymLifetime2MaxGap = std::max(bkgSymLifetime2Ceil - bkgSymLifetime2Floor, 2.0 * bkgSymLifetime2MinGap);
+	const double bkgSymLifetime3Floor = std::max(3.0 * bkgSymLifetimeFloor, 4e-2);
+	const double bkgSymLifetime3Init = std::max(0.12, 1.3 * bkgSymLifetime3Floor);
+	const double bkgSymLifetime3Ceil = std::max(0.80, maxStableLifetime);
+	const double bkgSymLifetime3MinGap = std::max(0.20 * bkgSymLifetime3Floor, 4e-3);
+	const double bkgSymLifetime3MaxGap = std::max(bkgSymLifetime3Ceil - bkgSymLifetime3Floor, 2.0 * bkgSymLifetime3MinGap);
+	const double bkgFlipLifetime2Floor = std::max(1.5 * bkgFlipLifetimeFloor, 1e-2);
+	const double bkgFlipLifetime2Init = std::max(0.08, 1.3 * bkgFlipLifetime2Floor);
+	const double bkgFlipLifetime2Ceil = std::max(0.60, maxStableLifetime);
+	const double bkgFlipLifetime3Floor = std::max(2.5 * bkgFlipLifetimeFloor, 2e-2);
+	const double bkgFlipLifetime3Init = std::max(0.12, 1.2 * bkgFlipLifetime3Floor);
+	const double bkgFlipLifetime3Ceil = std::max(0.80, maxStableLifetime);
+
+	// Generic lifetime and yield seeds.
+	double bkgLogLifetimeSeed = std::log(std::max(bkgLifetimeInit - bkgLifetimeFloor, 1e-4));
+	double bkgLogLifetime2Seed = std::log(std::max(bkgLifetime2Init - bkgLifetime2Floor, 1e-4));
+	double bkgSymLogLifetimeSeed = std::log(std::max(bkgSymLifetimeInit - bkgSymLifetimeFloor, bkgSymLifetimeMinGap));
+	double bkgFlipLogLifetimeSeed = std::log(std::max(bkgFlipLifetimeInit - bkgFlipLifetimeFloor, 1e-4));
+	double bkgFlipLogLifetime2Seed = std::log(std::max(bkgFlipLifetime2Init - bkgFlipLifetime2Floor, 1e-4));
+	double nplbFraction = 0.60;
+	double nss1Fraction = 0.10;
+	double nss2Fraction = 0.05;
+	double nds1Seed = 0.05 * data->numEntries();
+	double nflip1Seed = 0.08 * data->numEntries();
+	double nflip2Fraction = 0.05;
+
+	// Use special seeds only for the bins
+	if (yLow == 1.6f && ptLow == 3.0f && ptHigh == 4.0f)
+	{
+		bkgLogLifetimeSeed = -2.7490;
+		bkgLogLifetime2Seed = -2.3435;
+		bkgSymLogLifetimeSeed = -2.5666;
+		bkgFlipLogLifetimeSeed = 1.25;
+		bkgFlipLogLifetime2Seed = -3.1420;
+		nplbFraction = 0.15;
+		nss1Fraction = 0.30;
+		nss2Fraction = 0.20;
+		nds1Seed = 0.20 * data->numEntries();
+		nflip1Seed = 1.0;
+		nflip2Fraction = 0.08;
+	}
+	else if (yLow == 1.6f && ptLow == 5.0f && ptHigh == 6.0f)
+	{
+		bkgLogLifetimeSeed = -5.80914;
+		bkgLogLifetime2Seed = -1.21487;
+		bkgSymLogLifetimeSeed = -0.912962;
+		bkgFlipLogLifetimeSeed = -2.99405;
+		bkgFlipLogLifetime2Seed = -3.95034;
+		nplbFraction = 0.7320;
+		nss1Fraction = 0.0855;
+		nss2Fraction = 0.0454;
+		nds1Seed = 0.0579 * data->numEntries();
+		nflip1Seed = 0.0477 * data->numEntries();
+		nflip2Fraction = 0.0317;
+	}
+	else if (yLow == 1.6f && ptLow == 9.0f && ptHigh == 10.0f)
+	{
+		bkgLogLifetimeSeed = -9.20;
+		bkgLogLifetime2Seed = -1.103;
+		bkgSymLogLifetimeSeed = -1.273;
+		bkgFlipLogLifetimeSeed = -9.20;
+		bkgFlipLogLifetime2Seed = -1.696;
+		nplbFraction = 0.52;
+		nss1Fraction = 0.156;
+		nss2Fraction = 0.162;
+		nds1Seed = 1.0;
+		nflip1Seed = 0.107 * data->numEntries();
+		nflip2Fraction = 0.057;
+	}
+	else if (yLow == 1.6f && ptLow == 14.0f && ptHigh == 20.0f)
+	{
+		bkgLogLifetimeSeed = -9.182;
+		bkgLogLifetime2Seed = -1.265;
+		bkgSymLogLifetimeSeed = -1.719;
+		bkgFlipLogLifetimeSeed = -3.417;
+		bkgFlipLogLifetime2Seed = -4.168;
+		nplbFraction = 0.291;
+		nss1Fraction = 0.166;
+		nss2Fraction = 0.396;
+		nds1Seed = 1.0;
+		nflip1Seed = 0.0695 * data->numEntries();
+		nflip2Fraction = 0.0783;
+	}
+
+	// parameter - single sided bkg model
 	RooRealVar bkg_log_lifetime_offset(
 		"bkg_log_lifetime_offset", "log(bkg_lifetime - floor)",
-		useForward56Seed ? -5.80914 : (useForward34LifetimeRange ? -2.7490 : (useForward910Seed ? -9.20 : (useForward1420Seed ? -9.182 : std::log(std::max(bkgLifetimeInit - bkgLifetimeFloor, 1e-4))))),
+		bkgLogLifetimeSeed,
 		std::log(bkgLifetimeOffsetMin),
 		std::log(std::max(bkgLifetimeOffsetMax, 2e-3)));
 	RooFormulaVar bkg_lifetime(
 		"bkg_lifetime",
 		Form("%g + exp(@0)", bkgLifetimeFloor),
 		RooArgList(bkg_log_lifetime_offset));
-
-	const double bkgLifetime2Init = isLowPtForward ? 0.50 : std::max(0.04, 1.5 * bkgLifetime2Floor);
-	const double bkgLifetime2Ceil = isLowPtForward ? 10.0 : std::max(0.50, maxStableLifetime);
 	RooRealVar bkg_log_lifetime2_offset(
 		"bkg_log_lifetime2_offset", "log(bkg_lifetime2 - floor)",
-		useForward56Seed ? -1.21487 : (useForward34LifetimeRange ? -2.3435 : (useForward910Seed ? -1.103 : (useForward1420Seed ? -1.265 : std::log(std::max(bkgLifetime2Init - bkgLifetime2Floor, 1e-4))))),
+		bkgLogLifetime2Seed,
 		std::log(1e-4),
 		std::log(std::max(bkgLifetime2Ceil - bkgLifetime2Floor, 2e-4)));
 	RooFormulaVar bkg_lifetime2(
 		"bkg_lifetime2",
 		Form("%g + exp(@0)", bkgLifetime2Floor),
 		RooArgList(bkg_log_lifetime2_offset));
-	const double bkgLifetime3Floor = useResolutionTailFloor ? std::max(2.0 * bkgLifetimeFloor, 0.15) : std::max(2.0 * bkgLifetimeFloor, 3e-2);
-	const double bkgLifetime3Init = isLowPtForward ? 3.0 : std::max(0.10, 1.5 * bkgLifetime3Floor);
-	const double bkgLifetime3Ceil = isLowPtForward ? 80.0 : std::max(0.80, maxStableLifetime);
 	RooRealVar bkg_log_lifetime3_offset(
-		"bkg_log_lifetime3_offset", "log(bkg_lifetime3 - floor)",
+		"bkg_log_lifetime3", "log(bkg_lifetime3 - floor)",
 		std::log(std::max(bkgLifetime3Init - bkgLifetime3Floor, 1e-4)),
 		std::log(1e-4),
 		std::log(std::max(bkgLifetime3Ceil - bkgLifetime3Floor, 2e-4)));
@@ -620,24 +796,16 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		Form("%g + exp(@0)", bkgLifetime3Floor),
 		RooArgList(bkg_log_lifetime3_offset));
 
-	const double bkgSymLifetimeInit = isLowPtForward ? 1.40 : std::max(0.04, 1.4 * bkgSymLifetimeFloor);
-	const double bkgSymLifetimeCeil = isLowPtForward ? 20.0 : std::max(0.30, 0.5 * maxStableLifetime);
-	const double bkgSymLifetimeMinGap = std::max(0.30 * bkgSymLifetimeFloor, 2e-3);
-	const double bkgSymLifetimeMaxGap = std::max(bkgSymLifetimeCeil - bkgSymLifetimeFloor, 2.0 * bkgSymLifetimeMinGap);
+	// parameter - doubled sided bkg model
 	RooRealVar bkg_sym_log_lifetime_offset(
 		"bkg_sym_log_lifetime_offset", "log(bkg_sym_lifetime - floor)",
-		useForward56Seed ? -0.912962 : (useForward34LifetimeRange ? -2.5666 : (useForward910Seed ? -1.273 : (useForward1420Seed ? -1.719 : std::log(std::max(bkgSymLifetimeInit - bkgSymLifetimeFloor, bkgSymLifetimeMinGap))))),
+		bkgSymLogLifetimeSeed,
 		std::log(bkgSymLifetimeMinGap),
 		std::log(bkgSymLifetimeMaxGap));
 	RooFormulaVar bkg_sym_lifetime(
 		"bkg_sym_lifetime",
 		Form("%g + exp(@0)", bkgSymLifetimeFloor),
 		RooArgList(bkg_sym_log_lifetime_offset));
-	const double bkgSymLifetime2Floor = std::max(2.0 * bkgSymLifetimeFloor, 2e-2);
-	const double bkgSymLifetime2Init = std::max(0.07, 1.4 * bkgSymLifetime2Floor);
-	const double bkgSymLifetime2Ceil = std::max(0.50, maxStableLifetime);
-	const double bkgSymLifetime2MinGap = std::max(0.25 * bkgSymLifetime2Floor, 3e-3);
-	const double bkgSymLifetime2MaxGap = std::max(bkgSymLifetime2Ceil - bkgSymLifetime2Floor, 2.0 * bkgSymLifetime2MinGap);
 	RooRealVar bkg_sym_log_lifetime2_offset(
 		"bkg_sym_log_lifetime2_offset", "log(bkg_sym_lifetime2 - floor)",
 		std::log(std::max(bkgSymLifetime2Init - bkgSymLifetime2Floor, bkgSymLifetime2MinGap)),
@@ -647,11 +815,6 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		"bkg_sym_lifetime2",
 		Form("%g + exp(@0)", bkgSymLifetime2Floor),
 		RooArgList(bkg_sym_log_lifetime2_offset));
-	const double bkgSymLifetime3Floor = std::max(3.0 * bkgSymLifetimeFloor, 4e-2);
-	const double bkgSymLifetime3Init = std::max(0.12, 1.3 * bkgSymLifetime3Floor);
-	const double bkgSymLifetime3Ceil = std::max(0.80, maxStableLifetime);
-	const double bkgSymLifetime3MinGap = std::max(0.20 * bkgSymLifetime3Floor, 4e-3);
-	const double bkgSymLifetime3MaxGap = std::max(bkgSymLifetime3Ceil - bkgSymLifetime3Floor, 2.0 * bkgSymLifetime3MinGap);
 	RooRealVar bkg_sym_log_lifetime3_offset(
 		"bkg_sym_log_lifetime3_offset", "log(bkg_sym_lifetime3 - floor)",
 		std::log(std::max(bkgSymLifetime3Init - bkgSymLifetime3Floor, bkgSymLifetime3MinGap)),
@@ -662,36 +825,25 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		Form("%g + exp(@0)", bkgSymLifetime3Floor),
 		RooArgList(bkg_sym_log_lifetime3_offset));
 
-	const double bkgFlipLifetimeInit = isLowPtForward ? 0.28 : std::max(0.05, 1.2 * bkgFlipLifetimeFloor);
-	const double bkgFlipLifetimeCeil = isLowPtForward ? 8.0 : std::max(0.50, maxStableLifetime);
-	// 2026-07-31 08:10 KST: retain both flipped components but reduce their overlapping search ranges.
-	// 2026-07-31 11:53 KST: pT 3-4 needs the former range so its weak flipped yield can collapse cleanly.
-	const double bkgFlipLifetimeOffsetMin = (isLowPtForward || useWideForwardLifetimeRange) ? 1e-4 : 1e-2;
-	const double bkgFlipLifetimeOffsetMax = (isLowPtForward || useWideForwardLifetimeRange) ? bkgFlipLifetimeCeil - bkgFlipLifetimeFloor : 1.5e-1;
+	// parameter - flipped bkg model
 	RooRealVar bkg_flip_log_lifetime_offset(
 		"bkg_flip_log_lifetime_offset", "log(bkg_flip_lifetime - floor)",
-		useForward56Seed ? -2.99405 : (useForward34LifetimeRange ? 1.25 : (useForward910Seed ? -9.20 : (useForward1420Seed ? -3.417 : std::log(std::max(bkgFlipLifetimeInit - bkgFlipLifetimeFloor, 1e-4))))),
+		bkgFlipLogLifetimeSeed,
 		std::log(bkgFlipLifetimeOffsetMin),
 		std::log(std::max(bkgFlipLifetimeOffsetMax, 2e-4)));
 	RooFormulaVar bkg_flip_lifetime(
 		"bkg_flip_lifetime",
 		Form("%g + exp(@0)", bkgFlipLifetimeFloor),
 		RooArgList(bkg_flip_log_lifetime_offset));
-	const double bkgFlipLifetime2Floor = std::max(1.5 * bkgFlipLifetimeFloor, 1e-2);
-	const double bkgFlipLifetime2Init = std::max(0.08, 1.3 * bkgFlipLifetime2Floor);
-	const double bkgFlipLifetime2Ceil = std::max(0.60, maxStableLifetime);
 	RooRealVar bkg_flip_log_lifetime2_offset(
 		"bkg_flip_log_lifetime2_offset", "log(bkg_flip_lifetime2 - floor)",
-		useForward56Seed ? -3.95034 : (useForward34LifetimeRange ? -3.1420 : (useForward910Seed ? -1.696 : (useForward1420Seed ? -4.168 : std::log(std::max(bkgFlipLifetime2Init - bkgFlipLifetime2Floor, 1e-4))))),
+		bkgFlipLogLifetime2Seed,
 		std::log(5e-3),
-		std::log(1.0)); // 2026-07-31 08:10 KST: reduced range for the weak second flipped lifetime.
+		std::log(1.0));
 	RooFormulaVar bkg_flip_lifetime2(
 		"bkg_flip_lifetime2",
 		Form("%g + exp(@0)", bkgFlipLifetime2Floor),
 		RooArgList(bkg_flip_log_lifetime2_offset));
-	const double bkgFlipLifetime3Floor = std::max(2.5 * bkgFlipLifetimeFloor, 2e-2);
-	const double bkgFlipLifetime3Init = std::max(0.12, 1.2 * bkgFlipLifetime3Floor);
-	const double bkgFlipLifetime3Ceil = std::max(0.80, maxStableLifetime);
 	RooRealVar bkg_flip_log_lifetime3_offset(
 		"bkg_flip_log_lifetime3_offset", "log(bkg_flip_lifetime3 - floor)",
 		std::log(std::max(bkgFlipLifetime3Init - bkgFlipLifetime3Floor, 1e-4)),
@@ -702,6 +854,7 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		Form("%g + exp(@0)", bkgFlipLifetime3Floor),
 		RooArgList(bkg_flip_log_lifetime3_offset));
 
+	// declaer bkg model
 	RooDecay bkg_time_ss("bkg_time_ss", "bkg_time_ss", obs_time, bkg_lifetime, time_resolution, RooDecay::SingleSided);
 	RooDecay bkg_time_ss2("bkg_time_ss2", "bkg_time_ss2", obs_time, bkg_lifetime2, time_resolution, RooDecay::SingleSided);
 	RooDecay bkg_time_ss3("bkg_time_ss3", "bkg_time_ss3", obs_time, bkg_lifetime3, time_resolution, RooDecay::SingleSided);
@@ -712,25 +865,20 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	RooDecay bkg_time_flip2("bkg_time_flip2", "bkg_time_flip2", obs_time, bkg_flip_lifetime2, time_resolution, RooDecay::Flipped);
 	RooDecay bkg_time_flip3("bkg_time_flip3", "bkg_time_flip3", obs_time, bkg_flip_lifetime3, time_resolution, RooDecay::Flipped);
 
-	// 2026-07-31 07:50 KST
-	// The component yields sum to the selected event count; avoid the old 5x over-wide bounds.
+	// fraction of bkg models - used Nevt to always make them positive
 	const double bkgYieldMax = 1.20 * std::max(1, data->numEntries());
-	// 2026-07-31 07:54 KST: seed the prompt-dominated background composition near previous fits.
-	// 2026-07-31 11:57 KST: restore the validated pT 3-4 component-yield seed combination.
-	// 2026-07-31 12:40 KST: use the 08:30 pT 9-10 component fractions only as starting values.
-	// 2026-07-31 12:43 KST: use the 08:30 pT 14-20 component fractions only as starting values.
-	// 2026-07-31 14:31 KST: pT 1-2 uses the 08:30 generic component fractions; only validated special bins remain.
-	// 2026-07-31 22:58 KST: start pT 5-6 from its 08:30 full-covariance component fractions.
-	RooRealVar Nplb("Nplb", "Nplb", (useForward56Seed ? 0.7320 : (useForward34LifetimeRange ? 0.15 : (useForward910Seed ? 0.52 : (useForward1420Seed ? 0.291 : 0.60)))) * data->numEntries(), 0.0, bkgYieldMax);
-	RooRealVar Nss1("Nss1", "Nss1", (useForward56Seed ? 0.0855 : (useForward34LifetimeRange ? 0.30 : (useForward910Seed ? 0.156 : (useForward1420Seed ? 0.166 : 0.10)))) * data->numEntries(), 0.0, bkgYieldMax);
-	RooRealVar Nss2("Nss2", "Nss2", (useForward56Seed ? 0.0454 : (useForward34LifetimeRange ? 0.20 : (useForward910Seed ? 0.162 : (useForward1420Seed ? 0.396 : 0.05)))) * data->numEntries(), 0.0, bkgYieldMax);
+	RooRealVar Nplb("Nplb", "Nplb", nplbFraction * data->numEntries(), 0.0, bkgYieldMax);
+	RooRealVar Nss1("Nss1", "Nss1", nss1Fraction * data->numEntries(), 0.0, bkgYieldMax);
+	RooRealVar Nss2("Nss2", "Nss2", nss2Fraction * data->numEntries(), 0.0, bkgYieldMax);
 	RooRealVar Nss3("Nss3", "Nss3", 0.05 * data->numEntries(), 0.0, bkgYieldMax);
-	RooRealVar Nds1("Nds1", "Nds1", useForward56Seed ? 0.0579 * data->numEntries() : ((useForward910Seed || useForward1420Seed) ? 1.0 : (useForward34LifetimeRange ? 0.20 : 0.05) * data->numEntries()), 0.0, bkgYieldMax);
+	RooRealVar Nds1("Nds1", "Nds1", nds1Seed, 0.0, bkgYieldMax);
 	RooRealVar Nds2("Nds2", "Nds2", 0.02 * data->numEntries(), 0.0, bkgYieldMax);
 	RooRealVar Nds3("Nds3", "Nds3", 0.02 * data->numEntries(), 0.0, bkgYieldMax);
-	RooRealVar Nflip1("Nflip1", "Nflip1", useForward56Seed ? 0.0477 * data->numEntries() : (useForward34LifetimeRange ? 1.0 : (useForward910Seed ? 0.107 : (useForward1420Seed ? 0.0695 : 0.08)) * data->numEntries()), 0.0, bkgYieldMax);
-	RooRealVar Nflip2("Nflip2", "Nflip2", (useForward56Seed ? 0.0317 : (useForward34LifetimeRange ? 0.08 : (useForward910Seed ? 0.057 : (useForward1420Seed ? 0.0783 : 0.05)))) * data->numEntries(), 0.0, bkgYieldMax);
+	RooRealVar Nflip1("Nflip1", "Nflip1", nflip1Seed, 0.0, bkgYieldMax);
+	RooRealVar Nflip2("Nflip2", "Nflip2", nflip2Fraction * data->numEntries(), 0.0, bkgYieldMax);
 	RooRealVar Nflip3("Nflip3", "Nflip3", 0.02 * data->numEntries(), 0.0, bkgYieldMax);
+
+	// list PDFs and fractions to consider possible combinations
 	RooArgList bkgTimePdfList;
 	RooArgList bkgTimeYieldList;
 	bkgTimePdfList.add(bkg_time_plb);
@@ -780,16 +928,36 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		bkgTimePdfList.add(bkg_time_flip3);
 		bkgTimeYieldList.add(Nflip3);
 	}
+
+	// declare bkg model
 	RooAddPdf bkg_time("bkg_time", "bkg_time", bkgTimePdfList, bkgTimeYieldList);
+	RooAbsPdf &time_pdf = bkg_time;
 
 	// ------------------------------------------------------------------
-	// fit background ctau model
+	// Fit or restore the background ctau model.
 	// ------------------------------------------------------------------
-	RooAbsPdf &time_pdf = bkg_time;
 	std::unique_ptr<TFile> savedBkgFitFile;
 	std::unique_ptr<RooFitResult> timeResultHolder;
+
+	// helper to keep the fit options identical for the baseline fit and its retry
+	// only change the strategy
+	auto fitTimeModel = [&](int strategy)
+	{
+		return std::unique_ptr<RooFitResult>(
+			time_pdf.fitTo(
+				*data,
+				Extended(),
+				Save(),
+				SumW2Error(isWeight),
+				Strategy(strategy),
+				Offset(true),
+				RecoverFromUndefinedRegions(1.0),
+				ExternalConstraints(externalConstraints)));
+	};
+
 	if (drawFromSavedFit)
 	{
+		// publish mode: restore the saved parameters without fitting again.
 		if (!load_saved_fit_file(savedBkgFitFile, fitResultFileName, "background ctau"))
 			return;
 		timeResultHolder = clone_saved_fit_result(savedBkgFitFile.get(), "timeResult");
@@ -803,23 +971,61 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	}
 	else
 	{
-		// 2026-07-31 14:31 KST: restore the 08:30 generic Offset(true) background configuration for pT 1-2.
-		timeResultHolder.reset(time_pdf.fitTo(*data, Extended(), Save(), SumW2Error(isWeight),
-			Strategy(1), Offset(true), RecoverFromUndefinedRegions(1.0),
-			ExternalConstraints(externalConstraints)));
-		// 2026-07-31 08:05 KST: use the existing Strategy(2) retry for any failed convergence criterion.
-		if (timeResultHolder && (timeResultHolder->status() != 0 ||
-			timeResultHolder->covQual() < 3 || timeResultHolder->edm() > 1e-3))
+		// Start with the nominal strategy;
+		timeResultHolder = fitTimeModel(1);
+
+		// Retry once if convergence is insufficient.
+		if (timeResultHolder &&
+			(timeResultHolder->status() != 0 || timeResultHolder->covQual() < 3 || timeResultHolder->edm() > 1e-3))
 		{
-			timeResultHolder.reset(time_pdf.fitTo(*data, Extended(), Save(), SumW2Error(isWeight),
-				Strategy(2), Offset(true), RecoverFromUndefinedRegions(1.0),
-				ExternalConstraints(externalConstraints)));
+			timeResultHolder = fitTimeModel(2);
 		}
 	}
+
 	RooFitResult *time_result = timeResultHolder.get();
 	if (time_result)
 		time_result->Print();
 
+	// Save the completed fit session before creating plots.
+	if (!drawFromSavedFit)
+	{
+		TFile fitResultFile(fitResultFileName, "RECREATE");
+		if (!fitResultFile.IsZombie())
+		{
+			if (time_result)
+				time_result->Write("timeResult");
+
+			// Store the model configuration needed to interpret the saved fit.
+			TParameter<int>("nResolutionComponents", nResolutionComponents).Write();
+			TParameter<int>("nSignalSSComponents", nSignalSSComponents).Write();
+			TParameter<int>("nSignalFlipComponents", nSignalFlipComponents).Write();
+			TParameter<int>("nSignalDSComponents", nSignalDSComponents).Write();
+			TParameter<double>("bkgLifetimeFloor", bkgLifetimeFloor).Write();
+			TParameter<double>("bkgLifetime2Floor", bkgLifetime2Floor).Write();
+			TParameter<double>("bkgLifetime3Floor", bkgLifetime3Floor).Write();
+			TParameter<double>("bkgSymLifetimeFloor", bkgSymLifetimeFloor).Write();
+			TParameter<double>("bkgSymLifetime2Floor", bkgSymLifetime2Floor).Write();
+			TParameter<double>("bkgSymLifetime3Floor", bkgSymLifetime3Floor).Write();
+			TParameter<double>("bkgFlipLifetimeFloor", bkgFlipLifetimeFloor).Write();
+			TParameter<double>("bkgFlipLifetime2Floor", bkgFlipLifetime2Floor).Write();
+			TParameter<double>("bkgFlipLifetime3Floor", bkgFlipLifetime3Floor).Write();
+			TParameter<double>("ctRangeMin", ctRange.first).Write();
+			TParameter<double>("ctRangeMax", ctRange.second).Write();
+			fitResultFile.Write();
+
+			std::cout << "Saved ctau background fit results to " << fitResultFileName << std::endl;
+		}
+		else
+		{
+			std::cerr << "ERROR: cannot create output fit result file: " << fitResultFileName << std::endl;
+		}
+	}
+	else
+	{
+		std::cout << "[PlotOnly] Left saved background ctau ROOT file unchanged: " << fitResultFileName << std::endl;
+	}
+
+	// PDF objects for plotting
 	RooAbsPdf &time_pdf_ss1 = bkg_time_ss;
 	RooAbsPdf &time_pdf_plb = bkg_time_plb;
 	RooAbsPdf &time_pdf_ss2 = bkg_time_ss2;
@@ -1063,19 +1269,22 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	fpull->GetXaxis()->SetLabelSize(0.10);
 	fpull->Draw();
 
-	auto chiM = chi2_from_pull(hpull);
-	int npar = time_result ? time_result->floatParsFinal().getSize() : 0;
-	int ndf = std::max(1, chiM.second - npar);
-	double pvalue = TMath::Prob(chiM.first, ndf);
+	const int npar = time_result ? time_result->floatParsFinal().getSize() : 0;
+	RooHist *hdataForChi2 = dynamic_cast<RooHist *>(timefitplot->getHist("data"));
+	const int ndataBins = hdataForChi2 ? hdataForChi2->GetN() : timePlotBins;
+	const int ndf = std::max(1, ndataBins - npar);
+	const double chi2ndf = timefitplot->chiSquare("model", "data", npar);
+	const double chi2 = chi2ndf * ndf;
+	const double pvalue = TMath::Prob(chi2, ndf);
 	std::cout << Form("Background ctau chi2/ndf: %.1f/%d = %.3f, p=%.3g",
-		chiM.first, ndf, ndf > 0 ? chiM.first / ndf : 0.0, pvalue) << std::endl;
+		chi2, ndf, chi2ndf, pvalue) << std::endl;
 	{
 		TLatex tc;
 		tc.SetNDC();
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", chiM.first, ndf));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", chi2, ndf));
 	}
 
 	TLine line(ctRange.first, 0.0, ctRange.second, 0.0);
@@ -1085,38 +1294,11 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	cLifetime->Print(figName("lifetime_fit"));
 	delete cLifetime;
 
-	if (!drawFromSavedFit)
-	{
-	TFile *fitResultFile = TFile::Open(fitResultFileName, "RECREATE");
-	if (!fitResultFile || fitResultFile->IsZombie())
-	{
-		std::cerr << "ERROR: cannot create output fit result file: " << fitResultFileName << std::endl;
-		return;
-	}
-	if (time_result)
-		time_result->Write("timeResult");
-	TParameter<int>("nResolutionComponents", nResolutionComponents).Write();
-	TParameter<int>("nSignalSSComponents", nSignalSSComponents).Write();
-	TParameter<int>("nSignalFlipComponents", nSignalFlipComponents).Write();
-	TParameter<int>("nSignalDSComponents", nSignalDSComponents).Write();
-	TParameter<double>("bkgLifetimeFloor", bkgLifetimeFloor).Write();
-	TParameter<double>("bkgLifetime2Floor", bkgLifetime2Floor).Write();
-	TParameter<double>("bkgLifetime3Floor", bkgLifetime3Floor).Write();
-	TParameter<double>("bkgSymLifetimeFloor", bkgSymLifetimeFloor).Write();
-	TParameter<double>("bkgSymLifetime2Floor", bkgSymLifetime2Floor).Write();
-	TParameter<double>("bkgSymLifetime3Floor", bkgSymLifetime3Floor).Write();
-	TParameter<double>("bkgFlipLifetimeFloor", bkgFlipLifetimeFloor).Write();
-	TParameter<double>("bkgFlipLifetime2Floor", bkgFlipLifetime2Floor).Write();
-	TParameter<double>("bkgFlipLifetime3Floor", bkgFlipLifetime3Floor).Write();
-	TParameter<double>("ctRangeMin", ctRange.first).Write();
-	TParameter<double>("ctRangeMax", ctRange.second).Write();
-	fitResultFile->Write();
-	fitResultFile->Close();
-	std::cout << "Saved ctau background fit results to " << fitResultFileName << std::endl;
-	}
-	else
-		std::cout << "[PlotOnly] Left saved background ctau ROOT file unchanged: " << fitResultFileName << std::endl;
 
+
+	// ------------------------------------------------------------------
+	// print final result
+	// ------------------------------------------------------------------
 	cout << "------------------ FIT RESULT SUMMARY --------------------" << endl;
 	cout << "------------------ FIT RESULT FOR TIME ONLY --------------" << endl;
 	time_result->Print("v");

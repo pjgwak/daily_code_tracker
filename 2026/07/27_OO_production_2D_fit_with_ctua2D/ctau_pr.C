@@ -36,6 +36,7 @@
 #include "TLine.h"
 #include "TROOT.h"
 #include "TSystem.h"
+#include "TStopwatch.h"
 #include "TParameter.h"
 #include "TMath.h"
 #include "saved_fit_helpers.h"
@@ -50,102 +51,24 @@
 
 using namespace RooFit;
 
-static RooParametricStepFunction *makeStepPdfFromHist(
-	const char *pdfName,
-	RooRealVar &x,
-	TH1 *h,
-	RooArgList &ownedCoeffs,
-	double floorFrac = 1e-6,
-	double minCoeff = 1e-8,
-	double maxCoeff = 1.0)
+struct ScopedMacroTimer
 {
-	if (!h)
-		return nullptr;
+	TStopwatch sw;
+	TString label;
 
-	const int nBins = h->GetNbinsX();
-	if (nBins < 2)
-		return nullptr;
-
-	std::vector<double> boundaries(nBins + 1);
-	for (int i = 1; i <= nBins; ++i)
-		boundaries[i - 1] = h->GetXaxis()->GetBinLowEdge(i);
-	boundaries[nBins] = h->GetXaxis()->GetBinUpEdge(nBins);
-
-	TArrayD boundaryArray(static_cast<int>(boundaries.size()), boundaries.data());
-
-	double totalYield = 0.0;
-	double minWidth = std::numeric_limits<double>::infinity();
-	for (int i = 1; i <= nBins; ++i)
+	ScopedMacroTimer(const char *macroName, float ptLow, float ptHigh, float yLow, float yHigh)
+		: label(TString::Format("%s(pt=%.2f-%.2f, |y|=%.2f-%.2f)", macroName, ptLow, ptHigh, yLow, yHigh))
 	{
-		double c = h->GetBinContent(i);
-		if (!std::isfinite(c) || c < 0.0)
-			c = 0.0;
-		totalYield += c;
-		minWidth = std::min(minWidth, h->GetBinWidth(i));
-	}
-	if (!(totalYield > 0.0) || !(minWidth > 0.0))
-		return nullptr;
-
-	ownedCoeffs.removeAll();
-	double maxHeight = minCoeff;
-	double usedArea = 0.0;
-	for (int i = 1; i <= nBins - 1; ++i)
-	{
-		double c = h->GetBinContent(i);
-		if (!std::isfinite(c) || c <= 0.0)
-			c = floorFrac * totalYield;
-
-		const double width = h->GetBinWidth(i);
-		double frac = c / totalYield;
-		double hgt = frac / width;
-		hgt = std::max(minCoeff, hgt);
-		maxHeight = std::max(maxHeight, hgt);
-		usedArea += hgt * width;
-
-		auto *coef = new RooRealVar(
-			Form("%s_coef_%02d", pdfName, i - 1),
-			Form("%s_coef_%02d", pdfName, i - 1),
-			hgt,
-			minCoeff,
-			std::max(maxCoeff, 5.0 * maxHeight));
-		coef->setConstant(true);
-		ownedCoeffs.add(*coef);
+		sw.Start();
+		std::cout << "[TIMER] start " << label << std::endl;
 	}
 
-	const double remainingArea = std::max(0.0, 1.0 - usedArea);
-	const double impliedLastHeight = remainingArea / h->GetBinWidth(nBins);
-	std::cout << "[DEBUG] " << pdfName
-	          << " totalYield = " << totalYield
-	          << ", usedArea = " << usedArea
-	          << ", remainingArea = " << remainingArea
-	          << ", impliedLastHeight = " << impliedLastHeight
-	          << std::endl;
-
-	return new RooParametricStepFunction(
-		pdfName, pdfName,
-		x,
-		ownedCoeffs,
-		boundaryArray,
-		nBins);
-}
-
-static std::pair<double, int> chi2_from_pull(RooHist *hpull)
-{
-	double chi2 = 0.;
-	int n = 0;
-	if (!hpull)
-		return {0., 0};
-	double x = 0., y = 0.;
-	for (int i = 0; i < hpull->GetN(); ++i)
+	~ScopedMacroTimer()
 	{
-		hpull->GetPoint(i, x, y);
-		if (!std::isfinite(y))
-			continue;
-		chi2 += y * y;
-		++n;
+		sw.Stop();
+		std::cout << Form("[TIMER] done %s | real %.2f s | cpu %.2f s", label.Data(), sw.RealTime(), sw.CpuTime()) << std::endl;
 	}
-	return {chi2, n};
-}
+};
 
 static void apply_logy_auto_range(RooPlot *plot, const char *histName, double topScale = 20.0, double bottomScale = 1e3)
 {
@@ -181,9 +104,11 @@ static void apply_logy_auto_range(RooPlot *plot, const char *histName, double to
 void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 2.4,
 	bool drawFromSavedFit = false, bool publish = false)
 {
+	ScopedMacroTimer timer("ctau_pr", ptLow, ptHigh, yLow, yHigh);
 	if (publish)
 		drawFromSavedFit = true;
 	bool isWeight = false;
+
 	// ------------------------------------------------------------------
 	// model control
 	// ------------------------------------------------------------------
@@ -191,7 +116,7 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 	
 	if (yLow == 1.6f)
 	{
-		if (ptLow == 1.0f && ptHigh == 2.0f)
+		if (ptLow == 1.0f && ptHigh == 2.0f) // dummy
 		{
 			// nResolutionComponents = 4;
 		}
@@ -201,7 +126,6 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 	// ------------------------------------------------------------------
 	// load dataset
 	// ------------------------------------------------------------------
-	// First we open the actual RooDataSet used in the prompt ctau analysis.
 	const char *DATA_ROOT = "/data/users/pjgwak/work/daily_code_tracker/2026/04/00_OO_skims_updated/onia_to_skim/roodataset_roots/RooDataSet_miniAOD_isMC1_PR_globalOff_Jpsi_cent0_200_Effw0_Accw0_PtW0_TnP0_OO25_HLT_OxyL1SingleMuOpen_v1.root";
 	const char *DSET_NAME = "dataset";
 	TFile *inputFile = TFile::Open(DATA_ROOT);
@@ -218,6 +142,7 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 		return;
 	}
 
+	// basic cuts
 	TString cutBasic = Form("(mass>2.6 && mass<3.5) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g)",
 													ptLow, ptHigh, yLow, yHigh);
 	auto dataBasic = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(inputData->reduce(cutBasic)));
@@ -227,6 +152,7 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 		return;
 	}
 
+	// temporal observable - to decide ctau fit range
 	auto *massTmp = dynamic_cast<RooRealVar *>(dataBasic->get()->find("mass"));
 	auto *timeTmp = dynamic_cast<RooRealVar *>(dataBasic->get()->find("ctau"));
 	if (!massTmp || !timeTmp)
@@ -235,6 +161,9 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 		return;
 	}
 
+	// ------------------------------------------------------------------
+	// set ctau fit range
+	// ------------------------------------------------------------------
 	// Trim plotting/fit ranges with robust quantiles to suppress extreme outliers.
 	auto quantileRange = [&](RooDataSet &ds, RooRealVar &var, double qLo, double qHi, bool positiveOnly)
 	{
@@ -265,9 +194,6 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 		return std::make_pair(qAt(qLo), qAt(qHi));
 	};
 
-	// ------------------------------------------------------------------
-	// determine fit ranges
-	// ------------------------------------------------------------------
 	const auto ctRange = quantileRange(*dataBasic, *timeTmp, 0.0005, 0.9995, false);
 
 	TString cutAll = Form(
@@ -282,7 +208,7 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 	}
 
 	// ------------------------------------------------------------------
-	// output and observable setup
+	// preapre name tags
 	// ------------------------------------------------------------------
 	auto formatTag = [](double value)
 	{
@@ -295,6 +221,7 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 	const TString resultDir = TString::Format("roots/%s/ctau_pr", yTag.Data());
 	const TString figTag = yTag + "_" + ptTag;
 	const TString resolutionFileName = TString::Format("%s/ctau_resolution_%s.root", resultDir.Data(), figTag.Data());
+	
 	std::unique_ptr<TFile> savedResolutionFile;
 	if (drawFromSavedFit)
 	{
@@ -310,9 +237,12 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 	gSystem->mkdir(resultDir, true);
 	gROOT->Macro("/data/users/pjgwak/input_files/rootlogon.C");
 
+	// ------------------------------------------------------------------
+	// connect observable
+	// ------------------------------------------------------------------
 	RooRealVar &obs_mass = *static_cast<RooRealVar *>(dataSel->get()->find("mass"));
 	RooRealVar &obs_time = *static_cast<RooRealVar *>(dataSel->get()->find("ctau"));
-		obs_mass.SetTitle("mass");
+	obs_mass.SetTitle("mass");
 	obs_mass.setUnit("GeV/c^{2}");
 	obs_time.SetTitle("#font[12]{l}_{J/#psi}");
 	obs_time.setUnit("mm");
@@ -330,144 +260,214 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 	// ------------------------------------------------------------------
 	// build ctau resolution model
 	// ------------------------------------------------------------------
-	// Use only lifetime fit (mass fit skipped on purpose).
-	// THE CTAU TIME PDF
-	// Modeled as a sum of up to four Gaussian resolution components.
-	// Use per-event ctau errors as sigma scale factors while keeping the mean scale fixed to 1.
+	// Prompt J/#psi ctau resolution is described by up to four Gaussian cores.
+	// All cores share one fitted mean. Their widths are constructed as a
+	// positive cumulative sum, ensuring sigma_1 < sigma_2 < sigma_3 < sigma_4.
 	RooConstVar ctauMeanScale("ctauMeanScale", "ctauMeanScale", 1.0);
-	// 2026-07-31 11:48 KST: restore the previously validated seed combination for forward pT 3-4.
-	const bool useForward34Seed = (yLow == 1.6f && ptLow == 3.0f && ptHigh == 4.0f);
-	// 2026-07-31 12:21 KST: use the 08:30 validated starting points for the two wider forward low-pT shapes.
-	const bool useForward12Seed = (yLow == 1.6f && ptLow == 1.0f && ptHigh == 2.0f);
-	const bool useForward23Seed = (yLow == 1.6f && ptLow == 2.0f && ptHigh == 3.0f);
-	RooRealVar ctauTime1Mean("ctauTime1Mean", "ctauTime1Mean",
-		useForward12Seed ? 6.226e-4 : (useForward23Seed ? 7.073e-5 : (useForward34Seed ? 2.08e-4 : 0.0)), -0.01, 0.01);
-	// 2026-07-31 07:17 KST
-	// Seed near the converged neighboring-bin values and allow nearly merged tails.
-	// 2026-07-31 07:34 KST
-	RooRealVar ctauTime1Scale("ctauTime1Scale", "ctauTime1Scale",
-		useForward12Seed ? 0.06851 : (useForward23Seed ? 0.04538 : (useForward34Seed ? 0.0338 : 0.015)), 0.005, 0.20);
+
+	// initial values
+	double time1MeanSeed = 0.0;
+	double time1ScaleSeed = 0.015;
+	double time2DeltaSeed = 0.010;
+	double time3DeltaSeed = 0.010;
+	double time4DeltaSeed = 0.10;
+	double frac1Seed = 0.65;
+	double frac2Seed = 0.70;
+	double frac3Seed = 0.70;
+
+	// Bin-specific seeds from stable forward-rapidity fits.	
+	// fwd
+	if (yLow == 1.6f && ptLow == 1.0f && ptHigh == 2.0f)
+	{
+		time1MeanSeed = 6.226e-4;
+		time1ScaleSeed = 0.06851;
+		time2DeltaSeed = 0.06103;
+		time3DeltaSeed = 0.1281;
+		time4DeltaSeed = 0.4865;
+		frac1Seed = 0.4036;
+		frac2Seed = 0.7600;
+		frac3Seed = 0.8707;
+	}
+	else if (yLow == 1.6f && ptLow == 2.0f && ptHigh == 3.0f)
+	{
+		time1MeanSeed = 7.073e-5;
+		time1ScaleSeed = 0.04538;
+		time2DeltaSeed = 0.03539;
+		time3DeltaSeed = 0.07643;
+		time4DeltaSeed = 0.3227;
+		frac1Seed = 0.4341;
+		frac2Seed = 0.7762;
+		frac3Seed = 0.8701;
+	}
+	else if (yLow == 1.6f && ptLow == 3.0f && ptHigh == 4.0f)
+	{
+		time1MeanSeed = 2.08e-4;
+		time1ScaleSeed = 0.0338;
+		time2DeltaSeed = 0.0277;
+		time3DeltaSeed = 0.0611;
+		time4DeltaSeed = 0.243;
+		frac1Seed = 0.425;
+		frac2Seed = 0.802;
+		frac3Seed = 0.858;
+	}
+
+	// Core 1: common mean and the narrowest resolution width.
+	RooRealVar ctauTime1Mean("ctauTime1Mean", "ctauTime1Mean", time1MeanSeed, -0.01, 0.01);
+	RooRealVar ctauTime1Scale("ctauTime1Scale", "ctauTime1Scale", time1ScaleSeed, 0.005, 0.20);
 	RooGaussModel ctauTime1("ctauTime1", "ctauTime1", obs_time, ctauTime1Mean, ctauTime1Scale);
+
+	// Core 2: same mean, with a positive increment over the Core-1 width.
 	RooFormulaVar ctauTime2Mean("ctauTime2Mean", "@0", RooArgList(ctauTime1Mean));
-	RooRealVar ctauTime2Delta("ctauTime2Delta", "ctauTime2Delta",
-		useForward12Seed ? 0.06103 : (useForward23Seed ? 0.03539 : (useForward34Seed ? 0.0277 : 0.010)), 1e-4, 0.30);
+	RooRealVar ctauTime2Delta("ctauTime2Delta", "ctauTime2Delta", time2DeltaSeed, 1e-4, 0.30);
 	RooFormulaVar ctauTime2Scale("ctauTime2Scale", "@0+@1", RooArgList(ctauTime1Scale, ctauTime2Delta));
 	RooGaussModel ctauTime2("ctauTime2", "ctauTime2", obs_time, ctauTime2Mean, ctauTime2Scale);
+
+	// Core 3: same mean, with a further positive width increment.
 	RooFormulaVar ctauTime3Mean("ctauTime3Mean", "@0", RooArgList(ctauTime1Mean));
-	// 2026-07-31 07:24 KST
-	// 2026-07-31 07:26 KST
-	RooRealVar ctauTime3Delta("ctauTime3Delta", "ctauTime3Delta",
-		useForward12Seed ? 0.1281 : (useForward23Seed ? 0.07643 : (useForward34Seed ? 0.0611 : 0.010)), 0.003, 0.20);
+	RooRealVar ctauTime3Delta("ctauTime3Delta", "ctauTime3Delta", time3DeltaSeed, 0.003, 0.20);
 	RooFormulaVar ctauTime3Scale("ctauTime3Scale", "@0+@1", RooArgList(ctauTime2Scale, ctauTime3Delta));
 	RooGaussModel ctauTime3("ctauTime3", "ctauTime3", obs_time, ctauTime3Mean, ctauTime3Scale);
+
+	// Core 4: broadest optional tail core, also sharing the common mean.
 	RooFormulaVar ctauTime4Mean("ctauTime4Mean", "@0", RooArgList(ctauTime1Mean));
-	// 2026-07-31 07:39 KST: keep the fourth width separated from the third.
-	RooRealVar ctauTime4Delta("ctauTime4Delta", "ctauTime4Delta",
-		useForward12Seed ? 0.4865 : (useForward23Seed ? 0.3227 : (useForward34Seed ? 0.243 : 0.10)), 0.05, 0.50);
+	RooRealVar ctauTime4Delta("ctauTime4Delta", "ctauTime4Delta", time4DeltaSeed, 0.05, 0.50);
 	RooFormulaVar ctauTime4Scale("ctauTime4Scale", "@0+@1", RooArgList(ctauTime3Scale, ctauTime4Delta));
 	RooGaussModel ctauTime4("ctauTime4", "ctauTime4", obs_time, ctauTime4Mean, ctauTime4Scale);
 
-	// ------------------------------------------------------------------
-	// build ctau fit model
-	// ------------------------------------------------------------------
-		RooRealVar ctauFrac1Var("ctauFrac1Var", "ctauFrac1Var",
-			useForward12Seed ? 0.4036 : (useForward23Seed ? 0.4341 : (useForward34Seed ? 0.425 : 0.65)), 0.05, 0.98);
-		RooRealVar ctauFrac2Var("ctauFrac2Var", "ctauFrac2Var",
-			useForward12Seed ? 0.7600 : (useForward23Seed ? 0.7762 : (useForward34Seed ? 0.802 : 0.70)), 0.001, 0.98);
-		RooRealVar ctauFrac3Var("ctauFrac3Var", "ctauFrac3Var",
-			useForward12Seed ? 0.8707 : (useForward23Seed ? 0.8701 : (useForward34Seed ? 0.858 : 0.70)), 0.01, 0.99);
+	// fractions
+	RooRealVar ctauFrac1Var("ctauFrac1Var", "ctauFrac1Var", frac1Seed, 0.05, 0.98);
+	RooRealVar ctauFrac2Var("ctauFrac2Var", "ctauFrac2Var", frac2Seed, 0.001, 0.98);
+	RooRealVar ctauFrac3Var("ctauFrac3Var", "ctauFrac3Var", frac3Seed, 0.01, 0.99);
 
-		// THE LIFETIME FIT
-		// Fit the prompt resolution as a normalized mixture. Fractions are more stable here than
-		// extended component yields, which were collapsing to zero and spoiling the pull.
-		RooArgList promptTimePdfList;
-		RooArgList promptTimeFracList;
-		promptTimePdfList.add(ctauTime1);
-		if (nResolutionComponents >= 2)
-		{
-			promptTimePdfList.add(ctauTime2);
-			promptTimeFracList.add(ctauFrac1Var);
-		}
-		if (nResolutionComponents >= 3)
-		{
-			promptTimePdfList.add(ctauTime3);
-			promptTimeFracList.add(ctauFrac2Var);
-		}
-		else
-		{
-			ctauFrac2Var.setVal(0.0);
-		}
-		if (nResolutionComponents >= 4)
-		{
-			promptTimePdfList.add(ctauTime4);
-			promptTimeFracList.add(ctauFrac3Var);
-		}
-		else
-		{
-			ctauFrac3Var.setVal(0.0);
-		}
-		if (nResolutionComponents < 2)
-		{
-			ctauFrac1Var.setVal(0.0);
-		}
+	// fill the list of PDF and fractions
+	RooArgList promptTimePdfList;
+	RooArgList promptTimeFracList;
+	promptTimePdfList.add(ctauTime1);
+
+	if (nResolutionComponents >= 2)
+	{
+		promptTimePdfList.add(ctauTime2);
+		promptTimeFracList.add(ctauFrac1Var);
+	}
+	else
+	{
+		ctauFrac1Var.setVal(0.0);
+	}
+
+	if (nResolutionComponents >= 3)
+	{
+		promptTimePdfList.add(ctauTime3);
+		promptTimeFracList.add(ctauFrac2Var);
+	}
+	else
+	{
+		ctauFrac2Var.setVal(0.0);
+	}
+
+	if (nResolutionComponents >= 4)
+	{
+		promptTimePdfList.add(ctauTime4);
+		promptTimeFracList.add(ctauFrac3Var);
+	}
+	else
+	{
+		ctauFrac3Var.setVal(0.0);
+	}
+
+	// ctau prompt resolution model
 	RooAddPdf time_pdf("time_pdf", "time_pdf", promptTimePdfList, promptTimeFracList, true);
+	
+	
+	// ------------------------------------------------------------------
+	// fit prompt ctau resolution
+	// ------------------------------------------------------------------
+	// In plot-only mode, restore the saved resolution parameters and skip the
+	// minimization. Otherwise, fit the selected Gaussian-mixture model to data.
+	std::unique_ptr<RooFitResult> timeResultHolder;
+	RooFitResult *time_result = nullptr;
+
 	if (drawFromSavedFit)
 	{
+		// The saved file stores absolute widths, while this model fits positive
+		// width increments. Convert each saved width back to its increment.
 		ctauTime1Mean.setVal(read_saved_double_param(savedResolutionFile.get(), "ctauTime1Mean", ctauTime1Mean.getVal()));
 		ctauTime1Scale.setVal(read_saved_double_param(savedResolutionFile.get(), "ctauTime1Scale", ctauTime1Scale.getVal()));
+
 		if (nResolutionComponents >= 2)
 		{
 			const double savedScale = read_saved_double_param(savedResolutionFile.get(), "ctauTime2Scale", ctauTime2Scale.getVal());
 			ctauTime2Delta.setVal(std::max(1e-6, savedScale - ctauTime1Scale.getVal()));
 			ctauFrac1Var.setVal(read_saved_double_param(savedResolutionFile.get(), "ctauFrac1", ctauFrac1Var.getVal()));
 		}
+
 		if (nResolutionComponents >= 3)
 		{
 			const double savedScale = read_saved_double_param(savedResolutionFile.get(), "ctauTime3Scale", ctauTime3Scale.getVal());
 			ctauTime3Delta.setVal(std::max(1e-6, savedScale - ctauTime2Scale.getVal()));
 			ctauFrac2Var.setVal(read_saved_double_param(savedResolutionFile.get(), "ctauFrac2", ctauFrac2Var.getVal()));
 		}
+
 		if (nResolutionComponents >= 4)
 		{
 			const double savedScale = read_saved_double_param(savedResolutionFile.get(), "ctauTime4Scale", ctauTime4Scale.getVal());
 			ctauTime4Delta.setVal(std::max(1e-6, savedScale - ctauTime3Scale.getVal()));
 			ctauFrac3Var.setVal(read_saved_double_param(savedResolutionFile.get(), "ctauFrac3", ctauFrac3Var.getVal()));
 		}
+
+		std::cout << "[PlotOnly] Loaded saved prompt ctau parameters and skipped fit: "
+		          << resolutionFileName << std::endl;
 	}
-	std::unique_ptr<RooFitResult> timeResultHolder;
-	RooFitResult *time_result = nullptr;
-	if (!drawFromSavedFit)
+	else
 	{
-		// 2026-07-31 07:36 KST: improve numerical precision without changing the PDF.
-		// 2026-07-31 12:20 KST: all PR bins use the stable absolute NLL seen in the 08:30 reference run.
-		// 2026-07-31 13:34 KST: retain the two bin-specific optimizer combinations validated at 08:30.
-		const bool useMid1214Offset = (yLow == 0.0f && ptLow == 12.0f && ptHigh == 14.0f);
-		const bool useForward56Strategy1 = (yLow == 1.6f && ptLow == 5.0f && ptHigh == 6.0f);
-		const int firstStrategy = useForward56Strategy1 ? 1 : 2;
-		timeResultHolder.reset(time_pdf.fitTo(*data, Save(), SumW2Error(isWeight), Offset(useMid1214Offset), Strategy(firstStrategy)));
-		// 2026-07-31 07:39 KST: keep the numerically stable single fit result.
-		// 2026-07-31 13:31 KST: retry once with offset after the absolute NLL fit has moved the seed.
-		if (timeResultHolder && (timeResultHolder->status() != 0 ||
-			timeResultHolder->covQual() < 3 || timeResultHolder->edm() > 1e-3))
+		// Default optimizer setup: absolute NLL (Offset=false) with Strategy 2.
+		// The two validated exceptional bins override only the required setting.
+		bool firstFitOffset = false;
+		int firstFitStrategy = 2;
+		bool retryFitOffset = true;
+
+		if (yLow == 0.0f && ptLow == 12.0f && ptHigh == 14.0f)
 		{
-			const bool retryOffset = !useMid1214Offset && !useForward56Strategy1;
-			timeResultHolder.reset(time_pdf.fitTo(*data, Save(), SumW2Error(isWeight), Offset(retryOffset), Strategy(2)));
+			firstFitOffset = true;
+			retryFitOffset = false;
 		}
+		else if (yLow == 1.6f && ptLow == 5.0f && ptHigh == 6.0f)
+		{
+			firstFitStrategy = 1;
+			retryFitOffset = false;
+		}
+
+		// First fit uses the bin-specific setup chosen above.
+		timeResultHolder.reset(
+			time_pdf.fitTo(*data, Save(), SumW2Error(isWeight), Offset(firstFitOffset), Strategy(firstFitStrategy)));
+
+		// Retry once only when the minimizer or covariance quality is insufficient.
+		const bool fitNeedsRetry = timeResultHolder &&
+			(timeResultHolder->status() != 0 || timeResultHolder->covQual() < 3 || timeResultHolder->edm() > 1e-3);
+		if (fitNeedsRetry)
+		{
+			timeResultHolder.reset(
+				time_pdf.fitTo(*data, Save(), SumW2Error(isWeight), Offset(retryFitOffset), Strategy(2)));
+		}
+
 		time_result = timeResultHolder.get();
 		if (time_result)
 			time_result->Print();
 	}
-	else
-		std::cout << "[PlotOnly] Loaded saved prompt ctau parameters and skipped fit: " << resolutionFileName << std::endl;
 
+	// for log: ctauFrac is recursive fraction from fit
 	const double ctauFrac1 = (nResolutionComponents >= 2) ? ctauFrac1Var.getVal() : 1.0;
 	const double ctauFrac2 = (nResolutionComponents >= 3) ? ctauFrac2Var.getVal() : 0.0;
 	const double ctauFrac3 = (nResolutionComponents >= 4) ? ctauFrac3Var.getVal() : 0.0;
+
+	// for log: transform recursive fraction to simple fractions of components
+	// nEntries * compFrac = number of events in each PDF
 	const double compFrac1 = (nResolutionComponents == 1) ? 1.0 : ctauFrac1;
 	const double compFrac2 = (nResolutionComponents >= 2) ? ((nResolutionComponents == 2) ? (1.0 - ctauFrac1) : (1.0 - ctauFrac1) * ctauFrac2) : 0.0;
 	const double compFrac3 = (nResolutionComponents >= 3) ? ((nResolutionComponents == 3) ? (1.0 - ctauFrac1) * (1.0 - ctauFrac2) : (1.0 - ctauFrac1) * (1.0 - ctauFrac2) * ctauFrac3) : 0.0;
 	const double compFrac4 = (nResolutionComponents >= 4) ? ((1.0 - ctauFrac1) * (1.0 - ctauFrac2) * (1.0 - ctauFrac3)) : 0.0;
 	const double nEntries = data->numEntries();
+
+	// save outputs
 	if (!drawFromSavedFit)
 	{
 		TFile resolutionFile(resolutionFileName, "RECREATE");
@@ -712,17 +712,20 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 	fpull->Draw();
 
 	// Count only the floating parameters of the ctau fit itself in chi2/ndf.
-	auto chiM = chi2_from_pull(hpull);
-	int npar = time_result ? time_result->floatParsFinal().getSize() : 0;
-	int ndf = std::max(1, chiM.second - npar);
-	double pvalue = TMath::Prob(chiM.first, ndf);
+	const int npar = time_result ? time_result->floatParsFinal().getSize() : 0;
+	RooHist *hdataForChi2 = dynamic_cast<RooHist *>(timefitplot->getHist("data"));
+	const int ndataBins = hdataForChi2 ? hdataForChi2->GetN() : timePlotBins;
+	const int ndf = std::max(1, ndataBins - npar);
+	const double chi2ndf = timefitplot->chiSquare("model", "data", npar);
+	const double chi2 = chi2ndf * ndf;
+	const double pvalue = TMath::Prob(chi2, ndf);
 	{
 		TLatex tc;
 		tc.SetNDC();
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", chiM.first, ndf));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", chi2, ndf));
 	}
 
 	TLine line(ctRange.first, 0.0, ctRange.second, 0.0);
@@ -737,7 +740,7 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 	// ------------------------------------------------------------------
 	cout << "------------------ FIT RESULT SUMMARY --------------------" << endl;
 	cout << "Prompt resolution components used in PR fit: " << nResolutionComponents << endl;
-	cout << Form("Prompt ctau chi2/ndf: %.1f/%d = %.3f, p=%.3g", chiM.first, ndf, ndf > 0 ? chiM.first / ndf : 0.0, pvalue) << endl;
+	cout << Form("Prompt ctau chi2/ndf: %.1f/%d = %.3f, p=%.3g", chi2, ndf, chi2ndf, pvalue) << endl;
 	cout << "------------------ FIT RESULT FOR TIME ONLY --------------" << endl;
 	if (time_result)
 		time_result->Print();
@@ -747,24 +750,3 @@ void ctau_pr(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh = 
 	std::cout << "[FIG] ctau_pr lifetime fit : " << figLifetime << std::endl;
 	// time_pdf.Print("V");
 }
-
-// //
-// 	// THE LIFETIME FIT: decompose into two resolved components for plotting
-// 	RooProdPdf time_pdf_component1(
-// 		"time_pdf_component1",
-// 		"time_pdf_component1",
-// 		Conditional(RooArgSet(ctauTime1), RooArgSet(obs_time))
-// 	);
-// 	RooProdPdf time_pdf_component2(
-// 		"time_pdf_component2",
-// 		"time_pdf_component2",
-// 		Conditional(RooArgSet(ctauTime2), RooArgSet(obs_time))
-// 	);
-// 	RooAddPdf time_pdf(
-// 		"time_pdf",
-// 		"time_pdf",
-// 		RooArgList(time_pdf_component1, time_pdf_component2),
-// 		RooArgList(Nctau1, Nctau2)
-// 	);
-// 	RooFitResult *time_result = time_pdf.fitTo(*data,Extended(),Save());
-// 	time_result->Print();

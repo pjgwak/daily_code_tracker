@@ -66,24 +66,6 @@ struct ScopedMacroTimer
 	}
 };
 
-static std::pair<double, int> chi2_from_pull(RooHist *hpull)
-{
-	double chi2 = 0.;
-	int n = 0;
-	if (!hpull)
-		return {0., 0};
-	double x = 0., y = 0.;
-	for (int i = 0; i < hpull->GetN(); ++i)
-	{
-		hpull->GetPoint(i, x, y);
-		if (!std::isfinite(y))
-			continue;
-		chi2 += y * y;
-		++n;
-	}
-	return {chi2, n};
-}
-
 void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.4, bool isBkg = false, bool drawFromSavedFit = false, bool publish = false)
 {
 	ScopedMacroTimer timer("mc_mass", ptLow, ptHigh, yLow, yHigh);
@@ -214,44 +196,63 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	};
 
 	// ------------------------------------------------------------------
-	// build mass model
+	// build mass signal model
 	// ------------------------------------------------------------------
+	// Signal peak position and the width of the first Gaussian component.
 	RooRealVar signal_mass_mean("signal_mass_mean", "signal_mass_mean", 3.096, 3.05, 3.15, "GeV/c^{2}");
 	RooRealVar signal_mass_sigma("signal_mass_sigma", "signal_mass_sigma", 0.03, 0.001, 0.080, "GeV/c^{2}");
+
+	// Express additional widths as sigmaFloor + exp(log_offset), so they
+	// remain strictly positive throughout the fit.
 	const double sigmaFloor = 1e-4;
 	const double signal_mass_sigma2_init = std::max(signal_mass_sigma.getVal() + 0.03, sigmaFloor + 1e-4);
+	// the real variable for fit
 	RooRealVar signal_mass_sigma2_log_offset(
 			"signal_mass_sigma2_log_offset", "log(signal_mass_sigma2 - floor)",
-			std::log(std::max(signal_mass_sigma2_init - sigmaFloor, 1e-4)),
+			std::log(std::max(signal_mass_sigma2_init - sigmaFloor, 1e-4)), // double guard to prevent 
 			std::log(1e-4),
 			std::log(1.0));
 	RooFormulaVar signal_mass_sigma2("signal_mass_sigma2", Form("%g + exp(@0)", sigmaFloor), RooArgList(signal_mass_sigma2_log_offset));
-	RooFormulaVar signal_mass_sigma_delta2("signal_mass_sigma_delta2", "@0-@1", RooArgList(signal_mass_sigma2, signal_mass_sigma));
+	// logging varaible - not used for fit
+	RooFormulaVar signal_mass_sigma_delta2("signal_mass_sigma_delta2", "@0-@1", RooArgList(signal_mass_sigma2, signal_mass_sigma)); 
+
+	// CB width. With at least one Gaussian component, use the same positive
+	// log-offset parameterization; otherwise use the independent base width.
 	RooRealVar signal_mass_cb_sigma_base("signal_mass_cb_sigma_base", "signal_mass_cb_sigma_base", 0.035, 0.008, 0.080, "GeV/c^{2}");
 	std::unique_ptr<RooRealVar> signal_mass_cb_sigma_log_offset;
-	std::unique_ptr<RooFormulaVar> signal_mass_cb_sigma_delta_from_gaus;
 	std::unique_ptr<RooFormulaVar> signal_mass_cb_sigma_from_gaus;
+	std::unique_ptr<RooFormulaVar> signal_mass_cb_sigma_delta_from_gaus;
 	RooAbsReal *signal_mass_cb_sigma = &signal_mass_cb_sigma_base;
 	RooAbsReal *signal_mass_cb_sigma_delta = nullptr;
 	if (nSignalGaussComponents >= 1)
 	{
+		// set initial value of sigma_cb to be similar with gauss
 		const double signal_mass_cb_sigma_init = std::max(signal_mass_sigma.getVal() + 0.005, sigmaFloor + 1e-4);
+		// the parameter for fitting
 		signal_mass_cb_sigma_log_offset = std::make_unique<RooRealVar>(
 				"signal_mass_cb_sigma_log_offset", "log(signal_mass_cb_sigma - floor)",
 				std::log(std::max(signal_mass_cb_sigma_init - sigmaFloor, 1e-4)),
 				std::log(1e-4),
 				std::log(1.0));
+				
 		signal_mass_cb_sigma_from_gaus = std::make_unique<RooFormulaVar>(
 				"signal_mass_cb_sigma", Form("%g + exp(@0)", sigmaFloor), RooArgList(*signal_mass_cb_sigma_log_offset));
+		
+		// logging varaible - not used for fit
 		signal_mass_cb_sigma_delta_from_gaus = std::make_unique<RooFormulaVar>(
 				"signal_mass_cb_sigma_delta", "@0-@1", RooArgList(*signal_mass_cb_sigma_from_gaus, signal_mass_sigma));
+		
+		// to keep pointer 
 		signal_mass_cb_sigma = signal_mass_cb_sigma_from_gaus.get();
 		signal_mass_cb_sigma_delta = signal_mass_cb_sigma_delta_from_gaus.get();
 	}
+	// use default cb_sigma_base when there is no gauss
 	else
 	{
 		signal_mass_cb_sigma_delta = &signal_mass_cb_sigma_base;
 	}
+
+	// Second CB width used only by the double-sided Crystal Ball PDF.
 	const double signal_mass_cb_sigma2_init = std::max(signal_mass_cb_sigma->getVal() + 0.02, sigmaFloor + 1e-4);
 	RooRealVar signal_mass_cb_sigma2_log_offset(
 			"signal_mass_cb_sigma2_log_offset", "log(signal_mass_cb_sigma2 - floor)",
@@ -260,20 +261,27 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 			std::log(1.0));
 	RooFormulaVar signal_mass_cb_sigma2("signal_mass_cb_sigma2", Form("%g + exp(@0)", sigmaFloor), RooArgList(signal_mass_cb_sigma2_log_offset));
 	RooFormulaVar signal_mass_cb_sigma_delta2("signal_mass_cb_sigma_delta2", "@0-@1", RooArgList(signal_mass_cb_sigma2, *signal_mass_cb_sigma));
+
+	// crystal ball's power and tail
 	RooRealVar signal_mass_cb_alpha("signal_mass_cb_alpha", "signal_mass_cb_alpha", 1.5, 0.001, 30.0);
 	RooRealVar signal_mass_cb_alpha2("signal_mass_cb_alpha2", "signal_mass_cb_alpha2", 2.0, 0.001, 30.0);
 	RooRealVar signal_mass_cb_n("signal_mass_cb_n", "signal_mass_cb_n", 3.0, 0.001, 20.0);
 	RooRealVar signal_mass_cb_n2("signal_mass_cb_n2", "signal_mass_cb_n2", 4.0, 0.001, 10.0);
+
+	// Fit positive ratios and convert them to fractions r/(1+r), which keeps
+	// every fraction strictly between zero and one. (so called recursive frations)
 	RooRealVar signal_mass_frac_ratio1("signal_mass_frac_ratio1", "signal_mass_frac_ratio1", 1.86, 1e-3, 1e3);
 	RooFormulaVar signal_mass_frac1("signal_mass_frac1", "@0/(1.0+@0)", RooArgList(signal_mass_frac_ratio1));
 	RooRealVar signal_mass_frac_ratio2("signal_mass_frac_ratio2", "signal_mass_frac_ratio2", 0.25, 1e-3, 1e3);
 	RooFormulaVar signal_mass_frac2("signal_mass_frac2", "@0/(1.0+@0)", RooArgList(signal_mass_frac_ratio2));
 	RooRealVar signal_mass_frac_ratio3("signal_mass_frac_ratio3", "signal_mass_frac_ratio3", 0.5, 1e-3, 1e3);
-
 	RooFormulaVar signal_mass_frac3("signal_mass_frac3", "@0/(1.0+@0)", RooArgList(signal_mass_frac_ratio3));
 
+	// signal - Gauss
 	RooGaussian signal_mass_gaus("signal_mass_gaus", "signal_mass_gaus", obs_mass, signal_mass_mean, signal_mass_sigma);
 	RooGaussian signal_mass_gaus2("signal_mass_gaus2", "signal_mass_gaus2", obs_mass, signal_mass_mean, signal_mass_sigma2);
+	
+	// signal - signel CB or DSCB
 	std::unique_ptr<RooAbsPdf> signal_mass_cb_owned;
 	if (nSignalCBComponents >= 2)
 	{
@@ -300,6 +308,7 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	if (nSignalGaussComponents >= 2)
 		signalComponents.push_back(&signal_mass_gaus2);
 
+	// make a list of PDFs and fraction parameters
 	RooArgList signalPdfList;
 	for (RooAbsPdf *pdf : signalComponents)
 		signalPdfList.add(*pdf);
@@ -322,10 +331,10 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		signal_mass_pdf = signal_mass_owned.get();
 	}
 
-	// 2026-07-31 07:17 KST
-	// Keep the pure-signal yield away from the old upper boundary at Nentries.
-	RooRealVar Nsig("Nsig", "Nsig", std::max(1.0, 0.95 * data->numEntries()), 0.0, 1.20 * data->numEntries());
-	RooRealVar Nbkg("Nbkg", "Nbkg", std::max(1.0, 0.5 * data->numEntries()), 0.0, data->numEntries());
+	// ------------------------------------------------------------------
+	// build mass bkg model
+	// ------------------------------------------------------------------
+	// Bkg pdf exists for test. Not used for nominal fit
 	RooRealVar bkg_mass_p1("bkg_mass_p1", "bkg_mass_p1", 0.0, -1, 1);
 	RooRealVar bkg_mass_p2("bkg_mass_p2", "bkg_mass_p2", 0.0, -1, 1);
 	RooRealVar bkg_mass_p3("bkg_mass_p3", "bkg_mass_p3", 0.0, -1, 1);
@@ -333,6 +342,8 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	RooRealVar bkg_mass_p5("bkg_mass_p5", "bkg_mass_p5", 0.0, -1, 1);
 	RooRealVar bkg_mass_p6("bkg_mass_p6", "bkg_mass_p6", 0.0, -1, 1);
 	RooRealVar bkg_mass_lambda("bkg_mass_lambda", "bkg_mass_lambda", -1.0, -10.0, -1e-4);
+	
+	// fill the ChebyCoefficient
 	RooArgList chebyCoeffList;
 	if (nBkgChebyOrder >= 1)
 		chebyCoeffList.add(bkg_mass_p1);
@@ -346,6 +357,8 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		chebyCoeffList.add(bkg_mass_p5);
 	if (nBkgChebyOrder >= 6)
 		chebyCoeffList.add(bkg_mass_p6);
+
+	// implement bkg model
 	std::unique_ptr<RooAbsPdf> bkg_mass;
 	if (nBkgExpComponents == 1)
 		bkg_mass = std::make_unique<RooExponential>("bkg_mass", "bkg_mass", obs_mass, bkg_mass_lambda);
@@ -355,13 +368,24 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		bkg_mass = std::make_unique<RooExponential>("bkg_mass", "bkg_mass", obs_mass, bkg_mass_lambda);
 	const TString bkgLegendLabel = nBkgExpComponents == 1 ? "Background (E)" : TString::Format("Background (%d)", nBkgChebyOrder);
 
+	// ------------------------------------------------------------------
+	// build total mass model
+	// ------------------------------------------------------------------
+	RooRealVar Nsig("Nsig", "Nsig", std::max(1.0, 0.95 * data->numEntries()), 0.0, 1.20 * data->numEntries());
+	RooRealVar Nbkg("Nbkg", "Nbkg", std::max(1.0, 0.5 * data->numEntries()), 0.0, data->numEntries());
+	
+	// implement total mass model
 	std::unique_ptr<RooAbsPdf> mass_pdf;
 	if (isBkg)
 		mass_pdf = std::make_unique<RooAddPdf>("mass_pdf", "mass_pdf", RooArgList(*signal_mass_pdf, *bkg_mass), RooArgList(Nsig, Nbkg));
 	else
 		mass_pdf = std::make_unique<RooAddPdf>("mass_pdf", "mass_pdf", RooArgList(*signal_mass_pdf), RooArgList(Nsig));
 
+	// ------------------------------------------------------------------
+	// fitting
+	// ------------------------------------------------------------------
 	std::unique_ptr<RooFitResult> mass_result;
+	// publish mode: not fit, just re-draw plots
 	if (drawFromSavedFit)
 	{
 		mass_result = clone_saved_fit_result(savedFitFile.get(), "fit_result");
@@ -372,23 +396,25 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		}
 		apply_saved_fit_result(mass_result.get(), *mass_pdf, RooArgSet(obs_mass));
 	}
+	// fitting mode
 	else
 	{
-		// 2026-07-31 12:12 KST
-		// High-pT midrapidity seeds can remain at a zero offset FCN; disable only that numerical offset.
-		const bool useNllOffset = !(yLow == 0.0f && ptLow >= 14.0f);
+		const bool useNllOffset = !(yLow == 0.0f && ptLow >= 14.0f); // High-pT midrapidity seeds can remain at a zero offset FCN; disable only that numerical offset.
 		mass_result.reset(mass_pdf->fitTo(*data, Extended(), Save(), Strategy(2), PrintLevel(0), SumW2Error(isWeight), Minimizer("Minuit2", "migrad"), Offset(useNllOffset)));
 	}
-	// 2026-07-31 07:43 KST
+
 	// Retry once from the first result when any convergence criterion is not met.
 	if (!drawFromSavedFit && mass_result && (mass_result->status() != 0 || mass_result->covQual() < 3 || mass_result->edm() > 1e-3))
 	{
-		// 2026-07-31 12:15 KST: re-enable the offset after the first fit has moved the high-pT seed.
+		// re-enable the offset after the first fit has moved the high-pT seed.
 		mass_result.reset(mass_pdf->fitTo(*data, Extended(), Save(), Strategy(2), PrintLevel(0), SumW2Error(isWeight), Offset(true)));
 	}
+
+	// print fit result
 	if (mass_result)
 		mass_result->Print();
 
+	// save fit results
 	if (!drawFromSavedFit)
 	{
 		TFile outFile(modelFileName, "RECREATE");
@@ -451,6 +477,7 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 				mass_result->Write("fit_result");
 		}
 	}
+	// skip writing in publish mode
 	else
 		std::cout << "[PlotOnly] Loaded saved MC mass fit and left ROOT file unchanged: " << modelFileName << std::endl;
 
@@ -665,17 +692,20 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	fpull->GetXaxis()->SetLabelSize(0.10);
 	fpull->Draw();
 
-	auto chiM = chi2_from_pull(hpull);
-	int npar = mass_result ? mass_result->floatParsFinal().getSize() : 0;
-	int ndf = std::max(1, chiM.second - npar);
-	double pvalue = TMath::Prob(chiM.first, ndf);
+	const int npar = mass_result ? mass_result->floatParsFinal().getSize() : 0;
+	RooHist *hdataForChi2 = dynamic_cast<RooHist *>(massplot->getHist("data"));
+	const int ndataBins = hdataForChi2 ? hdataForChi2->GetN() : massPlotBins;
+	const int ndf = std::max(1, ndataBins - npar);
+	const double chi2ndf = massplot->chiSquare("model", "data", npar);
+	const double chi2 = chi2ndf * ndf;
+	const double pvalue = TMath::Prob(chi2, ndf);
 	{
 		TLatex tc;
 		tc.SetNDC();
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", chiM.first, ndf));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", chi2, ndf));
 	}
 
 	TLine line(obs_mass.getMin(), 0.0, obs_mass.getMax(), 0.0);
@@ -685,7 +715,7 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	cMass->Print(figName("mass_fit"));
 	delete cMass;
 
-	std::cout << Form("MC mass chi2/ndf: %.1f/%d = %.3f, p=%.3g", chiM.first, ndf, ndf > 0 ? chiM.first / ndf : 0.0, pvalue) << std::endl;
+	std::cout << Form("MC mass chi2/ndf: %.1f/%d = %.3f, p=%.3g", chi2, ndf, chi2ndf, pvalue) << std::endl;
 	std::cout << "------------------ FIT RESULT FOR MASS ONLY --------------" << std::endl;
 	mass_result->Print("v");
 }
