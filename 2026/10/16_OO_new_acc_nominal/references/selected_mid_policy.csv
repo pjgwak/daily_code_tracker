@@ -1,0 +1,8 @@
+bin,source_kind,rule,ct_low,ct_high,original_ct_low,original_ct_high,window_exception,independent_width_count,common_scale,prompt_mean_float,mean_prior_sigma_multiplier,mean_prior_sigma_mm,np_covariance_multiplier,fraction_policy,postfit_B_transport
+mid_7_8,September_independent_width_constraint_relaxation,NCS_M7_E995_MU64,-0.13,2.41,-1.8,3,True,4,False,True,64,0.004843969213252227,1,fixed native MC,False
+mid_9_10,September_independent_width_constraint_relaxation,NCS_M9_WIN_H135,-0.5,1.35,-0.5,2,True,4,False,False,0,0.0,1,fixed native MC,False
+mid_10_12,existing_original_September_independent_width_fit,S09_NEW,-2,4,-2,4,False,4,False,False,0,0.0,1,fixed native MC,False
+mid_12_14,September_independent_width_constraint_relaxation,NCS_M12_M32,-0.5,4.0,-0.5,4,False,4,False,True,32,0.0016924673770588234,1,fixed native MC,False
+mid_14_16,existing_original_September_independent_width_fit,S09_NEW,-0.5,2,-0.5,2,False,3,False,False,0,0.0,1,fixed native MC,False
+mid_16_20,existing_original_September_independent_width_fit,S09_NEW,-0.5,2,-0.5,2,False,3,False,False,0,0.0,1,fixed native MC,False
+mid_20_30,existing_original_September_independent_width_fit,S09_NEW,-0.5,2,-0.5,2,False,3,False,False,0,0.0,1,fixed native MC,False

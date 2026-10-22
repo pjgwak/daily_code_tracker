@@ -1,0 +1,17 @@
+# Local experiments and their historical source/result snapshots.
+/tests/
+
+# Accepted datasets, prefits, fit ROOTs, builds, logs and frozen bundles.
+/output/
+
+# Python and ROOT build products.
+__pycache__/
+*.py[cod]
+*.so
+*.pcm
+*.d
+*.o
+*.root
+*.log
+
+# Final PDF/PNG figures and CSV/JSON tables are intentionally tracked.

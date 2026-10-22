@@ -1,0 +1,22 @@
+rule FT1L
+# features: Nsig=837 S/B=1.873 sigEff/tauLong=0.0621 nPR=3
+# source rule: LG1020_w2_mm16_n2
+bkg_penalty_scale 1
+ct_high 2
+ct_low -0.5
+float_prompt_mean 1
+high_pt_numeric 1
+legacy_starts 1
+np_constrain 1
+np_cov_scale 2
+np_lifetime_bounds 1
+np_longest_free 1
+profile_bkg 1
+prompt_frac_constrain 0
+prompt_frac_cov_scale 4
+prompt_full_cov 0
+prompt_mean_prior_mult 16
+width_policy 1
+width_sigma1 0.001
+width_sigma2 0.004
+width_sigma3 0.008

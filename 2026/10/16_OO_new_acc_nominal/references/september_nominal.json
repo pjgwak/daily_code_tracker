@@ -1,0 +1,176 @@
+{
+  "authority": "User explicitly requested nominal values used by the September agreement plot.",
+  "inclusion_chain": [
+    "drawing/b_frac_comparison/plot_nominal_agreement.C",
+    "drawing/latest_fit_results.h",
+    "utils/nominal_bfraction.h"
+  ],
+  "selection": "mid ? nominal_bfraction::midBins()[i] : nominal_bfraction::bins()[i]",
+  "output": "nominal_agreement.pdf",
+  "snapshot_sources": [
+    {
+      "original_path": "/data/users/pjgwak/work/daily_code_tracker/2026/09/19_OO_2dfit_tuning_Hijing_tuning/drawing/b_frac_comparison/plot_nominal_agreement.C",
+      "snapshot_path": "reference/september_nominal_source/drawing/b_frac_comparison/plot_nominal_agreement.C",
+      "sha256": "a525d0ed2ee64a1b941e94459a0a0f2fd81e4c6e1078bb46aeb7462db8c65f9d"
+    },
+    {
+      "original_path": "/data/users/pjgwak/work/daily_code_tracker/2026/09/19_OO_2dfit_tuning_Hijing_tuning/drawing/latest_fit_results.h",
+      "snapshot_path": "reference/september_nominal_source/drawing/latest_fit_results.h",
+      "sha256": "e7d40ece97f52e8b61ad2a78357d65dc8d8611a3bb7deb5404c6dc57ffc0c2d0"
+    },
+    {
+      "original_path": "/data/users/pjgwak/work/daily_code_tracker/2026/09/19_OO_2dfit_tuning_Hijing_tuning/utils/nominal_bfraction.h",
+      "snapshot_path": "reference/september_nominal_source/utils/nominal_bfraction.h",
+      "sha256": "ae7b3307584c66ece8e179bf695ee3c12483010395547a6ac756b5958d157146"
+    },
+    {
+      "original_path": "/data/users/pjgwak/work/daily_code_tracker/2026/09/19_OO_2dfit_tuning_Hijing_tuning/nominal_agreement.pdf",
+      "snapshot_path": "reference/september_nominal_source/nominal_agreement.pdf",
+      "sha256": "8020fc0225058704b1cea7592c17956afdad80e327bb71d2ff49c284bcf1f2b8"
+    }
+  ],
+  "values": [
+    {
+      "region": "fwd",
+      "pt_low": 1.0,
+      "pt_high": 2.0,
+      "nominal": 0.095827,
+      "nominal_error": 0.01411977
+    },
+    {
+      "region": "fwd",
+      "pt_low": 2.0,
+      "pt_high": 3.0,
+      "nominal": 0.11657193,
+      "nominal_error": 0.00840907
+    },
+    {
+      "region": "fwd",
+      "pt_low": 3.0,
+      "pt_high": 4.0,
+      "nominal": 0.15473178,
+      "nominal_error": 0.00827655
+    },
+    {
+      "region": "fwd",
+      "pt_low": 4.0,
+      "pt_high": 5.0,
+      "nominal": 0.17217579,
+      "nominal_error": 0.00824081
+    },
+    {
+      "region": "fwd",
+      "pt_low": 5.0,
+      "pt_high": 6.0,
+      "nominal": 0.19048501,
+      "nominal_error": 0.00780888
+    },
+    {
+      "region": "fwd",
+      "pt_low": 6.0,
+      "pt_high": 7.0,
+      "nominal": 0.21633096,
+      "nominal_error": 0.00912559
+    },
+    {
+      "region": "fwd",
+      "pt_low": 7.0,
+      "pt_high": 8.0,
+      "nominal": 0.2444162,
+      "nominal_error": 0.01005342
+    },
+    {
+      "region": "fwd",
+      "pt_low": 8.0,
+      "pt_high": 9.0,
+      "nominal": 0.25342691,
+      "nominal_error": 0.01187479
+    },
+    {
+      "region": "fwd",
+      "pt_low": 9.0,
+      "pt_high": 10.0,
+      "nominal": 0.28272881,
+      "nominal_error": 0.01561774
+    },
+    {
+      "region": "fwd",
+      "pt_low": 10.0,
+      "pt_high": 12.0,
+      "nominal": 0.34256722,
+      "nominal_error": 0.01453528
+    },
+    {
+      "region": "fwd",
+      "pt_low": 12.0,
+      "pt_high": 14.0,
+      "nominal": 0.41615496,
+      "nominal_error": 0.02275166
+    },
+    {
+      "region": "fwd",
+      "pt_low": 14.0,
+      "pt_high": 20.0,
+      "nominal": 0.41280382,
+      "nominal_error": 0.02161569
+    },
+    {
+      "region": "mid",
+      "pt_low": 7.0,
+      "pt_high": 8.0,
+      "nominal": 0.23845,
+      "nominal_error": 0.00774
+    },
+    {
+      "region": "mid",
+      "pt_low": 8.0,
+      "pt_high": 9.0,
+      "nominal": 0.26571,
+      "nominal_error": 0.00818
+    },
+    {
+      "region": "mid",
+      "pt_low": 9.0,
+      "pt_high": 10.0,
+      "nominal": 0.28154,
+      "nominal_error": 0.00994
+    },
+    {
+      "region": "mid",
+      "pt_low": 10.0,
+      "pt_high": 12.0,
+      "nominal": 0.31622,
+      "nominal_error": 0.00917
+    },
+    {
+      "region": "mid",
+      "pt_low": 12.0,
+      "pt_high": 14.0,
+      "nominal": 0.38432,
+      "nominal_error": 0.01273
+    },
+    {
+      "region": "mid",
+      "pt_low": 14.0,
+      "pt_high": 16.0,
+      "nominal": 0.40518,
+      "nominal_error": 0.01782
+    },
+    {
+      "region": "mid",
+      "pt_low": 16.0,
+      "pt_high": 20.0,
+      "nominal": 0.47775,
+      "nominal_error": 0.01854
+    },
+    {
+      "region": "mid",
+      "pt_low": 20.0,
+      "pt_high": 30.0,
+      "nominal": 0.54732,
+      "nominal_error": 0.02384
+    }
+  ],
+  "current_header_byte_identical": true,
+  "verified_values": 20
+}

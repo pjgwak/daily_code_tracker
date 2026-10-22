@@ -1,0 +1,63 @@
+{
+ "fwd_10_12": {
+  "src": "LG1020_w0p5_mm16_n14"
+ },
+ "fwd_12_14": {
+  "src": "LG1020_w4_mm8_n4"
+ },
+ "fwd_14_20": {
+  "src": "LG1020_w2_mm16_n2"
+ },
+ "fwd_1_2": {
+  "src": "LG13_m1_f4_n175_b4"
+ },
+ "fwd_2_3": {
+  "note": "best setting with the validated (BIC) background prefit 2/1/1; the 3/0/0 background prefit (c300) fails the sideband fit (chi2/ndf 1.79, dNLL +356) and was withdrawn 2026-10-16",
+  "src": "LG13_m8_f32_n100_b1"
+ },
+ "fwd_3_4": {
+  "src": "LG35_v130"
+ },
+ "fwd_4_5": {
+  "src": "LG35_v1000"
+ },
+ "fwd_5_6": {
+  "src": "LG510_c0p01_mf_winB"
+ },
+ "fwd_6_7": {
+  "src": "LG510_c0p5"
+ },
+ "fwd_7_8": {
+  "src": "LG510_c1"
+ },
+ "fwd_8_9": {
+  "src": "LG510_c3p5"
+ },
+ "fwd_9_10": {
+  "src": "LG510_c15"
+ },
+ "mid_10_12": {
+  "src": "CT3"
+ },
+ "mid_12_14": {
+  "src": "CT3"
+ },
+ "mid_14_16": {
+  "src": "CT3"
+ },
+ "mid_16_20": {
+  "src": "CT3"
+ },
+ "mid_20_30": {
+  "src": "CT3"
+ },
+ "mid_7_8": {
+  "src": "CT3"
+ },
+ "mid_8_9": {
+  "src": "CT3"
+ },
+ "mid_9_10": {
+  "src": "CT3"
+ }
+}

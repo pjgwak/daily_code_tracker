@@ -1,0 +1,6 @@
+rule NCS_M7_E995_MU64
+ct_low -0.13
+ct_high 2.4100000000000001
+prompt_mean_mc_sigma 64
+np_cov_scale 1
+profile_mass 0

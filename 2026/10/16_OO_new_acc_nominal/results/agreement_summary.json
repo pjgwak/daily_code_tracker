@@ -1,0 +1,14 @@
+{
+  "count_under_2p9_percent": 20,
+  "count_under_september_max": 20,
+  "september_max_percent": 2.91656031733,
+  "max_abs_raw_percent": 1.3509870511212885,
+  "max_abs_nominal_stat_units": 0.37106760643737724,
+  "MC_window_transport_applied": false,
+  "significance_interpretation": false,
+  "selection": "NO_COMMON_SCALE_SIGMA0414",
+  "bins": 20,
+  "count_within_sigma0414": 20,
+  "frozen_root_hashes_matched": 20,
+  "figures_copied": 40
+}

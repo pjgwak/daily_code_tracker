@@ -1,0 +1,1098 @@
+{
+  "schema_version": 1,
+  "selection": "NO_COMMON_SCALE_SIGMA0414",
+  "threshold_sigma": 0.414,
+  "postfit_B_transport": false,
+  "root_version": "6.36.06",
+  "accepted_inputs": [
+    {
+      "path": "output/inputs/np_gen_singlemu.root",
+      "sha256": "1f9c070fe13b381ab8cc2c56e85bdc3abc134e9c4bd830518c728400cb476ca8",
+      "role": "nonprompt_mc"
+    },
+    {
+      "path": "output/inputs/roodataset_roots/RooDataSet_miniAOD_isMC1_PR_Hijing_globalOff_Jpsi_cent0_200_Effw0_Accw0_PtW0_TnP0_OO25_HLT_OxyL1SingleMuOpen_v1.root",
+      "sha256": "fe338aa6f22b649ac6a553308db233753be2ca76a03095dcf131fef91542f82f",
+      "role": "prompt_mc"
+    },
+    {
+      "path": "output/inputs/roodataset_roots/RooDataSet_miniAOD_isMC0_globalOff_Jpsi_cent0_200_Effw0_Accw0_PtW0_TnP0_OO25_HLT_OxyL1SingleMuOpen_v1.root",
+      "sha256": "49798917170de97ad9e84962a589152f6407f9c65a3835201f674cc22d8b3a81",
+      "role": "data"
+    }
+  ],
+  "runtime_files": {
+    "style": "include/rootlogon.C",
+    "pr_calibration_windows": "config/pr_calibration_windows.csv"
+  },
+  "bins": [
+    {
+      "id": "fwd_1_2",
+      "region": "fwd",
+      "pt_low": 1.0,
+      "pt_high": 2.0,
+      "y_low": 1.6,
+      "y_high": 2.4,
+      "rule": "FT1L",
+      "macro": "02_fit/variants/legacy_policy/fit2d.C",
+      "function": "fit2d",
+      "rule_dir": "config/rules/fwd_1_2",
+      "rule_file": "config/rules/fwd_1_2/y1.60_2.40_pt1.00_2.00.knobs",
+      "rule_sha256": "58e45ee44d6e458963bb610833b22f57c22e0bf0a886351b812e5d546b7f7d08",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/fwd_1_2/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt1.00_2.00.root",
+      "figure_dir": "output/fit/fwd_1_2/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/fwd_1_2/roots/y1.60_2.40/mc_mass/mc_mass_model_y1.60_2.40_pt1.00_2.00.root",
+          "sha256": "8064a7b2c418f245a15d550fea64ff29db08926d1712392c33e22445f881be4e"
+        },
+        "mass": {
+          "path": "output/prefits/fwd_1_2/roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt1.00_2.00.root",
+          "sha256": "406f58dbd4c5e7d56cdbd6871cf7d0ca1bf060b40abebbddb21b46102653b95e"
+        },
+        "pr": {
+          "path": "output/prefits/fwd_1_2/roots/y1.60_2.40/ctau_pr/ctau_resolution_y1.60_2.40_pt1.00_2.00.root",
+          "sha256": "229f56e4305139c2724d5d6a00bcaac7f89a309cd93ab42cdee30d2fdc3a4c59"
+        },
+        "np": {
+          "path": "output/prefits/fwd_1_2/roots/y1.60_2.40/ctau_np/ctau_np_model_y1.60_2.40_pt1.00_2.00.root",
+          "sha256": "85120e220725f8273c025efd74533400ec38d36ea1846b0ef98f24ccd1056fde"
+        },
+        "bkg": {
+          "path": "output/prefits/fwd_1_2/roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2.40_pt1.00_2.00.root",
+          "sha256": "176e06825519610a610916fee63a8861600c9ca7114321686e53d4b50b3c3139"
+        }
+      },
+      "ctau_window": [
+        -20,
+        20
+      ],
+      "expected": {
+        "B_raw": 0.09520664773616076,
+        "B_raw_error": 0.020267139801620947,
+        "nominal": 0.095827,
+        "nominal_stat_error": 0.01411977,
+        "sigma_signed": -0.04393501196118866,
+        "root_sha256": "1c94b523dceef4f8959ff40bafdc9881b1b25f56a356ab5001d5a4218ee41d3d"
+      },
+      "macro_sha256": "97f94fe3479df6e7c2aa6aa66142d7ee0061589149340343d41f8c5c01bb622f"
+    },
+    {
+      "id": "fwd_2_3",
+      "region": "fwd",
+      "pt_low": 2.0,
+      "pt_high": 3.0,
+      "y_low": 1.6,
+      "y_high": 2.4,
+      "rule": "TUNE9_F2scan_L022_H250_W20",
+      "macro": "02_fit/variants/window_constraints/fit2d_september_tune.C",
+      "function": "fit2d_september_tune",
+      "rule_dir": "config/rules/fwd_2_3",
+      "rule_file": "config/rules/fwd_2_3/y1.60_2.40_pt2.00_3.00.knobs",
+      "rule_sha256": "a7bc54d9e57318b9026be1629a5c7f68a803c03406e97bb6165a8d0bd51edf53",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/fwd_2_3/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt2.00_3.00.root",
+      "figure_dir": "output/fit/fwd_2_3/figs",
+      "prefits": {
+        "mass": {
+          "path": "output/prefits/fwd_2_3/roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt2.00_3.00.root",
+          "sha256": "b1d462351849ea95204ad46f2206416391959d1887b6daf6fa9102453d71c008"
+        },
+        "bkg": {
+          "path": "output/prefits/fwd_2_3/roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2.40_pt2.00_3.00.root",
+          "sha256": "ee60ebca0bf3fd7812025bf60b7b7c87ba17b3df8deb49c2c228b64430805886"
+        },
+        "pr": {
+          "path": "output/prefits/fwd_2_3/roots/y1.60_2.40/ctau_pr/ctau_resolution_y1.60_2.40_pt2.00_3.00.root",
+          "sha256": "a53e25cd4370abd72063b1d5850739295cc2106474c1ff0f1c41997ae45ac371"
+        },
+        "np": {
+          "path": "output/prefits/fwd_2_3/roots/y1.60_2.40/ctau_np/ctau_np_model_y1.60_2.40_pt2.00_3.00.root",
+          "sha256": "dc892335ddae31abfcf2cfa5aa1481e98a0b21e5b22583a6071ad0762ddf14f4"
+        },
+        "mc_mass": {
+          "path": "output/prefits/fwd_2_3/roots/y1.60_2.40/mc_mass/mc_mass_model_y1.60_2.40_pt2.00_3.00.root",
+          "sha256": "67f5138c84da26dc325872fcf72d6e6ce16b279065f4eed490bf6e7e42257304"
+        }
+      },
+      "ctau_window": [
+        -0.22,
+        2.5
+      ],
+      "expected": {
+        "B_raw": 0.1177709201031953,
+        "B_raw_error": 0.026034083193339157,
+        "nominal": 0.11657193,
+        "nominal_stat_error": 0.00840907,
+        "sigma_signed": 0.1425829613970744,
+        "root_sha256": "b0c81bba8fc45181937b171f0f2c6b42a37f710409cd3ffd02a7c7062e938d00"
+      },
+      "macro_sha256": "7ec35ae6954763397843329d35417f638ef1aa2374db5fc32cf8ebba4b488dd0"
+    },
+    {
+      "id": "fwd_3_4",
+      "region": "fwd",
+      "pt_low": 3.0,
+      "pt_high": 4.0,
+      "y_low": 1.6,
+      "y_high": 2.4,
+      "rule": "FT1L",
+      "macro": "02_fit/variants/legacy_policy/fit2d.C",
+      "function": "fit2d",
+      "rule_dir": "config/rules/fwd_3_4",
+      "rule_file": "config/rules/fwd_3_4/y1.60_2.40_pt3.00_4.00.knobs",
+      "rule_sha256": "c15ac0e77120efb8c4026a21465fe77dd96cdfaaee0839c0f589349fef3f9d6e",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/fwd_3_4/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt3.00_4.00.root",
+      "figure_dir": "output/fit/fwd_3_4/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/fwd_3_4/roots/y1.60_2.40/mc_mass/mc_mass_model_y1.60_2.40_pt3.00_4.00.root",
+          "sha256": "29ff06767e80e36724232a131a4f8a2358b8ebe6d86fdf7eace6e37fb2261207"
+        },
+        "mass": {
+          "path": "output/prefits/fwd_3_4/roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt3.00_4.00.root",
+          "sha256": "fe470dd7d71cb5290a787a4ddc5d2d9a6fd4b8970a251c8b1edd311b2ef54003"
+        },
+        "pr": {
+          "path": "output/prefits/fwd_3_4/roots/y1.60_2.40/ctau_pr/ctau_resolution_y1.60_2.40_pt3.00_4.00.root",
+          "sha256": "ac594e4233d853f14d0ef69764b164e53fb3b8205b567388df172c011cdbe4cf"
+        },
+        "np": {
+          "path": "output/prefits/fwd_3_4/roots/y1.60_2.40/ctau_np/ctau_np_model_y1.60_2.40_pt3.00_4.00.root",
+          "sha256": "f17b8e44ac3330c76fee48ec2ff31f0f69cf14985a9fa97a31c632006c7bd350"
+        },
+        "bkg": {
+          "path": "output/prefits/fwd_3_4/roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2.40_pt3.00_4.00.root",
+          "sha256": "8bf02db53a7bfd25402e70baf434f61301258a2293720da3fac67da65ae3a4ec"
+        }
+      },
+      "ctau_window": [
+        -6,
+        6
+      ],
+      "expected": {
+        "B_raw": 0.1546527578361824,
+        "B_raw_error": 0.008171537025752892,
+        "nominal": 0.15473178,
+        "nominal_stat_error": 0.00827655,
+        "sigma_signed": -0.009547717807251848,
+        "root_sha256": "90f2279ca23c5876108411d5a485911b1c88aa9be4e78288cfc020c0990b8a2d"
+      },
+      "macro_sha256": "97f94fe3479df6e7c2aa6aa66142d7ee0061589149340343d41f8c5c01bb622f"
+    },
+    {
+      "id": "fwd_4_5",
+      "region": "fwd",
+      "pt_low": 4.0,
+      "pt_high": 5.0,
+      "y_low": 1.6,
+      "y_high": 2.4,
+      "rule": "FT1L",
+      "macro": "02_fit/variants/legacy_policy/fit2d.C",
+      "function": "fit2d",
+      "rule_dir": "config/rules/fwd_4_5",
+      "rule_file": "config/rules/fwd_4_5/y1.60_2.40_pt4.00_5.00.knobs",
+      "rule_sha256": "525c5293aff31d1cb5afe9bab183a3e21c91e852e2331d26f0667a8105818b6e",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/fwd_4_5/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt4.00_5.00.root",
+      "figure_dir": "output/fit/fwd_4_5/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/fwd_4_5/roots/y1.60_2.40/mc_mass/mc_mass_model_y1.60_2.40_pt4.00_5.00.root",
+          "sha256": "bb57e621f32c13aa3554322451c923423a8dc2459a6df0d8df4f42da9cf406ac"
+        },
+        "mass": {
+          "path": "output/prefits/fwd_4_5/roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt4.00_5.00.root",
+          "sha256": "d7ecc5c2241ff2bc265b8e9b88408088125fffa1813033214e67786b4f4587ae"
+        },
+        "pr": {
+          "path": "output/prefits/fwd_4_5/roots/y1.60_2.40/ctau_pr/ctau_resolution_y1.60_2.40_pt4.00_5.00.root",
+          "sha256": "906d6a50c3c04a6724b6ed4fe7c4bc63a06853d6983a644923f9734798ac0f96"
+        },
+        "np": {
+          "path": "output/prefits/fwd_4_5/roots/y1.60_2.40/ctau_np/ctau_np_model_y1.60_2.40_pt4.00_5.00.root",
+          "sha256": "1ca124123a7018bdfe4e1f635f0d3948d98953743ef8e947b277af8703d5c6d0"
+        },
+        "bkg": {
+          "path": "output/prefits/fwd_4_5/roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2.40_pt4.00_5.00.root",
+          "sha256": "9f835162f52aacfd06ade3860204dcbb5b353ebf991cd23dd660c90dd68de8a5"
+        }
+      },
+      "ctau_window": [
+        -6,
+        6
+      ],
+      "expected": {
+        "B_raw": 0.17180556731358138,
+        "B_raw_error": 0.009357914477165968,
+        "nominal": 0.17217579,
+        "nominal_stat_error": 0.00824081,
+        "sigma_signed": -0.04492552144978707,
+        "root_sha256": "09fd89245af186012f8190e1b5136820f2f3bac0acfe3034aac15bfec72d98cb"
+      },
+      "macro_sha256": "97f94fe3479df6e7c2aa6aa66142d7ee0061589149340343d41f8c5c01bb622f"
+    },
+    {
+      "id": "fwd_5_6",
+      "region": "fwd",
+      "pt_low": 5.0,
+      "pt_high": 6.0,
+      "y_low": 1.6,
+      "y_high": 2.4,
+      "rule": "FT1L",
+      "macro": "02_fit/variants/legacy_policy/fit2d.C",
+      "function": "fit2d",
+      "rule_dir": "config/rules/fwd_5_6",
+      "rule_file": "config/rules/fwd_5_6/y1.60_2.40_pt5.00_6.00.knobs",
+      "rule_sha256": "bdc12ee5816bdacd18fd3181dad4f02e53cad8bc45968284857caf15b788953a",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/fwd_5_6/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt5.00_6.00.root",
+      "figure_dir": "output/fit/fwd_5_6/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/fwd_5_6/roots/y1.60_2.40/mc_mass/mc_mass_model_y1.60_2.40_pt5.00_6.00.root",
+          "sha256": "eee5cb0358f95ce5af75268bd94701ac8de70854c6d98e78902d2de587dfacd2"
+        },
+        "mass": {
+          "path": "output/prefits/fwd_5_6/roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt5.00_6.00.root",
+          "sha256": "b55f5a172ae208def019a9c918dea076e9cdc4ddb4480e4a80feb09391c437bb"
+        },
+        "pr": {
+          "path": "output/prefits/fwd_5_6/roots/y1.60_2.40/ctau_pr/ctau_resolution_y1.60_2.40_pt5.00_6.00.root",
+          "sha256": "12905e4badaec2fe72cfa5b57419024b1dd189da65226a4039c13ef7415152e1"
+        },
+        "np": {
+          "path": "output/prefits/fwd_5_6/roots/y1.60_2.40/ctau_np/ctau_np_model_y1.60_2.40_pt5.00_6.00.root",
+          "sha256": "fe92134614df7b555c8f02bf30d97809d4324a5d950b15d5f12a8b4fd0eb47f2"
+        },
+        "bkg": {
+          "path": "output/prefits/fwd_5_6/roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2.40_pt5.00_6.00.root",
+          "sha256": "92716a12bbf12887966c37f64fd5bd4eedde82c9efade16444945543da4e0524"
+        }
+      },
+      "ctau_window": [
+        -1,
+        3
+      ],
+      "expected": {
+        "B_raw": 0.1907280413838447,
+        "B_raw_error": 0.00903685900432738,
+        "nominal": 0.19048501,
+        "nominal_stat_error": 0.00780888,
+        "sigma_signed": 0.03112243802500268,
+        "root_sha256": "3ba25a38c9619630f01a4402bb4b5c9152cd1f70165f693aa4cd366543e06f88"
+      },
+      "macro_sha256": "97f94fe3479df6e7c2aa6aa66142d7ee0061589149340343d41f8c5c01bb622f"
+    },
+    {
+      "id": "fwd_6_7",
+      "region": "fwd",
+      "pt_low": 6.0,
+      "pt_high": 7.0,
+      "y_low": 1.6,
+      "y_high": 2.4,
+      "rule": "FT1L",
+      "macro": "02_fit/variants/legacy_policy/fit2d.C",
+      "function": "fit2d",
+      "rule_dir": "config/rules/fwd_6_7",
+      "rule_file": "config/rules/fwd_6_7/y1.60_2.40_pt6.00_7.00.knobs",
+      "rule_sha256": "b3209169b2dce439123fe6e506fcb48fa3fffccf8d89d4685249193df4096b16",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/fwd_6_7/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt6.00_7.00.root",
+      "figure_dir": "output/fit/fwd_6_7/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/fwd_6_7/roots/y1.60_2.40/mc_mass/mc_mass_model_y1.60_2.40_pt6.00_7.00.root",
+          "sha256": "07015f6a26722b99ba293abcbf50b5969c3071a23bddafc9d7183417e05e3caa"
+        },
+        "mass": {
+          "path": "output/prefits/fwd_6_7/roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt6.00_7.00.root",
+          "sha256": "ac3e9d5ec33e92616fc90650d95b7a9f5e5c3796681f881b390916d5ba02dbfb"
+        },
+        "pr": {
+          "path": "output/prefits/fwd_6_7/roots/y1.60_2.40/ctau_pr/ctau_resolution_y1.60_2.40_pt6.00_7.00.root",
+          "sha256": "f4e31f53b962c74b460bfc76055f30ff4f8aa68106c12acc618a8b460a5c86b2"
+        },
+        "np": {
+          "path": "output/prefits/fwd_6_7/roots/y1.60_2.40/ctau_np/ctau_np_model_y1.60_2.40_pt6.00_7.00.root",
+          "sha256": "3ea6c8376e8a1f12dec3fbdbc534824997a9718534a5bdbae84510dc94808e74"
+        },
+        "bkg": {
+          "path": "output/prefits/fwd_6_7/roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2.40_pt6.00_7.00.root",
+          "sha256": "838075f7a5fefc39721d197f213c1f274414f0364d841111eba3161178a87bc9"
+        }
+      },
+      "ctau_window": [
+        -0.4,
+        2
+      ],
+      "expected": {
+        "B_raw": 0.21686023167094456,
+        "B_raw_error": 0.010897054632840991,
+        "nominal": 0.21633096,
+        "nominal_stat_error": 0.00912559,
+        "sigma_signed": 0.05799862484996318,
+        "root_sha256": "55613757b0437ac962d447e4031e0353f9c3b88d25da64986a2448505cb8e349"
+      },
+      "macro_sha256": "97f94fe3479df6e7c2aa6aa66142d7ee0061589149340343d41f8c5c01bb622f"
+    },
+    {
+      "id": "fwd_7_8",
+      "region": "fwd",
+      "pt_low": 7.0,
+      "pt_high": 8.0,
+      "y_low": 1.6,
+      "y_high": 2.4,
+      "rule": "FT1L",
+      "macro": "02_fit/variants/legacy_policy/fit2d.C",
+      "function": "fit2d",
+      "rule_dir": "config/rules/fwd_7_8",
+      "rule_file": "config/rules/fwd_7_8/y1.60_2.40_pt7.00_8.00.knobs",
+      "rule_sha256": "3519c7c06a0dec10a4232155e6a59ca3deac564493f26b79c6ff4806d940b904",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/fwd_7_8/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt7.00_8.00.root",
+      "figure_dir": "output/fit/fwd_7_8/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/fwd_7_8/roots/y1.60_2.40/mc_mass/mc_mass_model_y1.60_2.40_pt7.00_8.00.root",
+          "sha256": "2b20facf7ed193bec7203ccb9f0184cbb66e6246e04b5c82c073777a98334263"
+        },
+        "mass": {
+          "path": "output/prefits/fwd_7_8/roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt7.00_8.00.root",
+          "sha256": "8245d7433d845fde1fbe41aad299cb51bcd46af88d806c3b75bbd6dc00bc8805"
+        },
+        "pr": {
+          "path": "output/prefits/fwd_7_8/roots/y1.60_2.40/ctau_pr/ctau_resolution_y1.60_2.40_pt7.00_8.00.root",
+          "sha256": "f5a64e4263271a662a75ad35a78281b7ca683c9b0677d8013af93ec91ccae53e"
+        },
+        "np": {
+          "path": "output/prefits/fwd_7_8/roots/y1.60_2.40/ctau_np/ctau_np_model_y1.60_2.40_pt7.00_8.00.root",
+          "sha256": "308a63694b6eb53bd0ca56c36fb51f86ea6bd3df5affd31c633f669181f42e04"
+        },
+        "bkg": {
+          "path": "output/prefits/fwd_7_8/roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2.40_pt7.00_8.00.root",
+          "sha256": "355b5f3ee89e07d34f92825c215a9a5259499a4b8643ea5a598386f87abc91de"
+        }
+      },
+      "ctau_window": [
+        -1.8,
+        3
+      ],
+      "expected": {
+        "B_raw": 0.24499143741078142,
+        "B_raw_error": 0.011851425965471604,
+        "nominal": 0.2444162,
+        "nominal_stat_error": 0.01005342,
+        "sigma_signed": 0.057218082083650645,
+        "root_sha256": "c2df4446225f6212831dbc6afb3638c4e187c5664f2413b9c4700909d1a1180e"
+      },
+      "macro_sha256": "97f94fe3479df6e7c2aa6aa66142d7ee0061589149340343d41f8c5c01bb622f"
+    },
+    {
+      "id": "fwd_8_9",
+      "region": "fwd",
+      "pt_low": 8.0,
+      "pt_high": 9.0,
+      "y_low": 1.6,
+      "y_high": 2.4,
+      "rule": "FT1L",
+      "macro": "02_fit/variants/legacy_policy/fit2d.C",
+      "function": "fit2d",
+      "rule_dir": "config/rules/fwd_8_9",
+      "rule_file": "config/rules/fwd_8_9/y1.60_2.40_pt8.00_9.00.knobs",
+      "rule_sha256": "33ac71859278f63dbf063c22606dd420e2bb125560f4362776da22247e5e36eb",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/fwd_8_9/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt8.00_9.00.root",
+      "figure_dir": "output/fit/fwd_8_9/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/fwd_8_9/roots/y1.60_2.40/mc_mass/mc_mass_model_y1.60_2.40_pt8.00_9.00.root",
+          "sha256": "23167a26956c8e96d0fb693c51f0c0ed59fe23aee7ad2ce818fa276e79af1255"
+        },
+        "mass": {
+          "path": "output/prefits/fwd_8_9/roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt8.00_9.00.root",
+          "sha256": "7d8d9f955961a479b0a68fb216ed4a297f96e50417b24298f44705bf861a18b2"
+        },
+        "pr": {
+          "path": "output/prefits/fwd_8_9/roots/y1.60_2.40/ctau_pr/ctau_resolution_y1.60_2.40_pt8.00_9.00.root",
+          "sha256": "3067e4086c3644d507908a6393d356acdd071fcd5b87f35ac01e7a25d9bb8b64"
+        },
+        "np": {
+          "path": "output/prefits/fwd_8_9/roots/y1.60_2.40/ctau_np/ctau_np_model_y1.60_2.40_pt8.00_9.00.root",
+          "sha256": "e70ab829b08506ce24f694affd79b63b5132c842bee2d476b2bce77568b58541"
+        },
+        "bkg": {
+          "path": "output/prefits/fwd_8_9/roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2.40_pt8.00_9.00.root",
+          "sha256": "215c862990d5d06de1738d0a5462a8049a93ecbff10e478ba0ee7a24f0b4c414"
+        }
+      },
+      "ctau_window": [
+        -0.5,
+        2
+      ],
+      "expected": {
+        "B_raw": 0.2529611676272926,
+        "B_raw_error": 0.014366851775335851,
+        "nominal": 0.25342691,
+        "nominal_stat_error": 0.01187479,
+        "sigma_signed": -0.03922110392751465,
+        "root_sha256": "8563c633c9e9dffc0a6007aa838ef90763f70483f80c9906c304ba501924d2f3"
+      },
+      "macro_sha256": "97f94fe3479df6e7c2aa6aa66142d7ee0061589149340343d41f8c5c01bb622f"
+    },
+    {
+      "id": "fwd_9_10",
+      "region": "fwd",
+      "pt_low": 9.0,
+      "pt_high": 10.0,
+      "y_low": 1.6,
+      "y_high": 2.4,
+      "rule": "FT1L",
+      "macro": "02_fit/variants/legacy_policy/fit2d.C",
+      "function": "fit2d",
+      "rule_dir": "config/rules/fwd_9_10",
+      "rule_file": "config/rules/fwd_9_10/y1.60_2.40_pt9.00_10.00.knobs",
+      "rule_sha256": "ed3cfdbb73c9e7187ecf5fa6d20ddeaa5786761228e327dd16177b27d18f2724",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/fwd_9_10/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt9.00_10.00.root",
+      "figure_dir": "output/fit/fwd_9_10/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/fwd_9_10/roots/y1.60_2.40/mc_mass/mc_mass_model_y1.60_2.40_pt9.00_10.00.root",
+          "sha256": "7bf29ab5d9f3a5ddae05c2b256d6af42750cbd4040eea49f086c7ad8ae1783a6"
+        },
+        "mass": {
+          "path": "output/prefits/fwd_9_10/roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt9.00_10.00.root",
+          "sha256": "5a1ea78a01dbac26adbb1c2da00480d0b7539091c45589f8bbe3dd7140d627d8"
+        },
+        "pr": {
+          "path": "output/prefits/fwd_9_10/roots/y1.60_2.40/ctau_pr/ctau_resolution_y1.60_2.40_pt9.00_10.00.root",
+          "sha256": "1db9e1f64cc4284676925e81c0fd482f633bca884a726b177586573604d9c7c9"
+        },
+        "np": {
+          "path": "output/prefits/fwd_9_10/roots/y1.60_2.40/ctau_np/ctau_np_model_y1.60_2.40_pt9.00_10.00.root",
+          "sha256": "f47ebf719f5faefb910b9c13a20cddc0367aa0f485a3c0d0b3cf946671397a0f"
+        },
+        "bkg": {
+          "path": "output/prefits/fwd_9_10/roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2.40_pt9.00_10.00.root",
+          "sha256": "f320d82be962ef8a314ba8b7d301c448c52498385385260080fc87956c8f1e11"
+        }
+      },
+      "ctau_window": [
+        -0.5,
+        2
+      ],
+      "expected": {
+        "B_raw": 0.28420323282041265,
+        "B_raw_error": 0.017624104566655613,
+        "nominal": 0.28272881,
+        "nominal_stat_error": 0.01561774,
+        "sigma_signed": 0.09440692574038609,
+        "root_sha256": "8ac4ce3c600636b61bb94ae0044603583511c9fbdee782158e32e2c22c73e4ec"
+      },
+      "macro_sha256": "97f94fe3479df6e7c2aa6aa66142d7ee0061589149340343d41f8c5c01bb622f"
+    },
+    {
+      "id": "fwd_10_12",
+      "region": "fwd",
+      "pt_low": 10.0,
+      "pt_high": 12.0,
+      "y_low": 1.6,
+      "y_high": 2.4,
+      "rule": "FT1L",
+      "macro": "02_fit/variants/legacy_policy/fit2d.C",
+      "function": "fit2d",
+      "rule_dir": "config/rules/fwd_10_12",
+      "rule_file": "config/rules/fwd_10_12/y1.60_2.40_pt10.00_12.00.knobs",
+      "rule_sha256": "46b0aeb54148393e62403ff2c78dfb8a8e624b584c0e3d30ef87294cc33792f2",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/fwd_10_12/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt10.00_12.00.root",
+      "figure_dir": "output/fit/fwd_10_12/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/fwd_10_12/roots/y1.60_2.40/mc_mass/mc_mass_model_y1.60_2.40_pt10.00_12.00.root",
+          "sha256": "d01a60958d4369b41ef76b2b36df797e9d1dc316afaae44f78ac07f646555e14"
+        },
+        "mass": {
+          "path": "output/prefits/fwd_10_12/roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt10.00_12.00.root",
+          "sha256": "d48665cf0de0c6daacae088726bda6019bb44f928d5dc523c096670ff918f99c"
+        },
+        "pr": {
+          "path": "output/prefits/fwd_10_12/roots/y1.60_2.40/ctau_pr/ctau_resolution_y1.60_2.40_pt10.00_12.00.root",
+          "sha256": "9a238ab9551e356afcf01433156ab6f6f85a6820cc121eccd5343b6fea5d791f"
+        },
+        "np": {
+          "path": "output/prefits/fwd_10_12/roots/y1.60_2.40/ctau_np/ctau_np_model_y1.60_2.40_pt10.00_12.00.root",
+          "sha256": "111f6de5bf911a94baf633b213cc5c476260b04f1643a2dcfaceb86443431c4f"
+        },
+        "bkg": {
+          "path": "output/prefits/fwd_10_12/roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2.40_pt10.00_12.00.root",
+          "sha256": "95b57af5218c3f57b0f03e77bdaeda40ab814c2085a8d5fdcc539b13a9e2ddb8"
+        }
+      },
+      "ctau_window": [
+        -2,
+        4
+      ],
+      "expected": {
+        "B_raw": 0.34093657191599824,
+        "B_raw_error": 0.02029628901663927,
+        "nominal": 0.34256722,
+        "nominal_stat_error": 0.01453528,
+        "sigma_signed": -0.11218552955304352,
+        "root_sha256": "5509c5ce062c3b79bc5b86786dee217fb04deb1f4499806c0e668cbfd62b1a79"
+      },
+      "macro_sha256": "97f94fe3479df6e7c2aa6aa66142d7ee0061589149340343d41f8c5c01bb622f"
+    },
+    {
+      "id": "fwd_12_14",
+      "region": "fwd",
+      "pt_low": 12.0,
+      "pt_high": 14.0,
+      "y_low": 1.6,
+      "y_high": 2.4,
+      "rule": "FT1L",
+      "macro": "02_fit/variants/legacy_policy/fit2d.C",
+      "function": "fit2d",
+      "rule_dir": "config/rules/fwd_12_14",
+      "rule_file": "config/rules/fwd_12_14/y1.60_2.40_pt12.00_14.00.knobs",
+      "rule_sha256": "9cfcc409ba421a1cb8718a46dfa68c72f85115b5c2b8f76b69fb0ec415b2d77e",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/fwd_12_14/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt12.00_14.00.root",
+      "figure_dir": "output/fit/fwd_12_14/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/fwd_12_14/roots/y1.60_2.40/mc_mass/mc_mass_model_y1.60_2.40_pt12.00_14.00.root",
+          "sha256": "1967d30c4f65bec5f7066575c676fa84259f9e0817e8b39294242f8d3633c2b7"
+        },
+        "mass": {
+          "path": "output/prefits/fwd_12_14/roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt12.00_14.00.root",
+          "sha256": "0f6fadc71d6b960dd193aba8ea280c471ab50c92fb12fe97dfd63d0e89df2e20"
+        },
+        "pr": {
+          "path": "output/prefits/fwd_12_14/roots/y1.60_2.40/ctau_pr/ctau_resolution_y1.60_2.40_pt12.00_14.00.root",
+          "sha256": "f9bcf4baf75d456ba4936b1d21ea910010471a0a9ca3b2bfc404778f53f9ab77"
+        },
+        "np": {
+          "path": "output/prefits/fwd_12_14/roots/y1.60_2.40/ctau_np/ctau_np_model_y1.60_2.40_pt12.00_14.00.root",
+          "sha256": "3acd0c7ad1d5c66322e75c3b312fdb4b3590cd6f98eaba5b933228e9bb031fb4"
+        },
+        "bkg": {
+          "path": "output/prefits/fwd_12_14/roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2.40_pt12.00_14.00.root",
+          "sha256": "502b2ac99a09de198867cb4f8e1b7e9ea477c0d07176be7f09abc8624a76468e"
+        }
+      },
+      "ctau_window": [
+        -0.5,
+        4
+      ],
+      "expected": {
+        "B_raw": 0.4160243637990437,
+        "B_raw_error": 0.02431372682539365,
+        "nominal": 0.41615496,
+        "nominal_stat_error": 0.02275166,
+        "sigma_signed": -0.005740073513596173,
+        "root_sha256": "abb14aae3209855c0cfb027dd50801540c0f17d8dbbab6b2266342f148864108"
+      },
+      "macro_sha256": "97f94fe3479df6e7c2aa6aa66142d7ee0061589149340343d41f8c5c01bb622f"
+    },
+    {
+      "id": "fwd_14_20",
+      "region": "fwd",
+      "pt_low": 14.0,
+      "pt_high": 20.0,
+      "y_low": 1.6,
+      "y_high": 2.4,
+      "rule": "FT1L",
+      "macro": "02_fit/variants/legacy_policy/fit2d.C",
+      "function": "fit2d",
+      "rule_dir": "config/rules/fwd_14_20",
+      "rule_file": "config/rules/fwd_14_20/y1.60_2.40_pt14.00_20.00.knobs",
+      "rule_sha256": "6c57cda40a1a50197af5104059189c27d765846d4f3f561c64cb462400358523",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/fwd_14_20/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt14.00_20.00.root",
+      "figure_dir": "output/fit/fwd_14_20/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/fwd_14_20/roots/y1.60_2.40/mc_mass/mc_mass_model_y1.60_2.40_pt14.00_20.00.root",
+          "sha256": "28ddfb556b243d430afda8c6bc03c2dcb078b59570409c6d3efffecfc9047ae9"
+        },
+        "mass": {
+          "path": "output/prefits/fwd_14_20/roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt14.00_20.00.root",
+          "sha256": "3af286b4de3b9326ae9745795004d3bd7a369bb02848dd076073351282dfe838"
+        },
+        "pr": {
+          "path": "output/prefits/fwd_14_20/roots/y1.60_2.40/ctau_pr/ctau_resolution_y1.60_2.40_pt14.00_20.00.root",
+          "sha256": "19a4a684b7955d025ac74a74d870c8638d1655bf5700d4f5afb26cba35a8bb4a"
+        },
+        "np": {
+          "path": "output/prefits/fwd_14_20/roots/y1.60_2.40/ctau_np/ctau_np_model_y1.60_2.40_pt14.00_20.00.root",
+          "sha256": "a7532f1c6a85363d34504ea91d0a7b996efba13fbe1ceb99c34908b7c8715eb0"
+        },
+        "bkg": {
+          "path": "output/prefits/fwd_14_20/roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2.40_pt14.00_20.00.root",
+          "sha256": "9daa2207cdfd743d41e1e10201d470a05b1f251f4a1a578c477c695566c8f7ac"
+        }
+      },
+      "ctau_window": [
+        -0.5,
+        2
+      ],
+      "expected": {
+        "B_raw": 0.4122462952815824,
+        "B_raw_error": 0.023561014032642602,
+        "nominal": 0.41280382,
+        "nominal_stat_error": 0.02161569,
+        "sigma_signed": -0.025792594102597655,
+        "root_sha256": "e2b81073ce6c0eff9728b085435fb680301dfdfaf8d20aa9cdf9415a04cfd5a7"
+      },
+      "macro_sha256": "97f94fe3479df6e7c2aa6aa66142d7ee0061589149340343d41f8c5c01bb622f"
+    },
+    {
+      "id": "mid_7_8",
+      "region": "mid",
+      "pt_low": 7.0,
+      "pt_high": 8.0,
+      "y_low": 0.0,
+      "y_high": 1.6,
+      "rule": "NCS_M7_E995_MU64",
+      "macro": "02_fit/variants/window_prompt_mean/fit2d_ncs_mid_combined.C",
+      "function": "fit2d_ncs_mid_combined",
+      "rule_dir": "config/rules/mid_7_8",
+      "rule_file": "config/rules/mid_7_8/y0.00_1.60_pt7.00_8.00.knobs",
+      "rule_sha256": "1dce52f61168e6fb56144eb46939ce5f5f476a7436b34ad57cd7c72b1d3bba45",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/mid_7_8/roots/y0.00_1.60/fit2d/fit2d_result_y0.00_1.60_pt7.00_8.00.root",
+      "figure_dir": "output/fit/mid_7_8/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/mid_7_8/roots/y0.00_1.60/mc_mass/mc_mass_model_y0.00_1.60_pt7.00_8.00.root",
+          "sha256": "2404a00fe35a01542036cc1c6c694234b17279da0d378f19d1aea9b757ef2aad"
+        },
+        "mass": {
+          "path": "output/prefits/mid_7_8/roots/y0.00_1.60/mass/mass_model_y0.00_1.60_pt7.00_8.00.root",
+          "sha256": "359e763918c9c4714b9ca2d8544ad1abee52cde12530935a4d8850bee7316b3f"
+        },
+        "pr": {
+          "path": "output/prefits/mid_7_8/roots/y0.00_1.60/ctau_pr/ctau_resolution_y0.00_1.60_pt7.00_8.00.root",
+          "sha256": "a7bfd225b70ac02dd2ff71e4ceac604fb2533c762da62fa4d60442c0e79d71c2"
+        },
+        "np": {
+          "path": "output/prefits/mid_7_8/roots/y0.00_1.60/ctau_np/ctau_np_model_y0.00_1.60_pt7.00_8.00.root",
+          "sha256": "12a19e43f372bb8eb8de7d2254673780926849a0eebcda64064684bae987e439"
+        },
+        "bkg": {
+          "path": "output/prefits/mid_7_8/roots/y0.00_1.60/ctau_bkg/ctau_bkg_fitresult_y0.00_1.60_pt7.00_8.00.root",
+          "sha256": "2c6efa7c1d65276ed4f954a67c52f83a63a08177d2761ec5f1bcd6e1bc194843"
+        }
+      },
+      "ctau_window": [
+        -0.13,
+        2.41
+      ],
+      "expected": {
+        "B_raw": 0.2359369844124352,
+        "B_raw_error": 0.010433458990321262,
+        "nominal": 0.23845,
+        "nominal_stat_error": 0.00774,
+        "sigma_signed": -0.324679016481238,
+        "root_sha256": "c7128331f1c731e5761448c419b0a2c638f9117595d88afc457f73f343f1526b"
+      },
+      "macro_sha256": "ff714a69b5ff292c2416fb1e57f2ed395ed22abacfab3cadab3d97df21f6bf3b"
+    },
+    {
+      "id": "mid_8_9",
+      "region": "mid",
+      "pt_low": 8.0,
+      "pt_high": 9.0,
+      "y_low": 0.0,
+      "y_high": 1.6,
+      "rule": "TUNE9_mid8_9_E99_N016",
+      "macro": "02_fit/variants/window_constraints/fit2d_september_tune.C",
+      "function": "fit2d_september_tune",
+      "rule_dir": "config/rules/mid_8_9",
+      "rule_file": "config/rules/mid_8_9/y0.00_1.60_pt8.00_9.00.knobs",
+      "rule_sha256": "820fa50f4558f7a4bdc3d6a3c4fe171a9af19872217c741c32d8218abc9c1bdf",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/mid_8_9/roots/y0.00_1.60/fit2d/fit2d_result_y0.00_1.60_pt8.00_9.00.root",
+      "figure_dir": "output/fit/mid_8_9/figs",
+      "prefits": {
+        "mass": {
+          "path": "output/prefits/mid_8_9/roots/y0.00_1.60/mass/mass_model_y0.00_1.60_pt8.00_9.00.root",
+          "sha256": "5398191360a5c2ad5bdeb2361373d2e26271540794129501e773dcd2fd11017c"
+        },
+        "bkg": {
+          "path": "output/prefits/mid_8_9/roots/y0.00_1.60/ctau_bkg/ctau_bkg_fitresult_y0.00_1.60_pt8.00_9.00.root",
+          "sha256": "aa81868b8283ff932474c64773aacaa13a303796ab6bc5742be69ecbe4706d24"
+        },
+        "pr": {
+          "path": "output/prefits/mid_8_9/roots/y0.00_1.60/ctau_pr/ctau_resolution_y0.00_1.60_pt8.00_9.00.root",
+          "sha256": "615e36131d23f242eb3e0172ba81a1e07f9a321af727df6291dde567d0c6d550"
+        },
+        "np": {
+          "path": "output/prefits/mid_8_9/roots/y0.00_1.60/ctau_np/ctau_np_model_y0.00_1.60_pt8.00_9.00.root",
+          "sha256": "b667a5fe4ec285df05effb7b08f8fa5c410ce1acbd8a7aaa4d7b6840d0c0249d"
+        },
+        "mc_mass": {
+          "path": "output/prefits/mid_8_9/roots/y0.00_1.60/mc_mass/mc_mass_model_y0.00_1.60_pt8.00_9.00.root",
+          "sha256": "00791a3e873eda065b23a2304921195f6df75e21ba0a31cf3baad90941d5ba90"
+        }
+      },
+      "ctau_window": [
+        -0.08,
+        1.78
+      ],
+      "expected": {
+        "B_raw": 0.26792000195175497,
+        "B_raw_error": 0.014212219717196745,
+        "nominal": 0.26571,
+        "nominal_stat_error": 0.00818,
+        "sigma_signed": 0.2701713877451063,
+        "root_sha256": "a02f290235804d59b7e4e622e54daaceed9ace0ffbd8c9131a8a65cecea977ff"
+      },
+      "macro_sha256": "7ec35ae6954763397843329d35417f638ef1aa2374db5fc32cf8ebba4b488dd0"
+    },
+    {
+      "id": "mid_9_10",
+      "region": "mid",
+      "pt_low": 9.0,
+      "pt_high": 10.0,
+      "y_low": 0.0,
+      "y_high": 1.6,
+      "rule": "NCS_M9_WIN_H135",
+      "macro": "02_fit/variants/window_background_domains/fit2d_september_tune_v2.C",
+      "function": "fit2d_september_tune_v2",
+      "rule_dir": "config/rules/mid_9_10",
+      "rule_file": "config/rules/mid_9_10/y0.00_1.60_pt9.00_10.00.knobs",
+      "rule_sha256": "1c8e7d4c399a11a0e643c354d1eb56072cfa49973c6b1b8f4e4b8ae2126c91da",
+      "rule_mode": "knobs",
+      "environment": {},
+      "output_root": "output/fit/mid_9_10/roots/y0.00_1.60/fit2d/fit2d_result_y0.00_1.60_pt9.00_10.00.root",
+      "figure_dir": "output/fit/mid_9_10/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/mid_9_10/roots/y0.00_1.60/mc_mass/mc_mass_model_y0.00_1.60_pt9.00_10.00.root",
+          "sha256": "2be43adec98ea4b761bf6646ea8f66e5dc2f84ca00e2a98de69403a8d38184c3"
+        },
+        "mass": {
+          "path": "output/prefits/mid_9_10/roots/y0.00_1.60/mass/mass_model_y0.00_1.60_pt9.00_10.00.root",
+          "sha256": "00c7d6d384c0b432ba250f55ecdf26df1f054d1f6d50263a30599929ddc35fed"
+        },
+        "pr": {
+          "path": "output/prefits/mid_9_10/roots/y0.00_1.60/ctau_pr/ctau_resolution_y0.00_1.60_pt9.00_10.00.root",
+          "sha256": "a64852cd4edb71be2564612f0f09adb0e5c3c751a3fe5f203af321b4500abece"
+        },
+        "np": {
+          "path": "output/prefits/mid_9_10/roots/y0.00_1.60/ctau_np/ctau_np_model_y0.00_1.60_pt9.00_10.00.root",
+          "sha256": "e9e56b70e594254ef4d5192fa9aaf55ee889aca06f691f6f00fe4595c4fe9abc"
+        },
+        "bkg": {
+          "path": "output/prefits/mid_9_10/roots/y0.00_1.60/ctau_bkg/ctau_bkg_fitresult_y0.00_1.60_pt9.00_10.00.root",
+          "sha256": "6f53bece80531087a9b4c03f05bf63939e749353843245f16f0960c2bda1e5a9"
+        }
+      },
+      "ctau_window": [
+        -0.5,
+        1.35
+      ],
+      "expected": {
+        "B_raw": 0.28522841200798754,
+        "B_raw_error": 0.011686573354614649,
+        "nominal": 0.28154,
+        "nominal_stat_error": 0.00994,
+        "sigma_signed": 0.37106760643737724,
+        "root_sha256": "2b960c762e11b8bf0a5f6eed7bb9876d06c8deac715a7022aaf4aa84e24cbcfc"
+      },
+      "macro_sha256": "6b9277b991596a1351da4eddb436389bb76573c56fdb88e68007133dd3a9cea2"
+    },
+    {
+      "id": "mid_10_12",
+      "region": "mid",
+      "pt_low": 10.0,
+      "pt_high": 12.0,
+      "y_low": 0.0,
+      "y_high": 1.6,
+      "rule": "S09_NEW",
+      "macro": "02_fit/variants/september_policy/fit2d_september.C",
+      "function": "fit2d_september",
+      "rule_dir": "config/rules/mid_10_12",
+      "rule_file": "config/rules/mid_10_12/y0.00_1.60_pt10.00_12.00.knobs",
+      "rule_sha256": "45bcca8e77ee530396b5ed479fd37f57985be9b442308a987c2f7dc9508b7b28",
+      "rule_mode": "native_environment",
+      "environment": {},
+      "output_root": "output/fit/mid_10_12/roots/y0.00_1.60/fit2d/fit2d_result_y0.00_1.60_pt10.00_12.00.root",
+      "figure_dir": "output/fit/mid_10_12/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/mid_10_12/roots/y0.00_1.60/mc_mass/mc_mass_model_y0.00_1.60_pt10.00_12.00.root",
+          "sha256": "8370589e3389b39b28fe4a15a304cd39bf812dbfd685dd20afde0a9bbaa738a9"
+        },
+        "mass": {
+          "path": "output/prefits/mid_10_12/roots/y0.00_1.60/mass/mass_model_y0.00_1.60_pt10.00_12.00.root",
+          "sha256": "b1082ca438ebda289853561528206df5603d31497cbf26df704e4efeab79a905"
+        },
+        "pr": {
+          "path": "output/prefits/mid_10_12/roots/y0.00_1.60/ctau_pr/ctau_resolution_y0.00_1.60_pt10.00_12.00.root",
+          "sha256": "666319ca0bd80511a8ac9f8972f3d6efbe3c2d882bed781e94e8e1356eaf6505"
+        },
+        "np": {
+          "path": "output/prefits/mid_10_12/roots/y0.00_1.60/ctau_np/ctau_np_model_y0.00_1.60_pt10.00_12.00.root",
+          "sha256": "a90e79505a880c485447265f56154a0ef9bc3ba22c4a7e2ba03c184d45ef8fc7"
+        },
+        "bkg": {
+          "path": "output/prefits/mid_10_12/roots/y0.00_1.60/ctau_bkg/ctau_bkg_fitresult_y0.00_1.60_pt10.00_12.00.root",
+          "sha256": "604fd84b04ffdf37072af351bd0997577f8b1204d5be08838a0b8e75873b2979"
+        }
+      },
+      "ctau_window": [
+        -2,
+        4
+      ],
+      "expected": {
+        "B_raw": 0.3162653284316276,
+        "B_raw_error": 0.009952322200537933,
+        "nominal": 0.31622,
+        "nominal_stat_error": 0.00917,
+        "sigma_signed": 0.00494312231489402,
+        "root_sha256": "ff2f06ccba2dc1af1ba93d38dbd4f1f0ed87c774bd1b785f57ddf6bb1c76e115"
+      },
+      "macro_sha256": "9a8fc46ca8bd95c3a96ad58e0f4a9a75f36333faf6be0f7c2b6de5f75e6030ae"
+    },
+    {
+      "id": "mid_12_14",
+      "region": "mid",
+      "pt_low": 12.0,
+      "pt_high": 14.0,
+      "y_low": 0.0,
+      "y_high": 1.6,
+      "rule": "NCS_M12_M32",
+      "macro": "02_fit/variants/prompt_mean/fit2d_ncs_mid.C",
+      "function": "fit2d_ncs_mid",
+      "rule_dir": "config/rules/mid_12_14",
+      "rule_file": "config/rules/mid_12_14/y0.00_1.60_pt12.00_14.00.knobs",
+      "rule_sha256": "cc339669b6bc038a3e004fe41b2ce75d1d1b1705b4415e59369706d512b9992b",
+      "rule_mode": "native_environment",
+      "environment": {
+        "OO_NCS_MEAN_PRIOR_MULT": "32",
+        "OO_NCS_WIDTH_SIGMA_MULT": "1"
+      },
+      "output_root": "output/fit/mid_12_14/roots/y0.00_1.60/fit2d/fit2d_result_y0.00_1.60_pt12.00_14.00.root",
+      "figure_dir": "output/fit/mid_12_14/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/mid_12_14/roots/y0.00_1.60/mc_mass/mc_mass_model_y0.00_1.60_pt12.00_14.00.root",
+          "sha256": "ed1e44a0e0bd726f9fd9a082bec060e002e8a6728c7aca7c11f018ab755865ae"
+        },
+        "mass": {
+          "path": "output/prefits/mid_12_14/roots/y0.00_1.60/mass/mass_model_y0.00_1.60_pt12.00_14.00.root",
+          "sha256": "1829bfc9387bc8639b63928d6a9fcfb6635623a587727fd586b659aa909a06b1"
+        },
+        "pr": {
+          "path": "output/prefits/mid_12_14/roots/y0.00_1.60/ctau_pr/ctau_resolution_y0.00_1.60_pt12.00_14.00.root",
+          "sha256": "ab7766a51ff199bc53050d4b4ff942e3190c3b6614f89b78adfc246a12188faf"
+        },
+        "np": {
+          "path": "output/prefits/mid_12_14/roots/y0.00_1.60/ctau_np/ctau_np_model_y0.00_1.60_pt12.00_14.00.root",
+          "sha256": "5fe3170d178c0812e11e2c894369d8cc91ad1571666bdae0263bf18c357e3373"
+        },
+        "bkg": {
+          "path": "output/prefits/mid_12_14/roots/y0.00_1.60/ctau_bkg/ctau_bkg_fitresult_y0.00_1.60_pt12.00_14.00.root",
+          "sha256": "a4043c03bd18ac74b75d1aa9d9ee1dd1445b2a082cfe0e836c3adcec6b1f1831"
+        }
+      },
+      "ctau_window": [
+        -0.5,
+        4.0
+      ],
+      "expected": {
+        "B_raw": 0.38871742016902844,
+        "B_raw_error": 0.014105948042984151,
+        "nominal": 0.38432,
+        "nominal_stat_error": 0.01273,
+        "sigma_signed": 0.3454375623745831,
+        "root_sha256": "7d795aa2d4225f0983f73ba739844e91291d82b10a2c2f78e267b323500caeff"
+      },
+      "macro_sha256": "bdcad577c2e77c2958124be7b86d0de857855fed5da549cd532bb72eef8686e0"
+    },
+    {
+      "id": "mid_14_16",
+      "region": "mid",
+      "pt_low": 14.0,
+      "pt_high": 16.0,
+      "y_low": 0.0,
+      "y_high": 1.6,
+      "rule": "S09_NEW",
+      "macro": "02_fit/variants/september_policy/fit2d_september.C",
+      "function": "fit2d_september",
+      "rule_dir": "config/rules/mid_14_16",
+      "rule_file": "config/rules/mid_14_16/y0.00_1.60_pt14.00_16.00.knobs",
+      "rule_sha256": "45bcca8e77ee530396b5ed479fd37f57985be9b442308a987c2f7dc9508b7b28",
+      "rule_mode": "native_environment",
+      "environment": {},
+      "output_root": "output/fit/mid_14_16/roots/y0.00_1.60/fit2d/fit2d_result_y0.00_1.60_pt14.00_16.00.root",
+      "figure_dir": "output/fit/mid_14_16/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/mid_14_16/roots/y0.00_1.60/mc_mass/mc_mass_model_y0.00_1.60_pt14.00_16.00.root",
+          "sha256": "f119eda02d07918cc81c542ec8edad371516cb6e0b94523e9cc179f37ad26608"
+        },
+        "mass": {
+          "path": "output/prefits/mid_14_16/roots/y0.00_1.60/mass/mass_model_y0.00_1.60_pt14.00_16.00.root",
+          "sha256": "12eb3e84038a401b6aa9bc5e53799c2dbd52be4a0bdd3ab21fc670291857732c"
+        },
+        "pr": {
+          "path": "output/prefits/mid_14_16/roots/y0.00_1.60/ctau_pr/ctau_resolution_y0.00_1.60_pt14.00_16.00.root",
+          "sha256": "ab54b461a9169579f3d59150a6034c4374ec9317ec1fc41508178500eb9843c7"
+        },
+        "np": {
+          "path": "output/prefits/mid_14_16/roots/y0.00_1.60/ctau_np/ctau_np_model_y0.00_1.60_pt14.00_16.00.root",
+          "sha256": "7a76ea5749e6b448cad922ab974224d48a99d07d1e345e95b535d8e02bb712ab"
+        },
+        "bkg": {
+          "path": "output/prefits/mid_14_16/roots/y0.00_1.60/ctau_bkg/ctau_bkg_fitresult_y0.00_1.60_pt14.00_16.00.root",
+          "sha256": "d67cd7cc2ce65bfdf4900aef2d9721384ea702d8fbcd5389b0dfe4eeee0f38b1"
+        }
+      },
+      "ctau_window": [
+        -0.5,
+        2
+      ],
+      "expected": {
+        "B_raw": 0.41004521069224303,
+        "B_raw_error": 0.018874128004939622,
+        "nominal": 0.40518,
+        "nominal_stat_error": 0.01782,
+        "sigma_signed": 0.2730196796993855,
+        "root_sha256": "7a1a3f15b8759b0abef6cd42044cffaf56ca7e14cc470c6f063e914e8459cb73"
+      },
+      "macro_sha256": "9a8fc46ca8bd95c3a96ad58e0f4a9a75f36333faf6be0f7c2b6de5f75e6030ae"
+    },
+    {
+      "id": "mid_16_20",
+      "region": "mid",
+      "pt_low": 16.0,
+      "pt_high": 20.0,
+      "y_low": 0.0,
+      "y_high": 1.6,
+      "rule": "S09_NEW",
+      "macro": "02_fit/variants/september_policy/fit2d_september.C",
+      "function": "fit2d_september",
+      "rule_dir": "config/rules/mid_16_20",
+      "rule_file": "config/rules/mid_16_20/y0.00_1.60_pt16.00_20.00.knobs",
+      "rule_sha256": "45bcca8e77ee530396b5ed479fd37f57985be9b442308a987c2f7dc9508b7b28",
+      "rule_mode": "native_environment",
+      "environment": {},
+      "output_root": "output/fit/mid_16_20/roots/y0.00_1.60/fit2d/fit2d_result_y0.00_1.60_pt16.00_20.00.root",
+      "figure_dir": "output/fit/mid_16_20/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/mid_16_20/roots/y0.00_1.60/mc_mass/mc_mass_model_y0.00_1.60_pt16.00_20.00.root",
+          "sha256": "334596b1109e32476742b78ec4840c943aa3a9b452e22669ef6180dcbb6c6efc"
+        },
+        "mass": {
+          "path": "output/prefits/mid_16_20/roots/y0.00_1.60/mass/mass_model_y0.00_1.60_pt16.00_20.00.root",
+          "sha256": "9e88d48ea17161491cceeb4ae809a8ccb8ea9ddf5994998ad748a2117a4023c1"
+        },
+        "pr": {
+          "path": "output/prefits/mid_16_20/roots/y0.00_1.60/ctau_pr/ctau_resolution_y0.00_1.60_pt16.00_20.00.root",
+          "sha256": "383d8a7247948a9d8ba23f4c4afac685ef1c543f844611a8abb2c6ed276ee525"
+        },
+        "np": {
+          "path": "output/prefits/mid_16_20/roots/y0.00_1.60/ctau_np/ctau_np_model_y0.00_1.60_pt16.00_20.00.root",
+          "sha256": "58307da7234f2e13e876c1c47e9ee97ebf71118a5dfcaf39435e3a27fd838816"
+        },
+        "bkg": {
+          "path": "output/prefits/mid_16_20/roots/y0.00_1.60/ctau_bkg/ctau_bkg_fitresult_y0.00_1.60_pt16.00_20.00.root",
+          "sha256": "ea6965550adb9c921bde03d23dc43e2068a87f84b9d8d76a830648c04bb65c48"
+        }
+      },
+      "ctau_window": [
+        -0.5,
+        2
+      ],
+      "expected": {
+        "B_raw": 0.47129565936326806,
+        "B_raw_error": 0.019377119922396047,
+        "nominal": 0.47775,
+        "nominal_stat_error": 0.01854,
+        "sigma_signed": -0.34813056293052574,
+        "root_sha256": "a411b5959acd791a207e88c8b8c3fd6a1c02faecf1cdcf08d319d115d7cb5e14"
+      },
+      "macro_sha256": "9a8fc46ca8bd95c3a96ad58e0f4a9a75f36333faf6be0f7c2b6de5f75e6030ae"
+    },
+    {
+      "id": "mid_20_30",
+      "region": "mid",
+      "pt_low": 20.0,
+      "pt_high": 30.0,
+      "y_low": 0.0,
+      "y_high": 1.6,
+      "rule": "S09_NEW",
+      "macro": "02_fit/variants/september_policy/fit2d_september.C",
+      "function": "fit2d_september",
+      "rule_dir": "config/rules/mid_20_30",
+      "rule_file": "config/rules/mid_20_30/y0.00_1.60_pt20.00_30.00.knobs",
+      "rule_sha256": "45bcca8e77ee530396b5ed479fd37f57985be9b442308a987c2f7dc9508b7b28",
+      "rule_mode": "native_environment",
+      "environment": {},
+      "output_root": "output/fit/mid_20_30/roots/y0.00_1.60/fit2d/fit2d_result_y0.00_1.60_pt20.00_30.00.root",
+      "figure_dir": "output/fit/mid_20_30/figs",
+      "prefits": {
+        "mc_mass": {
+          "path": "output/prefits/mid_20_30/roots/y0.00_1.60/mc_mass/mc_mass_model_y0.00_1.60_pt20.00_30.00.root",
+          "sha256": "c4d7494ac30017969e715e3311f758caa4d7eee0da67ade3af6b8035cc282657"
+        },
+        "mass": {
+          "path": "output/prefits/mid_20_30/roots/y0.00_1.60/mass/mass_model_y0.00_1.60_pt20.00_30.00.root",
+          "sha256": "4b9f74695c7772c5b8fcd6126abe3de244a76f73491e5551ae93af61de3af84a"
+        },
+        "pr": {
+          "path": "output/prefits/mid_20_30/roots/y0.00_1.60/ctau_pr/ctau_resolution_y0.00_1.60_pt20.00_30.00.root",
+          "sha256": "ab8b159b3ecb25a0a26acd41fd17d0b14183c0240584430fe2208a57689db68e"
+        },
+        "np": {
+          "path": "output/prefits/mid_20_30/roots/y0.00_1.60/ctau_np/ctau_np_model_y0.00_1.60_pt20.00_30.00.root",
+          "sha256": "1a788510bda8733c9637df4516bdcd111cc8d4d9890e42bb32c77115a1791edf"
+        },
+        "bkg": {
+          "path": "output/prefits/mid_20_30/roots/y0.00_1.60/ctau_bkg/ctau_bkg_fitresult_y0.00_1.60_pt20.00_30.00.root",
+          "sha256": "b9465ff9bb4f868124301980133871699a949efb3f654d0dfcee4ba17fb2face"
+        }
+      },
+      "ctau_window": [
+        -0.5,
+        2
+      ],
+      "expected": {
+        "B_raw": 0.5432406795855081,
+        "B_raw_error": 0.02478837722997068,
+        "nominal": 0.54732,
+        "nominal_stat_error": 0.02384,
+        "sigma_signed": -0.17111243349378702,
+        "root_sha256": "ad7ff12cd94cdde767efda46ebc923484e29a38074657dc9583a2d951063c039"
+      },
+      "macro_sha256": "9a8fc46ca8bd95c3a96ad58e0f4a9a75f36333faf6be0f7c2b6de5f75e6030ae"
+    }
+  ],
+  "fit_scope": "Final fits consume the five selected frozen prefits per bin. Calibration macros are provided separately; this runner does not rebuild or select prefits.",
+  "runtime_files_sha256": {
+    "style": "75eb2b6363e8b18ad50e1897020227a4e5da0ba52658fa28e4eb33e8aac5a4ea",
+    "pr_calibration_windows": "79eb9ef81aa41dd0fde400891bb4c5574eede4e4e7d17518fc1d0a71ee8b4ac1"
+  }
+}

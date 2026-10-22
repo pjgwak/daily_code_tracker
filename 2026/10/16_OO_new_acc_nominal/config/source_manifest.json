@@ -1,0 +1,148 @@
+{
+  "source_selection": "NO_COMMON_SCALE_SIGMA0414",
+  "scope": "Numerical macros unchanged apart from include/style/calibration-table paths. Historical source hashes bind the selected variants.",
+  "files": {
+    "02_fit/variants/legacy_policy/fit2d.C": {
+      "original_sha256": "a6c3ae419e500f45e540632cc3598283b33d3def849f91b13539b0dcde0a0f01",
+      "sha256": "97f94fe3479df6e7c2aa6aa66142d7ee0061589149340343d41f8c5c01bb622f",
+      "relocations": [
+        "project-local includes",
+        "OO_ROOTLOGON style path"
+      ]
+    },
+    "02_fit/variants/window_constraints/fit2d_september_tune.C": {
+      "original_sha256": "f0711ad7403c999d6a5f42b2f8b99656cda5d975e383fa8706eefe9bd9c3055d",
+      "sha256": "7ec35ae6954763397843329d35417f638ef1aa2374db5fc32cf8ebba4b488dd0",
+      "relocations": [
+        "project-local includes",
+        "OO_ROOTLOGON style path"
+      ]
+    },
+    "02_fit/variants/window_prompt_mean/fit2d_ncs_mid_combined.C": {
+      "original_sha256": "e129e246f905e5472464490e621a117e4139807b75649fec10cb879be60c323c",
+      "sha256": "ff714a69b5ff292c2416fb1e57f2ed395ed22abacfab3cadab3d97df21f6bf3b",
+      "relocations": [
+        "project-local includes",
+        "OO_ROOTLOGON style path"
+      ]
+    },
+    "02_fit/variants/window_background_domains/fit2d_september_tune_v2.C": {
+      "original_sha256": "cc6352d993b1fa0a4635e68a65a07d35b4e73e648da777b80f76442fe0b19065",
+      "sha256": "6b9277b991596a1351da4eddb436389bb76573c56fdb88e68007133dd3a9cea2",
+      "relocations": [
+        "project-local includes",
+        "OO_ROOTLOGON style path"
+      ]
+    },
+    "02_fit/variants/september_policy/fit2d_september.C": {
+      "original_sha256": "3b150b478d7e82a297a5bc5878b3d1efe4a8aa9eaaa0608720a50c0d7385a6bf",
+      "sha256": "9a8fc46ca8bd95c3a96ad58e0f4a9a75f36333faf6be0f7c2b6de5f75e6030ae",
+      "relocations": [
+        "project-local includes",
+        "OO_ROOTLOGON style path"
+      ]
+    },
+    "02_fit/variants/prompt_mean/fit2d_ncs_mid.C": {
+      "original_sha256": "a3930e738e4d01f08a900877a534cf708e0f112391cbba2cdb3f13236f376f79",
+      "sha256": "bdcad577c2e77c2958124be7b86d0de857855fed5da549cd532bb72eef8686e0",
+      "relocations": [
+        "project-local includes",
+        "OO_ROOTLOGON style path"
+      ]
+    },
+    "02_fit/calibration/mc_mass.C": {
+      "original_sha256": "6388e347efc23e30b9603413dd8d42fa5651626eb550b9e46386119b0fb97695",
+      "sha256": "3951e9b42a451cfc2743860e941328acecca21829f2b3d844dff4fe1f7da9eb8",
+      "relocations": [
+        "project-local includes",
+        "OO_ROOTLOGON style path",
+        "trailing whitespace cleanup"
+      ]
+    },
+    "02_fit/calibration/mass.C": {
+      "original_sha256": "3ca92c51d88273450a381428fbd13494605aa3c904ecafe5de0c845b902f12d3",
+      "sha256": "631994cb8b57cfe3298251755c76cde76e70b8fa97360daf5d8b9f5c4143cc95",
+      "relocations": [
+        "project-local includes",
+        "OO_ROOTLOGON style path",
+        "trailing whitespace cleanup"
+      ]
+    },
+    "02_fit/calibration/ctau_pr.C": {
+      "original_sha256": "0ed94e9129db61ed45a9a6960d5badbf9bc8632cc8e045aaeccb68128089ffb7",
+      "sha256": "ef31999bd62d65914c06f51e78141a0dda9e7c72023265006839bab9828cde5a",
+      "relocations": [
+        "project-local includes",
+        "OO_ROOTLOGON style path",
+        "trailing whitespace cleanup"
+      ]
+    },
+    "02_fit/calibration/ctau_np.C": {
+      "original_sha256": "b833a53b82206a4ec2f4db5ba53ec48f1653fa338646eca528971c2d8e9241d6",
+      "sha256": "bd2dbf838b7eec3a26ea021fa5cfb950bf487b2e46edea9b2303604e4e864065",
+      "relocations": [
+        "project-local includes",
+        "OO_ROOTLOGON style path"
+      ]
+    },
+    "02_fit/calibration/ctau_bkg.C": {
+      "original_sha256": "519b4142dce548ec05338f4fb5a234d4e469e38ad401c71ec078a4b2f9a6126a",
+      "sha256": "2607b4fead8e0705004e884dadd8d432328aa76b441a271a93b2d526a0f52e1d",
+      "relocations": [
+        "project-local includes",
+        "OO_ROOTLOGON style path",
+        "trailing whitespace cleanup"
+      ]
+    },
+    "02_fit/calibration/mass_window_screen.C": {
+      "original_sha256": "d79636d69d3478c9edc7366d9570a969cf3581bbdd38978efa8a7fcd430cc2d4",
+      "sha256": "3ba8d3f22621688fc8ea4ce8e84b6e7fee08f0a082e54af4fa508d63ae3a4788",
+      "relocations": [
+        "project-local includes",
+        "OO_ROOTLOGON style path",
+        "trailing whitespace cleanup"
+      ]
+    },
+    "02_fit/calibration/ctau_bkg_window.C": {
+      "original_sha256": "f548d5f55ab9ed93a3561325a3582ec90278a5af0920e6575f8009ddca49186e",
+      "sha256": "5822e666fd3500eff6b7e60f67bedc778ebe22005df8d4b6a8442153e00c0cbb",
+      "relocations": [
+        "project-local includes",
+        "OO_ROOTLOGON style path",
+        "trailing whitespace cleanup"
+      ]
+    },
+    "02_fit/validate_saved_fit.C": {
+      "original_sha256": "a197a664c4497f43c367028edfdd6d2106bd5c051c4de0a8969547af50e1a8eb",
+      "sha256": "87cf98a4cd77e7ec95a1b5f4aa06743fdc9d7e18b416867c8a8f3af7156c1d3b",
+      "relocations": [
+        "project-local includes",
+        "OO_ROOTLOGON style path"
+      ]
+    },
+    "include/robust_chi2.h": {
+      "sha256": "d0392d85eb6e57ee5e14c040af77147d7eb586a9c2ecfc8dfa6c5a52914591af"
+    },
+    "include/rootlogon.C": {
+      "sha256": "75eb2b6363e8b18ad50e1897020227a4e5da0ba52658fa28e4eb33e8aac5a4ea"
+    },
+    "include/fit_config.h": {
+      "sha256": "d481796a88b02f9e8a58e8d2038b7d5be81c88f24760ab74b507e7ca75ea6971"
+    },
+    "include/prompt_window_transport.h": {
+      "sha256": "50592408e64af11e4c61a7291d23572e31b0d7078d46ff5940732fbb7f37bd43"
+    },
+    "include/projection_diagnostics.h": {
+      "sha256": "8562cb927e0c451c260d862cf270b25c6e9d9d7e5387c97b2076e74f9432edf7"
+    },
+    "include/saved_fit_helpers.h": {
+      "sha256": "ae1a8949203ad891d5c5fb40a49c59905c6448f73b89001584a29d5972c57dd6"
+    },
+    "include/rule_override.h": {
+      "sha256": "a8f2bc4e7b778495fea6fca79b462cfccd624a8c7a90e7e9a52959842bcb5fde"
+    },
+    "include/nominal_bfraction.h": {
+      "sha256": "ae7b3307584c66ece8e179bf695ee3c12483010395547a6ac756b5958d157146"
+    }
+  }
+}
