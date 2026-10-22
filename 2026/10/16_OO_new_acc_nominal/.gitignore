@@ -4,6 +4,10 @@
 # Accepted datasets, prefits, fit ROOTs, builds, logs and frozen bundles.
 /output/
 
+# Temporary live reports; promote reviewed results separately.
+/results/interim/
+/figs/standard_study/
+
 # Python and ROOT build products.
 __pycache__/
 *.py[cod]
