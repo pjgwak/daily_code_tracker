@@ -526,6 +526,30 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		ctauFrac3Val = readDoubleParam("ctauFrac3");
 	}
 
+	// Redraw: a prefit that profiled the background core fractions stores them as physical
+	// weights ctauFrac1..3 (as read by fit2d); use them instead of the MC prompt fractions.
+	if (drawFromSavedFit)
+	{
+		const TString savedPath = (gSystem->Getenv("OO_BKG_OUT") ? TString(gSystem->Getenv("OO_BKG_OUT")) + "/" : TString(""))
+			+ Form("roots/y%.2f_%.2f/ctau_bkg/ctau_bkg_fitresult_y%.2f_%.2f_pt%.2f_%.2f.root", yLow, yHigh, yLow, yHigh, ptLow, ptHigh);
+		TFile saved(savedPath, "READ");
+		auto *profiled = saved.IsZombie() ? nullptr : saved.Get<TParameter<int>>("backgroundCoreFractionsProfiled");
+		if (profiled && profiled->GetVal() == 1)
+		{
+			double physical[3] = {0, 0, 0}, remain = 1.0;
+			double *recursive[3] = {&ctauFrac1Val, &ctauFrac2Val, &ctauFrac3Val};
+			for (int i = 0; i < nResolutionComponents - 1; ++i)
+			{
+				auto *p = saved.Get<TParameter<double>>(Form("ctauFrac%d", i + 1));
+				if (!p) throw std::runtime_error("Profiled background fractions missing in saved prefit");
+				physical[i] = p->GetVal();
+				*recursive[i] = remain > 0 ? std::clamp(physical[i] / remain, 0.0, 1.0) : 0.0;
+				remain -= physical[i];
+			}
+			std::cout << "[REDRAW] using saved profiled background core fractions" << std::endl;
+		}
+	}
+
 	// Reject incomplete or non-finite calibrations before building the model.
 	if (!std::isfinite(ctauMeanScaleVal) || !std::isfinite(ctauTime1MeanVal) || !std::isfinite(ctauTime1ScaleVal) ||
 		(nResolutionComponents >= 2 && (!std::isfinite(ctauTime2MeanVal) || !std::isfinite(ctauTime2ScaleVal) || !std::isfinite(ctauFrac1Val))) ||
@@ -705,6 +729,13 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	}
 
 	// Apply only the constraints for enabled resolution cores.
+	// OO_BKG_RES_CONSTRAINT_SCALE=k (per-bin setting, default 1) scales all four MC width constraints.
+	if (const char *k = gSystem->Getenv("OO_BKG_RES_CONSTRAINT_SCALE"))
+	{
+		const double scale = std::atof(k);
+		if (!(scale > 0)) throw std::runtime_error("OO_BKG_RES_CONSTRAINT_SCALE must be positive");
+		ctauTime1ConstraintSigma *= scale; ctauTime2ConstraintSigma *= scale; ctauTime3ConstraintSigma *= scale; ctauTime4ConstraintSigma *= scale;
+	}
 	addResConstraint(ctauTime1Scale, "ctauTime1Scale", ctauTime1ScaleVal, ctauTime1ConstraintSigma);
 	if (nResolutionComponents >= 2)
 		addResConstraint(ctauTime2Delta, "ctauTime2Delta", ctauTime2DeltaVal, ctauTime2ConstraintSigma);
@@ -725,6 +756,27 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	// ------------------------------------------------------------------
 	std::unique_ptr<RooAddModel> promptResolutionModel;
 
+	// Optional: fit the background core weights (recursive fractions, MC weights as starting values).
+	const bool profileCoreFractions = !drawFromSavedFit && gSystem->Getenv("OO_BKG_PROFILE_FRAC") && std::string(gSystem->Getenv("OO_BKG_PROFILE_FRAC")) == "1";
+	std::vector<std::unique_ptr<RooRealVar>> profiledCoreRecursive;
+	std::vector<std::unique_ptr<RooAbsReal>> profiledCoreWeights;
+	if (profileCoreFractions)
+	{
+		const double mcWeights[3] = {compFrac1Val, compFrac2Val, compFrac3Val};
+		double remain = 1.0;
+		RooArgList recursive;
+		for (int i = 0; i < nResolutionComponents - 1; ++i)
+		{
+			const double start = remain > 0 ? std::clamp(mcWeights[i] / remain, 0.01, 0.99) : 0.5;
+			remain -= mcWeights[i];
+			profiledCoreRecursive.push_back(std::make_unique<RooRealVar>(Form("bkgPrefitRecursiveFrac%d", i + 1), "", start, 0.0, 1.0));
+			recursive.add(*profiledCoreRecursive.back());
+			TString formula = Form("@%d", i);
+			for (int j = 0; j < i; ++j) formula = Form("(1-@%d)*", j) + formula;
+			profiledCoreWeights.push_back(std::make_unique<RooFormulaVar>(Form("bkgPrefitCoreWeight%d", i + 1), formula.Data(), recursive));
+		}
+	}
+
 	// Use the single core directly unless a multi-core mixture is required.
 	RooResolutionModel *time_resolution_ptr = &ctauTime1;
 	RooAbsPdf *bkg_time_plb_ptr = &ctauTime1;
@@ -736,18 +788,23 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		RooArgList resolutionFractionList;
 		resolutionPdfList.add(ctauTime1);
 		resolutionPdfList.add(ctauTime2);
-		resolutionFractionList.add(ctauFrac1);
-
-		// Append optional wider cores in increasing-width order.
 		if (nResolutionComponents >= 3)
-		{
 			resolutionPdfList.add(ctauTime3);
-			resolutionFractionList.add(ctauFrac2);
-		}
 		if (nResolutionComponents >= 4)
-		{
 			resolutionPdfList.add(ctauTime4);
-			resolutionFractionList.add(ctauFrac3);
+		if (profileCoreFractions)
+		{
+			// Study option OO_BKG_PROFILE_FRAC=1: core weights fitted to the sideband through recursive fractions.
+			for (int i = 0; i < nResolutionComponents - 1; ++i)
+				resolutionFractionList.add(*profiledCoreWeights[i]);
+		}
+		else
+		{
+			resolutionFractionList.add(ctauFrac1);
+			if (nResolutionComponents >= 3)
+				resolutionFractionList.add(ctauFrac2);
+			if (nResolutionComponents >= 4)
+				resolutionFractionList.add(ctauFrac3);
 		}
 
 		promptResolutionModel = std::make_unique<RooAddModel>(
@@ -1211,6 +1268,13 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 
 			// Store the model configuration needed to interpret the saved fit.
 			TParameter<int>("nResolutionComponents", nResolutionComponents).Write();
+			if (profileCoreFractions)
+			{
+				// Same convention as the 23 calibrated prefits: physical core weights, read by fit2d and the redraw.
+				TParameter<int>("backgroundCoreFractionsProfiled", 1).Write();
+				for (int i = 0; i < nResolutionComponents - 1; ++i)
+					TParameter<double>(Form("ctauFrac%d", i + 1), profiledCoreWeights[i]->getVal()).Write();
+			}
 			TParameter<int>("nSignalSSComponents", nSignalSSComponents).Write();
 			TParameter<int>("nSignalFlipComponents", nSignalFlipComponents).Write();
 			TParameter<int>("nSignalDSComponents", nSignalDSComponents).Write();
@@ -1495,6 +1559,7 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	{
 		const auto robust = oo_robust_chi2(time_pdf, *data, obs_time, npar);
 		oo_robust_chi2_toy(time_pdf, *data, obs_time, npar);
+		oo_chi2_binning_scan(time_pdf, *data, obs_time, npar, figTag.Data());
 		if (!drawFromSavedFit) oo_write_robust_chi2(fitResultFileName, robust);
 	}
 	const double chi2 = chi2ndf * ndf;

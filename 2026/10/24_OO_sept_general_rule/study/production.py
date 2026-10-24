@@ -31,10 +31,10 @@ def call(stage, s, draw, publish):
 def stage_env(stage, s):
     e = {'ROOT_HIST': '0', 'OMP_NUM_THREADS': '1'}
     if stage == 'mc': e['OO_MC_SIG'] = f'{s["mc_cb"]},{s["mc_gauss"]}'
-    if stage == 'pr': e['OO_PR_NRES'] = s['pr_nres']
+    if stage == 'pr': e.update(OO_PR_NRES=s['pr_nres'], OO_PR_QUANT=s.get('pr_quant', '0.0005,0.9995'))
     if stage == 'np': e['OO_NP_COUNT'] = s['np_count']
     if stage == 'mass': e['OO_MASS_CHEB'] = s['mass_cheb']
-    if stage == 'bkg': e.update(OO_BKG_COUNTS=f'{s["bkg_ss"]},{s["bkg_flip"]},{s["bkg_ds"]}', OO_BKG_CT_LO=s['ct_low'], OO_BKG_CT_HI=s['ct_high'], OO_BKG_ROBUST='1')
+    if stage == 'bkg': e.update(OO_BKG_COUNTS=f'{s["bkg_ss"]},{s["bkg_flip"]},{s["bkg_ds"]}', OO_BKG_CT_LO=s['ct_low'], OO_BKG_CT_HI=s['ct_high'], OO_BKG_ROBUST='1', OO_BKG_PROFILE_FRAC=s.get('bkg_profile_frac', '0'))
     if stage == '2d': e['OO_RULE_DIR'] = str(BASE / 'study/rules/FINAL_v3')
     return e
 
@@ -80,7 +80,7 @@ def main():
         logdir = BASE / 'logs' / f'{stage}{"_publish" if a.publish else "_redraw" if a.redraw else ""}_{stamp}'; logdir.mkdir(parents=True)
 
         def one(s):
-            env = {k: v for k, v in os.environ.items() if not k.startswith('OO_')}
+            env = {k: v for k, v in os.environ.items() if not k.startswith('OO_') or k == 'OO_BKG_CHI2_SCAN'}  # diagnostics flag passes through
             env.update(stage_env(stage, s))
             expr = f'gSystem->Load("{lib}");Int_t e=0;gROOT->ProcessLine("{call(stage, s, draw, a.publish).replace(chr(34), chr(92) + chr(34))};",&e);gSystem->Exit(e?11:0);'
             with open(logdir / f'{s["bin"]}.log', 'w') as log:

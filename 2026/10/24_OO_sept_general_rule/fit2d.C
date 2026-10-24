@@ -3495,7 +3495,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		timefitplot->GetXaxis()->SetLimits(ctPlotRange.first, ctPlotRange.second);
 	timefitplot->Draw("e");
 
-	TLegend timeLeg(0.19, 0.52, 0.43, 0.725);
+	TLegend timeLeg(0.50, 0.68, 0.74, 0.89); // same column as the mass legend
 	timeLeg.SetBorderSize(0);
 	timeLeg.SetFillStyle(0);
 	timeLeg.SetTextSize(0.03);
@@ -3636,7 +3636,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 		tc.SetTextSize(0.085);
 		tc.SetTextFont(42);
 		tc.SetTextAlign(33);
-		tc.DrawLatex(0.88, 0.96, Form(zoomCtauPlot ? "#chi^{2}/ndf (full range) = %.1f/%d" : "#chi^{2}/ndf = %.1f/%d", timeChi2, timeNdf));
+		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", timeChi2, timeNdf));
 	}
 	TLine timeLine(ctPlotRange.first, 0.0, ctPlotRange.second, 0.0);
 	timeLine.SetLineStyle(2);

@@ -1,5 +1,6 @@
 #ifndef OO_ROBUST_CHI2_H
 #define OO_ROBUST_CHI2_H
+#include <cstdio>
 
 // Binning-robust goodness of fit for unbinned prefits (2026-10-15).
 // RooPlot::chiSquare on a fixed uniform binning breaks down when the bin width is far
@@ -81,4 +82,34 @@ inline void oo_write_robust_chi2(const char *path, const OORobustChi2 &r)
     TParameter<int>("prefitChi2RobustNdf", r.ndf).Write("", TObject::kOverwrite);
 }
 
+
+// Binning scan (env OO_BKG_CHI2_SCAN=1, diagnostics only): Pearson chi2 with uniform bins whose expected
+// counts come from the PDF integral over each bin (bins with expectation >= 5), and equal-population chi2
+// with more bins. The fit itself is not changed.
+inline void oo_chi2_binning_scan(RooAbsPdf &pdf, RooDataSet &data, RooRealVar &obs, int npar, const char *tag) {
+    if (!std::getenv("OO_BKG_CHI2_SCAN")) return;
+    const double lo = obs.getMin(), hi = obs.getMax();
+    const double n = data.sumEntries();
+    std::vector<double> v; v.reserve(data.numEntries());
+    for (int i = 0; i < data.numEntries(); ++i) v.push_back(data.get(i)->getRealValue(obs.GetName()));
+    std::sort(v.begin(), v.end());
+    for (int nb : {100, 200, 400, 800}) {
+        double chi2 = 0; int used = 0;
+        const double w = (hi - lo) / nb;
+        for (int b = 0; b < nb; ++b) {
+            const double a = lo + b * w, c = a + w;
+            obs.setRange("scanbin", a, c);
+            std::unique_ptr<RooAbsReal> in(pdf.createIntegral(obs, RooFit::NormSet(obs), RooFit::Range("scanbin")));
+            const double mu = n * in->getVal();
+            if (mu < 5) continue;
+            const double k = double(std::upper_bound(v.begin(), v.end(), c) - std::lower_bound(v.begin(), v.end(), a));
+            chi2 += (k - mu) * (k - mu) / mu; ++used;
+        }
+        std::printf("[CHI2_SCAN] %s uniform nb=%d used=%d chi2/ndf=%.1f/%d = %.3f\n", tag, nb, used, chi2, used - npar, chi2 / std::max(1, used - npar));
+    }
+    for (int nb : {100, 200, 400}) {
+        const auto r = oo_robust_chi2(pdf, data, obs, npar, 5, nb);
+        std::printf("[CHI2_SCAN] %s equalpop nb=%d chi2/ndf=%.1f/%d = %.3f\n", tag, r.bins, r.chi2, r.ndf, r.chi2 / std::max(1, r.ndf));
+    }
+}
 #endif
