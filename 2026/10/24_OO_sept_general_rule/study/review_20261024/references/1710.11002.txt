@@ -1,0 +1,1943 @@
+                                          EUROPEAN ORGANIZATION FOR NUCLEAR RESEARCH (CERN)
+
+
+                                                                                                           CERN-EP-2017-267
+                                                                                                           2018/03/16
+
+
+
+
+                                          CMS-BPH-15-005
+
+
+
+
+                                           Measurement of quarkonium production
+                                                                       √         cross sections in
+                                                       pp collisions at s = 13 TeV
+arXiv:1710.11002v2 [hep-ex] 14 Mar 2018
+
+
+
+
+                                                                             The CMS Collaboration∗
+
+
+
+                                                                                          Abstract
+
+                                              Differential production cross sections of prompt J/ψ and ψ(2S) charmonium and
+                                              Υ
+                                              √(nS) (n = 1, 2, 3) bottomonium states are measured in proton-proton collisions at
+                                                 s = 13 TeV, with data collected by the CMS detector at the LHC, corresponding to
+                                              an integrated luminosity of 2.3 fb−1 for the J/ψ and 2.7 fb−1 for the other mesons. The
+                                              five quarkonium states are reconstructed in the dimuon decay channel, for dimuon
+                                              rapidity |y| < 1.2. The double-differential cross sections for each state are measured
+                                              as a function of y and transverse momentum, and compared to theoretical expecta-
+                                              tions. In addition, ratios are presented of cross sections for prompt ψ(2S) to J/ψ, Υ(2S)
+                                              to Υ(1S), and Υ(3S) to Υ(1S) production.
+
+
+                                                 Published in Physics Letters B as doi:10.1016/j.physletb.2018.02.033.
+
+
+
+
+                                          c 2018 CERN for the benefit of the CMS Collaboration. CC-BY-4.0 license
+                                           ∗ See Appendix B for the list of collaboration members
+                                                                                                 1
+
+
+1   Introduction
+Since the discovery of heavy-quark bound states, quarkonium production in hadronic colli-
+sions has been the subject of many theoretical and experimental studies. A well established
+theoretical framework to describe quarkonium production is nonrelativistic quantum chromo-
+dynamics (NRQCD) [1–3], an effective theory that assumes that the mechanism can be factor-
+ized in two steps. In the first step, a heavy quark-antiquark pair is produced in a given spin and
+orbital angular momentum state, either in a color-singlet or color-octet configuration. The cor-
+responding parton-level cross sections, usually called short-distance coefficients (SDCs), are
+functions of the kinematics of the state and can be calculated perturbatively, presently up to
+next-to-leading order (NLO) [4–7]. In the second step, the quark-antiquark pairs bind into
+the final quarkonium states through a nonperturbative hadronization process, with transition
+probabilities determined by process-independent long-distance matrix elements (LDMEs). Un-
+like the SDCs, the LDMEs are presently not calculable and must be obtained through fits to ex-
+perimental data [4–9]. Until recently, for directly produced S-wave quarkonia, the color-octet
+3 S term was thought to dominate, which would result in a strong transverse polarization of
+   1
+the mesons relative to their direction of motion (helicity frame) at large transverse momentum,
+pT .
+Experiments at the CERN LHC have provided measurements of the production of the S-wave
+quarkonium states ηc (1S), J/ψ, ψ(2S), and Υ(nS) (n = 1, 2, 3), and of the P-wave states, χc1,2
+and χb1,2 (1P) [10–14], at center-of-mass energies of 2.76, 7 and 8 TeV. These measurements of
+the S-wave states include both the differential cross sections [15–29] and polarizations [30–34],
+and offer strong indication that, contrary to previous expectations, these mesons are produced
+unpolarized. Further theoretical and experimental work can provide deeper insights on how
+to interpret these observations. In particular, additional data can help in improving the fits and
+determine more precisely the relative weights of the LDMEs.
+We report the measurement of double-differential √ cross sections of five S-wave quarkonium
+states J/ψ, ψ(2S), and Υ(nS) in pp collisions at s = 13 TeV by the CMS detector at the LHC.
+The increased center-of-mass energy and production cross sections provide an extended reach
+in pT and improved statistical precision relative to similar measurements at 7 TeV [24–27,
+                                                                                      √     35].
+The measurements performed at 13 TeV also provide the opportunity to test the s depen-
+dence of the cross sections and to check the validity of the factorization hypothesis and LDME
+universality implied in NRQCD.
+The product of the branching fraction of quarkonia to muon pairs, B(Q → µ+ µ− ), and the
+double-differential production cross section, d2 σ/(dpT dy), in bins of pT and rapidity, y, is
+given by
+                                   d2 σ
+                                                                       
+                            + −              N ( pT , y )      1
+                   B(Q → µ µ )            =                               ,                (1)
+                                  dpT dy    L∆y∆pT e( pT , y)A( pT , y)
+where N ( pT , y) is the number of prompt signal events in the bin, L is the integrated luminosity,
+∆y and ∆pT are the bin widths, and h1/(e( pT , y)A( pT , y))i represents the average of the prod-
+uct of the inverse acceptance and efficiency for all the events in the bin. Only prompt signal
+events are considered. The nonprompt components of the J/ψ and ψ(2S) mesons, i.e. originat-
+ing from decays of b hadrons, are separated using the decay length defined as ` = L xy · m/pT ,
+where L xy is the distance measured in the transverse plane between the average location of the
+luminous region and the fitted position of the dimuon vertex, m is the mass of the J/ψ (ψ(2S))
+from Ref. [36], and pT the transverse momentum of the dimuon candidate. For the prompt
+signal events, we do not distinguish between feed-down decays of heavier quarkonium states
+and directly produced quarkonia.
+2                                                                  3   Acceptance and efficiencies
+
+
+2   The CMS detector, data set, and event selection
+                                                                √
+The analysis uses dimuon events collected in pp collisions at s = 13 TeV with the CMS de-
+tector. The central feature of the CMS apparatus is a superconducting solenoid of 6 m internal
+diameter, providing a magnetic field of 3.8 T. Within the solenoid volume are a silicon pixel and
+strip tracker, a lead tungstate crystal electromagnetic calorimeter, and a brass and scintillator
+hadron calorimeter, each composed of a barrel and two endcap sections. Forward calorimeters
+extend the pseudorapidity (η) coverage provided by the barrel and endcap detectors. Muons
+are detected in gas-ionization chambers embedded in the steel flux-return yoke outside the
+solenoid [37]. A more detailed description of the CMS detector, together with a definition of
+the coordinate system used and the relevant kinematic variables, can be found in Ref. [38].
+The data were collected using a multilevel trigger system [39]. The first level (L1), made of
+custom hardware processors providing coarse momentum information, requires two muons
+within the range |η | < 1.6 without requesting an explicit pT threshold on the individual muons.
+Second (L2) and third (L3) levels, collectively known as the HLT (High-Level Trigger), are im-
+plemented in software. At these levels, the muon selection is refined, then opposite-charge
+muon candidates are paired and required to have an invariant mass in the regions 2.9–3.3,
+3.35–4.05, or 8.5–11 GeV for the J/ψ, ψ(2S), and Υ(nS), respectively. The dimuon pT is required
+to be above 9.9 GeV for the J/ψ and above 7.9 GeV for the remaining states. For all five states, the
+dimuon rapidity is restricted to |y| < 1.25. A fit of the positions and momenta of the two muon
+candidates to a common vertex is performed, and the fit χ2 probability is required to be above
+0.5%. The sample collected with these triggers has a total integrated luminosity of 2.3 fb−1 for
+the J/ψ and 2.7 fb−1 for the other mesons. The lower value for the J/ψ is the consequence of the
+trigger prescaling that was applied to limit the rate during part of the data taking, when the
+instantaneous luminosity increased.
+When reconstructing the five states offline, further requirements are applied: only muons with
+  µ                                             µ
+pT > 4.5 GeV in the range |η µ | < 0.3, or pT > 4.0 GeV in the range 0.3 < |η µ | < 1.4 are
+selected. The muons have to match the triggered pair and be identified as reconstructed tracks
+with at least five measurements in the silicon tracker and at least one in the pixel detector.
+The track is required to match at least one muon segment identified by a muon detector plane.
+Loose criteria are applied on the longitudinal and transverse impact parameters to reject cosmic
+rays and in-flight hadron decays. The dimuon vertex χ2 probability is required to be greater
+than 1%. In the CMS magnetic field, the two muons can bend towards or away from each
+other; only the second type of event is considered in this analysis since the first type exhibits
+high trigger inefficiencies. It was verified that this requirement does not introduce any bias
+in the determination of the prompt component for the J/ψ and ψ(2S) mesons. The dimuon
+rapidity is restricted to |y| < 1.2. Trigger bandwidth limitations prevented the extension of the
+measurement to the full CMS acceptance.
+The double-differential cross sections are presented in four (two) rapidity bins for the prompt
+J/ψ and ψ(2S) (Υ(nS)), and in several bins of pT , covering a pT range between 20 and 120
+(100) GeV for J/ψ (ψ(2S), Υ(nS)), extending up to 150 (130) GeV for measurements integrated
+in rapidity.
+
+
+3   Acceptance and efficiencies
+The acceptance is calculated using simulated events produced with a single-particle event gen-
+erator. The quarkonium states are generated with a flat y distribution and a realistic pT dis-
+tribution derived from data [25, 26], covering the analysis phase space. The PYTHIA 8.205 [40]
+                                                                                                 3
+
+
+Monte Carlo event generator is used to produce an unpolarized dimuon decay (corresponding
+to a flat dimuon angular distribution), also accounting for final-state photon radiation. The sim-
+ulated events include multiple proton-proton interactions in the same or nearby beam crossings
+(pileup), with the distribution matching that observed in data, with an average of about 11 col-
+lisions per bunch crossing. The acceptance for events in a given (pT ,|y|) range is defined as
+the ratio of the number of generated events that pass the kinematic selection criteria described
+above to the total number of simulated events in that pT and |y| range. The acceptance depends
+on the quarkonium polarization. It is derived for the unpolarized scenario, which is compatible
+with experimental measurements within uncertainties. We also calculate multiplicative correc-
+tion factors that allow, from the unpolarized case, to infer the acceptance that corresponds to
+three different values of the polar anisotropy parameter, λHX  θ , in the helicity frame: −1 (fully
+longitudinal), +1 (fully transverse), and k, with k reflecting the CMS measured value of λHXθ for
+each quarkonium state [31, 32], also used in Refs. [26, 27]. The multiplicative factors to convert
+the cross sections calculated using the unpolarized scenario to the ones calculated employing
+one of the polarization scenarios described above are provided. It was verified that the use of
+only events with two muons bending away from each other does not introduce any bias in the
+determination of the acceptance.
+The single-muon trigger, reconstruction, and identification efficiencies are measured individu-
+ally from data as a function of muon pT and |η |, applying a tag-and-probe [24, 35] technique on
+J/ψ and Υ(1S) candidates acquired with triggers that are independent from those used for the
+measurements of the yields. The individual efficiencies are multiplied and then parameterized
+using a sigmoid function. The dimuon efficiency is obtained as the product of the efficiencies
+of the two muons, multiplied by a correction factor, ρ, that takes into account the correlation
+between the two muons. The ρ factor is derived from data, using a trigger, independent from
+the ones used for the measurement of the yield, requiring a single muon at L1. ρ becomes in-
+creasingly important with higher dimuon pT , when the two muons are close to each other in
+space, causing the efficiency to decrease. Dimuon efficiencies are around 85% for the J/ψ and
+ψ(2S) up to a dimuon pT of 50 GeV and decrease slowly for higher pT due to the ρ factor. In
+the case of the Υ(nS) states, the dimuon efficiencies are nearly constant around 90%. The ac-
+ceptance and efficiency term in Eq. (1) is obtained by averaging the values of the inverse of the
+acceptance times efficiency for all the individual dimuon candidates in each pT and |y| range.
+
+
+4   Determination of the yields
+The signal and background yields are obtained through an extended unbinned maximum-
+likelihood fit to the dimuon invariant mass distribution in the case of the Υ(nS) states, and
+to the dimuon invariant mass and decay length distributions for the J/ψ and ψ(2S) mesons. In
+both cases, the number of signal and background candidates are free parameters in the fit.
+The three Υ(nS) signal peaks are modeled with Crystal Ball (CB) functions [41], composed
+of a Gaussian core, characterized by a mean m, a width σm , and a tail characterized by two
+parameters, n and α. The CB function is used to account for the energy loss due to the final-state
+radiation of the muons. The mean mass values are fixed to those of the Particle Data Group [36],
+multiplied by a common factor that calibrates the mass scale, left as a free parameter in the fit.
+The width of the CB function is a free parameter only in the case of the Υ(1S), while the width
+of the CB functions describing the Υ(2S) and Υ(3S) peaks are fixed to the width of the Υ(1S),
+scaled by the ratio of their masses to the mass of the Υ(1S). The Υ(nS) dimuon mass resolution
+σm is a function of rapidity and spans the range 60 to 90 MeV for |y| < 1.2 in the case of the
+Υ(1S). The tail parameters n and α are the same for all three CB functions; n is fixed and α
+4                                                                      5   Systematic uncertainties
+
+
+is constrained to a Gaussian probability distribution. Both constraints are derived from a fit
+of the Υ(1S) dimuon invariant mass shape, using the pT -integrated distribution to reduce the
+statistical fluctuations. The background is modeled using an exponential function.
+For the J/ψ and ψ(2S) mesons, an additional nonprompt component originating from the decay
+of b hadrons must be taken into account. The prompt and nonprompt yields are measured by
+fitting the dimuon invariant mass and decay length distributions. The J/ψ dimuon invariant
+mass distribution is modeled by the sum of a CB and a Gaussian function with common mean,
+while the corresponding ψ(2S) distribution is described using only a CB function. The widths
+of the CB and Gaussian functions, as well as the α of the CB functions, are free parameters. The
+σm varies as a function of rapidity between 20 and 50 (40) MeV for the J/ψ (ψ(2S)) state. The m
+and n parameters are fixed to values derived from fits to the invariant mass distribution of the
+pT -integrated data. An exponential is used to describe the dimuon mass background. The de-
+cay length distribution is modeled by a prompt signal component represented by a resolution
+function, a nonprompt term given by an exponential function convolved with the resolution
+function, and a background term represented by the sum of a resolution function plus an expo-
+nential decay function to take into account prompt and nonprompt background components.
+The resolution function is modeled by the sum of two Gaussian functions whose widths are
+taken as the event-by-event decay length uncertainty, multiplied by global scale factors. The
+two scale factors are free parameters in the fit and are constrained with Gaussian probabil-
+ity distributions that are derived from fits to the pT -integrated data, less affected by statistical
+fluctuations. The effective width of the two Gaussian functions is approximately 25 µm.
+To verify that the fits to the quarkonium states are unbiased and the uncertainties are cor-
+rectly modeled, 1000 pseudo-experiments were produced from simulation. Similarly, simu-
+lated events were used to test the hypotheses made on the constraints of the parameters. Dif-
+ferences in the event-by-event uncertainty information between signal and background can-
+didates could introduce biases in the fitting of the decay length using the simplified model
+described above, but we verified that these effects are negligible. Examples of fits to the invari-
+ant mass and decay length distributions are provided in Figs. A.1–A.2 of Appendix A.
+
+
+5   Systematic uncertainties
+Systematic uncertainties are due to the measurement of the integrated luminosity (2.3%) [42],
+the determination of the signal yields, and the dimuon efficiencies and acceptances. Uncer-
+tainties in the estimation of the yields are evaluated by changing the signal and background
+models used in the maximum-likelihood fits. To assess the systematic uncertainty in the mod-
+eling of the signal invariant mass distribution of each state, the n and α parameters of the CB
+function are varied by up to ±5 standard deviations, one at a time, while the mean, which is
+constrained in the nominal fit, is allowed to float. The half-differences between the largest re-
+sulting deviations of the signal yields measured in the fit from the nominal yields are added in
+quadrature to obtain an uncertainty in the modeling of the signal. The systematic uncertainty
+originating from a possibly imperfect description of the background is evaluated by changing
+the background model from an exponential to a linear function. The observed differences from
+the nominal signal yields are taken as a systematic uncertainty. The total uncertainty in the
+determination of the yields is obtained as the sum in quadrature of the uncertainties in signal
+and background, and is about 2.0% for all quarkonium states.
+Uncertainties in the discrimination between charmonia that are promptly produced rather than
+originating from b hadron decays arise from the determination of the primary vertex position
+(the production point of the mesons, which enters in the calculation of the decay length) and
+                                                                                                   5
+
+
+from the modeling of the signal and background in the decay length distributions. We assess
+the uncertainty originating from the choice of the primary vertex by using an alternative to
+the average position of the luminous region, the position of the collision vertex closest to the
+dimuon vertex extrapolated towards the beam line. The systematic uncertainty related to the
+description of the background is evaluated by measuring the difference between the prompt
+fractions using the nominal fit and a fit modeling the background by the sum of four expo-
+nential functions and a simplified resolution function composed of only one single Gaussian
+function. To study the impact of imperfect modeling of the resolution function, the scale pa-
+rameters of the Gaussian functions that had Gaussian constraints in the nominal fit are varied
+by ±1 standard deviation. Similarly, we assess the impact of modeling the nonprompt signal
+by fixing the parameterization of the exponential decay function. The systematic uncertainty
+stemming from the choice of the primary vertex is added in quadrature with the uncertainty
+derived from the fit strategy. The latter is calculated as half of the difference between the max-
+imum deviations observed from the nominal fit when the above variations are applied one by
+one. The total systematic uncertainty in the determination of the nonprompt yield is less than
+3% in almost all the (pT , y) bins for the J/ψ meson, without a dominant contribution from any
+one of the sources described above. The largest systematic uncertainty in the ψ(2S) measure-
+ments can reach a maximum of 16%, mostly owing to the uncertainty in the modeling of the
+background decay length distribution. The effect of pileup on the analysis results has been
+studied using both data and simulation, and found to be negligible.
+Uncertainties in the single-muon efficiencies, reflecting their statistical precision as well as pos-
+sible imperfections of the parametrization, are evaluated by varying the three parameters of the
+sigmoid function used to parameterize the single-muon efficiencies within their uncertainties.
+The resulting systematic uncertainties are nearly constant as a function of pT and are around
+2.5% for the J/ψ and ψ(2S), and 1.8% for the Υ(nS) in the central regions |y| < 0.6 and around
+1% in the remaining rapidity regions. The L3 single-muon efficiencies are calculated from sim-
+ulations because of the low number of collected events useful for their measurements. The
+corresponding uncertainty is estimated to be 3%.
+Systematic uncertainties related to the ρ factor are of three kinds. The first originates from the
+number of events available in the control sample collected with the independent trigger used
+to evaluate the ρ factor. The relative uncertainty is about 1% from 20 to 50 GeV and increases
+to about 5% near 100 GeV, with no dependence on rapidity. The measurement of the ρ factor
+also requires the evaluation of an additional single-muon efficiency using the tag-and-probe
+method, which introduces an uncertainty of about 1% at low pT (below 50 GeV) and up to 4%
+at high pT . Moreover, we assign the fractional difference in the ρ factor obtained from data and
+simulation as a systematic uncertainty. The difference is in the range 2–5% up to 60 GeV and
+increases slowly for higher pT , reaching a value of up to 15%, in the worst case. This is the
+dominant uncertainty for all the quarkonium states except the ψ(2S).
+The finite number of events generated for the acceptance calculation imposes a systematic un-
+certainty of 0.5% at low pT and up to 6% at high pT . Other sources of systematic uncertainties,
+like the kinematic modeling of simulated events, are found to have a negligible influence on
+the acceptance calculation. The effect of the quarkonium polarization on the acceptance is not
+treated as a systematic uncertainty; instead correction factors are provided in Appendix Ato
+recalculate the cross sections according to different polarization scenarios.
+For the cross sections measured in the rapidity-integrated range |y| < 1.2, we conservatively as-
+sign the total systematic uncertainties of the most-forward rapidity range, which are larger than
+the uncertainties for central rapidities. Taking advantage of the larger yields in the integrated-
+6                                                                                        6   Results
+
+
+rapidity range, an additional pT bin was added for each state. The systematic uncertainty in
+the yields for this bin was evaluated as described above for the other bins, while for other
+uncertainties the same value as in the neighboring lower-pT bin was used. It was verified
+that systematic uncertainties extrapolated to the additional pT bin have either negligible pT
+dependence in that region or are negligibly small compared to other systematic or statistical
+uncertainties.
+For the measurement of the ratios of the cross sections of the prompt ψ(2S), Υ(2S), and Υ(3S)
+states relative to their ground states, the systematic uncertainties in the yields, the ρ factor, the
+single-muon efficiencies, and the acceptance are the only ones considered. Uncertainties in the
+yields for the ratio of ψ(2S) and J/ψ cross sections are treated as uncorrelated, because their
+corresponding yields are determined from independent fits. In contrast, yield uncertainties are
+treated as correlated for the ratio of the Υ(nS) to Υ(1S) cross sections, as they are extracted from
+a combined fit to the three states, as shown in Fig. A.2 of Appendix A. The correlation factors are
+found to be approximately 5%, causing no significant effect on the final systematic uncertainty.
+The same single-muon efficiencies are used for all the measured cross sections, therefore their
+uncertainties are treated as correlated in all the ratios. The systematic uncertainties in the ratios
+are determined by consistently varying the efficiencies in the numerator and the denominator
+by their uncertainties and recalculating the ratios. The resulting effect is less than 0.4%. The
+uncertainty in the integrated luminosity is fully correlated, and is not included in the ratios.
+Uncertainties in the ρ correction factor are treated as uncorrelated.
+The statistical uncertainty in the ψ(2S) to J/ψ cross section ratio is more important than any sys-
+tematic uncertainty except for the high-pT region, where the ρ factor uncertainty is the dom-
+inant one, reaching 28%. For the Υ(2S) to Υ(1S) and Υ(3S) to Υ(1S) cross section ratios, the
+uncertainty in the ρ factor dominates across the entire pT region, ranging from 3% to 12%.
+
+
+6   Results
+The measured double-differential cross sections times the dimuon branching fractions are pre-
+sented in Fig. 1 as a function of pT , for four rapidity ranges in the case of the prompt J/ψ and
+ψ(2S) states, and two rapidity ranges for the Υ(nS). The top panels of Fig. 2 show the mea-
+sured cross sections times branching fractions for the rapidity-integrated range |y| < 1.2. The
+presented results are obtained under the assumption of unpolarized production, which is very
+close to the polarization that was measured by CMS [31, 32]. If the quarkonium states are fully
+polarized, the cross sections can change by up to 25%. The numerical values of the cross sec-
+tions for all five quarkonium states in the chosen bins of pT and |y| in the unpolarized scenario
+are reported in Tables A.1–A.5 of Appendix A. Tables A.6–A.10 list the multiplicative scale
+factors needed to recalculate the cross sections in the three different polarization scenarios de-
+scribed in Section 3. The conversion to a new polarization scenario is achieved by multiplying
+the unpolarized cross section result in each (pT , |y|) bin by the corresponding scale factor.
+The NLO NRQCD predictions [43, 44] are in agreement with the measured cross sections times
+branching fractions within uncertainties, as shown in the top panels of Fig. 2. The ratios of
+the measured to predicted values are plotted in the middle panels of Fig. 2, where the vertical
+bars represent the experimental uncertainties. The shaded bands show the theoretical uncer-
+tainties stemming from the extraction of the LDMEs, renormalization scales, and the choice of
+c and b quark masses, added in quadrature with the uncertainties in the dimuon branching
+fractions [36]. The theory tends to underestimate (overestimate) the cross section for the J/ψ
+(ψ(2S)), while staying within the one-standard-deviation uncertainty band. The bottom panels
+of Fig. 2 show the ratios of the pT differential cross sections times branching fractions measured
+                                                                                                                                                     7
+
+
+                             CMS                2.3 − 2.7 fb-1 (13 TeV)                               CMS                      2.7 fb-1 (13 TeV)
+     d2σ [pb/GeV]
+
+
+
+
+                                                                                d2σ [pb/GeV]
+                    103                 J/ ψ         0.0 < |y| < 0.3                                             Υ (1S)    0.0 < |y| < 0.6
+                         2              ψ(2S)        0.3 < |y| < 0.6 (× 1/2)                    10               Υ (2S)    0.6 < |y| < 1.2 (× 1/5)
+                    10
+                                                     0.6 < |y| < 0.9 (× 1/4)                                     Υ (3S)
+    dp dy
+
+
+
+
+                                                                               dp dy
+                     10
+                T
+
+
+
+
+                                                                                           T
+                                                     0.9 < |y| < 1.2 (× 1/8)                      1
+      B ×
+
+
+
+
+                                                                                 B ×
+                         1
+                                                                                               10−1
+                      −1
+                    10
+
+                    10−2                                                                       10−2
+
+                    10−3
+                                                                                               10−3
+                    10−4
+                             20    30     40    50    60   70 80 90 100 120                           20    30       40   50    60   70 80 90 100
+                                                                   p [GeV]                                                               p [GeV]
+                                                                       T                                                                     T
+
+Figure 1: The product of the measured double-differential cross sections and the dimuon
+branching fractions for prompt J/ψ and ψ(2S) (left) and the Υ(nS) (right) mesons as a function
+of pT , in four and two rapidity regions, respectively, assuming unpolarized dimuon decays.
+For presentation purposes, the individual points in the measurements are scaled by the factors
+given in the legends. The inner vertical bars on the data points represent the statistical un-
+certainty, while the outer bars show the statistical and systematic uncertainties, not including
+the 2.3% uncertainty in the integrated luminosity, added in quadrature. For most of the data
+points, the uncertainties are comparable to the size of the symbols. The data points are shown
+at the average pT in each bin.
+   √
+at s = 13 TeV and 7 TeV [26, 27] for |y| < 1.2. The 13 TeV cross sections of all five quarkonium
+states are factors of 1.5 to 3 larger than the corresponding 7 TeV cross sections, changing slowly
+as a function of dimuon pT . An increase of this order is expected from the evolution of the
+parton distribution functions.
+Figure 3 shows the production cross sections times dimuon branching fractions of the radial
+excitations relative to the ground state in the charmonium and bottomonium systems for |y| <
+1.2. The prompt ψ(2S) to J/ψ meson cross section ratio is constant as a function of pT , while the
+cross sections of the excited Υ states relative to the Υ(1S) show a slight increase with pT . The
+numerical values of these ratios are reported in Table A.11 of Appendix A.
+
+
+7              Summary
+The double-differential production cross sections of the J/ψ, ψ(2S), and Υ(nS) (n = 1, 2, 3)
+quarkonium
+√             states have been measured, using their dimuon decay mode, in pp collisions at
+  s = 13 TeV with the CMS detector at the LHC. The production cross sections of all five S-wave
+states are presented in a single analysis. The measurement has been performed as a function
+of transverse momentum (pT ) in several bins of rapidity (y), covering a pT range 20–120 GeV
+for the J/ψ meson and 20–100 GeV for the remaining states. The cross sections integrated over
+|y| < 1.2 are also presented, and extend the pT reach√to 150 and 130 GeV, respectively. Also
+presented are the ratios of cross sections measured at s = 13 (this analysis) and 7 TeV (from
+Refs. [26, 27]), as well as the cross sections of the prompt ψ(2S), Υ(2S), and Υ(3S) mesons
+relative to their ground states. These results will help in testing the underlying hypotheses
+of nonrelativistic quantum chromodynamics and in providing further input to constrain the
+theoretical parameters.
+8                                                                                                                                       7   Summary
+
+
+
+
+                             CMS                  2.3 − 2.7 fb-1 (13 TeV)                              CMS                        2.7 fb-1 (13 TeV)
+                    104
+     d2σ [pb/GeV]
+
+
+
+
+                                                                               d2σ [pb/GeV]
+                                                    J/ψ       NRQCD                           105                      Υ (1S) (× 100)       NRQCD
+                    103
+                                                    ψ(2S)     NRQCD                           10   4
+                                                                                                                       Υ (2S) (× 10)        NRQCD
+    dp dy
+
+
+
+
+                                                                              dp dy
+                    102
+                                                                                                                       Υ (3S)
+                T
+
+
+
+
+                                                                                          T
+                                                                                                   3
+                                                                                              10                                            NRQCD
+      B×
+
+
+
+
+                                                                                B×
+                     10                                                                            2
+                                                                                              10
+
+                         1                                                                     10
+
+                      −1
+                    10                                                                             1
+
+                                                                                                −1
+                    10−2                                                                      10
+
+                                                                                              10−2
+                    10−3
+                                                                                              10−3
+                     1.5                                                                       1.5
+     theory
+
+
+
+
+                                                                               theory
+      data
+
+
+
+
+                                                                                data
+
+
+
+
+                         1                                                                         1
+
+                     0.5                                                                       0.5
+                       4                                                                         4
+      13 TeV
+
+
+
+
+                                                                                13 TeV
+      7 TeV
+
+
+
+
+                                                                                7 TeV
+
+
+
+
+                       3                                                                         3
+                         2                                                                         2
+                         1                                                                         1
+                             20    30   40   50    60 70 80 90100       150                            20    30   40     50     60 70 80 90100      130
+
+                                                                p [GeV]                                                                     p [GeV]
+                                                                    T                                                                        T
+
+Figure 2: The measured double-differential cross sections times branching fractions of the
+prompt J/ψ and ψ(2S) (left) and the Υ(nS) (right) mesons (markers), assuming unpolarized
+dimuon decays, as a function of pT , for |y| < 1.2, compared to NLO NRQCD predictions [43, 44]
+(shaded bands). The inner vertical bars on the data points represent the statistical uncertainty,
+while the outer bars show the statistical and systematic uncertainties, including the integrated
+luminosity uncertainty of 2.3%, added in quadrature. The middle panels show the ratios of
+measurement to theory, where the vertical bars depict the total uncertainties in the measure-
+ment. The widths of the bands represent the theoretical uncertainty, added in quadrature with
+the uncertainties in the dimuon
+                            √     branching fractions [36]. The lower panels show the ratios of
+cross sections measured at s = 13 TeV to those measured at 7 TeV [26, 27]. All uncertainties in
+the 7 and 13 TeV results are treated as uncorrelated. The data points are shown at the average
+pT in each bin.
+                                                                                                  9
+
+
+
+
+                                              CMS                  2.3 − 2.7 fb-1 (13 TeV)
+                                        1.4
+                         B × dσ Ratio
+
+
+
+
+                                                              ψ(2S) / J/ψ (× 5)
+                                        1.2
+                                                              Υ (2S) / Υ (1S)
+                                    T
+                             dp
+
+
+
+
+                                          1                   Υ (3S) / Υ (1S)
+
+                                        0.8
+
+                                        0.6
+
+                                        0.4
+
+                                        0.2
+
+                                         0
+                                              20    30   40   50   60   70 80 90 100        150
+
+                                                                                       p [GeV]
+                                                                                        T
+
+
+Figure 3: Ratios of the pT differential cross sections times dimuon branching fractions of the
+prompt ψ(2S) to J/ψ, Υ(2S) to Υ(1S), and Υ(3S) to Υ(1S) mesons for |y| < 1.2. The inner
+vertical bars represent the statistical uncertainty, while the outer bars show the statistical and
+systematic uncertainties added in quadrature. The ratio of the ψ(2S) to J/ψ meson cross sections
+is multiplied by a factor 5 for better visibility.
+10                                                                                  References
+
+
+Acknowledgments
+The authors would like to thank Yan-Qing Ma for providing theoretical calculations of the cross
+sections shown in Fig. 2.
+We congratulate our colleagues in the CERN accelerator departments for the excellent perfor-
+mance of the LHC and thank the technical and administrative staffs at CERN and at other
+CMS institutes for their contributions to the success of the CMS effort. In addition, we grate-
+fully acknowledge the computing centers and personnel of the Worldwide LHC Computing
+Grid for delivering so effectively the computing infrastructure essential to our analyses. Fi-
+nally, we acknowledge the enduring support for the construction and operation of the LHC
+and the CMS detector provided by the following funding agencies: BMWFW and FWF (Aus-
+tria); FNRS and FWO (Belgium); CNPq, CAPES, FAPERJ, and FAPESP (Brazil); MES (Bulgaria);
+CERN; CAS, MoST, and NSFC (China); COLCIENCIAS (Colombia); MSES and CSF (Croatia);
+RPF (Cyprus); SENESCYT (Ecuador); MoER, ERC IUT, and ERDF (Estonia); Academy of Fin-
+land, MEC, and HIP (Finland); CEA and CNRS/IN2P3 (France); BMBF, DFG, and HGF (Ger-
+many); GSRT (Greece); OTKA and NIH (Hungary); DAE and DST (India); IPM (Iran); SFI
+(Ireland); INFN (Italy); MSIP and NRF (Republic of Korea); LAS (Lithuania); MOE and UM
+(Malaysia); BUAP, CINVESTAV, CONACYT, LNS, SEP, and UASLP-FAI (Mexico); MBIE (New
+Zealand); PAEC (Pakistan); MSHE and NSC (Poland); FCT (Portugal); JINR (Dubna); MON,
+RosAtom, RAS, RFBR and RAEP (Russia); MESTD (Serbia); SEIDI, CPAN, PCTI and FEDER
+(Spain); Swiss Funding Agencies (Switzerland); MST (Taipei); ThEPCenter, IPST, STAR, and
+NSTDA (Thailand); TUBITAK and TAEK (Turkey); NASU and SFFR (Ukraine); STFC (United
+Kingdom); DOE and NSF (USA).
+Individuals have received support from the Marie-Curie program and the European Research
+Council and Horizon 2020 Grant, contract No. 675440 (European Union); the Leventis Foun-
+dation; the A. P. Sloan Foundation; the Alexander von Humboldt Foundation; the Belgian Fed-
+eral Science Policy Office; the Fonds pour la Formation à la Recherche dans l’Industrie et dans
+l’Agriculture (FRIA-Belgium); the Agentschap voor Innovatie door Wetenschap en Technologie
+(IWT-Belgium); the Ministry of Education, Youth and Sports (MEYS) of the Czech Republic; the
+Council of Science and Industrial Research, India; the HOMING PLUS program of the Foun-
+dation for Polish Science, cofinanced from European Union, Regional Development Fund, the
+Mobility Plus program of the Ministry of Science and Higher Education, the National Science
+Center (Poland), contracts Harmonia 2014/14/M/ST2/00428, Opus 2014/13/B/ST2/02543,
+2014/15/B/ST2/03998, and 2015/19/B/ST2/02861, Sonata-bis 2012/07/E/ST2/01406; the
+National Priorities Research Program by Qatar National Research Fund; the Programa Severo
+Ochoa del Principado de Asturias; the Thalis and Aristeia programs cofinanced by EU-ESF and
+the Greek NSRF; the Rachadapisek Sompot Fund for Postdoctoral Fellowship, Chulalongkorn
+University and the Chulalongkorn Academic into Its 2nd Century Project Advancement Project
+(Thailand); the Welch Foundation, contract C-1845; and the Weston Havens Foundation (USA).
+
+
+References
+ [1] G. T. Bodwin, E. Braaten, and G. P. Lepage, “Rigorous QCD analysis of inclusive
+     annihilation and production of heavy quarkonium”, Phys. Rev. D 51 (1995) 1125,
+     doi:10.1103/PhysRevD.51.1125. [Erratum: doi:10.1103/PhysRevD.55.5853].
+
+ [2] P. Cho and A. K. Leibovich, “Color-octet quarkonia production”, Phys. Rev. D 53 (1996)
+     150, doi:10.1103/PhysRevD.53.150.
+References                                                                                    11
+
+
+ [3] P. Cho and A. K. Leibovich, “Color-octet quarkonia production. II”, Phys. Rev. D 53
+     (1996) 6203, doi:10.1103/PhysRevD.53.6203.
+ [4] B. Gong, L.-P. Wan, J.-X. Wang, and H.-F. Zhang, “Complete next-to-leading-order study
+     on the yield and polarization of Υ(1S, 2S, 3S) at the Tevatron and LHC”, Phys. Rev. Lett.
+     112 (2014) 032001, doi:10.1103/PhysRevLett.112.032001, arXiv:1305.0748.
+ [5] Z.-B. Kang, Y.-Q. Ma, J.-W. Qiu, and G. Sterman, “Heavy quarkonium production at
+     collider energies: partonic cross section and polarization”, Phys. Rev. D 91 (2015) 014030,
+     doi:10.1103/PhysRevD.91.014030, arXiv:1411.2456.
+ [6] M. Butenschön and B. A. Kniehl, “J/ψ polarization at Tevatron and LHC:
+     nonrelativistic-QCD factorization at the crossroads”, Phys. Rev. Lett. 108 (2012) 172002,
+     doi:10.1103/PhysRevLett.108.172002, arXiv:1201.1872.
+ [7] K.-T. Chao et al., “J/ψ polarization at hadron colliders in nonrelativistic QCD”, Phys. Rev.
+     Lett. 108 (2012) 242004, doi:10.1103/PhysRevLett.108.242004,
+     arXiv:1201.2675.
+ [8] P. Faccioli et al., “Quarkonium production in the LHC era: a polarized perspective”,
+     Phys. Lett. B 736 (2014) 98, doi:10.1016/j.physletb.2014.07.006,
+     arXiv:1403.3970.
+ [9] G. T. Bodwin, H. S. Chung, U.-R. Kim, and J. Lee, “Fragmentation contributions to J/ψ
+     production at the Tevatron and the LHC”, Phys. Rev. Lett. 113 (2014) 022001,
+     doi:10.1103/PhysRevLett.113.022001, arXiv:1403.3612.
+
+                     √ “Measurement of the cross-section ratio σ(χc2 )/σ(χc1 ) for prompt
+[10] LHCb Collaboration,
+     χc production at s = 7 TeV”, Phys. Lett. B 714 (2012) 215,
+     doi:10.1016/j.physletb.2012.06.077, arXiv:1202.1080.
+[11] LHCb Collaboration, “Measurement of the χb (3P) mass and of the relative rate of χb1 (1P)
+     and χb2 (1P) production”, JHEP 10 (2014) 88, doi:10.1007/JHEP10(2014)088,
+     arXiv:1409.1408.
+                                                                        √
+[12] ATLAS Collaboration, “Measurement of χc1 and χc2 production with s = 7 TeV pp
+     collisions at ATLAS”, JHEP 07 (2014) 154, doi:10.1007/JHEP07(2014)154,
+     arXiv:1404.7035.
+[13] CMS Collaboration, “Measurement of the production
+                                                √         cross section ratio
+     σ(χb2 (1P))/σ(χb1 (1P)) in pp collisions at s = 8 TeV”, Phys. Lett. B 743 (2015) 383,
+     doi:10.1016/j.physletb.2015.02.048, arXiv:1409.5761.
+[14] CMS Collaboration, √ “Measurement of the relative prompt production rate of χc2 and χc1
+     in pp collisions at s = 7 TeV”, Eur. Phys. J. C 72 (2012) 2251,
+     doi:10.1140/epjc/s10052-012-2251-3, arXiv:1210.0875.
+[15] LHCb Collaboration, “Measurement of the ηc (1S) production cross-section in
+     proton-proton collisions via the decay ηc (1S) → pp”, Eur. Phys. J. C 75 (2015) 311,
+     doi:10.1140/epjc/s10052-015-3502-x, arXiv:1409.3612.
+[16] ATLAS Collaboration, “Measurement of the differential cross-sections of
+                                                                          √ inclusive,
+     prompt and non-prompt J/ψ production in proton-proton collisions at s = 7 TeV”,
+     Nucl. Phys. B 850 (2011) 387, doi:10.1016/j.nuclphysb.2011.05.015,
+     arXiv:1104.3038.
+12                                                                                  References
+
+
+[17] ATLAS Collaboration, “Measurement of the production
+                                                 √       cross-section of
+                     + −    + −
+     ψ(2S) → J/ψ(→ µ µ )π π in pp collisions at s = 7 TeV at ATLAS”, JHEP 09 (2014)
+     079, doi:10.1007/JHEP09(2014)079, arXiv:1407.5532.
+[18] ATLAS Collaboration, “Measurement of Upsilon production in 7 TeV pp collisions at
+     ATLAS”, Phys. Rev. D 87 (2013) 052004, doi:10.1103/PhysRevD.87.052004,
+     arXiv:1211.7255.
+[19] ATLAS Collaboration, “Measurement of the differential cross-sections
+                                                               √          of prompt and
+     non-prompt production of J/ψ and ψ(2S) in pp collisions at s = 7 and 8 TeV with the
+     ATLAS detector”, Eur. Phys. J. C 76 (2016) 283,
+     doi:10.1140/epjc/s10052-016-4050-8, arXiv:1512.03657.
+                                                                             √
+[20] LHCb Collaboration, “Measurement of J/ψ production in pp collisions at s = 7 TeV”,
+     Eur. Phys. J. C 71 (2011) 1645, doi:10.1140/epjc/s10052-011-1645-y,
+     arXiv:1103.0423.
+[21] LHCb
+     √      Collaboration, “Measurement of ψ(2S) meson production in pp collisions at
+       s = 7 TeV”, Eur. Phys. J. C 72 (2012) 2100,
+     doi:10.1140/epjc/s10052-012-2100-4, arXiv:1204.1258.
+[22] LHCb
+     √      Collaboration, “Measurement of Upsilon production in pp collisions at
+       s = 7 TeV”, Eur. Phys. J. C 72 (2012) 2025,
+     doi:10.1140/epjc/s10052-012-2025-y, arXiv:1202.6579.
+[23] ALICE Collaboration, “Measurement of prompt √    J/ψ and beauty hadron production cross
+     sections at mid-rapidity in pp collisions at s = 7 TeV”, JHEP 11 (2012) 065,
+     doi:10.1007/JHEP11(2012)065, arXiv:1205.5880.
+[24] CMS Collaboration,
+                  √      “Measurement of the inclusive Υ production cross section in pp
+     collisions at s = 7 TeV”, Phys. Rev. D 83 (2011) 112004,
+     doi:10.1103/PhysRevD.83.112004, arXiv:1012.5545.
+[25] CMS Collaboration,
+                  √      “Measurement of the Υ(1S), Υ(2S), and Υ(3S) cross sections in pp
+     collisions at s = 7 TeV”, Phys. Lett. B 727 (2013) 101,
+     doi:10.1016/j.physletb.2013.10.033, arXiv:1303.5900.
+[26] CMS Collaboration, “Measurement
+                                 √       of J/ψ and ψ(2S) prompt double-differential cross
+     sections in pp collisions at s = 7 TeV”, Phys. Rev. Lett. 114 (2015) 191802,
+     doi:10.1103/PhysRevLett.114.191802, arXiv:1502.04155.
+[27] CMS Collaboration, “Measurements
+                                 √        of the Υ(1S), Υ(2S), and Υ(3S) differential cross
+     sections in pp collisions at s = 7 TeV”, Phys. Lett. B 749 (2015) 14,
+     doi:10.1016/j.physletb.2015.07.037, arXiv:1501.07750.
+[28] CMS Collaboration, “Suppression of non-prompt J/ψ, prompt J/ψ, and Υ(1S) in PbPb
+                  √
+     collisions at sNN = 2.76 TeV”, Journal of High Energy Physics 5 (2012) 63,
+     doi:10.1007/JHEP05(2012)063.
+[29] CMS Collaboration, “Suppression of Υ(1S), Υ(2S)and Υ(3S) production in PbPb
+                  √
+     collisions at sNN = 2.76 TeV”, Phys. Lett. B 770 (2017) 357,
+     doi:10.1016/j.physletb.2017.04.031, arXiv:1611.01510.
+                                                               √
+[30] ALICE Collaboration, “J/ψ polarization in pp collisions at s = 7 TeV”, Phys. Rev. Lett.
+     108 (2012) 082001, doi:10.1103/PhysRevLett.108.082001, arXiv:1111.1630.
+References                                                                                   13
+
+
+[31] CMS Collaboration,
+                  √      “Measurement of the prompt J/ψ and ψ(2S) polarizations in pp
+     collisions at s = 7 TeV”, Phys. Lett. B 727 (2013) 381,
+     doi:10.1016/j.physletb.2013.10.055, arXiv:1307.6070.
+
+[32] CMS Collaboration,
+                   √       “Measurement of the Υ(1S), Υ(2S), and Υ(3S) polarizations in pp
+     collisions at s = 7 TeV”, Phys. Rev. Lett. 110 (2013) 081802,
+     doi:10.1103/PhysRevLett.110.081802, arXiv:1209.2922.
+                                                                              √
+[33] LHCb Collaboration, “Measurement of J/ψ polarization in pp collisions at s = 7 TeV”,
+     Eur. Phys. J. C 73 (2013) 2631, doi:10.1140/epjc/s10052-013-2631-3,
+     arXiv:1307.6379.
+
+[34] LHCb
+     √      Collaboration, “Measurement of ψ(2S) polarisation in pp collisions at
+       s = 7 TeV”, Eur. Phys. J. C 74 (2014) 2872,
+     doi:10.1140/epjc/s10052-014-2872-9, arXiv:1403.1339.
+
+[35] CMS
+     √ Collaboration, “Prompt and non-prompt J/ψ production in pp collisions at
+       s = 7 TeV”, Eur. Phys. J. C 71 (2011) 1575,
+     doi:10.1140/epjc/s10052-011-1575-8, arXiv:1011.4193.
+
+[36] Particle Data Group, C. Patrignani et al., “Review of Particle Physics”, Chin. Phys. C 40
+     (2016) 100001, doi:10.1088/1674-1137/40/10/100001.
+
+[37] CMS
+     √ Collaboration, “Performance of CMS muon reconstruction in pp collision events at
+       s = 7 TeV”, JINST 7 (2012) P10002, doi:10.1088/1748-0221/7/10/P10002,
+     arXiv:1206.4071.
+
+[38] CMS Collaboration, “The CMS experiment at the CERN LHC”, JINST 3 (2008) S08004,
+     doi:10.1088/1748-0221/3/08/S08004.
+
+[39] CMS Collaboration, “The CMS trigger system”, JINST 12 (2017) P01020,
+     doi:10.1088/1748-0221/12/01/P01020, arXiv:1609.02366.
+
+[40] T. Sjöstrand, S. Mrenna, and P. Skands, “A brief introduction to PYTHIA 8.1”, Comp.
+     Phys. Comm. 178 (2008) 852, doi:10.1016/j.cpc.2008.01.036,
+     arXiv:0710.3820.
+
+[41] M. J. Oreglia, “A study of the reactions ψ0 → γγψ”. PhD thesis, Stanford University,
+     1980. SLAC Report SLAC-R-236, see Appendix D.
+
+[42] CMS Collaboration, “Preliminary CMS luminosity measurement for the 2015 data taking
+     period”, CMS Physics Analysis Summary CMS-PAS-LUM-15-001, 2017.
+
+[43] Y.-Q. Ma, K. Wang, and K.-T. Chao, “J/ψ (ψ0 ) production at the Tevatron and LHC at
+     O(α4s v4 ) in nonrelativistic QCD”, Phys. Rev. Lett. 106 (2011) 042002,
+     doi:10.1103/PhysRevLett.106.042002, arXiv:1009.3655.
+
+[44] H. Han et al., “Υ(nS) and χb (nP) production at hadron colliders in nonrelativistic QCD”,
+     Phys. Rev. D 94 (2016) 014028, doi:10.1103/PhysRevD.94.014028,
+     arXiv:1410.8537.
+     A   Dimuon invariant mass and lifetime distributions, numerical values of differential cross
+14                        section, and correction factors for alternative polarization scenarios
+
+
+A    Dimuon invariant mass and lifetime distributions, numerical val-
+     ues of differential cross section, and correction factors for al-
+     ternative polarization scenarios
+                                          CMS                                                     2.3 fb-1 (13 TeV)                          CMS                                      2.3 fb-1 (13 TeV)
+
+
+
+
+                                                                                                                      Events / 20 µm
+              Events / 10 MeV
+
+
+
+
+                                6000                                                       20 < pT < 21 GeV                                                                    20 < pT < 21 GeV
+                                                                                           |y| < 0.3                                   104                                     |y| < 0.3
+                                5000
+                                                                                               Total fit                                                                       Total fit
+                                                                                               Background                              103                                     Prompt signal
+                                4000
+                                                                                                                                                                               Nonprompt signal
+                                                                                                                                       102                                     Background
+                                3000
+
+                                2000                                                                                                   10
+
+                                1000
+                                                                                                                                         1
+
+                                      0
+                                           2.95       3    3.05        3.1             3.15       3.2     3.25                         −0.05          0     0.05       0.1     0.15        0.2      0.25
+                                                                                    µ+µ- invariant mass [GeV]                                                                   Decay length [cm]
+                                      CMS                                                         2.7 fb-1 (13 TeV)   Events / 20 µm         CMS                                      2.7 fb-1 (13 TeV)
+         Events / 10 MeV
+
+
+
+
+                                450                                                    22.5 < pT < 25 GeV                                                                    22.5 < pT < 25 GeV
+                                400                                                    |y| < 0.3                                                                             |y| < 0.3
+                                                                                                                                       103
+                                350                                                          Total fit                                                                       Total fit
+                                300                                                          Background                                                                      Prompt signal
+                                                                                                                                       102                                   Nonprompt signal
+                                250                                                                                                                                          Background
+                                200
+                                                                                                                                       10
+                                150
+                                100
+                                                                                                                                         1
+                                50
+                                 0
+                                                3.5       3.6         3.7                   3.8         3.9                            −0.05          0     0.05       0.1     0.15        0.2      0.25
+                                                                                    µ+µ- invariant mass [GeV]                                                                   Decay length [cm]
+
+Figure A.1: Examples of fits of the dimuon invariant mass (left) and decay length (right) dis-
+tributions for J/ψ (upper row) and ψ(2S) (lower row) candidate events in the pT and |y| ranges
+given in the plots. The results from the total fit and from the various components included in
+the fit are shown.
+
+                                                                                           CMS                                                     2.7 fb-1 (13 TeV)
+                                                                  Events / 25 MeV
+
+
+
+
+                                                                                                                                             22 < pT < 24 GeV
+                                                                                    1000
+                                                                                                                                             |y| < 0.6
+
+                                                                                     800                                                         Total fit
+                                                                                                                                                 Background
+                                                                                     600
+
+                                                                                     400
+
+                                                                                     200
+
+                                                                                       0
+                                                                                                  9           9.5        10                    10.5        11
+                                                                                                                              µ+µ- invariant mass [GeV]
+
+Figure A.2: Examples of a fit of the dimuon invariant mass distribution for the Υ(nS) candidate
+events in the pT and |y| ranges given in the plot. The results from the total fit and for the
+background component are shown.
+Table A.1: Double-differential cross section times the dimuon branching fraction of the J/ψ meson for different ranges of pT , in bins of |y|
+and for the full |y| range, for the unpolarized decay hypothesis, with their statistical and systematic uncertainties in percent. The average pT
+value in each bin is also given. The global uncertainty in the integrated luminosity of 2.3% is not included in the systematic uncertainties.
+                                                                   B dσ2 /dpT dy
+   pT   h pT i         |y| < 0.3          0.3 < |y| < 0.6          0.6 < |y| < 0.9                    0.9 < |y| < 1.2             |y| < 1.2
+ [GeV] [GeV] [pb/GeV] stat % syst % [pb/GeV] stat % syst % [pb/GeV] stat % syst %               [pb/GeV] stat % syst % [pb/GeV] stat % syst %
+ 20–21  20.5 4.68E+01       1.7  5.3 4.63E+01     1.3     4.6 4.47E+01     1.2     4.5           4.51E+01     1.3     4.6 4.58E+01     0.7  4.6
+ 21–22  21.5 3.52E+01       1.3  5.4 3.65E+01     1.2     4.8 3.52E+01     1.2     4.6           3.42E+01     1.3     4.8 3.53E+01     0.6  4.8
+ 22–23  22.5 2.72E+01       1.4  5.2 2.80E+01     1.3     4.5 2.75E+01     1.3     4.4           2.69E+01     1.3     4.6 2.74E+01     0.7  4.6
+ 23–24  23.5 2.14E+01       1.5  5.0 2.25E+01     1.4     4.5 2.18E+01     1.4     4.3           2.12E+01     1.5     4.4 2.18E+01     0.7  4.5
+ 24–25  24.5 1.80E+01       1.6  5.0 1.81E+01     1.5     4.5 1.76E+01     1.5     4.3           1.66E+01     1.6     4.5 1.76E+01     0.8  4.5
+ 25–26  25.5 1.46E+01       1.8  5.0 1.50E+01     1.7     4.5 1.38E+01     1.7     4.3           1.39E+01     1.8     4.5 1.43E+01     0.9  4.5
+ 26–27  26.5 1.21E+01       1.9  5.1 1.22E+01     1.8     4.4 1.13E+01     1.9     4.3           1.11E+01     1.9     4.5 1.17E+01     0.9  4.5
+ 27–28  27.5 1.00E+01       2.1  5.0 1.00E+01     2.0     4.4 9.76E+00     2.0     4.3           9.17E+00     2.1     4.5 9.75E+00     1.0  4.5
+ 28–29  28.5 8.14E+00       2.3  5.1 8.31E+00     2.2     4.5 7.88E+00     2.2     4.3           7.67E+00     2.3     4.5 7.99E+00     1.1  4.5
+ 29–30  29.5 6.68E+00       2.5  5.2 6.92E+00     2.4     4.5 6.78E+00     2.4     4.4           6.39E+00     2.5     4.6 6.70E+00     1.2  4.5
+ 30–32  31.0 5.47E+00       1.9  5.2 5.44E+00     1.9     4.5 5.03E+00     1.9     4.3           4.91E+00     2.0     4.6 5.20E+00     1.0  4.6
+ 32–34  33.0 3.84E+00       2.3  5.4 3.84E+00     2.2     4.6 3.72E+00     2.2     4.4           3.50E+00     2.3     4.8 3.72E+00     1.1  4.7
+ 34–36  35.0 2.78E+00       2.7  5.7 2.84E+00     2.5     4.9 2.76E+00     2.5     4.9           2.62E+00     2.7     5.1 2.75E+00     1.3  5.0
+ 36–38  37.0 2.12E+00       3.1  6.2 2.03E+00     2.9     5.4 2.02E+00     3.0     5.3           1.85E+00     3.1     5.6 2.00E+00     1.5  5.5
+ 38–42  39.8 1.45E+00       2.6  6.4 1.40E+00     2.5     5.7 1.39E+00     2.5     5.6           1.33E+00     2.6     5.9 1.39E+00     1.3  5.8
+ 42–46  43.8   8.33E-01     3.3  6.9 8.33E-01     3.2     6.1 7.74E-01     3.3     5.9           7.47E-01     3.4     6.5 7.96E-01     1.7  6.2
+ 46–50  47.8   5.34E-01     4.2  7.0 5.48E-01     4.0     6.1 4.96E-01     4.2     6.1           4.54E-01     4.5     6.7 5.08E-01     2.1  6.3
+ 50–60  54.2   2.79E-01     3.7  7.8 2.74E-01     3.5     7.1 2.49E-01     3.7     7.1           2.14E-01     4.1     7.7 2.54E-01     1.9  7.2
+ 60–75  66.0   8.96E-02     5.4  8.0 9.05E-02     5.0     6.9 8.23E-02     5.6     6.9           6.64E-02     6.2     8.2 8.28E-02     2.7  7.3
+ 75–95  82.7   2.54E-02     9.0  7.7 2.62E-02     8.5     6.4 2.37E-02     8.7     6.4           2.03E-02     9.6     7.6 2.39E-02     4.4  6.3
+95–120 104.7 8.37E-03       15   8.3 8.56E-03     15      8.2 7.16E-03     15      7.3           5.61E-03     19      9.1 7.42E-03     7.7  7.9
+120–150 131.1                                                                                                             1.53E-03     17   7.9
+                                                                                                                                                   15
+Dimuon invariant mass and lifetime distributions, numerical values of differential cross
+                 section, and correction factors for alternative polarization scenarios
+
+
+
+
+                                                                                           Table A.2: Double-differential cross section times the dimuon branching fraction of the ψ(2S) meson for different ranges of pT , in bins of |y|
+                                                                                           and for the full |y| range, for the unpolarized decay hypothesis, with their statistical and systematic uncertainties in percent. The average pT
+                                                                                           value in each bin is also given. The global uncertainty in the integrated luminosity of 2.3% is not included in the systematic uncertainties.
+                                                                                                                                                              B dσ2 /dpT dy
+                                                                                              pT   h pT i         |y| < 0.3          0.3 < |y| < 0.6          0.6 < |y| < 0.9          0.9 < |y| < 1.2             |y| < 1.2
+                                                                                            [GeV] [GeV] [pb/GeV] stat % syst % [pb/GeV] stat % syst % [pb/GeV] stat % syst % [pb/GeV] stat % syst % [pb/GeV] stat % syst %
+                                                                                            20–22  21.1 1.62E+00       3.3  5.4 1.65E+00     3.3     5.5 1.67E+00     3.2     5.0 1.58E+00     3.6     5.8 1.63E+00     1.6  5.8
+                                                                                            22–25  23.7   9.46E-01     4.2  5.0 8.90E-01     4.4     5.0 1.03E+00     3.9     4.6 8.30E-01     4.8     5.3 9.19E-01     2.1  5.4
+                                                                                            25–28  26.2   5.23E-01     5.6  5.0 5.12E-01     5.7     5.2 5.23E-01     5.3     4.4 4.89E-01     6.1     6.7 5.10E-01     2.8  6.8
+                                                                                            28–30  28.7   3.45E-01     6.9  5.4 3.77E-01     6.3     5.6 3.08E-01     7.3     5.0 3.55E-01     6.8     6.7 3.45E-01     3.3  6.8
+                                                                                            30–35  32.2   1.94E-01     6.4  6.1 2.04E-01     6.2     7.0 1.82E-01     6.6     6.2 1.46E-01     8.2     11  1.80E-01     3.3  11
+                                                                                            35–40  37.2   9.68E-02     9.2  7.3 8.87E-02     9.1     8.1 8.42E-02     9.2     9.0 7.22E-02     11      12  8.46E-02     4.7  12
+                                                                                            40–55  45.7   2.93E-02     9.3  7.5 2.87E-02     9.4     8.2 2.90E-02     9.6     9.1 2.63E-02     11      12  2.81E-02     4.8  12
+                                                                                            55–75  62.5   4.75E-03     66   12  5.07E-03     21      15  4.82E-03     10      15  6.59E-03     18      17  4.97E-03     11   16
+                                                                                           75–100 84.2    1.01E-03     48   18  1.20E-03     17      17  1.24E-03     23      18  8.81E-04     23      20  1.08E-03     6.6  20
+                                                                                           100–130 111.0                                                                                                   2.85E-04     24   20
+A
+                                              16
+Table A.3: Double-differential cross section times the dimuon branching fraction of the Υ(1S) meson for different ranges of pT , in bins of |y|
+and for the full |y| range, for the unpolarized decay hypothesis, with their statistical and systematic uncertainties in percent. The average pT
+value in each bin is also given. The global uncertainty in the integrated luminosity of 2.3% is not included in the systematic uncertainties.
+                                                               B dσ2 /dpT dy
+                        pT   h pT i        |y| < 0.6           0.6 < |y| < 1.2                          |y| < 1.2
+                      [GeV] [GeV] [pb/GeV] stat % syst % [pb/GeV] stat % syst %                 [pb/GeV] stat % syst %
+                      20–22   20.9 5.76E+00     1.7  7.1  5.46E+00     1.7     7.8               5.62E+00    0.9  7.3
+                      22–24   22.9 3.60E+00     1.6  6.0  3.77E+00     2.1     6.7               3.68E+00    1.1  6.3
+                      24–26   25.0 2.50E+00     1.9  5.3  2.44E+00     2.1     6.1               2.47E+00    1.3  5.6
+                      26–28   26.9 1.72E+00     2.2  4.8  1.75E+00     2.5     5.3               1.73E+00    1.5  4.9
+                      28–30   29.0 1.19E+00     2.6  4.9  1.21E+00     3.1     5.2               1.20E+00    1.8  4.9
+                      30–32   31.0 8.50E-01     3.5  4.9  8.62E-01     3.5     5.3               8.55E-01    2.1  5.1
+                      32–34   33.0 6.43E-01     4.0  4.9  6.26E-01     4.1     5.0               6.36E-01    2.4  4.8
+                      34–36   35.0 4.88E-01     4.2  4.7  4.55E-01     5.1     5.4               4.72E-01    2.8  5.3
+                      36–38   37.0 3.52E-01     5.2  4.8  3.12E-01     6.0     6.1               3.32E-01    3.4  5.8
+                      38–40   39.0 2.37E-01     6.1  5.0  2.65E-01     6.5     6.2               2.51E-01    3.9  6.0
+                      40–43   41.4 2.17E-01     5.4  5.4  1.91E-01     5.7     5.1               2.04E-01    3.5  4.8
+                      43–46   44.4 1.39E-01     6.0  5.5  1.17E-01     7.3     5.0               1.28E-01    4.3  4.9
+                      46–50   47.9 7.87E-02     7.0  5.2  8.25E-02     7.0     5.1               8.07E-02    4.6  4.6
+                      50–55   52.3 5.36E-02     7.4  5.0  4.96E-02     8.2     5.2               5.16E-02    5.2  4.7
+                      55–60   57.3 3.72E-02     8.8  5.4  2.96E-02     11      5.6               3.33E-02    6.5  4.8
+                      60–70   64.3 1.51E-02     10   5.2  1.72E-02     11      5.6               1.62E-02    6.8  5.1
+                      70–100 80.5 3.83E-03      12   5.4  4.85E-03     12      5.6               4.32E-03    7.7  4.7
+                     100–130 111.5                                                               6.48E-04    20   4.7
+                                                                                                                                                   17
+Dimuon invariant mass and lifetime distributions, numerical values of differential cross
+                 section, and correction factors for alternative polarization scenarios
+
+
+
+
+                                                                                           Table A.4: Double-differential cross section times the dimuon branching fraction of the Υ(2S) meson for different ranges of pT , in bins of |y|
+                                                                                           and for the full |y| range, for the unpolarized decay hypothesis, with their statistical and systematic uncertainties in percent. The average pT
+                                                                                           value in each bin is also given. The global uncertainty in the integrated luminosity of 2.3% is not included in the systematic uncertainties.
+                                                                                                                                                                    B dσ2 /dpT dy
+                                                                                                                   pT   h pT i        |y| < 0.6                     0.6 < |y| < 1.2                |y| < 1.2
+                                                                                                                 [GeV] [GeV] [pb/GeV] stat % syst %           [pb/GeV] stat % syst %       [pb/GeV] stat % syst %
+                                                                                                                 20–22   20.9 2.45E+00     2.6  6.1            2.30E+00     2.7     6.9     2.38E+00    1.4  6.4
+                                                                                                                 22–24   22.9 1.55E+00     2.3  5.7            1.60E+00     3.3     7.1     1.57E+00    1.7  6.8
+                                                                                                                 24–26   25.0 1.15E+00     2.7  5.2            1.16E+00     3.1     6.1     1.16E+00    1.9  5.8
+                                                                                                                 26–28   26.9 7.54E-01     3.3  4.9            8.27E-01     3.7     5.9     7.89E-01    2.3  5.6
+                                                                                                                 28–30   29.0 5.51E-01     3.7  5.0            5.39E-01     4.6     5.8     5.45E-01    2.7  5.5
+                                                                                                                 30–32   31.0 4.02E-01     4.8  5.4            4.28E-01     5.2     6.5     4.14E-01    3.1  6.3
+                                                                                                                 32–34   33.0 3.04E-01     5.8  6.0            3.31E-01     5.8     5.7     3.18E-01    3.6  5.5
+                                                                                                                 34–36   35.0 2.36E-01     5.9  4.8            2.47E-01     7.6     6.2     2.41E-01    4.1  6.0
+                                                                                                                 36–38   37.0 1.54E-01     7.2  4.7            1.61E-01     8.3     6.0     1.57E-01    5.0  5.6
+                                                                                                                 38–40   39.0 1.28E-01     7.8  4.9            1.23E-01     9.4     5.8     1.26E-01    5.7  5.6
+                                                                                                                 40–43   41.4 9.52E-02     7.6  5.2            1.03E-01     8.0     5.4     9.89E-02    5.0  5.1
+                                                                                                                 43–46   44.4 6.83E-02     8.3  4.9            5.68E-02     11      5.0     6.19E-02    6.4  4.7
+                                                                                                                 46–50   47.9 4.53E-02     9.1  4.8            3.32E-02     12      5.4     3.93E-02    6.9  5.0
+                                                                                                                 50–55   52.3 2.81E-02     9.9  5.1            2.57E-02     12      5.4     2.68E-02    7.3  4.9
+                                                                                                                 55–60   57.3 2.00E-02     11   5.5            1.77E-02     14      5.8     1.88E-02    8.6  5.1
+                                                                                                                 60–70   64.3 8.99E-03     13   5.5            1.10E-02     13      6.3     9.96E-03    8.8  5.5
+                                                                                                                 70–100 80.5 1.91E-03      19   6.3            2.24E-03     17      7.1     2.08E-03    12   5.9
+                                                                                                                100–130 111.5                                                               5.79E-04    35   6.0
+A
+                                              18
+Table A.5: Double-differential cross section times the dimuon branching fraction of the Υ(3S) meson for different ranges of pT , in bins of |y|
+and for the full |y| range, for the unpolarized decay hypothesis, with their statistical and systematic uncertainties in percent. The average pT
+value in each bin is also given. The global uncertainty in the integrated luminosity of 2.3% is not included in the systematic uncertainties.
+                                                               B dσ2 /dpT dy
+                        pT   h pT i        |y| < 0.6           0.6 < |y| < 1.2            |y| < 1.2
+                      [GeV] [GeV] [pb/GeV] stat % syst % [pb/GeV] stat % syst % [pb/GeV] stat % syst %
+                      20–22   20.9 1.64E+00     3.3  7.3  1.55E+00     3.5     7.1 1.60E+00    1.8  6.7
+                      22–24   22.9 1.08E+00     2.9  6.0  1.21E+00     4.0     6.5 1.13E+00    2.0  6.2
+                      24–26   25.0 7.94E-01     3.4  6.2  7.81E-01     4.1     6.4 7.88E-01    2.4  6.1
+                      26–28   26.9 5.72E-01     3.9  6.2  5.84E-01     4.8     6.6 5.79E-01    2.8  6.3
+                      28–30   29.0 4.11E-01     4.5  5.8  3.79E-01     6.0     7.0 3.96E-01    3.3  6.8
+                      30–32   31.0 2.93E-01     6.0  6.4  3.10E-01     6.6     7.3 3.01E-01    3.8  7.0
+                      32–34   33.0 2.54E-01     6.9  6.1  2.13E-01     7.9     6.9 2.34E-01    4.3  6.8
+                      34–36   35.0 1.82E-01     7.0  5.9  1.84E-01     9.7     8.1 1.82E-01    4.7  7.9
+                      36–38   37.0 1.41E-01     7.9  5.8  1.27E-01     10      8.2 1.34E-01    5.4  8.0
+                      38–40   39.0 1.16E-01     8.7  6.0  1.23E-01     11      8.0 1.19E-01    5.7  7.9
+                      40–43   41.4 7.36E-02     9.4  6.4  7.23E-02     10      6.5 7.33E-02    6.1  6.1
+                      43–46   44.4 4.46E-02     11   6.3  4.81E-02     13      6.0 4.59E-02    7.7  5.8
+                      46–50   47.9 3.64E-02     11   6.8  2.84E-02     13      6.4 3.24E-02    7.7  6.0
+                      50–55   52.3 2.22E-02     12   6.9  2.28E-02     13      7.2 2.24E-02    8.4  6.9
+                      55–60   57.3 1.48E-02     14   8.1  1.35E-02     18      8.8 1.43E-02    11   8.3
+                      60–70   64.3 6.34E-03     16   10   8.50E-03     17      11  7.36E-03    10   10
+                      70–100 80.5 1.88E-03      17   13   2.10E-03     19      13  1.98E-03    12   13
+                     100–130 111.5                                                 2.30E-04    48   13
+                                                                                                                                                   19
+Dimuon invariant mass and lifetime distributions, numerical values of differential cross
+                 section, and correction factors for alternative polarization scenarios
+
+
+
+
+                                                                                           Table A.6: Multiplicative scaling factors to obtain the J/ψ differential cross sections for different polarization scenarios (λHX
+                                                                                                                                                                                                                          θ  = +1, k, −1)
+                                                                                           from the unpolarized cross section measurements given in Table A.1. The value of k is taken equal to +0.10, and corresponds to an average
+                                                                                           over pT of the CMS measurement [31].
+                                                                                                      pT       |y| < 0.3        0.3 < |y| < 0.6     0.6 < |y| < 0.9     0.9 < |y| < 1.2       |y| < 1.2
+                                                                                                    [GeV] λ =+1 λ =k λ =−1 λ =+1 λ =k λ =−1 λ =+1 λ =k λ =−1 λ =+1 λ =k λ =−1 λ =+1 λ =k λθ =−1
+                                                                                                           θ       θ     θ    θ       θ      θ    θ       θ      θ    θ       θ      θ    θ       θ
+                                                                                                    20–21  1.20 1.02     0.75 1.17 1.01      0.75 1.18 1.02      0.76 1.18 1.02      0.76 1.19 1.02     0.76
+                                                                                                    21–22  1.19 1.02     0.76 1.17 1.01      0.76 1.18 1.02      0.77 1.17 1.02      0.77 1.18 1.02     0.76
+                                                                                                    22–23  1.19 1.02     0.76 1.16 1.01      0.77 1.17 1.02      0.78 1.17 1.02      0.78 1.17 1.02     0.77
+                                                                                                    23–24  1.18 1.02     0.77 1.16 1.01      0.77 1.16 1.02      0.78 1.16 1.02      0.78 1.16 1.02     0.78
+                                                                                                    24–25  1.17 1.02     0.77 1.15 1.01      0.78 1.16 1.02      0.79 1.15 1.02      0.79 1.16 1.02     0.78
+                                                                                                    25–26  1.17 1.02     0.78 1.15 1.01      0.78 1.15 1.02      0.79 1.15 1.02      0.79 1.15 1.02     0.79
+                                                                                                    26–27  1.16 1.02     0.78 1.14 1.01      0.79 1.15 1.02      0.79 1.14 1.02      0.80 1.15 1.02     0.79
+                                                                                                    27–28  1.16 1.02     0.79 1.14 1.01      0.79 1.14 1.02      0.80 1.14 1.02      0.81 1.14 1.02     0.80
+                                                                                                    28–29  1.15 1.02     0.79 1.13 1.01      0.80 1.13 1.02      0.81 1.14 1.02      0.81 1.14 1.01     0.80
+                                                                                                    29–30  1.14 1.02     0.80 1.13 1.01      0.80 1.13 1.02      0.81 1.13 1.02      0.81 1.13 1.01     0.81
+                                                                                                    30–32  1.14 1.02     0.81 1.12 1.01      0.81 1.12 1.01      0.82 1.13 1.01      0.82 1.13 1.01     0.81
+                                                                                                    32–34  1.13 1.02     0.82 1.11 1.01      0.82 1.12 1.01      0.82 1.12 1.01      0.82 1.12 1.01     0.82
+                                                                                                    34–36  1.13 1.02     0.82 1.11 1.01      0.82 1.11 1.01      0.83 1.11 1.01      0.83 1.12 1.01     0.83
+                                                                                                    36–38  1.11 1.01     0.83 1.11 1.01      0.83 1.11 1.01      0.84 1.10 1.01      0.85 1.11 1.01     0.84
+                                                                                                    38–42  1.11 1.01     0.84 1.10 1.01      0.84 1.10 1.01      0.85 1.10 1.01      0.85 1.10 1.01     0.84
+                                                                                                    42–46  1.10 1.01     0.85 1.09 1.01      0.85 1.09 1.01      0.86 1.09 1.01      0.85 1.09 1.01     0.85
+                                                                                                    46–50  1.09 1.01     0.86 1.08 1.01      0.86 1.08 1.01      0.87 1.09 1.01      0.86 1.09 1.01     0.86
+                                                                                                    50–60  1.08 1.01     0.88 1.06 1.01      0.89 1.07 1.01      0.88 1.08 1.01      0.88 1.07 1.01     0.88
+                                                                                                    60–75  1.06 1.01     0.89 1.05 1.00      0.90 1.06 1.01      0.90 1.06 1.01      0.90 1.06 1.01     0.90
+                                                                                                    75–95  1.05 1.01     0.91 1.04 1.00      0.93 1.04 1.01      0.92 1.05 1.01      0.91 1.04 1.01     0.92
+                                                                                                    95–120 1.03 1.01     0.93 1.02 1.00      0.94 1.03 1.00      0.94 1.04 1.01      0.92 1.03 1.00     0.93
+                                                                                                   120–150                                                                                1.03 1.00     0.93
+A
+                                              20
+Table A.7: Multiplicative scaling factors to obtain the ψ(2S) differential cross sections for different polarization scenarios (λHX
+                                                                                                                                 θ  = +1, k, −1)
+from the unpolarized cross section measurements given in Table A.1. The value of k is taken equal to +0.03, and corresponds to an average
+over pT of the CMS measurement [31].
+           pT        |y| < 0.3         0.3 < |y| < 0.6     0.6 < |y| < 0.9     0.9 < |y| < 1.2       |y| < 1.2
+         [GeV] λθ =+1 λθ =k λθ =−1 λθ =+1 λθ =k λθ =−1 λθ =+1 λθ =k λθ =−1 λθ =+1 λθ =k λθ =−1 λθ =+1 λθ =k λθ =−1
+         20–22  1.19 1.01      0.76 1.17 0.99       0.75 1.18 1.01      0.77 1.17 1.01      0.77 1.18 1.00     0.76
+         22–25  1.18 1.01      0.77 1.15 1.00       0.77 1.16 1.01      0.78 1.16 1.01      0.78 1.16 1.00     0.78
+         25–28  1.16 1.01      0.79 1.14 1.00       0.79 1.14 1.00      0.80 1.15 1.01      0.79 1.15 1.00     0.79
+         28–30  1.15 1.01      0.80 1.12 1.00       0.80 1.13 1.00      0.81 1.13 1.00      0.81 1.13 1.00     0.81
+         30–35  1.14 1.01      0.81 1.12 1.00       0.81 1.12 1.00      0.82 1.12 1.00      0.82 1.12 1.00     0.82
+         35–40  1.12 1.01      0.83 1.10 1.00       0.83 1.11 1.00      0.84 1.11 1.00      0.84 1.11 1.00     0.83
+         40–55  1.10 1.00      0.85 1.08 1.00       0.86 1.08 1.00      0.86 1.08 1.00      0.87 1.09 1.00     0.86
+         55–75  1.07 1.00      0.88 1.07 1.00       0.88 1.06 1.00      0.89 1.06 1.00      0.89 1.07 1.00     0.88
+         75–100 1.04 1.00      0.92 1.03 1.00       0.93 1.03 1.00      0.94 1.04 1.00      0.92 1.03 1.00     0.93
+        100–130                                                                                  1.03 1.00     0.93
+                                                                                                                                                   21
+     A   Dimuon invariant mass and lifetime distributions, numerical values of differential cross
+22                        section, and correction factors for alternative polarization scenarios
+
+
+
+
+Table A.8: Multiplicative scaling factors to obtain the Υ(1S) differential cross sections for differ-
+ent polarization scenarios (λHXθ  = +1, k, −1) from the unpolarized cross section measurements
+given in Table A.3. The parameter k corresponds to a linear interpolation of the CMS measured
+value of λHX
+          θ [32] as a function of pT for pT < 50 GeV. For pT > 50 GeV, where no measurements
+of λHX
+    θ  exist, k is taken as the average of all the measured values of λHX
+                                                                        θ for pT < 50 GeV.
+   pT         |y| < 0.6             0.6 < |y| < 1.2          |y| < 1.2
+ [GeV] λθ = +1 λθ = k λθ = −1 λθ = +1 λθ = k λθ = −1 λθ = +1 λθ = k λθ = −1
+ 20–22   1.14    0.98   0.78    1.14     0.98      0.78 1.14    0.98   0.78
+ 22–24   1.13    0.99   0.78    1.13     0.99      0.78 1.13    0.99   0.78
+ 24–26   1.12    0.99   0.79    1.12     0.99      0.79 1.12    0.99   0.79
+ 26–28   1.11    0.99   0.80    1.11     0.99      0.80 1.11    0.99   0.80
+ 28–30   1.11    0.99   0.81    1.11     0.99      0.81 1.11    0.99   0.81
+ 30–32   1.10    1.01   0.81    1.10     1.01      0.81 1.10    1.01   0.81
+ 32–34   1.10    1.01   0.82    1.10     1.01      0.82 1.10    1.01   0.82
+ 34–36   1.09    1.01   0.82    1.09     1.01      0.82 1.09    1.01   0.82
+ 36–38   1.09    1.01   0.83    1.09     1.01      0.83 1.09    1.01   0.83
+ 38–40   1.10    1.01   0.83    1.10     1.01      0.83 1.10    1.01   0.83
+ 40–43   1.08    1.01   0.84    1.08     1.01      0.84 1.08    1.01   0.84
+ 43–46   1.07    1.01   0.85    1.07     1.01      0.85 1.07    1.01   0.85
+ 46–50   1.07    1.01   0.85    1.07     1.01      0.85 1.07    1.01   0.85
+ 50–55   1.06    0.99   0.86    1.06     0.99      0.86 1.06    0.99   0.86
+ 55–60   1.05    0.99   0.88    1.05     0.99      0.88 1.05    0.99   0.88
+ 60–70   1.05    0.99   0.88    1.05     0.99      0.88 1.05    0.99   0.88
+70–100   1.03    1.00   0.92    1.03     1.00      0.92 1.03    1.00   0.92
+100–130                                                 1.03    1.00   0.92
+                                                                                                  23
+
+
+
+
+Table A.9: Multiplicative scaling factors to obtain the Υ(2S) differential cross sections for differ-
+ent polarization scenarios (λHXθ  = +1, k, −1) from the unpolarized cross section measurements
+given in Table A.4. The parameter k corresponds to a linear interpolation of the CMS measured
+value of λHX
+          θ [32] as a function of pT for pT < 50 GeV. For pT > 50 GeV, where no measurements
+of λHX
+    θ  exist, k is taken as the average of all the measured values of λHX
+                                                                        θ for pT < 50 GeV.
+   pT         |y| < 0.6             0.6 < |y| < 1.2          |y| < 1.2
+ [GeV] λθ = +1 λθ = k λθ = −1 λθ = +1 λθ = k λθ = −1 λθ = +1 λθ = k λθ = −1
+ 20–22   1.14    1.03   0.78    1.14     1.03      0.78 1.14    1.03   0.78
+ 22–24   1.13    1.03   0.79    1.13     1.03      0.79 1.13    1.03   0.79
+ 24–26   1.12    1.03   0.79    1.12     1.03      0.79 1.12    1.03   0.79
+ 26–28   1.11    1.03   0.80    1.11     1.03      0.80 1.11    1.03   0.80
+ 28–30   1.11    1.03   0.81    1.11     1.03      0.81 1.11    1.03   0.81
+ 30–32   1.10    1.03   0.82    1.10     1.03      0.82 1.10    1.03   0.82
+ 32–34   1.10    1.03   0.82    1.10     1.03      0.82 1.10    1.03   0.82
+ 34–36   1.09    1.03   0.82    1.09     1.03      0.82 1.09    1.03   0.82
+ 36–38   1.09    1.03   0.83    1.09     1.03      0.83 1.09    1.03   0.83
+ 38–40   1.09    1.03   0.83    1.09     1.03      0.83 1.09    1.03   0.83
+ 40–43   1.08    1.03   0.84    1.08     1.03      0.84 1.08    1.03   0.84
+ 43–46   1.07    1.02   0.85    1.07     1.02      0.85 1.07    1.02   0.85
+ 46–50   1.07    1.02   0.86    1.07     1.02      0.86 1.07    1.02   0.86
+ 50–55   1.06    0.99   0.87    1.06     0.99      0.87 1.06    0.99   0.87
+ 55–60   1.06    0.99   0.86    1.06     0.99      0.86 1.06    0.99   0.86
+ 60–70   1.05    0.99   0.90    1.05     0.99      0.90 1.05    0.99   0.90
+70–100   1.03    0.99   0.92    1.03     0.99      0.92 1.03    0.99   0.92
+100–130                                                 1.03    0.99   0.92
+     A   Dimuon invariant mass and lifetime distributions, numerical values of differential cross
+24                        section, and correction factors for alternative polarization scenarios
+
+
+
+
+Table A.10: Multiplicative scaling factors to obtain the Υ(3S) differential cross sections for dif-
+ferent polarization scenarios (λHX
+                                 θ    = +1, k, −1) from the unpolarized cross section measure-
+ments given in Table A.5. The parameter k corresponds to a linear interpolation of the CMS
+measured value of λHX θ   [32] as a function of pT for pT < 50 GeV. For pT > 50 GeV, where
+no measurements of λHX                                                                      HX
+                        θ exist, k is taken as the average of all the measured values of λθ for
+pT < 50 GeV, which are all consistent with a single value.
+   pT         |y| < 0.6             0.6 < |y| < 1.2          |y| < 1.2
+ [GeV] λθ = +1 λθ = k λθ = −1 λθ = +1 λθ = k λθ = −1 λθ = +1 λθ = k λθ = −1
+ 20–22   1.13    1.03   0.78    1.13     1.03      0.78 1.13    1.03   0.78
+ 22–24   1.13    1.02   0.79    1.13     1.02      0.79 1.13    1.02   0.79
+ 24–26   1.12    1.02   0.79    1.12     1.02      0.79 1.12    1.02   0.79
+ 26–28   1.11    1.02   0.80    1.11     1.02      0.80 1.11    1.02   0.80
+ 28–30   1.11    1.02   0.81    1.11     1.02      0.81 1.11    1.02   0.81
+ 30–32   1.10    1.03   0.82    1.10     1.03      0.82 1.10    1.03   0.82
+ 32–34   1.10    1.03   0.82    1.10     1.03      0.82 1.10    1.03   0.82
+ 34–36   1.09    1.03   0.83    1.09     1.03      0.83 1.09    1.03   0.83
+ 36–38   1.09    1.03   0.83    1.09     1.03      0.83 1.09    1.03   0.83
+ 38–40   1.09    1.03   0.84    1.09     1.03      0.84 1.09    1.03   0.84
+ 40–43   1.08    1.03   0.84    1.08     1.03      0.84 1.08    1.03   0.84
+ 43–46   1.07    1.02   0.85    1.07     1.02      0.85 1.07    1.02   0.85
+ 46–50   1.06    1.02   0.86    1.06     1.02      0.86 1.06    1.02   0.86
+ 50–55   1.06    0.99   0.87    1.06     0.99      0.87 1.06    0.99   0.87
+ 55–60   1.06    0.99   0.87    1.06     0.99      0.87 1.06    0.99   0.87
+ 60–70   1.05    0.99   0.89    1.05     0.99      0.89 1.05    0.99   0.89
+70–100   1.03    0.99   0.92    1.03     0.99      0.92 1.03    0.99   0.92
+100–130                                                 1.03    0.99   0.92
+Table A.11: Ratios of the pT differential cross sections times dimuon branching fractions of the prompt ψ(2S) to J/ψ, Υ(2S) to Υ(1S), and
+Υ(3S) to Υ(1S) mesons for |y| < 1.2, with their statistical and systematic uncertainties in percent.
+                              pT          ψ(2S) / J/ψ         pT        Υ(2S)/ Υ(1S)         Υ(3S)/ Υ(1S)
+                            [GeV]          stat % syst %    [GeV]         stat % syst %        stat % syst %
+                            20–21    0.04     3      11     20–22    0.42 1.7      8.5    0.28 2.0      9.1
+                            21–22    0.04     3      11     22–24    0.43 2.0      8.4    0.31 2.3      7.5
+                            22–23    0.04     3      11     24–26    0.47 2.3      6.9    0.32 2.7      7.1
+                            23–24    0.05     3      11     26–28    0.46 2.8      6.2    0.33 3.1      6.8
+                            24–25    0.04     4      13     28–30    0.45 3.2      6.4    0.33 3.8      8.1
+                            25–26    0.04     4      14     30–32    0.48 3.8      7.8    0.35 4.3      8.9
+                            26–27    0.04     5      15     32–34    0.50 4.3      6.3    0.37 4.9      8.3
+                            27–28    0.04     5      16     34–36    0.51 5.0      7.9    0.38 5.5      11
+                            28–29    0.05     5      17     36–38    0.47 6.1      8.3    0.40 6.4      11
+                            29–30    0.05     6      17     38–40    0.50 6.8      8.3    0.47 6.9      11
+                            30–32    0.04     5      18     40–43    0.48 6.1      5.7    0.36 7.0      7.1
+                            32–34    0.04     6      18     43–46    0.48 7.7      5.4    0.36 8.8      6.6
+                            34–36    0.04     6      20     46–50    0.49 8.3      5.3    0.40 9.0      6.6
+                            36–38    0.04     7      20     50–55    0.52 8.9      5.4    0.43 9.8      7.5
+                            38–42    0.05     6      21     55–60    0.56   11     6.2    0.43   12     9.2
+                            42–46    0.04     9      22     60–70    0.62   11     6.6    0.46   12     11
+                            46–50    0.05    10      25    70–100    0.48   14     6.6    0.46   14     14
+                            50–60    0.05    10      25    100–130   0.89   40     6.6    0.35   52     14
+                            60–75    0.04    42      26
+                            75–95    0.05    10      29
+                           95–120    0.06    21      38
+                           120–150   0.07    71      38
+                                                                                                                                            25
+     A   Dimuon invariant mass and lifetime distributions, numerical values of differential cross
+26                        section, and correction factors for alternative polarization scenarios
+                                                                                               27
+
+
+B    The CMS Collaboration
+Yerevan Physics Institute, Yerevan, Armenia
+A.M. Sirunyan, A. Tumasyan
+Institut für Hochenergiephysik, Wien, Austria
+W. Adam, F. Ambrogi, E. Asilar, T. Bergauer, J. Brandstetter, E. Brondolin, M. Dragicevic,
+J. Erö, M. Flechl, M. Friedl, R. Frühwirth1 , V.M. Ghete, J. Grossmann, J. Hrubec, M. Jeitler1 ,
+A. König, N. Krammer, I. Krätschmer, D. Liko, T. Madlener, I. Mikulec, E. Pree, D. Rabady,
+N. Rad, H. Rohringer, J. Schieck1 , R. Schöfbeck, M. Spanring, D. Spitzbart, W. Waltenberger,
+J. Wittmann, C.-E. Wulz1 , M. Zarucki
+Institute for Nuclear Problems, Minsk, Belarus
+V. Chekhovsky, V. Mossolov, J. Suarez Gonzalez
+Universiteit Antwerpen, Antwerpen, Belgium
+E.A. De Wolf, D. Di Croce, X. Janssen, J. Lauwers, M. Van De Klundert, H. Van Haevermaet,
+P. Van Mechelen, N. Van Remortel
+Vrije Universiteit Brussel, Brussel, Belgium
+S. Abu Zeid, F. Blekman, J. D’Hondt, I. De Bruyn, J. De Clercq, K. Deroover, G. Flouris,
+D. Lontkovskyi, S. Lowette, S. Moortgat, L. Moreels, Q. Python, K. Skovpen, S. Tavernier,
+W. Van Doninck, P. Van Mulders, I. Van Parijs
+Université Libre de Bruxelles, Bruxelles, Belgium
+H. Brun, B. Clerbaux, G. De Lentdecker, H. Delannoy, G. Fasanella, L. Favart, R. Goldouzian,
+A. Grebenyuk, G. Karapostoli, T. Lenzi, J. Luetic, T. Maerschalk, A. Marinov, A. Randle-conde,
+T. Seva, C. Vander Velde, P. Vanlaer, D. Vannerom, R. Yonamine, F. Zenoni, F. Zhang2
+Ghent University, Ghent, Belgium
+A. Cimmino, T. Cornelis, D. Dobur, A. Fagot, M. Gul, I. Khvastunov, D. Poyraz, C. Roskas,
+S. Salva, M. Tytgat, W. Verbeke, N. Zaganidis
+Université Catholique de Louvain, Louvain-la-Neuve, Belgium
+H. Bakhshiansohi, O. Bondu, S. Brochet, G. Bruno, C. Caputo, A. Caudron, S. De Visscher,
+C. Delaere, M. Delcourt, B. Francois, A. Giammanco, A. Jafari, M. Komm, G. Krintiras,
+V. Lemaitre, A. Magitteri, A. Mertens, M. Musich, K. Piotrzkowski, L. Quertenmont, M. Vidal
+Marono, S. Wertz
+Université de Mons, Mons, Belgium
+N. Beliy
+Centro Brasileiro de Pesquisas Fisicas, Rio de Janeiro, Brazil
+W.L. Aldá Júnior, F.L. Alves, G.A. Alves, L. Brito, M. Correa Martins Junior, C. Hensel,
+A. Moraes, M.E. Pol, P. Rebello Teles
+Universidade do Estado do Rio de Janeiro, Rio de Janeiro, Brazil
+E. Belchior Batista Das Chagas, W. Carvalho, J. Chinellato3 , A. Custódio, E.M. Da Costa,
+G.G. Da Silveira4 , D. De Jesus Damiao, S. Fonseca De Souza, L.M. Huertas Guativa,
+H. Malbouisson, M. Melo De Almeida, C. Mora Herrera, L. Mundim, H. Nogima, A. Santoro,
+A. Sznajder, E.J. Tonelli Manganote3 , F. Torres Da Silva De Araujo, A. Vilela Pereira
+Universidade Estadual Paulista a , Universidade Federal do ABC b , São Paulo, Brazil
+S. Ahujaa , C.A. Bernardesa , T.R. Fernandez Perez Tomeia , E.M. Gregoresb , P.G. Mercadanteb ,
+S.F. Novaesa , Sandra S. Padulaa , D. Romero Abadb , J.C. Ruiz Vargasa
+28                                                                   B      The CMS Collaboration
+
+
+Institute for Nuclear Research and Nuclear Energy, Bulgarian Academy of Sciences, Sofia,
+Bulgaria
+A. Aleksandrov, R. Hadjiiska, P. Iaydjiev, M. Misheva, M. Rodozov, M. Shopova, S. Stoykova,
+G. Sultanov
+University of Sofia, Sofia, Bulgaria
+A. Dimitrov, I. Glushkov, L. Litov, B. Pavlov, P. Petkov
+Beihang University, Beijing, China
+W. Fang5 , X. Gao5
+Institute of High Energy Physics, Beijing, China
+M. Ahmad, J.G. Bian, G.M. Chen, H.S. Chen, M. Chen, Y. Chen, C.H. Jiang, D. Leggat, H. Liao,
+Z. Liu, F. Romeo, S.M. Shaheen, A. Spiezia, J. Tao, C. Wang, Z. Wang, E. Yazgan, H. Zhang,
+S. Zhang, J. Zhao
+State Key Laboratory of Nuclear Physics and Technology, Peking University, Beijing, China
+Y. Ban, G. Chen, Q. Li, S. Liu, Y. Mao, S.J. Qian, D. Wang, Z. Xu
+Universidad de Los Andes, Bogota, Colombia
+C. Avila, A. Cabrera, L.F. Chaparro Sierra, C. Florez, C.F. González Hernández, J.D. Ruiz
+Alvarez
+University of Split, Faculty of Electrical Engineering, Mechanical Engineering and Naval
+Architecture, Split, Croatia
+B. Courbon, N. Godinovic, D. Lelas, I. Puljak, P.M. Ribeiro Cipriano, T. Sculac
+University of Split, Faculty of Science, Split, Croatia
+Z. Antunovic, M. Kovac
+Institute Rudjer Boskovic, Zagreb, Croatia
+V. Brigljevic, D. Ferencek, K. Kadija, B. Mesic, A. Starodumov6 , T. Susa
+University of Cyprus, Nicosia, Cyprus
+M.W. Ather, A. Attikis, G. Mavromanolakis, J. Mousa, C. Nicolaou, F. Ptochos, P.A. Razis,
+H. Rykaczewski
+Charles University, Prague, Czech Republic
+M. Finger7 , M. Finger Jr.7
+Universidad San Francisco de Quito, Quito, Ecuador
+E. Carrera Jarrin
+Academy of Scientific Research and Technology of the Arab Republic of Egypt, Egyptian
+Network of High Energy Physics, Cairo, Egypt
+Y. Assran8,9 , S. Elgammal9 , A. Mahrous10
+National Institute of Chemical Physics and Biophysics, Tallinn, Estonia
+R.K. Dewanjee, M. Kadastik, L. Perrini, M. Raidal, A. Tiko, C. Veelken
+Department of Physics, University of Helsinki, Helsinki, Finland
+P. Eerola, J. Pekkanen, M. Voutilainen
+Helsinki Institute of Physics, Helsinki, Finland
+J. Härkönen, T. Järvinen, V. Karimäki, R. Kinnunen, T. Lampén, K. Lassila-Perini, S. Lehti,
+T. Lindén, P. Luukka, E. Tuominen, J. Tuominiemi, E. Tuovinen
+                                                                                                29
+
+
+Lappeenranta University of Technology, Lappeenranta, Finland
+J. Talvitie, T. Tuuva
+IRFU, CEA, Université Paris-Saclay, Gif-sur-Yvette, France
+M. Besancon, F. Couderc, M. Dejardin, D. Denegri, J.L. Faure, F. Ferri, S. Ganjour, S. Ghosh,
+A. Givernaud, P. Gras, G. Hamel de Monchenault, P. Jarry, I. Kucher, E. Locci, M. Machet,
+J. Malcles, G. Negro, J. Rander, A. Rosowsky, M.Ö. Sahin, M. Titov
+Laboratoire Leprince-Ringuet, Ecole polytechnique, CNRS/IN2P3, Université Paris-Saclay,
+Palaiseau, France
+A. Abdulsalam, I. Antropov, S. Baffioni, F. Beaudette, P. Busson, L. Cadamuro, C. Charlot,
+R. Granier de Cassagnac, M. Jo, S. Lisniak, A. Lobanov, J. Martin Blanco, M. Nguyen,
+C. Ochando, G. Ortona, P. Paganini, P. Pigard, S. Regnard, R. Salerno, J.B. Sauvan, Y. Sirois,
+A.G. Stahl Leiton, T. Strebler, Y. Yilmaz, A. Zabi, A. Zghiche
+Université de Strasbourg, CNRS, IPHC UMR 7178, F-67000 Strasbourg, France
+J.-L. Agram11 , J. Andrea, D. Bloch, J.-M. Brom, M. Buttignol, E.C. Chabert, N. Chanon,
+C. Collard, E. Conte11 , X. Coubez, J.-C. Fontaine11 , D. Gelé, U. Goerlach, M. Jansová, A.-C. Le
+Bihan, N. Tonon, P. Van Hove
+Centre de Calcul de l’Institut National de Physique Nucleaire et de Physique des Particules,
+CNRS/IN2P3, Villeurbanne, France
+S. Gadrat
+Université de Lyon, Université Claude Bernard Lyon 1, CNRS-IN2P3, Institut de Physique
+Nucléaire de Lyon, Villeurbanne, France
+S. Beauceron, C. Bernet, G. Boudoul, R. Chierici, D. Contardo, P. Depasse, H. El Mamouni,
+J. Fay, L. Finco, S. Gascon, M. Gouzevitch, G. Grenier, B. Ille, F. Lagarde, I.B. Laktineh,
+M. Lethuillier, L. Mirabito, A.L. Pequegnot, S. Perries, A. Popov12 , V. Sordini, M. Vander
+Donckt, S. Viret
+Georgian Technical University, Tbilisi, Georgia
+A. Khvedelidze7
+Tbilisi State University, Tbilisi, Georgia
+I. Bagaturia13
+RWTH Aachen University, I. Physikalisches Institut, Aachen, Germany
+C. Autermann, S. Beranek, L. Feld, M.K. Kiesel, K. Klein, M. Lipinski, M. Preuten,
+C. Schomakers, J. Schulz, T. Verlage, V. Zhukov12
+RWTH Aachen University, III. Physikalisches Institut A, Aachen, Germany
+A. Albert, E. Dietz-Laursonn, D. Duchardt, M. Endres, M. Erdmann, S. Erdweg, T. Esch,
+R. Fischer, A. Güth, M. Hamer, T. Hebbeker, C. Heidemann, K. Hoepfner, S. Knutzen,
+M. Merschmeyer, A. Meyer, P. Millet, S. Mukherjee, M. Olschewski, K. Padeken, T. Pook,
+M. Radziej, H. Reithler, M. Rieger, F. Scheuch, D. Teyssier, S. Thüer
+RWTH Aachen University, III. Physikalisches Institut B, Aachen, Germany
+G. Flügge, B. Kargoll, T. Kress, A. Künsken, J. Lingemann, T. Müller, A. Nehrkorn, A. Nowack,
+C. Pistone, O. Pooth, A. Stahl14
+Deutsches Elektronen-Synchrotron, Hamburg, Germany
+M. Aldaya Martin, T. Arndt, C. Asawatangtrakuldee, K. Beernaert, O. Behnke, U. Behrens,
+A. Bermúdez Martı́nez, A.A. Bin Anuar, K. Borras15 , V. Botta, A. Campbell, P. Connor,
+C. Contreras-Campana, F. Costanza, C. Diez Pardos, G. Eckerlin, D. Eckstein, T. Eichhorn,
+30                                                                        B   The CMS Collaboration
+
+
+E. Eren, E. Gallo16 , J. Garay Garcia, A. Geiser, A. Gizhko, J.M. Grados Luyando, A. Grohsjean,
+P. Gunnellini, M. Guthoff, A. Harb, J. Hauk, M. Hempel17 , H. Jung, A. Kalogeropoulos,
+M. Kasemann, J. Keaveney, C. Kleinwort, I. Korol, D. Krücker, W. Lange, A. Lelek, T. Lenz,
+J. Leonard, K. Lipka, W. Lohmann17 , R. Mankel, I.-A. Melzer-Pellmann, A.B. Meyer, G. Mittag,
+J. Mnich, A. Mussgiller, E. Ntomari, D. Pitzl, A. Raspereza, B. Roland, M. Savitskyi, P. Saxena,
+R. Shevchenko, S. Spannagel, N. Stefaniuk, G.P. Van Onsem, R. Walsh, Y. Wen, K. Wichmann,
+C. Wissing, O. Zenaiev
+University of Hamburg, Hamburg, Germany
+S. Bein, V. Blobel, M. Centis Vignali, T. Dreyer, E. Garutti, D. Gonzalez, J. Haller, A. Hinzmann,
+M. Hoffmann, A. Karavdina, R. Klanner, R. Kogler, N. Kovalchuk, S. Kurz, T. Lapsien,
+I. Marchesini, D. Marconi, M. Meyer, M. Niedziela, D. Nowatschin, F. Pantaleo14 , T. Peiffer,
+A. Perieanu, C. Scharf, P. Schleper, A. Schmidt, S. Schumann, J. Schwandt, J. Sonneveld,
+H. Stadie, G. Steinbrück, F.M. Stober, M. Stöver, H. Tholen, D. Troendle, E. Usai, L. Vanelderen,
+A. Vanhoefer, B. Vormwald
+Institut für Experimentelle Kernphysik, Karlsruhe, Germany
+M. Akbiyik, C. Barth, S. Baur, E. Butz, R. Caspart, T. Chwalek, F. Colombo, W. De Boer,
+A. Dierlamm, B. Freund, R. Friese, M. Giffels, A. Gilbert, D. Haitz, F. Hartmann14 , S.M. Heindl,
+U. Husemann, F. Kassel14 , S. Kudella, H. Mildner, M.U. Mozer, Th. Müller, M. Plagge, G. Quast,
+K. Rabbertz, M. Schröder, I. Shvetsov, G. Sieber, H.J. Simonis, R. Ulrich, S. Wayand, M. Weber,
+T. Weiler, S. Williamson, C. Wöhrmann, R. Wolf
+Institute of Nuclear and Particle Physics (INPP), NCSR Demokritos, Aghia Paraskevi,
+Greece
+G. Anagnostou, G. Daskalakis, T. Geralis, V.A. Giakoumopoulou, A. Kyriakis, D. Loukas,
+I. Topsis-Giotis
+National and Kapodistrian University of Athens, Athens, Greece
+G. Karathanasis, S. Kesisoglou, A. Panagiotou, N. Saoulidou
+National Technical University of Athens, Athens, Greece
+K. Kousouris
+University of Ioánnina, Ioánnina, Greece
+I. Evangelou, C. Foudas, P. Kokkas, S. Mallios, N. Manthos, I. Papadopoulos, E. Paradas,
+J. Strologas, F.A. Triantis
+MTA-ELTE Lendület CMS Particle and Nuclear Physics Group, Eötvös Loránd University,
+Budapest, Hungary
+M. Csanad, N. Filipovic, G. Pasztor, G.I. Veres18
+Wigner Research Centre for Physics, Budapest, Hungary
+G. Bencze, C. Hajdu, D. Horvath19 , Á. Hunyadi, F. Sikler, V. Veszpremi, A.J. Zsigmond
+Institute of Nuclear Research ATOMKI, Debrecen, Hungary
+N. Beni, S. Czellar, J. Karancsi20 , A. Makovec, J. Molnar, Z. Szillasi
+Institute of Physics, University of Debrecen, Debrecen, Hungary
+M. Bartók18 , P. Raics, Z.L. Trocsanyi, B. Ujvari
+Indian Institute of Science (IISc), Bangalore, India
+S. Choudhury, J.R. Komaragiri
+                                                                                                       31
+
+
+National Institute of Science Education and Research, Bhubaneswar, India
+S. Bahinipati21 , S. Bhowmik, P. Mal, K. Mandal, A. Nayak22 , D.K. Sahoo21 , N. Sahoo, S.K. Swain
+Panjab University, Chandigarh, India
+S. Bansal, S.B. Beri, V. Bhatnagar, R. Chawla, N. Dhingra, A.K. Kalsi, A. Kaur, M. Kaur,
+R. Kumar, P. Kumari, A. Mehta, J.B. Singh, G. Walia
+University of Delhi, Delhi, India
+Ashok Kumar, Aashaq Shah, A. Bhardwaj, S. Chauhan, B.C. Choudhary, R.B. Garg, S. Keshri,
+A. Kumar, S. Malhotra, M. Naimuddin, K. Ranjan, R. Sharma
+Saha Institute of Nuclear Physics, HBNI, Kolkata, India
+R. Bhardwaj, R. Bhattacharya, S. Bhattacharya, U. Bhawandeep, S. Dey, S. Dutt, S. Dutta,
+S. Ghosh, N. Majumdar, A. Modak, K. Mondal, S. Mukhopadhyay, S. Nandan, A. Purohit,
+A. Roy, D. Roy, S. Roy Chowdhury, S. Sarkar, M. Sharan, S. Thakur
+Indian Institute of Technology Madras, Madras, India
+P.K. Behera
+Bhabha Atomic Research Centre, Mumbai, India
+R. Chudasama, D. Dutta, V. Jha, V. Kumar, A.K. Mohanty14 , P.K. Netrakanti, L.M. Pant,
+P. Shukla, A. Topkar
+Tata Institute of Fundamental Research-A, Mumbai, India
+T. Aziz, S. Dugad, B. Mahakud, S. Mitra, G.B. Mohanty, N. Sur, B. Sutar
+Tata Institute of Fundamental Research-B, Mumbai, India
+S. Banerjee, S. Bhattacharya, S. Chatterjee, P. Das, M. Guchait, Sa. Jain, S. Kumar, M. Maity23 ,
+G. Majumder, K. Mazumdar, T. Sarkar23 , N. Wickramage24
+Indian Institute of Science Education and Research (IISER), Pune, India
+S. Chauhan, S. Dube, V. Hegde, A. Kapoor, K. Kothekar, S. Pandey, A. Rane, S. Sharma
+Institute for Research in Fundamental Sciences (IPM), Tehran, Iran
+S. Chenarani25 , E. Eskandari Tadavani, S.M. Etesami25 , M. Khakzad, M. Mohammadi
+Najafabadi, M. Naseri, S. Paktinat Mehdiabadi26 , F. Rezaei Hosseinabadi, B. Safarzadeh27 ,
+M. Zeinali
+University College Dublin, Dublin, Ireland
+M. Felcini, M. Grunewald
+INFN Sezione di Bari a , Università di Bari b , Politecnico di Bari c , Bari, Italy
+M. Abbresciaa,b , C. Calabriaa,b , A. Colaleoa , D. Creanzaa,c , L. Cristellaa,b , N. De Filippisa,c ,
+M. De Palmaa,b , F. Erricoa,b , L. Fiorea , G. Iasellia,c , S. Lezkia,b , G. Maggia,c , M. Maggia ,
+G. Minielloa,b , S. Mya,b , S. Nuzzoa,b , A. Pompilia,b , G. Pugliesea,c , R. Radognaa , A. Ranieria ,
+G. Selvaggia,b , A. Sharmaa , L. Silvestrisa,14 , R. Vendittia , P. Verwilligena
+INFN Sezione di Bologna a , Università di Bologna b , Bologna, Italy
+G. Abbiendia , C. Battilanaa,b , D. Bonacorsia,b , S. Braibant-Giacomellia,b , R. Campaninia,b ,
+P. Capiluppia,b , A. Castroa,b , F.R. Cavalloa , S.S. Chhibraa , G. Codispotia,b , M. Cuffiania,b ,
+G.M. Dallavallea , F. Fabbria , A. Fanfania,b , D. Fasanellaa,b , P. Giacomellia , C. Grandia ,
+L. Guiduccia,b , S. Marcellinia , G. Masettia , A. Montanaria , F.L. Navarriaa,b , A. Perrottaa ,
+A.M. Rossia,b , T. Rovellia,b , G.P. Sirolia,b , N. Tosia
+INFN Sezione di Catania a , Università di Catania b , Catania, Italy
+S. Albergoa,b , S. Costaa,b , A. Di Mattiaa , F. Giordanoa,b , R. Potenzaa,b , A. Tricomia,b , C. Tuvea,b
+32                                                                           B   The CMS Collaboration
+
+
+INFN Sezione di Firenze a , Università di Firenze b , Firenze, Italy
+G. Barbaglia , K. Chatterjeea,b , V. Ciullia,b , C. Civininia , R. D’Alessandroa,b , E. Focardia,b ,
+P. Lenzia,b , M. Meschinia , S. Paolettia , L. Russoa,28 , G. Sguazzonia , D. Stroma , L. Viliania,b,14
+INFN Laboratori Nazionali di Frascati, Frascati, Italy
+L. Benussi, S. Bianco, F. Fabbri, D. Piccolo, F. Primavera14
+INFN Sezione di Genova a , Università di Genova b , Genova, Italy
+V. Calvellia,b , F. Ferroa , E. Robuttia , S. Tosia,b
+INFN Sezione di Milano-Bicocca a , Università di Milano-Bicocca b , Milano, Italy
+A. Benagliaa , L. Brianzaa,b , F. Brivioa,b , V. Cirioloa,b , M.E. Dinardoa,b , S. Fiorendia,b , S. Gennaia ,
+A. Ghezzia,b , P. Govonia,b , M. Malbertia,b , S. Malvezzia , R.A. Manzonia,b , D. Menascea ,
+L. Moronia , M. Paganonia,b , K. Pauwelsa,b , D. Pedrinia , S. Pigazzinia,b,29 , S. Ragazzia,b ,
+T. Tabarelli de Fatisa,b
+INFN Sezione di Napoli a , Università di Napoli ’Federico II’ b , Napoli, Italy, Università della
+Basilicata c , Potenza, Italy, Università G. Marconi d , Roma, Italy
+S. Buontempoa , N. Cavalloa,c , S. Di Guidaa,d,14 , F. Fabozzia,c , F. Fiengaa,b , A.O.M. Iorioa,b ,
+W.A. Khana , L. Listaa , S. Meolaa,d,14 , P. Paoluccia,14 , C. Sciaccaa,b , F. Thyssena
+INFN Sezione di Padova a , Università di Padova b , Padova, Italy, Università di Trento c ,
+Trento, Italy
+P. Azzia,14 , N. Bacchettaa , L. Benatoa,b , D. Biselloa,b , A. Bolettia,b , R. Carlina,b , A. Carvalho
+Antunes De Oliveiraa,b , P. Checchiaa , M. Dall’Ossoa,b , P. De Castro Manzanoa , T. Dorigoa ,
+U. Dossellia , F. Gasparinia,b , U. Gasparinia,b , A. Gozzelinoa , S. Lacapraraa , P. Lujan,
+M. Margonia,b , A.T. Meneguzzoa,b , N. Pozzobona,b , P. Ronchesea,b , R. Rossina,b , F. Simonettoa,b ,
+E. Torassaa , S. Venturaa , P. Zottoa,b
+INFN Sezione di Pavia a , Università di Pavia b , Pavia, Italy
+A. Braghieria , A. Magnania,b , P. Montagnaa,b , S.P. Rattia,b , V. Rea , M. Ressegotti, C. Riccardia,b ,
+P. Salvinia , I. Vaia,b , P. Vituloa,b
+INFN Sezione di Perugia a , Università di Perugia b , Perugia, Italy
+L. Alunni Solestizia,b , M. Biasinia,b , G.M. Bileia , C. Cecchia,b , D. Ciangottinia,b , L. Fanòa,b ,
+P. Laricciaa,b , R. Leonardia,b , E. Manonia , G. Mantovania,b , V. Mariania,b , M. Menichellia ,
+A. Rossia,b , A. Santocchiaa,b , D. Spigaa
+INFN Sezione di Pisa a , Università di Pisa b , Scuola Normale Superiore di Pisa c , Pisa, Italy
+K. Androsova , P. Azzurria,14 , G. Bagliesia , T. Boccalia , L. Borrello, R. Castaldia , M.A. Cioccia,b ,
+R. Dell’Orsoa , G. Fedia , L. Gianninia,c , A. Giassia , M.T. Grippoa,28 , F. Ligabuea,c , T. Lomtadzea ,
+E. Mancaa,c , G. Mandorlia,c , L. Martinia,b , A. Messineoa,b , F. Pallaa , A. Rizzia,b , A. Savoy-
+Navarroa,30 , P. Spagnoloa , R. Tenchinia , G. Tonellia,b , A. Venturia , P.G. Verdinia
+INFN Sezione di Roma a , Sapienza Università di Roma b , Rome, Italy
+L. Baronea,b , F. Cavallaria , M. Cipriania,b , N. Dacia , D. Del Rea,b,14 , E. Di Marcoa,b , M. Diemoza ,
+S. Gellia,b , E. Longoa,b , F. Margarolia,b , B. Marzocchia,b , P. Meridiania , G. Organtinia,b ,
+R. Paramattia,b , F. Preiatoa,b , S. Rahatloua,b , C. Rovellia , F. Santanastasioa,b
+INFN Sezione di Torino a , Università di Torino b , Torino, Italy, Università del Piemonte
+Orientale c , Novara, Italy
+N. Amapanea,b , R. Arcidiaconoa,c , S. Argiroa,b , M. Arneodoa,c , N. Bartosika , R. Bellana,b ,
+C. Biinoa , N. Cartigliaa , M. Costaa,b , R. Covarellia,b , P. De Remigisa , A. Deganoa,b , N. Demariaa ,
+B. Kiania,b , C. Mariottia , S. Masellia , E. Migliorea,b , V. Monacoa,b , E. Monteila,b , M. Montenoa ,
+                                                                                                      33
+
+
+M.M. Obertinoa,b , L. Pachera,b , N. Pastronea , M. Pelliccionia , G.L. Pinna Angionia,b , F. Raveraa,b ,
+A. Romeroa,b , M. Ruspaa,c , R. Sacchia,b , K. Shchelinaa,b , V. Solaa , A. Solanoa,b , A. Staianoa ,
+P. Traczyka,b
+INFN Sezione di Trieste a , Università di Trieste b , Trieste, Italy
+S. Belfortea , M. Casarsaa , F. Cossuttia , G. Della Riccaa,b , A. Zanettia
+Kyungpook National University, Daegu, Korea
+D.H. Kim, G.N. Kim, M.S. Kim, J. Lee, S. Lee, S.W. Lee, C.S. Moon, Y.D. Oh, S. Sekmen, D.C. Son,
+Y.C. Yang
+Chonbuk National University, Jeonju, Korea
+A. Lee
+Chonnam National University, Institute for Universe and Elementary Particles, Kwangju,
+Korea
+H. Kim, D.H. Moon, G. Oh
+Hanyang University, Seoul, Korea
+J.A. Brochero Cifuentes, J. Goh, T.J. Kim
+Korea University, Seoul, Korea
+S. Cho, S. Choi, Y. Go, D. Gyun, S. Ha, B. Hong, Y. Jo, Y. Kim, K. Lee, K.S. Lee, S. Lee, J. Lim,
+S.K. Park, Y. Roh
+Seoul National University, Seoul, Korea
+J. Almond, J. Kim, J.S. Kim, H. Lee, K. Lee, K. Nam, S.B. Oh, B.C. Radburn-Smith, S.h. Seo,
+U.K. Yang, H.D. Yoo, G.B. Yu
+University of Seoul, Seoul, Korea
+M. Choi, H. Kim, J.H. Kim, J.S.H. Lee, I.C. Park
+Sungkyunkwan University, Suwon, Korea
+Y. Choi, C. Hwang, J. Lee, I. Yu
+Vilnius University, Vilnius, Lithuania
+V. Dudenas, A. Juodagalvis, J. Vaitkus
+National Centre for Particle Physics, Universiti Malaya, Kuala Lumpur, Malaysia
+I. Ahmed, Z.A. Ibrahim, M.A.B. Md Ali31 , F. Mohamad Idris32 , W.A.T. Wan Abdullah,
+M.N. Yusli, Z. Zolkapli
+Centro de Investigacion y de Estudios Avanzados del IPN, Mexico City, Mexico
+Reyes-Almanza, R, Ramirez-Sanchez, G., Duran-Osuna, M. C., H. Castilla-Valdez, E. De La
+Cruz-Burelo, I. Heredia-De La Cruz33 , Rabadan-Trejo, R. I., R. Lopez-Fernandez, J. Mejia
+Guisao, A. Sanchez-Hernandez, C.H. Zepeda Fernandez
+Universidad Iberoamericana, Mexico City, Mexico
+S. Carrillo Moreno, C. Oropeza Barrera, F. Vazquez Valencia
+Benemerita Universidad Autonoma de Puebla, Puebla, Mexico
+I. Pedraza, H.A. Salazar Ibarguen, C. Uribe Estrada
+Universidad Autónoma de San Luis Potosı́, San Luis Potosı́, Mexico
+A. Morelos Pineda
+34                                                                   B   The CMS Collaboration
+
+
+University of Auckland, Auckland, New Zealand
+D. Krofcheck
+University of Canterbury, Christchurch, New Zealand
+P.H. Butler
+National Centre for Physics, Quaid-I-Azam University, Islamabad, Pakistan
+A. Ahmad, M. Ahmad, Q. Hassan, H.R. Hoorani, A. Saddique, M.A. Shah, M. Shoaib, M. Waqas
+National Centre for Nuclear Research, Swierk, Poland
+H. Bialkowska, M. Bluj, B. Boimska, T. Frueboes, M. Górski, M. Kazana, K. Nawrocki,
+M. Szleper, P. Zalewski
+Institute of Experimental Physics, Faculty of Physics, University of Warsaw, Warsaw, Poland
+K. Bunkowski, A. Byszuk34 , K. Doroba, A. Kalinowski, M. Konecki, J. Krolikowski, M. Misiura,
+M. Olszewski, A. Pyskir, M. Walczak
+Laboratório de Instrumentação e Fı́sica Experimental de Partı́culas, Lisboa, Portugal
+P. Bargassa, C. Beirão Da Cruz E Silva, A. Di Francesco, P. Faccioli, B. Galinhas, M. Gallinaro,
+J. Hollar, N. Leonardo, L. Lloret Iglesias, M.V. Nemallapudi, J. Seixas, G. Strong, O. Toldaiev,
+D. Vadruccio, J. Varela
+Joint Institute for Nuclear Research, Dubna, Russia
+A. Baginyan, A. Golunov, I. Golutvin, A. Kamenev, V. Karjavin, I. Kashunin, V. Korenkov,
+G. Kozlov, A. Lanev, A. Malakhov, V. Matveev35,36 , V. Palichik, V. Perelygin, S. Shmatov,
+V. Smirnov, V. Trofimov, B.S. Yuldashev37 , A. Zarubin
+Petersburg Nuclear Physics Institute, Gatchina (St. Petersburg), Russia
+Y. Ivanov, V. Kim38 , E. Kuznetsova39 , P. Levchenko, V. Murzin, V. Oreshkin, I. Smirnov,
+V. Sulimov, L. Uvarov, S. Vavilov, A. Vorobyev
+Institute for Nuclear Research, Moscow, Russia
+Yu. Andreev, A. Dermenev, S. Gninenko, N. Golubev, A. Karneyeu, M. Kirsanov, N. Krasnikov,
+A. Pashenkov, D. Tlisov, A. Toropin
+Institute for Theoretical and Experimental Physics, Moscow, Russia
+V. Epshteyn, V. Gavrilov, N. Lychkovskaya, V. Popov, I. Pozdnyakov, G. Safronov,
+A. Spiridonov, A. Stepennov, M. Toms, E. Vlasov, A. Zhokin
+Moscow Institute of Physics and Technology, Moscow, Russia
+T. Aushev, A. Bylinkin36
+National Research Nuclear University ’Moscow Engineering Physics Institute’ (MEPhI),
+Moscow, Russia
+R. Chistov40 , M. Danilov40 , P. Parygin, D. Philippov, S. Polikarpov, E. Tarkovskii
+P.N. Lebedev Physical Institute, Moscow, Russia
+V. Andreev, M. Azarkin36 , I. Dremin36 , M. Kirakosyan36 , A. Terkulov
+Skobeltsyn Institute of Nuclear Physics, Lomonosov Moscow State University, Moscow,
+Russia
+A. Baskakov, A. Belyaev, E. Boos, M. Dubinin41 , L. Dudko, A. Ershov, A. Gribushin,
+V. Klyukhin, O. Kodolova, I. Lokhtin, I. Miagkov, S. Obraztsov, S. Petrushanko, V. Savrin,
+A. Snigirev
+                                                                                                  35
+
+
+Novosibirsk State University (NSU), Novosibirsk, Russia
+V. Blinov42 , Y.Skovpen42 , D. Shtol42
+State Research Center of Russian Federation, Institute for High Energy Physics, Protvino,
+Russia
+I. Azhgirey, I. Bayshev, S. Bitioukov, D. Elumakhov, V. Kachanov, A. Kalinin, D. Konstantinov,
+V. Krychkine, V. Petrov, R. Ryutin, A. Sobol, S. Troshin, N. Tyurin, A. Uzunian, A. Volkov
+University of Belgrade, Faculty of Physics and Vinca Institute of Nuclear Sciences, Belgrade,
+Serbia
+P. Adzic43 , P. Cirkovic, D. Devetak, M. Dordevic, J. Milosevic, V. Rekovic
+Centro de Investigaciones Energéticas Medioambientales y Tecnológicas (CIEMAT),
+Madrid, Spain
+J. Alcaraz Maestre, M. Barrio Luna, M. Cerrada, N. Colino, B. De La Cruz, A. Delgado Peris,
+A. Escalante Del Valle, C. Fernandez Bedoya, J.P. Fernández Ramos, J. Flix, M.C. Fouz, P. Garcia-
+Abia, O. Gonzalez Lopez, S. Goy Lopez, J.M. Hernandez, M.I. Josa, A. Pérez-Calero Yzquierdo,
+J. Puerta Pelayo, A. Quintario Olmeda, I. Redondo, L. Romero, M.S. Soares, A. Álvarez
+Fernández
+Universidad Autónoma de Madrid, Madrid, Spain
+C. Albajar, J.F. de Trocóniz, M. Missiroli, D. Moran
+Universidad de Oviedo, Oviedo, Spain
+J. Cuevas, C. Erice, J. Fernandez Menendez, I. Gonzalez Caballero, J.R. González Fernández,
+E. Palencia Cortezon, S. Sanchez Cruz, P. Vischia, J.M. Vizan Garcia
+Instituto de Fı́sica de Cantabria (IFCA), CSIC-Universidad de Cantabria, Santander, Spain
+I.J. Cabrillo, A. Calderon, B. Chazin Quero, E. Curras, J. Duarte Campderros, M. Fernandez,
+J. Garcia-Ferrero, G. Gomez, A. Lopez Virto, J. Marco, C. Martinez Rivero, P. Martinez Ruiz del
+Arbol, F. Matorras, J. Piedra Gomez, T. Rodrigo, A. Ruiz-Jimeno, L. Scodellaro, N. Trevisani,
+I. Vila, R. Vilar Cortabitarte
+CERN, European Organization for Nuclear Research, Geneva, Switzerland
+D. Abbaneo, E. Auffray, P. Baillon, A.H. Ball, D. Barney, M. Bianco, P. Bloch, A. Bocci, C. Botta,
+T. Camporesi, R. Castello, M. Cepeda, G. Cerminara, E. Chapon, Y. Chen, D. d’Enterria,
+A. Dabrowski, V. Daponte, A. David, M. De Gruttola, A. De Roeck, M. Dobson, B. Dorney,
+T. du Pree, M. Dünser, N. Dupont, A. Elliott-Peisert, P. Everaerts, F. Fallavollita, G. Franzoni,
+J. Fulcher, W. Funk, D. Gigi, K. Gill, F. Glege, D. Gulhan, P. Harris, J. Hegeman, V. Innocente,
+P. Janot, O. Karacheban17 , J. Kieseler, H. Kirschenmann, V. Knünz, A. Kornmayer14 ,
+M.J. Kortelainen, M. Krammer1 , C. Lange, P. Lecoq, C. Lourenço, M.T. Lucchini, L. Malgeri,
+M. Mannelli, A. Martelli, F. Meijers, J.A. Merlin, S. Mersi, E. Meschi, P. Milenovic44 , F. Moortgat,
+M. Mulders, H. Neugebauer, S. Orfanelli, L. Orsini, L. Pape, E. Perez, M. Peruzzi, A. Petrilli,
+G. Petrucciani, A. Pfeiffer, M. Pierini, A. Racz, T. Reis, G. Rolandi45 , M. Rovere, H. Sakulin,
+C. Schäfer, C. Schwick, M. Seidel, M. Selvaggi, A. Sharma, P. Silva, P. Sphicas46 , A. Stakia,
+J. Steggemann, M. Stoye, M. Tosi, D. Treille, A. Triossi, A. Tsirou, V. Veckalns47 , M. Verweij,
+W.D. Zeuner
+Paul Scherrer Institut, Villigen, Switzerland
+W. Bertl† , L. Caminada48 , K. Deiters, W. Erdmann, R. Horisberger, Q. Ingram, H.C. Kaestli,
+D. Kotlinski, U. Langenegger, T. Rohe, S.A. Wiederkehr
+ETH Zurich - Institute for Particle Physics and Astrophysics (IPA), Zurich, Switzerland
+F. Bachmair, L. Bäni, P. Berger, L. Bianchini, B. Casal, G. Dissertori, M. Dittmar, M. Donegà,
+36                                                                     B   The CMS Collaboration
+
+
+C. Grab, C. Heidegger, D. Hits, J. Hoss, G. Kasieczka, T. Klijnsma, W. Lustermann, B. Mangano,
+M. Marionneau, M.T. Meinhard, D. Meister, F. Micheli, P. Musella, F. Nessi-Tedaldi, F. Pandolfi,
+J. Pata, F. Pauss, G. Perrin, L. Perrozzi, M. Quittnat, M. Reichmann, M. Schönenberger,
+L. Shchutska, V.R. Tavolaro, K. Theofilatos, M.L. Vesterbacka Olsson, R. Wallny, D.H. Zhu
+Universität Zürich, Zurich, Switzerland
+T.K. Aarrestad, C. Amsler49 , M.F. Canelli, A. De Cosa, R. Del Burgo, S. Donato, C. Galloni,
+T. Hreus, B. Kilminster, J. Ngadiuba, D. Pinna, G. Rauco, P. Robmann, D. Salerno, C. Seitz,
+Y. Takahashi, A. Zucchetta
+National Central University, Chung-Li, Taiwan
+V. Candelise, T.H. Doan, Sh. Jain, R. Khurana, C.M. Kuo, W. Lin, A. Pozdnyakov, S.S. Yu
+National Taiwan University (NTU), Taipei, Taiwan
+Arun Kumar, P. Chang, Y. Chao, K.F. Chen, P.H. Chen, F. Fiori, W.-S. Hou, Y. Hsiung, Y.F. Liu,
+R.-S. Lu, E. Paganis, A. Psallidas, A. Steen, J.f. Tsai
+Chulalongkorn University, Faculty of Science, Department of Physics, Bangkok, Thailand
+B. Asavapibhop, K. Kovitanggoon, G. Singh, N. Srimanobhas
+Çukurova University, Physics Department, Science and Art Faculty, Adana, Turkey
+M.N. Bakirci50 , F. Boran, S. Damarseckin, Z.S. Demiroglu, C. Dozen, I. Dumanoglu, E. Eskut,
+S. Girgis, G. Gokbulut, Y. Guler, I. Hos51 , E.E. Kangal52 , O. Kara, U. Kiminsu, M. Oglakci,
+G. Onengut53 , K. Ozdemir54 , S. Ozturk50 , H. Topakli50 , S. Turkcapar, I.S. Zorbakir, C. Zorbilmez
+Middle East Technical University, Physics Department, Ankara, Turkey
+B. Bilin, G. Karapinar55 , K. Ocalan56 , M. Yalvac, M. Zeyrek
+Bogazici University, Istanbul, Turkey
+E. Gülmez, M. Kaya57 , O. Kaya58 , S. Tekten, E.A. Yetkin59
+Istanbul Technical University, Istanbul, Turkey
+M.N. Agaras, S. Atay, A. Cakir, K. Cankocak
+Institute for Scintillation Materials of National Academy of Science of Ukraine, Kharkov,
+Ukraine
+B. Grynyov
+National Scientific Center, Kharkov Institute of Physics and Technology, Kharkov, Ukraine
+L. Levchuk, P. Sorokin
+University of Bristol, Bristol, United Kingdom
+R. Aggleton, F. Ball, L. Beck, J.J. Brooke, D. Burns, E. Clement, D. Cussans, O. Davignon,
+H. Flacher, J. Goldstein, M. Grimes, G.P. Heath, H.F. Heath, J. Jacob, L. Kreczko, C. Lucas,
+D.M. Newbold60 , S. Paramesvaran, A. Poll, T. Sakuma, S. Seif El Nasr-storey, D. Smith,
+V.J. Smith
+Rutherford Appleton Laboratory, Didcot, United Kingdom
+K.W. Bell, A. Belyaev61 , C. Brew, R.M. Brown, L. Calligaris, D. Cieri, D.J.A. Cockerill,
+J.A. Coughlan, K. Harder, S. Harper, E. Olaiya, D. Petyt, C.H. Shepherd-Themistocleous,
+A. Thea, I.R. Tomalin, T. Williams
+Imperial College, London, United Kingdom
+G. Auzinger, R. Bainbridge, S. Breeze, O. Buchmuller, A. Bundock, S. Casasso, M. Citron,
+D. Colling, L. Corpe, P. Dauncey, G. Davies, A. De Wit, M. Della Negra, R. Di Maria,
+A. Elwood, Y. Haddad, G. Hall, G. Iles, T. James, R. Lane, C. Laner, L. Lyons, A.-M. Magnan,
+                                                                                                37
+
+
+S. Malik, L. Mastrolorenzo, T. Matsushita, J. Nash, A. Nikitenko6 , V. Palladino, M. Pesaresi,
+D.M. Raymond, A. Richards, A. Rose, E. Scott, C. Seez, A. Shtipliyski, S. Summers, A. Tapper,
+K. Uchida, M. Vazquez Acosta62 , T. Virdee14 , N. Wardle, D. Winterbottom, J. Wright, S.C. Zenz
+Brunel University, Uxbridge, United Kingdom
+J.E. Cole, P.R. Hobson, A. Khan, P. Kyberd, I.D. Reid, P. Symonds, L. Teodorescu, M. Turner
+Baylor University, Waco, USA
+A. Borzou, K. Call, J. Dittmann, K. Hatakeyama, H. Liu, N. Pastika, C. Smith
+Catholic University of America, Washington DC, USA
+R. Bartek, A. Dominguez
+The University of Alabama, Tuscaloosa, USA
+A. Buccilli, S.I. Cooper, C. Henderson, P. Rumerio, C. West
+Boston University, Boston, USA
+D. Arcaro, A. Avetisyan, T. Bose, D. Gastler, D. Rankin, C. Richardson, J. Rohlf, L. Sulak, D. Zou
+Brown University, Providence, USA
+G. Benelli, D. Cutts, A. Garabedian, J. Hakala, U. Heintz, J.M. Hogan, K.H.M. Kwok, E. Laird,
+G. Landsberg, Z. Mao, M. Narain, J. Pazzini, S. Piperov, S. Sagir, R. Syarif, D. Yu
+University of California, Davis, Davis, USA
+R. Band, C. Brainerd, R. Breedon, D. Burns, M. Calderon De La Barca Sanchez, M. Chertok,
+J. Conway, R. Conway, P.T. Cox, R. Erbacher, C. Flores, G. Funk, M. Gardner, W. Ko, R. Lander,
+C. Mclean, M. Mulhearn, D. Pellett, J. Pilot, S. Shalhout, M. Shi, J. Smith, M. Squires, D. Stolp,
+K. Tos, M. Tripathi, Z. Wang
+University of California, Los Angeles, USA
+M. Bachtis, C. Bravo, R. Cousins, A. Dasgupta, A. Florent, J. Hauser, M. Ignatenko, N. Mccoll,
+D. Saltzberg, C. Schnaible, V. Valuev
+University of California, Riverside, Riverside, USA
+E. Bouvier, K. Burt, R. Clare, J. Ellison, J.W. Gary, S.M.A. Ghiasi Shirazi, G. Hanson, J. Heilman,
+P. Jandir, E. Kennedy, F. Lacroix, O.R. Long, M. Olmedo Negrete, M.I. Paneva, A. Shrinivas,
+W. Si, L. Wang, H. Wei, S. Wimpenny, B. R. Yates
+University of California, San Diego, La Jolla, USA
+J.G. Branson, S. Cittolin, M. Derdzinski, R. Gerosa, B. Hashemi, A. Holzner, D. Klein, G. Kole,
+V. Krutelyov, J. Letts, I. Macneill, M. Masciovecchio, D. Olivito, S. Padhi, M. Pieri, M. Sani,
+V. Sharma, S. Simon, M. Tadel, A. Vartak, S. Wasserbaech63 , J. Wood, F. Würthwein, A. Yagil,
+G. Zevi Della Porta
+University of California, Santa Barbara - Department of Physics, Santa Barbara, USA
+N. Amin, R. Bhandari, J. Bradmiller-Feld, C. Campagnari, A. Dishaw, V. Dutta, M. Franco
+Sevilla, C. George, F. Golf, L. Gouskos, J. Gran, R. Heller, J. Incandela, S.D. Mullin,
+A. Ovcharova, H. Qu, J. Richman, D. Stuart, I. Suarez, J. Yoo
+California Institute of Technology, Pasadena, USA
+D. Anderson, J. Bendavid, A. Bornheim, J.M. Lawhorn, H.B. Newman, T. Nguyen, C. Pena,
+M. Spiropulu, J.R. Vlimant, S. Xie, Z. Zhang, R.Y. Zhu
+Carnegie Mellon University, Pittsburgh, USA
+M.B. Andrews, T. Ferguson, T. Mudholkar, M. Paulini, J. Russ, M. Sun, H. Vogel, I. Vorobiev,
+M. Weinberg
+38                                                                    B   The CMS Collaboration
+
+
+University of Colorado Boulder, Boulder, USA
+J.P. Cumalat, W.T. Ford, F. Jensen, A. Johnson, M. Krohn, S. Leontsinis, T. Mulholland,
+K. Stenson, S.R. Wagner
+Cornell University, Ithaca, USA
+J. Alexander, J. Chaves, J. Chu, S. Dittmer, K. Mcdermott, N. Mirman, J.R. Patterson,
+A. Rinkevicius, A. Ryd, L. Skinnari, L. Soffi, S.M. Tan, Z. Tao, J. Thom, J. Tucker, P. Wittich,
+M. Zientek
+Fermi National Accelerator Laboratory, Batavia, USA
+S. Abdullin, M. Albrow, G. Apollinari, A. Apresyan, A. Apyan, S. Banerjee, L.A.T. Bauerdick,
+A. Beretvas, J. Berryhill, P.C. Bhat, G. Bolla† , K. Burkett, J.N. Butler, A. Canepa, G.B. Cerati,
+H.W.K. Cheung, F. Chlebana, M. Cremonesi, J. Duarte, V.D. Elvira, J. Freeman, Z. Gecse,
+E. Gottschalk, L. Gray, D. Green, S. Grünendahl, O. Gutsche, R.M. Harris, S. Hasegawa,
+J. Hirschauer, Z. Hu, B. Jayatilaka, S. Jindariani, M. Johnson, U. Joshi, B. Klima, B. Kreis,
+S. Lammel, D. Lincoln, R. Lipton, M. Liu, T. Liu, R. Lopes De Sá, J. Lykken, K. Maeshima,
+N. Magini, J.M. Marraffino, S. Maruyama, D. Mason, P. McBride, P. Merkel, S. Mrenna, S. Nahn,
+V. O’Dell, K. Pedro, O. Prokofyev, G. Rakness, L. Ristori, B. Schneider, E. Sexton-Kennedy,
+A. Soha, W.J. Spalding, L. Spiegel, S. Stoynev, J. Strait, N. Strobbe, L. Taylor, S. Tkaczyk,
+N.V. Tran, L. Uplegger, E.W. Vaandering, C. Vernieri, M. Verzocchi, R. Vidal, M. Wang,
+H.A. Weber, A. Whitbeck
+University of Florida, Gainesville, USA
+D. Acosta, P. Avery, P. Bortignon, D. Bourilkov, A. Brinkerhoff, A. Carnes, M. Carver, D. Curry,
+R.D. Field, I.K. Furic, J. Konigsberg, A. Korytov, K. Kotov, P. Ma, K. Matchev, H. Mei,
+G. Mitselmakher, D. Rank, D. Sperka, N. Terentyev, L. Thomas, J. Wang, S. Wang, J. Yelton
+Florida International University, Miami, USA
+Y.R. Joshi, S. Linn, P. Markowitz, J.L. Rodriguez
+Florida State University, Tallahassee, USA
+A. Ackert, T. Adams, A. Askew, S. Hagopian, V. Hagopian, K.F. Johnson, T. Kolberg,
+G. Martinez, T. Perry, H. Prosper, A. Saha, A. Santra, V. Sharma, R. Yohay
+Florida Institute of Technology, Melbourne, USA
+M.M. Baarmand, V. Bhopatkar, S. Colafranceschi, M. Hohlmann, D. Noonan, T. Roy,
+F. Yumiceva
+University of Illinois at Chicago (UIC), Chicago, USA
+M.R. Adams, L. Apanasevich, D. Berry, R.R. Betts, R. Cavanaugh, X. Chen, O. Evdokimov,
+C.E. Gerber, D.A. Hangal, D.J. Hofman, K. Jung, J. Kamin, I.D. Sandoval Gonzalez, M.B. Tonjes,
+H. Trauger, N. Varelas, H. Wang, Z. Wu, J. Zhang
+The University of Iowa, Iowa City, USA
+B. Bilki64 , W. Clarida, K. Dilsiz65 , S. Durgut, R.P. Gandrajula, M. Haytmyradov, V. Khristenko,
+J.-P. Merlo, H. Mermerkaya66 , A. Mestvirishvili, A. Moeller, J. Nachtman, H. Ogul67 , Y. Onel,
+F. Ozok68 , A. Penzo, C. Snyder, E. Tiras, J. Wetzel, K. Yi
+Johns Hopkins University, Baltimore, USA
+B. Blumenfeld, A. Cocoros, N. Eminizer, D. Fehling, L. Feng, A.V. Gritsan, P. Maksimovic,
+J. Roskes, U. Sarica, M. Swartz, M. Xiao, C. You
+The University of Kansas, Lawrence, USA
+A. Al-bataineh, P. Baringer, A. Bean, S. Boren, J. Bowen, J. Castle, S. Khalil, A. Kropivnitskaya,
+                                                                                               39
+
+
+D. Majumder, W. Mcbrayer, M. Murray, C. Royon, S. Sanders, E. Schmitz, J.D. Tapia Takaki,
+Q. Wang
+Kansas State University, Manhattan, USA
+A. Ivanov, K. Kaadze, Y. Maravin, A. Mohammadi, L.K. Saini, N. Skhirtladze, S. Toda
+Lawrence Livermore National Laboratory, Livermore, USA
+F. Rebassoo, D. Wright
+University of Maryland, College Park, USA
+C. Anelli, A. Baden, O. Baron, A. Belloni, B. Calvert, S.C. Eno, C. Ferraioli, N.J. Hadley,
+S. Jabeen, G.Y. Jeng, R.G. Kellogg, J. Kunkle, A.C. Mignerey, F. Ricci-Tam, Y.H. Shin, A. Skuja,
+S.C. Tonwar
+Massachusetts Institute of Technology, Cambridge, USA
+D. Abercrombie, B. Allen, V. Azzolini, R. Barbieri, A. Baty, R. Bi, S. Brandt, W. Busza,
+I.A. Cali, M. D’Alfonso, Z. Demiragli, G. Gomez Ceballos, M. Goncharov, D. Hsu, Y. Iiyama,
+G.M. Innocenti, M. Klute, D. Kovalskyi, Y.S. Lai, Y.-J. Lee, A. Levin, P.D. Luckey, B. Maier,
+A.C. Marini, C. Mcginn, C. Mironov, S. Narayanan, X. Niu, C. Paus, C. Roland, G. Roland,
+J. Salfeld-Nebgen, G.S.F. Stephans, K. Tatar, D. Velicanu, J. Wang, T.W. Wang, B. Wyslouch
+University of Minnesota, Minneapolis, USA
+A.C. Benvenuti, R.M. Chatterjee, A. Evans, P. Hansen, S. Kalafut, Y. Kubota, Z. Lesko, J. Mans,
+S. Nourbakhsh, N. Ruckstuhl, R. Rusack, J. Turkewitz
+University of Mississippi, Oxford, USA
+J.G. Acosta, S. Oliveros
+University of Nebraska-Lincoln, Lincoln, USA
+E. Avdeeva, K. Bloom, D.R. Claes, C. Fangmeier, R. Gonzalez Suarez, R. Kamalieddin,
+I. Kravchenko, J. Monroy, J.E. Siado, G.R. Snow, B. Stieger
+State University of New York at Buffalo, Buffalo, USA
+M. Alyari, J. Dolen, A. Godshalk, C. Harrington, I. Iashvili, D. Nguyen, A. Parker, S. Rappoccio,
+B. Roozbahani
+Northeastern University, Boston, USA
+G. Alverson, E. Barberis, A. Hortiangtham, A. Massironi, D.M. Morse, D. Nash, T. Orimoto,
+R. Teixeira De Lima, D. Trocino, D. Wood
+Northwestern University, Evanston, USA
+S. Bhattacharya, O. Charaf, K.A. Hahn, N. Mucia, N. Odell, B. Pollack, M.H. Schmitt, K. Sung,
+M. Trovato, M. Velasco
+University of Notre Dame, Notre Dame, USA
+N. Dev, M. Hildreth, K. Hurtado Anampa, C. Jessop, D.J. Karmgard, N. Kellams, K. Lannon,
+N. Loukas, N. Marinelli, F. Meng, C. Mueller, Y. Musienko35 , M. Planer, A. Reinsvold, R. Ruchti,
+G. Smith, S. Taroni, M. Wayne, M. Wolf, A. Woodard
+The Ohio State University, Columbus, USA
+J. Alimena, L. Antonelli, B. Bylsma, L.S. Durkin, S. Flowers, B. Francis, A. Hart, C. Hill, W. Ji,
+B. Liu, W. Luo, D. Puigh, B.L. Winer, H.W. Wulsin
+Princeton University, Princeton, USA
+S. Cooperstein, O. Driga, P. Elmer, J. Hardenbrook, P. Hebda, S. Higginbotham, D. Lange, J. Luo,
+D. Marlow, K. Mei, I. Ojalvo, J. Olsen, C. Palmer, P. Piroué, D. Stickland, C. Tully
+40                                                                 B   The CMS Collaboration
+
+
+University of Puerto Rico, Mayaguez, USA
+S. Malik, S. Norberg
+Purdue University, West Lafayette, USA
+A. Barker, V.E. Barnes, S. Das, S. Folgueras, L. Gutay, M.K. Jha, M. Jones, A.W. Jung,
+A. Khatiwada, D.H. Miller, N. Neumeister, C.C. Peng, J.F. Schulte, J. Sun, F. Wang, W. Xie
+Purdue University Northwest, Hammond, USA
+T. Cheng, N. Parashar, J. Stupak
+Rice University, Houston, USA
+A. Adair, B. Akgun, Z. Chen, K.M. Ecklund, F.J.M. Geurts, M. Guilbaud, W. Li, B. Michlin,
+M. Northup, B.P. Padley, J. Roberts, J. Rorie, Z. Tu, J. Zabel
+University of Rochester, Rochester, USA
+A. Bodek, P. de Barbaro, R. Demina, Y.t. Duh, T. Ferbel, M. Galanti, A. Garcia-Bellido, J. Han,
+O. Hindrichs, A. Khukhunaishvili, K.H. Lo, P. Tan, M. Verzetti
+The Rockefeller University, New York, USA
+R. Ciesielski, K. Goulianos, C. Mesropian
+Rutgers, The State University of New Jersey, Piscataway, USA
+A. Agapitos, J.P. Chou, Y. Gershtein, T.A. Gómez Espinosa, E. Halkiadakis, M. Heindl,
+E. Hughes, S. Kaplan, R. Kunnawalkam Elayavalli, S. Kyriacou, A. Lath, R. Montalvo, K. Nash,
+M. Osherson, H. Saka, S. Salur, S. Schnetzer, D. Sheffield, S. Somalwar, R. Stone, S. Thomas,
+P. Thomassen, M. Walker
+University of Tennessee, Knoxville, USA
+A.G. Delannoy, M. Foerster, J. Heideman, G. Riley, K. Rose, S. Spanier, K. Thapa
+Texas A&M University, College Station, USA
+O. Bouhali69 , A. Castaneda Hernandez69 , A. Celik, M. Dalchenko, M. De Mattia, A. Delgado,
+S. Dildick, R. Eusebi, J. Gilmore, T. Huang, T. Kamon70 , R. Mueller, Y. Pakhotin, R. Patel,
+A. Perloff, L. Perniè, D. Rathjens, A. Safonov, A. Tatarinov, K.A. Ulmer
+Texas Tech University, Lubbock, USA
+N. Akchurin, J. Damgov, F. De Guio, P.R. Dudero, J. Faulkner, E. Gurpinar, S. Kunori,
+K. Lamichhane, S.W. Lee, T. Libeiro, T. Peltola, S. Undleeb, I. Volobouev, Z. Wang
+Vanderbilt University, Nashville, USA
+S. Greene, A. Gurrola, R. Janjam, W. Johns, C. Maguire, A. Melo, H. Ni, P. Sheldon, S. Tuo,
+J. Velkovska, Q. Xu
+University of Virginia, Charlottesville, USA
+M.W. Arenton, P. Barria, B. Cox, R. Hirosky, M. Joyce, A. Ledovskoy, H. Li, C. Neu,
+T. Sinthuprasith, Y. Wang, E. Wolfe, F. Xia
+Wayne State University, Detroit, USA
+R. Harr, P.E. Karchin, J. Sturdy, S. Zaleski
+University of Wisconsin - Madison, Madison, WI, USA
+M. Brodski, J. Buchanan, C. Caillol, S. Dasu, L. Dodd, S. Duric, B. Gomber, M. Grothe,
+M. Herndon, A. Hervé, U. Hussain, P. Klabbers, A. Lanaro, A. Levine, K. Long, R. Loveless,
+G.A. Pierro, G. Polese, T. Ruggles, A. Savin, N. Smith, W.H. Smith, D. Taylor, N. Woods
+                                                                                           41
+
+
+†: Deceased
+1: Also at Vienna University of Technology, Vienna, Austria
+2: Also at State Key Laboratory of Nuclear Physics and Technology, Peking University, Beijing,
+China
+3: Also at Universidade Estadual de Campinas, Campinas, Brazil
+4: Also at Universidade Federal de Pelotas, Pelotas, Brazil
+5: Also at Université Libre de Bruxelles, Bruxelles, Belgium
+6: Also at Institute for Theoretical and Experimental Physics, Moscow, Russia
+7: Also at Joint Institute for Nuclear Research, Dubna, Russia
+8: Also at Suez University, Suez, Egypt
+9: Now at British University in Egypt, Cairo, Egypt
+10: Now at Helwan University, Cairo, Egypt
+11: Also at Université de Haute Alsace, Mulhouse, France
+12: Also at Skobeltsyn Institute of Nuclear Physics, Lomonosov Moscow State University,
+Moscow, Russia
+13: Also at Ilia State University, Tbilisi, Georgia
+14: Also at CERN, European Organization for Nuclear Research, Geneva, Switzerland
+15: Also at RWTH Aachen University, III. Physikalisches Institut A, Aachen, Germany
+16: Also at University of Hamburg, Hamburg, Germany
+17: Also at Brandenburg University of Technology, Cottbus, Germany
+18: Also at MTA-ELTE Lendület CMS Particle and Nuclear Physics Group, Eötvös Loránd
+University, Budapest, Hungary
+19: Also at Institute of Nuclear Research ATOMKI, Debrecen, Hungary
+20: Also at Institute of Physics, University of Debrecen, Debrecen, Hungary
+21: Also at Indian Institute of Technology Bhubaneswar, Bhubaneswar, India
+22: Also at Institute of Physics, Bhubaneswar, India
+23: Also at University of Visva-Bharati, Santiniketan, India
+24: Also at University of Ruhuna, Matara, Sri Lanka
+25: Also at Isfahan University of Technology, Isfahan, Iran
+26: Also at Yazd University, Yazd, Iran
+27: Also at Plasma Physics Research Center, Science and Research Branch, Islamic Azad
+University, Tehran, Iran
+28: Also at Università degli Studi di Siena, Siena, Italy
+29: Also at INFN Sezione di Milano-Bicocca; Università di Milano-Bicocca, Milano, Italy
+30: Also at Purdue University, West Lafayette, USA
+31: Also at International Islamic University of Malaysia, Kuala Lumpur, Malaysia
+32: Also at Malaysian Nuclear Agency, MOSTI, Kajang, Malaysia
+33: Also at Consejo Nacional de Ciencia y Tecnologı́a, Mexico city, Mexico
+34: Also at Warsaw University of Technology, Institute of Electronic Systems, Warsaw, Poland
+35: Also at Institute for Nuclear Research, Moscow, Russia
+36: Now at National Research Nuclear University ’Moscow Engineering Physics
+Institute’ (MEPhI), Moscow, Russia
+37: Also at Institute of Nuclear Physics of the Uzbekistan Academy of Sciences, Tashkent,
+Uzbekistan
+38: Also at St. Petersburg State Polytechnical University, St. Petersburg, Russia
+39: Also at University of Florida, Gainesville, USA
+40: Also at P.N. Lebedev Physical Institute, Moscow, Russia
+41: Also at California Institute of Technology, Pasadena, USA
+42: Also at Budker Institute of Nuclear Physics, Novosibirsk, Russia
+42                                                                 B   The CMS Collaboration
+
+
+43: Also at Faculty of Physics, University of Belgrade, Belgrade, Serbia
+44: Also at University of Belgrade, Faculty of Physics and Vinca Institute of Nuclear Sciences,
+Belgrade, Serbia
+45: Also at Scuola Normale e Sezione dell’INFN, Pisa, Italy
+46: Also at National and Kapodistrian University of Athens, Athens, Greece
+47: Also at Riga Technical University, Riga, Latvia
+48: Also at Universität Zürich, Zurich, Switzerland
+49: Also at Stefan Meyer Institute for Subatomic Physics (SMI), Vienna, Austria
+50: Also at Gaziosmanpasa University, Tokat, Turkey
+51: Also at Istanbul Aydin University, Istanbul, Turkey
+52: Also at Mersin University, Mersin, Turkey
+53: Also at Cag University, Mersin, Turkey
+54: Also at Piri Reis University, Istanbul, Turkey
+55: Also at Izmir Institute of Technology, Izmir, Turkey
+56: Also at Necmettin Erbakan University, Konya, Turkey
+57: Also at Marmara University, Istanbul, Turkey
+58: Also at Kafkas University, Kars, Turkey
+59: Also at Istanbul Bilgi University, Istanbul, Turkey
+60: Also at Rutherford Appleton Laboratory, Didcot, United Kingdom
+61: Also at School of Physics and Astronomy, University of Southampton, Southampton,
+United Kingdom
+62: Also at Instituto de Astrofı́sica de Canarias, La Laguna, Spain
+63: Also at Utah Valley University, Orem, USA
+64: Also at Beykent University, Istanbul, Turkey
+65: Also at Bingol University, Bingol, Turkey
+66: Also at Erzincan University, Erzincan, Turkey
+67: Also at Sinop University, Sinop, Turkey
+68: Also at Mimar Sinan University, Istanbul, Istanbul, Turkey
+69: Also at Texas A&M University at Qatar, Doha, Qatar
+70: Also at Kyungpook National University, Daegu, Korea
+

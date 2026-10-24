@@ -1,0 +1,1904 @@
+                                           EUROPEAN ORGANIZATION FOR NUCLEAR RESEARCH (CERN)
+
+
+                                                                                                            CERN-EP-2023-052
+                                                                                                            2023/10/25
+
+
+
+
+                                          CMS-HIN-21-008
+
+
+
+
+                                           Measurements of the azimuthal anisotropy of prompt and
+                                                 nonprompt charmonia
+                                                              √        in PbPb collisions at
+                                                                sNN = 5.02 TeV
+arXiv:2305.16928v2 [hep-ex] 24 Oct 2023
+
+
+
+
+                                                                              The CMS Collaboration*
+
+
+
+                                                                                           Abstract
+
+                                               The second-order (v2 ) and third-order (v3 ) Fourier coefficients describing the az-
+                                               imuthal anisotropy of prompt and nonprompt (from b-hadron decays) J/ψ, as well
+                                               as prompt ψ (2S) mesons√are measured in lead-lead collisions at a center-of-mass en-
+                                               ergy per nucleon pair of sNN = 5.02 TeV. The analysis uses a data set corresponding
+                                               to an integrated luminosity of 1.61 nb−1 recorded with the CMS detector. The J/ψ and
+                                               ψ (2S) mesons are reconstructed using their dimuon decay channel. The v2 and v3
+                                               coefficients are extracted using the scalar product method and studied as functions
+                                               of meson transverse momentum and collision centrality. The measured v2 values for
+                                               prompt J/ψ mesons are found to be larger than those for nonprompt J/ψ mesons. The
+                                               prompt J/ψ v2 values at high pT are found to be underpredicted by a model incorpo-
+                                               rating only parton energy loss effects in a quark-gluon plasma medium. Prompt and
+                                               nonprompt J/ψ meson v3 and prompt ψ (2S) v2 and v3 values are also reported for the
+                                               first time, providing new information about heavy quark interactions in the hot and
+                                               dense medium created in heavy ion collisions.
+
+
+                                               Published in the Journal of High Energy Physics as doi:10.1007/JHEP10(2023)115.
+
+
+
+
+                                          © 2023 CERN for the benefit of the CMS Collaboration. CC-BY-4.0 license
+                                            * See Appendix B for the list of collaboration members
+                                                                                                   1
+
+
+1   Introduction
+In high energy heavy ion collisions, a very strongly-interacting medium of deconfined quarks
+and gluons, known as the quark-gluon plasma (QGP), is created [1]. Quarkonia, bound states of
+a heavy quark and its antiquark, e.g., charmonia (J/ψ, ψ (2S) ), and bottomonia (Υ(1S, 2S, 3S)),
+are useful probes to study the properties of the QGP. Since heavy quarks are predominantly
+produced at the early stages of collisions by hard partonic scattering processes, they experience
+the whole space-time evolution of the medium. Models including static color screening [2, 3]
+and gluo-dissociation effects [4–6] inside a QGP medium predict a suppression of quarkonium
+yields in nucleus-nucleus (AA) collisions compared to proton-proton (pp) collisions [7]. On the
+other hand, quarkonia may also be created by recombination of quarks and antiquarks which
+were initially uncorrelated, thereby resulting in an enhancement of the measured yields [8].
+Experimentally, the modification of particle yields in heavy ion collisions is quantified by the
+nuclear modification factor, defined as the ratio of yields in AA collisions to those in pp col-
+lisions scaled by the estimated number of binary nucleon-nucleon (NN) collisions. Results
+from the CERN SPS, BNL RHIC, and CERN LHC experiments show significant suppression of
+J/ψ mesons in AA collisions [9–19]. At the LHC, the ALICE Collaboration [17, 18] observed a
+weaker suppression of J/ψ mesons in the low transverse momentum (pT ) region below 3 GeV/c
+than was seen by experiments at the SPS and RHIC. This result has been interpreted as a sign
+of enhanced recombination processes at LHC energies because of the larger production cross
+section of charm quarks [17, 18, 20, 21]. These measurements have provided information to con-
+strain theoretical models that incorporate different in-medium effects on charmonium states in
+order to describe thermal characteristics of the QGP.
+Another effective way to probe the dynamics of the QGP is the study of the azimuthal (ϕ) distri-
+bution of particles produced in heavy ion collisions. Azimuthal anisotropies of the particles can
+be characterized by Fourier coefficients (vn ) of the ϕ distribution with respect to the event plane,
+which corresponds to the direction of maximal particle density [22]. The presence of non-zero
+Fourier coefficients is referred to as collective flow by analogy to hydrodynamic models. In
+particular, the second-order (v2 ) and the third-order (v3 ) components are predominantly sen-
+sitive to initial collision geometry and event-by-event fluctuations, respectively [23]. Because
+of the initial anisotropic shape of the QGP in the transverse plane, quarkonia produced by
+initial hard-scattering processes experience different path lengths while traveling through the
+medium. Larger energy loss, and therefore larger suppression, can occur for quarkonia mov-
+ing in directions corresponding to larger average path lengths. On the other hand, quarkonia
+created via recombination can have an asymmetric ϕ distribution as a result of asymmetries in
+quark densities [24, 25].
+In LHC experiments, sizable v2 values have been observed
+                                                       √ for J/ψ mesons in lead-lead (PbPb)
+collisions at center-of-mass energies per nucleon pair sNN = 2.76 and 5.02 TeV [26–29], indi-
+cating collective flow behavior of charm quarks. However, these results have limitations that
+prevent drawing firm conclusions on the origin of the v2 for J/ψ mesons, given the large mea-
+surement uncertainties and the lack of separation between prompt and nonprompt J/ψ mesons.
+Measurements of nonprompt J/ψ mesons, which originate from bottom hadron decays, provide
+useful information on the propagation of bottom quarks in the QGP.
+The CMS Collaboration has shown that in PbPb collisions the suppression of prompt J/ψ (of
+pT above 6.5 GeV/c) within jets depends upon the fragmentation [30]. Theoretical calculations
+suggest that jet quenching may drive the modulation of the ϕ distribution of J/ψ at high pT [31].
+These studies motivate the measurement of the azimuthal anisotropy for prompt J/ψ mesons
+at higher pT to investigate the path length dependence of jet quenching [32, 33].
+2
+
+
+Azimuthal correlations for ψ (2S) mesons are also a subject of interest. Prompt ψ (2S) mesons
+have been found to be significantly more suppressed than prompt J/ψ mesons in PbPb colli-
+sions [19, 34]. Measurements of v2 and v3 values for prompt ψ (2S) mesons are expected to
+provide constraints on in-medium effects for charmonium states with different binding ener-
+gies in heavy ion collisions [21, 35].
+This paper reports measurements of vn values for prompt and nonprompt J/ψ √       mesons, as well
+as prompt ψ (2S) meson, using PbPb data collected with the CMS detector at sNN = 5.02 TeV
+in 2018. The prompt and nonprompt J/ψ v3 , and prompt ψ (2S) vn values are measured for
+the first time. The charmonium states are identified via their dimuon decay channel. The data
+set corresponds to an integrated luminosity of 1.61 nb−1 [36, 37], allowing the extraction of vn
+values as functions of meson transverse momentum and PbPb event centrality (i.e., the degree
+of overlap of the two Pb ions). The numerical values of the results for this analysis are tabulated
+in the HEPDATA record [38].
+
+
+2   The CMS detector
+The central feature of the CMS apparatus is a superconducting solenoid of 6 m internal diame-
+ter, providing a magnetic field of 3.8 T. Within the solenoid volume are a silicon pixel and strip
+tracker, a lead tungstate crystal electromagnetic calorimeter (ECAL), and a brass and scintilla-
+tor hadron calorimeter (HCAL), each composed of a barrel and two endcap sections. Forward
+calorimeters extend the pseudorapidity (η) coverage provided by the barrel and endcap detec-
+tors. The forward hadron (HF) calorimeter uses steel as an absorber and quartz fibers as the
+sensitive material. The two halves of the HF are located 11.2 m from the interaction region, one
+on each end, and together they provide coverage in the range 3.0 < |η | < 5.2. The HF calorime-
+ters are composed of individual detector elements, or towers, having ∆η × ∆ϕ = 0.175 × 0.175.
+Centrality is determined by the total transverse energy deposited in both of the HF calorime-
+ters, and is defined as the fraction of the total hadronic inelastic nucleus-nucleus cross section,
+with 0% representing the largest overlap of the two colliding Pb nuclei [39].
+Muons are measured in the range |η | < 2.4, with detection planes made using three technolo-
+gies: drift tubes, cathode strip chambers, and resistive plate chambers. Matching muons to
+tracks measured in the silicon tracker results in a relative transverse momentum resolution, for
+muons with pT up to 100 GeV/c, of 1% in the barrel and 3% in the endcaps. The pT resolution in
+the barrel is better than 7% for muons with pT up to 1 TeV/c [40]. A more detailed description
+of the CMS detector, together with a definition of the coordinate system used and the relevant
+kinematic variables, can be found in Ref. [41].
+
+
+3   Event selection
+Events of interest are selected using a two-tiered trigger system. The first level (Level-1), com-
+posed of custom hardware processors, uses information from the calorimeters and muon de-
+tectors to select events at a rate of around 100 kHz within a fixed latency of about 4 µs [42]. The
+second level, known as the high-level trigger (HLT), consists of a farm of processors running a
+version of the full event reconstruction software optimized for fast processing, and reduces the
+event rate to around 1 kHz before data storage [43]. The trigger for this analysis was designed
+to have several stages. First, at least two muon candidates should be reconstructed at Level-
+1. At the HLT, the events are required to contain at least one Level-2 (L2) muon and another
+Level-3 (L3) muon, with requirements on their invariant mass being within 1–5 GeV/c2 . L2
+muons are identified by matching the tracks to the hits in the outer muon spectrometer. For L3
+                                                                                                   3
+
+
+muons, full tracks from the L2 muon tracks and the inner tracker information are used in the
+reconstruction, in addition requiring at least ten high-quality hits in the inner tracker [43].
+To reject beam-related background processes, events are required to have at least one recon-
+structed primary vertex, and the clusters in the silicon pixel detector are required to be com-
+patible with the vertex position. There must be at least two towers that contain energy deposits
+above 4 GeV in each of the HF detectors. The primary vertex, which is reconstructed from two
+or more tracks, is required to be located within 15 cm of the central point of the detector along
+the beam axis. In addition, the reconstructed muons are selected using a set of offline muon
+identification criteria [30]. To ensure the reconstruction efficiency of single muons is larger than
+10%, muons within the following kinematic domains are selected:
+                      µ
+                    pT > 3.5 GeV/c                    for |η µ | < 1.2,
+                      µ
+                    pT > (5.47 − 1.89|η µ |) GeV/c    for 1.2 < |η µ | < 2.1, and                 (1)
+                     µ
+                    pT > 1.5 GeV/c                    for 2.1 < |η | < 2.4.
+                                                                    µ
+
+
+
+4   Acceptance and efficiency corrections
+Correction factors are applied to all results to account for the detector acceptance, as well as for
+the trigger, reconstruction, and selection efficiencies for µ + µ − pairs. The correction factors are
+derived from simulated prompt and nonprompt J/ψ and ψ (2S) meson samples which are then
+embedded in simulated PbPb collisions. Corrections are evaluated in the same bins of pT , cen-
+trality, and rapidity (y) used in the vn analyses. The meson samples are generated with PYTHIA
+8.212 [44] using the CP5 underlying event tune [45], while the decay of bottom hadrons is simu-
+lated with EVTGEN 1.3.0 [46], which provides a better description of the kinematic distribution
+of nonprompt charmonia. These meson events are then embedded into simulated PbPb colli-
+sion events generated using HYDJET 1.9 [47], and propagated through the CMS detector with
+the G EANT 4 package [48]. The pT distributions for simulated J/ψ and ψ (2S) mesons are com-
+pared to those in data with fine pT intervals, and the ratios of data over the simulation are used
+to reweight the simulation to better describe the data as a function of pT . This weighting proce-
+dure accounts for possible mismodeling of the J/ψ and ψ (2S) meson kinematics. Moreover, the
+reconstructed charmonia in data include feed-down contributions from heavier quarkonium
+state decays. These contributions are not explicitly considered in the simulation, but their ef-
+fect on the kinematic distribution of the simulated charmonia is taken into account by the pT
+reweighting procedure.
+The acceptance in a given analysis bin is defined as the fraction of generated J/ψ and ψ (2S)
+mesons in that bin that decay into two muons passing the kinematic requirements defined in
+Eq. (1), and reflects the geometrical coverage of the CMS detector. The value of the acceptance
+increases with dimuon pT and varies from 0.05–0.76.
+The efficiency in a given analysis bin is defined as the ratio of the number of reconstructed
+J/ψ and ψ (2S) mesons from which both muons pass the selections described in Section 3 and
+the number of generated J/ψ mesons from which both muons pass the kinematic requirements
+defined in Eq. (1). Individual components of the efficiency (trigger, track reconstruction, and
+muon identification) are measured using single muons from J/ψ meson decays in both colli-
+sion data and simulated samples, using a ”tag-and-probe” (T&P) technique [49, 50]. The ratio
+in the efficiency between the data and simulated samples is used as a correction factor for the
+efficiency extracted from the simulation. The reciprocals of the acceptance and efficiency cor-
+retion factors are used as event-by-event weights when the distributions of invariant mass and
+average vn are computed.
+4
+
+
+5                          Signal extraction
+The signal candidates for J/ψ (ψ (2S) ) mesons are extracted in the kinematic range of 6.5 < pT <
+50 GeV/c, |y| < 2.4, and centrality 0–90% (0–60%). The results are reported as functions of pT
+and ⟨Npart ⟩, where ⟨Npart ⟩ is the average number of participating nucleons in a given centrality
+interval [39]. The centrality range for pT -dependent results is limited to 10–60% to ensure a
+large anisotropy of the QGP. The most central collisions (0–10%) are excluded due to the small
+eccentricity in the initial geometry of the medium, while the most peripheral collisions (60–
+90%) are excluded because of the poor resolution in extracting the vn coefficients. In addition,
+the lower pT region is extended down to 3 GeV/c (4 GeV/c) for J/ψ (ψ (2S) ) in the forward
+rapidity region. Details of the kinematic selection and ⟨Npart ⟩ values for each centrality interval
+can be found in Tables 2 and 3 in Appendix A. The mass ranges of 2.6–3.5 and 3.3–4.1 GeV/c2
+are used to study the J/ψ and ψ (2S) mesons, respectively.
+The separation of the prompt and nonprompt charmonium production components relies on
+the measurement of a secondary µ + µ − vertex displaced from the primary collision vertex.
+The pseudo-proper decay length [51] is defined as ℓJ/ψ = L xyz mJ/ψ c/| pµµ |, where L xyz is the
+distance between the primary and dimuon vertices, mJ/ψ is the world average value [52] of
+the J/ψ meson mass (assumed for all dimuon candidates), and pµµ is the dimuon momentum.
+To extract prompt and nonprompt J/ψ meson yields, the invariant mass spectrum of µ + µ −
+pairs and their ℓJ/ψ distribution are fitted using a two-dimensional (2D) extended unbinned
+maximum likelihood fit. The parameters of different components of the 2D probability density
+function (pdf) are obtained through fits to the invariant mass and the ℓJ/ψ distributions, which
+are further used in the final 2D fits. These fits are performed for each vn interval in the measured
+kinematic region. The evaluation of vn coefficients is detailed in Section 6. Figure 1 shows the
+dimuon invariant mass and ℓJ/ψ projection of the 2D fit in the ranges 3.0 < pT < 4.5 GeV/c and
+0.0 < v2 < 0.3 for the 10–60% centrality interval.
+                                     ×10
+                                       3
+                                                                    PbPb 1.61 nb-1 (5.02 TeV)                                                                PbPb 1.61 nb-1 (5.02 TeV)
+                                                µµ                                                                                       µµ
+                                      3.0 < p         < 4.5 GeV/c                       CMS                            107     3.0 < p         < 4.5 GeV/c                       CMS
+                               140              T
+                                                 µµ
+                                                                                                                                         T
+                                                                                                                                          µµ
+                                      1.6 < |y | < 2.4                      Data                                               1.6 < |y | < 2.4                      Data
+                                                                                                                       106
+    Events / ( 0.025 GeV/c )
+
+
+
+
+                                      Cent. 10-60%                          Total fit                                          Cent. 10-60%                          Total fit
+    2
+
+
+
+
+                               120
+                                                                                                Events / ( 0.05 mm )
+
+
+
+
+                                                                            Prompt J/ψ                                                                               Prompt J/ψ
+                                             i                                                                                        i
+                                      0.0 < v2 < 0.3                                                                           0.0 < v2 < 0.3
+                               100                                          Nonprompt J/ ψ                             105                                           Nonprompt J/ ψ
+                                                                            Background                                                                               Background
+                               80                                                                                      104
+
+                               60                                                                                      103
+
+                               40                                                                                      102
+
+                               20                                                                                      10
+
+                                                                                                                         1
+                                 2.6 2.7 2.8 2.9 3 3.1 3.2 3.3 3.4 3.5                                                    −2         −1             0           1       2         3
+                                               mµ+µ- (GeV/c2)                                                                                           l J/ψ (mm)
+
+Figure 1: Invariant mass (left) and ℓJ/ψ (right) distributions for the bin of 3.0 < pT < 4.5 GeV/c
+and 0.0 < v2 < 0.3 in centrality 10–60%. The solid lines represent the total fit, while the dashed
+and dash–dotted lines represent the prompt and nonprompt components, respectively. The
+background contributions are shown by the filled blue histograms.
+
+Sums of two Crystal Ball (CB) functions [53], with different widths but common mean and tail
+parameters, are used to extract the signal yield values from the invariant mass distribution.
+Two separate sums of CB functions are used to describe the prompt and nonprompt contri-
+                                                                                                  5
+
+
+butions to the J/ψ signal. The tail parameters, as well as relative contributions of the two CB
+functions and the ratio of their widths, are fixed to the values obtained from simulation. The
+background component for the invariant mass distribution is described by a sum of Chebyshev
+polynomial functions up to order N, where N is determined by performing the log-likelihood
+ratio (LLR) test [54]. This procedure is done for each analysis bin, while the tail and width ratio
+parameters are kept fixed. The polynomial order is chosen as the minimum so that increasing
+it does not significantly improve the quality of the fit. In most analysis bins, the first-order
+Chebyshev polynomial function is used as the background function.
+Prompt and nonprompt signals and background components of ℓJ/ψ distributions are parame-
+terized using collision data and simulated samples. The sPlot technique [55] is used to obtain
+ℓJ/ψ distributions of J/ψ signal and background from data, which have different invariant mass
+distributions. The correlation between the mass and ℓJ/ψ is found to be very small, such that
+its impact on the final results is negligible. This justifies the use of the dimuon mass distribu-
+tion to separate signal and background distributions of ℓJ/ψ using the sPlot [30] technique. The
+ℓJ/ψ resolution is obtained by fitting the negative tail of the J/ψ signal ℓJ/ψ distribution in data
+using a sum of two Gaussian functions. Note that ℓJ/ψ can have negative values as a result
+of the finite detector resolution. The shape of the ℓJ/ψ distributions of prompt J/ψ signals is
+described by the ℓJ/ψ resolution. The ℓJ/ψ distribution of nonprompt J/ψ signals is parameter-
+ized by the sum of three exponential functions convoluted with the resolution function. The
+parameters of the three exponential functions are determined by a fit of the ℓJ/ψ distribution of
+simulated nonprompt J/ψ mesons at the generator level. The background ℓJ/ψ distribution in
+data is fit to a sum of exponential functions. To extract the yields of prompt and nonprompt
+J/ψ mesons, a fit to the mµ + µ − and ℓJ/ψ distributions is performed, where the free parameters
+include the J/ψ meson yield, nonprompt J/ψ meson fraction, and background yield. A more
+detailed description of the fitting procedure can be found in Ref. [19].
+For ψ (2S) mesons, the nonprompt component is reduced by placing tight constraints on the
+ℓJ/ψ distribution. The constraint, studied in simulated samples, rejects the nonprompt ψ (2S)
+contamination while maintaining a prompt ψ (2S) purity of at least 90%. The remaining con-
+tribution of nonprompt ψ (2S) mesons ranges from 5 to 10% and is assigned as a systematic
+uncertainty for the nonprompt ψ (2S) contamination.
+
+
+6   Extraction of vn
+The vn (n = 2 and 3) values of J/ψ and ψ (2S) candidates are determined using the scalar product
+(SP) method [56]. The Q-vectors are defined in the complex plane Qn = ∑kM=1 ωk einϕk , obtained
+using the tracker or calorimeters. Here, M is the multiplicity of particles in the tracker or the
+number of towers for HF; ϕ is the azimuthal angle of the particle or the tower; ωk is the weight-
+ing factor, that is the pT of a particle for the tracker or the transverse energy deposited in an HF
+tower. In this analysis, Q-vectors from three subevents are calculated using the tracker at the
+mid-pseudorapidity (|η | < 0.75) and similarly the two HF calorimeters covering the forward
+(3 < η < 5, HF+) and backward (−5 < η < −3, HF−) regions. Two different procedures
+are applied in extracting v2 of J/ψ and ψ (2S) . The procedure for extracting ψ (2S) v2 has been
+established in previous publications [56], while a new method is applied to the extraction of
+J/ψ v2 with the advantage of avoiding making assumptions of background candidate v2 . The
+6
+
+
+vn coefficient for J/ψ or ψ (2S) mesons is obtained as follows:
+                                              D                   E
+                                                  J/ψ,ψ (2S) ∗
+                                                Qn          QnA
+                                  vn {SP} ≡ r                          .                            (2)
+                                                ⟨QnA Q∗nB ⟩⟨QnA Q∗nC ⟩
+                                                     ⟨QnB Q∗nC ⟩
+                                                                                  J/ψ
+The Q-vector of the J/ψ or ψ (2S) candidate is defined as Qn = einϕ , where ϕ is the azimuthal
+angle of the candidate. The subscripts A and B refer to either HF+ or HF−, depending on
+the rapidity of the J/ψ or ψ (2S) candidate. Flattening and recentering procedures are applied
+to the Q-vectors relative to HF and the tracker for removing detector acceptance effects. To
+avoid short-range non-collective correlations, the η gap between the J/ψ or ψ (2S) candidate
+and the detector used for the subevent determination is required to be at least three units of
+rapidity [56–58]. For this purpose, HF+ is selected for A (B) when J/ψ and ψ (2S) candidates
+are produced at negative (positive) rapidity. The subscript C denotes the subevents taken from
+the tracker. The denominator in Eq. (2) is the correction factor to remove the finite resolution
+effect of the detectors and finite final-state multiplicity.
+To extract the prompt and nonprompt J/ψ meson vn values, the J/ψ candidates are classified
+into fine vn intervals of their flow vector SPs (i.e., Eq. (2) but not averaged over all J/ψ candi-
+dates). Then, a simultaneous invariant mass and ℓJ/ψ fit, as described in Section 5, is performed
+in each vn interval to extract the corresponding inclusive J/ψ meson yield and the nonprompt
+J/ψ meson fraction, and to obtain the SP distribution of both prompt and nonprompt J/ψ signal.
+The prompt J/ψ meson vn values can be obtained by:
+                                          prompt       ∑(1 − f i )vin Y i
+                                        vn         =                      ,                         (3)
+                                                        ∑ ( 1 − f i )Y i
+while the nonprompt J/ψ meson vn values can be obtained by:
+                                             nonprompt          ∑ f i vin Y i
+                                          vn             =                    .                     (4)
+                                                                 ∑ fi Yi
+Here vin is the center of the i-th SP bin, while f i and Y i are the nonprompt J/ψ meson fraction
+and inclusive J/ψ meson yield in the same bin, respectively.
+A different method is used to extract the prompt ψ (2S) meson flow harmonics. The average
+Q-vectors of all prompt ψ (2S) meson candidates are divided into bins of invariant mass, as
+shown in the lower panel of Fig. 2. For every invariant mass bin, the prompt ψ (2S) meson
+vn coefficient is calculated using Eq. (2). The ψ (2S) candidate invariant mass spectrum and vn
+distribution as a function of invariant mass are fit simultaneously using binned χ2 fits. The
+invariant mass spectrum is fit with the sum of two CB functions and a Chebyshev polynomial
+function, as described in Section 5. The vn distribution is fit to the following formula:
+                      Sig+Bkg                          ψ (2S)                           Bkg
+                     vn         (minv ) = α(minv )vn            + [1 − α(minv )]vn (minv ),         (5)
+         ψ (2S)                                                                               Bkg
+where vn      is the prompt ψ (2S) meson vn , which is independent of minv by definition; vn (minv )
+is the background vn modeled as a first-order polynomial function of invariant mass; and
+α(minv ) is the ψ (2S) signal fraction as a function of invariant mass:
+                                                        Sigψ (2S) (minv )
+                                α(minv ) =                                              .           (6)
+                                             [Sigψ (2S) (minv ) + Bkg(minv )]
+
+An example of a simultaneous fit to the mass distribution (upper panel) and vn profile (lower
+panel) for ψ (2S) mesons is shown in Fig. 2 for a representative analysis bin.
+                                                                                                                                                                                 7
+
+
+                                                          PbPb 1.61 nb-1 (5.02 TeV)                                                              PbPb 1.61 nb-1 (5.02 TeV)
+                           21000                                                                                21000
+                                         µµ                                                                                       µµ
+                           20000   6.5 < p < 10.0 GeV/c                    CMS                                  20000     6.5 < p < 10.0 GeV/c                     CMS
+                                     µµ   T                                                                                 µµ   T
+    Events/(0.02 GeV/c2)
+
+
+
+
+                                                                                         Events/(0.02 GeV/c2)
+                           19000   |y | < 2.4                                                                   19000     |y | < 2.4
+                                   Cent. 10-60%                                                                           Cent. 10-60%
+                           18000                                                                                18000
+                           17000     Data                                                                       17000       Data
+                                     Fit                                                                                    Fit
+                           16000     Background                                                                 16000       Background
+                           15000                                                                                15000
+                           14000                                                                                14000
+                           13000                                                                                13000
+                           12000                                                                                12000
+                            0.24                                     Sig+Bkg                                      0.2                                        Sig+Bkg
+                                                                    v2                                                                                      v3
+                            0.22 v2 = 0.22 ± 0.11                                                                          3 = 0.05 ± 0.18
+                                    Sig
+                                                                                                                          vSig
+                                                                    vBkg
+                                                                     2                                           0.15                                       vBkg
+                                                                                                                                                             3
+                             0.2
+                            0.18                                                                                  0.1
+    vSig+Bkg
+
+
+
+
+                                                                                         vSig+Bkg
+                            0.16
+                                                                                                                 0.05
+                            0.14
+     2
+
+
+
+
+                            0.12                                                          3                        0
+                              0.1
+                            0.08                                                                                −0.05
+                            0.06                                                                                 −0.1
+                                3.3 3.4 3.5 3.6       3.7     3.8    3.9       4   4.1                              3.3     3.4    3.5   3.6   3.7   3.8     3.9       4   4.1
+                                                                2
+                                                mµ +µ - (GeV/c )                                                                         mµ +µ - (GeV/c2)
+                                                                                                                                                       Sig+Bkg
+Figure 2: Simultaneous fits of the dimuon invariant mass spectrum and the v2             (left) and
+  Sig+Bkg
+v3        (right) distributions for ψ (2S) mesons, as defined by Eq. (5), for 6.5 < pT < 10 GeV/c
+and centrality 10–60%. In the upper panel, the solid black (signal + background) and dashed
+blue (background only) lines show the result of the mass fit. In the lower panel, the vertical
+               Sig
+lines of the vn points represent the statistical uncertainty. The solid (vn signal + background)
+and the dashed (vn background) lines indicate the corresponding fit to the vn distributions.
+
+7                  Systematic uncertainties
+Systematic uncertainties in this analysis originate from various sources including the model-
+ing of signal and background pdfs, and acceptance and efficiency corrections (trigger, track
+reconstruction, and muon identification). For uncertainties from the signal pdf, two factors
+are considered. The first factor is the choice of the signal pdf, and the second is the values of
+fixed parameters in the invariant mass fit. To evaluate uncertainty on the choice of two CB fit
+functions, an alternative pdf is formed by adding one CB function and one Gaussian function.
+The deviation of vn to the nominal one is quoted as the uncertainty. Uncertainties from the
+fixed signal shape parameters are studied by releasing each parameter one at a time. The root-
+mean-square (RMS) of differences between the nominal and altered vn results is assigned as the
+uncertainty. For the uncertainty in the background pdf, an exponential of a Chebyshev poly-
+nomial is considered as an alternative pdf for the invariant mass distribution. The variation in
+the vn results is quoted as the systematic uncertainty.
+The uncertainty due to the acceptance correction is evaluated by comparing results with and
+without pT reweighting of the signal shape in simulated samples. The variation of efficiencies
+due to the T&P correction is considered. The change of results by varying the T&P correc-
+tion within its uncertainty is quoted as an uncertainty in the final vn results. In addition, the
+uncertainty due to hadronic event selection is considered. The collision event filter is varied,
+thus allowing for a migration of J/ψ and ψ (2S) mesons across centrality boundaries. The effect
+on measured vn values is taken as a systematic uncertainty. Then, the differences of resulting
+vn values from the nominal ones are considered as the systematic uncertainty for the event
+8
+
+
+selection.
+Different components of the ℓJ/ψ pdf are varied to estimate the uncertainty in the nonprompt
+J/ψ meson fraction. The total (signal+background) distribution is used instead of individual
+distributions for the ℓJ/ψ uncertainty distribution. The ℓJ/ψ resolution obtained from prompt
+J/ψ meson simulation is used instead of that evaluated from data. The parameters used in the
+function to describe the bottom hadron decay length shape of the nonprompt J/ψ meson simu-
+lations are released in the final fit to data. Four exponential decay functions are also considered
+instead of three. The maximum deviation between each pair of two variations is taken as an
+uncertainty for bottom hadron decay length distribution of the nonprompt J/ψ. One additional
+exponential function on each side of the ℓJ/ψ distribution of the background is used for the
+systematic uncertainty estimation. The RMS of these four sources is taken as the systematic
+uncertainty for the nonprompt J/ψ fraction.
+             Bkg
+For the v2 (minv ) modeling of ψ (2S) mesons, a second-order polynomial is used as an al-
+ternative function. The deviation of vn results from nominal ones is assigned as the systematic
+uncertainty. Uncertainties due to the nonprompt component in the ψ (2S) meson vn are derived
+from the deviation of vn by using a looser ℓJ/ψ requirement that has twice the residual efficiency
+for nonprompt ψ (2S) mesons compared to the nominal case. The total uncertainty, calculated
+for each bin of pT or ⟨Npart ⟩, is determined by taking the quadratic sum of each individual
+source of uncertainty. In Table 1, the total systematic uncertainty is summarized along with its
+dominant sources. The ranges provided are illustrative and represent the absolute values of
+the minimum and maximum uncertainties averaged over all pT and ⟨Npart ⟩ bins.
+
+Table 1: Summary of the absolute total systematic uncertainty and its dominant contributions,
+in units of 10−3 .
+
+                                     Prompt J/ψ      Nonprompt J/ψ           Prompt ψ (2S)
+    Uncertainty source
+                                     v2       v3        v2      v3           v2         v3
+    Total systematic              1.3–5.2 2.2–5.3    1.9–8.1 3.3–9.1     32.0–63.0 30.0–82.0
+    Signal parameters             0.4–3.0 0.1–3.0    0.9–5.0 0.1–3.0      3.0–10.0 10.0–30.0
+    Event selection               0.1–5.0 0.2–3.0    0.9–6.0 0.3–2.0     10.0–30.0 5.0–20.0
+    Nonprompt J/ψ fraction        0.3–4.0 0.8–4.0    0.4–6.0 2.0–9.0         —          —
+    Nonprompt ψ (2S) contam.         —       —          —      —         20.0–50.0 10.0–40.0
+    Background vn                    —       —          —       —         1.0–20.0  0.7–50.0
+
+
+8    Results
+The v2 and v3 coefficients measured for prompt and nonprompt J/ψ mesons in PbPb collisions
+are shown in Fig. 3, as functions of pT and ⟨Npart ⟩. There is at most a weak pT dependence
+observed for the prompt and nonprompt J/ψ mesons within their respective uncertainties. Re-
+sults in Fig. 3 also show sizable v2 values for prompt J/ψ mesons even at high pT , which are
+consistent with the v2 of charged hadrons in the high pT region [32, 33].
+The measured v2 values for nonprompt J/ψ mesons are smaller than those for prompt      √ J/ψ
+mesons in the studied region. Such a difference could not have been observed at sNN =
+2.76 TeV [28] because of the limited amount of data. These results are compatible with measure-
+ments from the ALICE and ATLAS Collaborations [27, 29], and extend to a higher pT region.
+A similar finding has been observed for prompt and nonprompt D 0 [59]. These observations
+can be contrasted to those found for bottomonium measurements, in which the v2 values for Υ
+mesons are found to be consistent with zero [56, 60].
+                                                                                                  9
+
+
+In Fig. 3 (right), the v2 values for prompt and nonprompt J/ψ mesons are found to be smallest
+in the most central PbPb collision events (0–10%), which corresponds to ⟨Npart ⟩ > 356, and the
+v2 values increase toward mid-central collision events. This is expected from the eccentricity
+in the initial collision geometry of these collisions. The lower panel of the same figure shows
+measured v3 values for prompt and nonprompt J/ψ components. No significant nonzero v3
+values are found in studied kinematic intervals.
+In Fig. 4, prompt J/ψ meson v2 values are compared to a theoretical prediction [31], where
+high-pT prompt J/ψ are produced from the jet fragmentation. The medium response of jets in
+PbPb collisions is simulated using the linear Boltzmann transport framework and the v2 values
+are calculated as a consequence of path length dependent energy loss of jets in the QGP. Note
+that the model is calculated with the centrality interval 10–30%, whereas the data is for the
+centrality interval 10–60%. A finite v2 value is predicted by the model calculation, suggesting
+that path length dependent energy loss of jets in this pT range needs to be taken into account to
+describe the prompt J/ψ meson v2 . However, the magnitude of v2 values in the data is found to
+be underpredicted by the model. As no strong centrality dependence in mid-central collision
+events is observed in data, this difference between the observed v2 and theory calculation can
+not be explained by the different centrality intervals, indicating that additional contributions
+are needed to describe the prompt J/ψ meson v2 at high pT .
+Figure 5 shows the first vn measurements of the azimuthal anisotropy for prompt ψ (2S) mesons
+in heavy ion collisions together with the results for prompt J/ψ mesons. The v2 values are found
+to be slightly larger for the prompt ψ (2S) than for the prompt J/ψ mesons, especially at higher
+pT and in peripheral PbPb collisions, but the statistical significance of this difference is too low
+to draw any conclusion, with p-values of at best 10%. The v3 values are found to be consistent
+with zero in the measured bins.
+10
+
+
+
+
+                                                                             PbPb 1.61 nb-1 (5.02 TeV)
+     0.15                                                  0.15
+              Cent. 10-60% Prompt J/ψ         Nonprompt J/ψ        6.5 < p < 50 GeV/c
+                                                                           T                         CMS
+                            1.6 < |y| < 2.4    1.6 < |y| < 2.4     |y| < 2.4
+       0.1                  |y| < 2.4          |y| < 2.4
+                                                            0.1
+v2
+
+
+
+
+     0.05                                                  0.05
+
+
+
+         0                                                   0
+
+
+
+          0         10      20          30        40        50 0      50   100   150    200   250   300   350   400
+
+
+
+       0.1                                                  0.1
+v3
+
+
+
+
+     0.05                                                  0.05
+
+
+
+         0                                                   0
+
+
+
+
+          0        10       20    30              40       50 0      50 100 150 200 250 300 350 400
+                            pT (GeV/c)                                         〈Npart〉
+Figure 3: The v2 (upper) and v3 (lower) values, as functions of pT (left) and ⟨Npart ⟩ (right) for
+prompt and nonprompt J/ψ mesons. The results for 3 < pT < 6.5 and 6.5 < pT < 50 GeV/c
+are studied in the rapidity range of 1.6 < |y| < 2.4 and |y| < 2.4, respectively (left). The
+kinematic range for the right panel is 6.5 < pT < 50 GeV/c and |y| < 2.4. The data points are
+positioned in the middle of each pT bin. The vertical bars denote the statistical uncertainties
+and the rectangular bands show the systematic uncertainties.
+                                                                                             11
+
+
+
+
+                                                  PbPb 1.61 nb-1 (5.02 TeV)
+                   0.15
+                             Prompt J/ψ, Cent. 10-60%            CMS
+                               1.6 < |y| < 2.4
+                               |y| < 2.4
+                               LP-NRQCD+LBT, |y| < 2.4, Cent. 10-30%
+                     0.1
+              v2
+
+
+
+
+                   0.05
+
+
+
+                       0
+                        0     5 10 15 20 25 30 35 40 45 50
+                                      p (GeV/c)
+                                              T
+Figure 4: The v2 values of prompt J/ψ mesons (blue circles) as a function of pT in the 10–60%
+centrality range compared with a model calculation in Ref. [31] (green dashed line). The results
+for 3 < pT < 6.5 and 6.5 < pT < 50 GeV/c are studied in the rapidity range of 1.6 < |y| <
+2.4 and |y| < 2.4, respectively. The vertical bars denote the statistical uncertainties and the
+rectangular bands show the systematic uncertainties.
+12
+
+
+
+
+                                                                          PbPb 1.61 nb-1 (5.02 TeV)
+      0.4                                                0.4
+             Cent. 10-60% Prompt J/ψ      Prompt ψ(2S)          6.5 < p < 50 GeV/c
+                                                                        T                         CMS
+                           1.6 < |y| < 2.4 1.6 < |y| < 2.4      |y| < 2.4
+      0.3                                                0.3
+                           |y| < 2.4        |y| < 2.4
+      0.2                                                0.2
+v2
+
+
+
+
+       0.1                                               0.1
+
+
+        0                                                 0
+
+
+      −0.1                                              −0.1
+
+         0         10      20          30      40        50 0      50   100   150    200   250   300   350   400
+      0.3                                                0.3
+
+
+      0.2                                                0.2
+
+
+       0.1                                               0.1
+v3
+
+
+
+
+        0                                                 0
+
+
+      −0.1                                              −0.1
+
+
+     −0.2                                               −0.2
+         0        10       20    30           40        50 0      50 100 150 200 250 300 350 400
+                           pT (GeV/c)                                       〈Npart〉
+Figure 5: The v2 (upper) and v3 (lower) values, as functions of pT (left) and ⟨Npart ⟩ (right)
+for prompt J/ψ (blue circles) and prompt ψ (2S) (green squares) mesons. The results for pT <
+6.5 and pT > 6.5 GeV/c are studied in the rapidity range of 1.6 < |y| < 2.4 and |y| < 2.4,
+respectively (left). The kinematic range for the right panel is 6.5 < pT < 50 GeV/c and |y| <
+2.4. The data points are positioned in the middle of each pT bin. The vertical bars denote the
+statistical uncertainties and the rectangular bands show the systematic uncertainties.
+                                                                                             13
+
+
+9   Summary
+The second-order (v2 ) and third-order (v3 ) Fourier coefficients of azimuthal distributions for
+prompt and nonprompt J/ψ, and prompt ψ (2S) mesons are measured in PbPb collisions as
+functions of transverse momentum (pT ) and event centrality. The v2 values for prompt and
+nonprompt J/ψ mesons both indicate a decreasing trend from mid-central towards central col-
+lision events. Within present experimental uncertainties, these v2 values show no clear pT
+dependence between 3 and 50 GeV/c. The prompt J/ψ meson v2 values are found to be larger
+than those of nonprompt J/ψ mesons throughout the studied kinematic region, suggesting dif-
+ferent in-medium effects for charm and bottom quarks. The prompt J/ψ meson v2 values are
+larger than those from a model calculation which considered the prompt J/ψ production above
+10 GeV/c from jet fragmentation. This discrepancy indicates additional effects are required to
+describe the observed sizable v2 at high pT for prompt J/ψ mesons. The v3 values for prompt
+and nonprompt J/ψ mesons are reported for the first time, and found to be consistent with
+zero in the measured pT and centrality intervals. The v2 and v3 values are also measured for
+prompt ψ (2S) mesons and are compatible with, although slightly larger than, those of prompt
+J/ψ mesons. These J/ψ and ψ (2S) meson measurements provide new information about heavy
+quark interactions in the hot and dense medium created in heavy ion collisions.
+
+
+Acknowledgments
+We congratulate our colleagues in the CERN accelerator departments for the excellent perfor-
+mance of the LHC and thank the technical and administrative staffs at CERN and at other
+CMS institutes for their contributions to the success of the CMS effort. In addition, we grate-
+fully acknowledge the computing centers and personnel of the Worldwide LHC Computing
+Grid and other centers for delivering so effectively the computing infrastructure essential to
+our analyses. Finally, we acknowledge the enduring support for the construction and oper-
+ation of the LHC, the CMS detector, and the supporting computing infrastructure provided
+by the following funding agencies: BMBWF and FWF (Austria); FNRS and FWO (Belgium);
+CNPq, CAPES, FAPERJ, FAPERGS, and FAPESP (Brazil); MES and BNSF (Bulgaria); CERN;
+CAS, MoST, and NSFC (China); MINCIENCIAS (Colombia); MSES and CSF (Croatia); RIF
+(Cyprus); SENESCYT (Ecuador); MoER, ERC PUT and ERDF (Estonia); Academy of Finland,
+MEC, and HIP (Finland); CEA and CNRS/IN2P3 (France); BMBF, DFG, and HGF (Germany);
+GSRI (Greece); NKFIH (Hungary); DAE and DST (India); IPM (Iran); SFI (Ireland); INFN
+(Italy); MSIP and NRF (Republic of Korea); MES (Latvia); LAS (Lithuania); MOE and UM
+(Malaysia); BUAP, CINVESTAV, CONACYT, LNS, SEP, and UASLP-FAI (Mexico); MOS (Mon-
+tenegro); MBIE (New Zealand); PAEC (Pakistan); MES and NSC (Poland); FCT (Portugal);
+MESTD (Serbia); MCIN/AEI and PCTI (Spain); MOSTR (Sri Lanka); Swiss Funding Agen-
+cies (Switzerland); MST (Taipei); MHESI and NSTDA (Thailand); TUBITAK and TENMAK
+(Turkey); NASU (Ukraine); STFC (United Kingdom); DOE and NSF (USA).
+Individuals have received support from the Marie-Curie program and the European Re-
+search Council and Horizon 2020 Grant, contract Nos. 675440, 724704, 752730, 758316, 765710,
+824093, 884104, and COST Action CA16108 (European Union); the Leventis Foundation; the
+Alfred P. Sloan Foundation; the Alexander von Humboldt Foundation; the Belgian Federal
+Science Policy Office; the Fonds pour la Formation à la Recherche dans l’Industrie et dans
+l’Agriculture (FRIA-Belgium); the Agentschap voor Innovatie door Wetenschap en Technolo-
+gie (IWT-Belgium); the F.R.S.-FNRS and FWO (Belgium) under the “Excellence of Science –
+EOS” – be.h project n. 30820817; the Beijing Municipal Science & Technology Commission,
+No. Z191100007219010; the Ministry of Education, Youth and Sports (MEYS) of the Czech
+14
+
+
+Republic; the Hellenic Foundation for Research and Innovation (HFRI), Project Number 2288
+(Greece); the Deutsche Forschungsgemeinschaft (DFG), under Germany’s Excellence Strategy –
+EXC 2121 “Quantum Universe” – 390833306, and under project number 400140256 - GRK2497;
+the Hungarian Academy of Sciences, the New National Excellence Program - ÚNKP, the NK-
+FIH research grants K 124845, K 124850, K 128713, K 128786, K 129058, K 131991, K 133046, K
+138136, K 143460, K 143477, 2020-2.2.1-ED-2021-00181, and TKP2021-NKTA-64 (Hungary); the
+Council of Science and Industrial Research, India; the Latvian Council of Science; the Ministry
+of Education and Science, project no. 2022/WK/14, and the National Science Center, con-
+tracts Opus 2021/41/B/ST2/01369 and 2021/43/B/ST2/01552 (Poland); the Fundação para
+a Ciência e a Tecnologia, grant CEECIND/01334/2018 (Portugal); the National Priorities Re-
+search Program by Qatar National Research Fund; MCIN/AEI/10.13039/501100011033, ERDF
+“a way of making Europe”, and the Programa Estatal de Fomento de la Investigación Cientı́fica
+y Técnica de Excelencia Marı́a de Maeztu, grant MDM-2017-0765 and Programa Severo Ochoa
+del Principado de Asturias (Spain); the Chulalongkorn Academic into Its 2nd Century Project
+Advancement Project, and the National Science, Research and Innovation Fund via the Pro-
+gram Management Unit for Human Resources & Institutional Development, Research and In-
+novation, grant B05F650021 (Thailand); the Kavli Foundation; the Nvidia Corporation; the Su-
+perMicro Corporation; the Welch Foundation, contract C-1845; and the Weston Havens Foun-
+dation (USA).
+
+
+References
+ [1] W. Busza, K. Rajagopal, and W. van der Schee, “Heavy ion collisions: The big picture,
+     and the big questions”, Ann. Rev. Nucl. Part. Sci. 68 (2018) 339,
+     doi:10.1146/annurev-nucl-101917-020852, arXiv:1802.04801.
+
+ [2] T. Matsui and H. Satz, “J/ψ suppression by quark-gluon plasma formation”, Phys. Lett. B
+     178 (1986) 416, doi:10.1016/0370-2693(86)91404-8.
+
+ [3] S. Digal, P. Petreczky, and H. Satz, “Quarkonium feed down and sequential
+     suppression”, Phys. Rev. D 64 (2001) 094015, doi:10.1103/PhysRevD.64.094015,
+     arXiv:hep-ph/0106017.
+
+ [4] M. Laine, O. Philipsen, P. Romatschke, and M. Tassler, “Real-time static potential in hot
+     QCD”, JHEP 03 (2007) 054, doi:10.1088/1126-6708/2007/03/054,
+     arXiv:hep-ph/0611300.
+
+ [5] N. Brambilla, J. Ghiglieri, A. Vairo, and P. Petreczky, “Static quark-antiquark pairs at
+     finite temperature”, Phys. Rev. D 78 (2008) 014017,
+     doi:10.1103/PhysRevD.78.014017, arXiv:0804.0993.
+
+ [6] N. Brambilla et al., “Heavy quarkonium in a weakly-coupled quark-gluon plasma below
+     the melting temperature”, JHEP 09 (2010) 038, doi:10.1007/JHEP09(2010)038,
+     arXiv:1007.4156.
+
+ [7] A. Rothkopf, “Heavy quarkonium in extreme conditions”, Phys. Rept. 858 (2020) 1,
+     doi:10.1016/j.physrep.2020.02.006, arXiv:1912.02253.
+
+ [8] J.-P. Blaizot, D. De Boni, P. Faccioli, and G. Garberoglio, “Heavy quark bound states in a
+     quark-gluon plasma: Dissociation and recombination”, Nucl. Phys. A 946 (2016) 49,
+     doi:10.1016/j.nuclphysa.2015.10.011, arXiv:1503.03857.
+References                                                                                    15
+
+
+ [9] NA38 Collaboration, “ψ′ and J/ψ production in pW, pU and SU interactions at 200
+     GeV/nucleon”, Phys. Lett. B 345 (1995) 617, doi:10.1016/0370-2693(94)01614-I.
+
+[10] NA50 Collaboration, “A new measurement of J/ψ suppression in Pb-Pb collisions at 158
+     GeV per nucleon”, Eur. Phys. J. C 39 (2005) 335,
+     doi:10.1140/epjc/s2004-02107-9, arXiv:hep-ex/0412036.
+
+[11] NA60 Collaboration, “J/ψ production in indium-indium collisions at 158 GeV/nucleon”,
+     Phys. Rev. Lett. 99 (2007) 132302, doi:10.1103/PhysRevLett.99.132302.
+
+[12] A. Capella et al., “Nuclear effects in J/ψ suppression”, Phys. Lett. B 206 (1988) 354,
+     doi:10.1016/0370-2693(88)91521-3.
+
+[13] PHENIX Collaboration, “J/ψ production
+                                    √       vs centrality, transverse momentum, and
+     rapidity in Au+Au collisions at sNN = 200 GeV”, Phys. Rev. Lett. 98 (2007) 232301,
+     doi:10.1103/PhysRevLett.98.232301, arXiv:nucl-ex/0611020.
+
+[14] PHENIX Collaboration, “J/ψ suppression at forward rapidity in Au+Au collisions at
+     √
+       s NN = 200 GeV”, Phys. Rev. C 84 (2011) 054912,
+     doi:10.1103/PhysRevC.84.054912, arXiv:1103.6269.
+                                                                                      √
+[15] STAR Collaboration, “J/ψ production at low pT in Au+Au and Cu+Cu collisions at sNN
+     = 200 GeV with the STAR detector”, Phys. Rev. C 90 (2014) 024906,
+     doi:10.1103/PhysRevC.90.024906, arXiv:1310.3563.
+                                                                                       √
+[16] STAR Collaboration, “Energy dependence of J/ψ production in Au+Au collisions at sNN
+     = 39, 62.4 and 200 GeV”, Phys. Lett. B 771 (2017) 13,
+     doi:10.1016/j.physletb.2017.04.078, arXiv:1607.07517.
+                                                                                     √
+[17] ALICE Collaboration, “J/ψ suppression at forward rapidity in Pb-Pb collisions at sNN =
+     2.76 TeV”, Phys. Rev. Lett. 109 (2012) 072301,
+     doi:10.1103/PhysRevLett.109.072301, arXiv:1202.1383.
+                                                                                     √
+[18] ALICE Collaboration, “J/ψ suppression at forward rapidity in Pb-Pb collisions at sNN =
+     5.02 TeV”, Phys. Lett. B 766 (2017) 212, doi:10.1016/j.physletb.2016.12.064,
+     arXiv:1609.08197.
+
+[19] CMS Collaboration, “Measurement of prompt and nonprompt charmonium suppression
+     in PbPb collisions at 5.02 TeV”, Eur. Phys. J. C 78 (2018) 509,
+     doi:10.1140/epjc/s10052-018-5950-6, arXiv:1712.08959.
+
+[20] X. Zhao and R. Rapp, “Medium modifications and production of charmonia at LHC”,
+     Nucl. Phys. A 859 (2011) 114, doi:10.1016/j.nuclphysa.2011.05.001,
+     arXiv:1102.2194.
+
+[21] X. Du and R. Rapp, “Sequential regeneration of charmonia in heavy-ion collisions”,
+     Nucl. Phys. A 943 (2015) 147, doi:10.1016/j.nuclphysa.2015.09.006,
+     arXiv:1504.00670.
+
+[22] S. Voloshin and Y. Zhang, “Flow study in relativistic nuclear collisions by Fourier
+     expansion of azimuthal particle distributions”, Z. Phys. C 70 (1996) 665,
+     doi:10.1007/s002880050141, arXiv:hep-ph/9407282.
+16
+
+
+[23] A. Bzdak, B. Schenke, P. Tribedy, and R. Venugopalan, “Initial state geometry and the role
+     of hydrodynamics in proton-proton, proton-nucleus and deuteron-nucleus collisions”,
+     Phys. Rev. C 87 (2013), no. 6, 064906, doi:10.1103/PhysRevC.87.064906,
+     arXiv:1304.3403.
+
+[24] Y. Liu, N. Xu, and P. Zhuang, “J/ψ elliptic flow in relativistic heavy ion collisions”, Nucl.
+     Phys. A 834 (2010) 317C, doi:10.1016/j.nuclphysa.2010.01.008,
+     arXiv:0910.0959.
+
+[25] M. He, B. Wu, and R. Rapp, “Collectivity of J/ψ mesons in heavy-ion collisions”, Phys.
+     Rev. Lett. 128 (2022), no. 16, 162301, doi:10.1103/PhysRevLett.128.162301,
+     arXiv:2111.13528.
+                                                                   √
+[26] ALICE Collaboration, “J/ψ elliptic flow in Pb-Pb collisions at sNN = 2.76 TeV”, Phys.
+     Rev. Lett. 111 (2013) 162301, doi:10.1103/PhysRevLett.111.162301,
+     arXiv:1330.5880.
+
+[27] ATLAS
+     √       Collaboration, “Prompt and non-prompt J/ψ elliptic flow in Pb+Pb collisions at
+       sNN = 5.02 TeV with the ATLAS detector”, Eur. Phys. J. C 78 (2018) 784,
+     doi:10.1140/epjc/s10052-018-6243-9, arXiv:1807.05198.
+
+[28] CMS Collaboration, “Suppression and √ azimuthal anisotropy of prompt and nonprompt
+     J/ψ production in PbPb collisions at sNN = 2.76 TeV”, Eur. Phys. J. C 77 (2017) 252,
+     doi:10.1140/epjc/s10052-017-4781-1, arXiv:1610.00613.
+                                                                                  √
+[29] ALICE Collaboration, “J/ψ elliptic and triangular flow in Pb-Pb collisions at sNN = 5.02
+     TeV”, JHEP 10 (2020) 141, doi:10.1007/JHEP10(2020)141, arXiv:2005.14518.
+
+[30] CMS Collaboration,
+                     √ “Fragmentation of jets containing a prompt J/ψ meson in PbPb and
+     pp collisions at sNN = 5.02 TeV”, Phys. Lett. B 825 (2022) 136842,
+     doi:10.1016/j.physletb.2021.136842, arXiv:2106.13235.
+
+[31] S.-L. Zhang et al., “Unraveling gluon jet quenching through J/ψ production in heavy-ion
+     collisions”, 2022. arXiv:2208.08323.
+
+[32] CMS Collaboration, “Azimuthal anisotropy of charged
+                                                    √ particles with transverse
+     momentum up to 100 GeV/c in PbPb collisions at sNN = 5.02 TeV”, Phys. Lett. B 776
+     (2018) 195, doi:10.1016/j.physletb.2017.11.041, arXiv:1702.00630.
+
+[33] CMS Collaboration, “Azimuthal anisotropy of charged particles at high transverse
+                                  √
+     momenta in PbPb collisions at s NN = 2.76 TeV”, Phys. Rev. Lett. 109 (2012) 022301,
+     doi:10.1103/PhysRevLett.109.022301, arXiv:1204.1850.
+
+[34] ALICE Collaboration, “ψ (2S) suppression in Pb-Pb collisions at the LHC”, 2022.
+     arXiv:2210.08893. Submitted to Phys. Rev. Lett.
+
+[35] B. Chen, “Elliptic flow as a probe for ψ (2S) production mechanism in relativistic heavy
+     ion collisions”, Phys. Rev. C 95 (2017) 034908, doi:10.1103/PhysRevC.95.034908,
+     arXiv:1608.02173.
+
+[36] CMS
+     √ Collaboration, “CMS luminosity measurement using nucleus-nucleus collisions at
+      sNN = 5.02 TeV in 2018”, CMS Physics Analysis Summary CMS-PAS-LUM-18-001, 2022.
+References                                                                                17
+
+
+[37] CMS
+     √ Collaboration, “Precision luminosity measurement in proton-proton collisions at
+       s = 13 TeV in 2015 and 2016 at CMS”, Eur. Phys. J. C 81 (2021), no. 9, 800,
+     doi:10.1140/epjc/s10052-021-09538-2, arXiv:2104.01927.
+
+[38] “HEPData record for this analysis”, 2023. doi:10.17182/hepdata.130962.
+
+[39] C. Loizides, J. Kamin, and D. d’Enterria, “Improved Monte Carlo Glauber predictions at
+     present and future nuclear colliders”, Phys. Rev. C 97 (2018) 054910,
+     doi:10.1103/PhysRevC.97.054910, arXiv:1710.07098. [Erratum: Phys.Rev.C 99
+     (2019) 019901].
+
+[40] CMS Collaboration, “Performance √ of the CMS muon detector and muon reconstruction
+     with proton-proton collisions at s = 13 TeV”, JINST 13 (2018) P06015,
+     doi:10.1088/1748-0221/13/06/P06015, arXiv:1804.04528.
+
+[41] CMS Collaboration, “The CMS Experiment at the CERN LHC”, JINST 3 (2008) S08004,
+     doi:10.1088/1748-0221/3/08/S08004.
+
+[42] CMS
+       √ Collaboration, “Performance of the CMS Level-1 trigger in proton-proton collisions
+     at s = 13 TeV”, JINST 15 (2020) P10017,
+     doi:10.1088/1748-0221/15/10/P10017, arXiv:2006.10165.
+
+[43] CMS Collaboration, “The CMS trigger system”, JINST 12 (2017) P01020,
+     doi:10.1088/1748-0221/12/01/P01020, arXiv:1609.02366.
+
+[44] T. Sjöstrand et al., “An introduction to PYTHIA 8.2”, Comput. Phys. Commun. 191 (2015)
+     159, doi:10.1016/j.cpc.2015.01.024, arXiv:1410.3012.
+
+[45] CMS Collaboration, “Extraction and validation of a new set of CMS PYTHIA 8 tunes from
+     underlying-event measurements”, Eur. Phys. J. C 80 (2020) 4,
+     doi:10.1140/epjc/s10052-019-7499-4, arXiv:1903.12179.
+
+[46] D. J. Lange, “The EvtGen particle decay simulation package”, Nucl. Instrum. Meth. A 462
+     (2001) 152, doi:10.1016/S0168-9002(01)00089-4.
+
+[47] C. Gale, S. Jeon, and B. Schenke, “Hydrodynamic modeling of heavy-ion collisions”, Int.
+     J. Mod. Phys. A 28 (2013) 1340011, doi:10.1142/S0217751X13400113,
+     arXiv:1301.5893.
+
+[48] GEANT4 Collaboration, “GEANT4 — A simulation toolkit”, Nucl. Instrum. Meth. A 506
+     (2003) 250, doi:10.1016/S0168-9002(03)01368-8.
+
+[49] CMS
+       √ Collaboration, “Measurements of inclusive W and Z cross sections in pp collisions
+     at s = 7 TeV”, JHEP 01 (2011) 080, doi:10.1007/JHEP01(2011)080,
+     arXiv:1012.2466.
+
+[50] CMS Collaboration,
+                  √      “Suppression of non-prompt J/ψ, prompt J/ψ, and Υ (1S) in PbPb
+     collisions at sNN = 2.76 TeV”, JHEP 05 (2012) 063, doi:10.1007/JHEP05(2012)063,
+     arXiv:1201.5069.
+
+[51] ALEPH Collaboration, “Measurement of the anti-B0 and B− meson lifetimes”, Phys. Lett.
+     B 307 (1993) 194, doi:10.1016/0370-2693(93)90211-Y. [Erratum:
+     doi:10.1016/0370-2693(94)90054-X].
+18
+
+
+[52] Particle Data Group, P. A. Zyla et al., “Review of Particle Physics”, Prog. Theor. Exp. Phys.
+     2020 (2020) 083C01, doi:10.1093/ptep/ptaa104.
+
+[53] M. J. Oreglia, “A study of the reactions ψ′ → γγψ”. PhD thesis, Stanford University,
+     1980. SLAC Report SLAC-R-236, see Appendix D.
+
+[54] G. Cowan, K. Cranmer, E. Gross, and O. Vitells, “Asymptotic formulae for
+     likelihood-based tests of new physics”, Eur. Phys. J. C 71 (2011) 1554,
+     doi:10.1140/epjc/s10052-011-1554-0, arXiv:1007.1727. [Erratum:
+     Eur.Phys.J.C 73, 2501 (2013)].
+
+[55] M. Pivk and F. R. Le Diberder, “sPlot: A statistical tool to unfold data distributions”,
+     Nucl. Instrum. Meth. A 555 (2005) 356, doi:10.1016/j.nima.2005.08.106,
+     arXiv:physics/0402083.
+
+[56] CMS Collaboration, “Measurement
+                                 √     of the azimuthal anisotropy of Υ (1S) and Υ (2S)
+     mesons in PbPb collisions at sNN = 5.02 TeV”, Phys. Lett. B 819 (2021) 136385,
+     doi:10.1016/j.physletb.2021.136385, arXiv:2006.07707.
+
+[57] CMS Collaboration,
+                  √      “Measurement of prompt D 0 meson azimuthal anisotropy in Pb-Pb
+     collisions at sNN = 5.02 TeV”, Phys. Rev. Lett. 120 (2018) 202301,
+     doi:10.1103/PhysRevLett.120.202301, arXiv:1708.03497.
+
+[58] M. Luzum and J. Ollitrault, “Eliminating experimental bias in anisotropic-flow
+     measurements of high-energy nuclear collisions”, Phys. Rev. C 87 (2013) 044907,
+     doi:10.1103/PhysRevC.87.044907, arXiv:1209.2323.
+
+[59] CMS Collaboration, “Measurements of azimuthal anisotropy of nonprompt D 0 mesons in
+                       √
+     PbPb collisions at sNN = 5.02 TeV”, 2022. arXiv:2212.01636. Submitted to Phys.
+     Lett. B.
+
+[60] ALICE Collaboration,
+                  √         “Measurement of Υ (1S) elliptic flow at forward rapidity in Pb-Pb
+     collisions at sNN = 5.02 TeV”, Phys. Rev. Lett. 123 (2019) 192301,
+     doi:10.1103/PhysRevLett.123.192301, arXiv:1907.03169.
+
+
+A    Kinematic regions
+The kinematic ranges for J/ψ and ψ (2S) mesons used in this study are summarized in Table 2.
+The centrality and ⟨Npart ⟩ values used are calculated using a Glauber model simulation [39]
+and are summarized in Table 3.
+Table 2: A Summary of the kinematic regions for J/ψ and ψ (2S) in the centrality interval 10–
+60%.
+
+                                           J/ψ                    ψ (2S)
+                    |y| < 2.4      6.5 < pT < 50 GeV/c     6.5 < pT < 50 GeV/c
+                 1.6 < |y| < 2.4    3 < pT < 6.5 GeV/c     4 < pT < 6.5 GeV/c
+                                                                                                 19
+
+
+
+
+                                                                             √
+Table 3: The centrality classes and ⟨Npart ⟩ values for PbPb collisions at       sNN = 5.02 TeV used
+in this study.
+
+                                 Centrality class     ⟨Npart ⟩
+                                     0–10%          356.9 ± 0.9
+                                    10–20%          262.3 ± 1.3
+                                    20–30%          188.2 ± 1.4
+                                    30–40%          131.0 ± 1.4
+                                    40–50%           87.1 ± 1.3
+                                    50–90%           27.1 ± 0.6
+                                     0–20%          309.6 ± 1.0
+                                     20–40%         159.6 ± 1.4
+                                     40–90%          39.1 ± 0.7
+                                     10–60%         144.6 ± 1.2
+20
+                                                                                          21
+
+
+B    The CMS Collaboration
+Yerevan Physics Institute, Yerevan, Armenia
+A. Tumasyan
+Institut für Hochenergiephysik, Vienna, Austria
+W. Adam , J.W. Andrejkovic, T. Bergauer , S. Chatterjee , K. Damanakis , M. Dragice-
+vic , A. Escalante Del Valle , P.S. Hussain , M. Jeitler1 , N. Krammer , L. Lechner ,
+D. Liko , I. Mikulec , P. Paulitsch, F.M. Pitters, J. Schieck1 , R. Schöfbeck , D. Schwarz ,
+M. Sonawane , S. Templ , W. Waltenberger , C.-E. Wulz1
+Universiteit Antwerpen, Antwerpen, Belgium
+M.R. Darwish2 , T. Janssen , T. Kello3 , H. Rejeb Sfar, P. Van Mechelen
+Vrije Universiteit Brussel, Brussel, Belgium
+E.S. Bols , J. D’Hondt , A. De Moor , M. Delcourt , H. El Faham , S. Lowette ,
+S. Moortgat , A. Morton , D. Müller , A.R. Sahasransu , S. Tavernier , W. Van Doninck,
+D. Vannerom
+Université Libre de Bruxelles, Bruxelles, Belgium
+B. Clerbaux , G. De Lentdecker , L. Favart , D. Hohov , J. Jaramillo , K. Lee ,
+M. Mahdavikhorrami , I. Makarenko , A. Malara , S. Paredes , L. Pétré , N. Postiau,
+L. Thomas , M. Vanden Bemden, C. Vander Velde , P. Vanlaer
+Ghent University, Ghent, Belgium
+D. Dobur , J. Knolle , L. Lambrecht , G. Mestdach, M. Niedziela , C. Rendón,
+C. Roskas , A. Samalan, K. Skovpen , M. Tytgat , N. Van Den Bossche , B. Vermassen,
+L. Wezenbeek
+Université Catholique de Louvain, Louvain-la-Neuve, Belgium
+A. Benecke , G. Bruno , F. Bury , C. Caputo , P. David , C. Delaere , I.S. Donertas         ,
+A. Giammanco , K. Jaffel , Sa. Jain , V. Lemaitre, K. Mondal , A. Taliercio , T.T. Tran     ,
+P. Vischia , S. Wertz
+Centro Brasileiro de Pesquisas Fisicas, Rio de Janeiro, Brazil
+G.A. Alves , E. Coelho , C. Hensel , A. Moraes , P. Rebello Teles
+Universidade do Estado do Rio de Janeiro, Rio de Janeiro, Brazil
+W.L. Aldá Júnior , M. Alves Gallo Pereira , M. Barroso Ferreira Filho , H. Bran-
+dao Malbouisson , W. Carvalho , J. Chinellato4 , E.M. Da Costa , G.G. Da Silveira5 ,
+D. De Jesus Damiao , V. Dos Santos Sousa , S. Fonseca De Souza , J. Martins6 ,
+C. Mora Herrera , K. Mota Amarilo , L. Mundim , H. Nogima , A. Santoro ,
+S.M. Silva Do Amaral , A. Sznajder , M. Thiel , F. Torres Da Silva De Araujo7 ,
+A. Vilela Pereira
+Universidade Estadual Paulista, Universidade Federal do ABC, São Paulo, Brazil
+C.A. Bernardes5 , L. Calligaris , T.R. Fernandez Perez Tomei , E.M. Gregores                ,
+P.G. Mercadante , S.F. Novaes , Sandra S. Padula
+Institute for Nuclear Research and Nuclear Energy, Bulgarian Academy of Sciences, Sofia,
+Bulgaria
+A. Aleksandrov , G. Antchev , R. Hadjiiska , P. Iaydjiev , M. Misheva , M. Rodozov,
+M. Shopova , G. Sultanov
+University of Sofia, Sofia, Bulgaria
+22
+
+
+A. Dimitrov   , T. Ivanov   , L. Litov   , B. Pavlov   , P. Petkov    , A. Petrov, E. Shumka
+Instituto De Alta Investigación, Universidad de Tarapacá, Casilla 7 D, Arica, Chile
+S.Thakur
+Beihang University, Beijing, China
+T. Cheng , T. Javaid8 , M. Mittal , L. Yuan
+Department of Physics, Tsinghua University, Beijing, China
+M. Ahmad , G. Bauer9 , Z. Hu , S. Lezki , K. Yi9,10
+Institute of High Energy Physics, Beijing, China
+G.M. Chen8 , H.S. Chen8 , M. Chen8 , F. Iemmi              , C.H. Jiang, A. Kapoor , H. Kou ,
+H. Liao , Z.-A. Liu11 , V. Milosevic , F. Monti            , R. Sharma , J. Tao , J. Thomas-
+Wilsker , J. Wang , H. Zhang , J. Zhao
+State Key Laboratory of Nuclear Physics and Technology, Peking University, Beijing, China
+A. Agapitos , Y. An , Y. Ban , C. Chen, A. Levin , C. Li , Q. Li , X. Lyu, Y. Mao,
+S.J. Qian , X. Sun , D. Wang , J. Xiao , H. Yang
+Sun Yat-Sen University, Guangzhou, China
+M. Lu , Z. You
+Institute of Modern Physics and Key Laboratory of Nuclear Physics and Ion-beam
+Application (MOE) - Fudan University, Shanghai, China
+X. Gao3 , D. Leggat, H. Okawa , Y. Zhang
+Zhejiang University, Hangzhou, Zhejiang, China
+Z. Lin , C. Lu , M. Xiao
+Universidad de Los Andes, Bogota, Colombia
+C. Avila , D.A. Barbosa Trujillo, A. Cabrera , C. Florez        , J. Fraga
+Universidad de Antioquia, Medellin, Colombia
+J. Mejia Guisao , F. Ramirez , M. Rodriguez , J.D. Ruiz Alvarez
+University of Split, Faculty of Electrical Engineering, Mechanical Engineering and Naval
+Architecture, Split, Croatia
+D. Giljanovic , N. Godinovic , D. Lelas , I. Puljak
+University of Split, Faculty of Science, Split, Croatia
+Z. Antunovic, M. Kovac , T. Sculac
+Institute Rudjer Boskovic, Zagreb, Croatia
+V. Brigljevic , B.K. Chitroda , D. Ferencek                 ,    S.   Mishra   ,   M.   Roguljic   ,
+A. Starodumov12 , T. Susa
+University of Cyprus, Nicosia, Cyprus
+A. Attikis , K. Christoforou , M. Kolosova , S. Konstantinou , J. Mousa              , C. Nicolaou,
+F. Ptochos , P.A. Razis , H. Rykaczewski, H. Saka , A. Stepennov
+Charles University, Prague, Czech Republic
+M. Finger12 , M. Finger Jr.12 , A. Kveton
+Escuela Politecnica Nacional, Quito, Ecuador
+E. Ayala
+Universidad San Francisco de Quito, Quito, Ecuador
+                                                                                                23
+
+
+E. Carrera Jarrin
+Academy of Scientific Research and Technology of the Arab Republic of Egypt, Egyptian
+Network of High Energy Physics, Cairo, Egypt
+A.A. Abdelalim13,14 , E. Salama15,16
+Center for High Energy Physics (CHEP-FU), Fayoum University, El-Fayoum, Egypt
+A. Lotfy , M.A. Mahmoud
+National Institute of Chemical Physics and Biophysics, Tallinn, Estonia
+S. Bhowmik , R.K. Dewanjee , K. Ehataht , M. Kadastik, T. Lange                , S. Nandan       ,
+C. Nielsen , J. Pata , M. Raidal , L. Tani , C. Veelken
+Department of Physics, University of Helsinki, Helsinki, Finland
+P. Eerola , H. Kirschenmann , K. Osterberg , M. Voutilainen
+Helsinki Institute of Physics, Helsinki, Finland
+S. Bharthuar , E. Brücken , F. Garcia , J. Havukainen , M.S. Kim , R. Kinnunen,
+T. Lampén , K. Lassila-Perini , S. Lehti , T. Lindén , M. Lotti, L. Martikainen ,
+M. Myllymäki , J. Ott , M.m. Rantanen , H. Siikonen , E. Tuominen , J. Tuominiemi
+Lappeenranta-Lahti University of Technology, Lappeenranta, Finland
+P. Luukka , H. Petrow , T. Tuuva
+IRFU, CEA, Université Paris-Saclay, Gif-sur-Yvette, France
+C. Amendola , M. Besancon , F. Couderc , M. Dejardin , D. Denegri, J.L. Faure,
+F. Ferri , S. Ganjour , P. Gras , G. Hamel de Monchenault , P. Jarry , V. Lohezic ,
+J. Malcles , J. Rander, A. Rosowsky , M.Ö. Sahin , A. Savoy-Navarro17 , P. Simkina ,
+M. Titov
+Laboratoire Leprince-Ringuet, CNRS/IN2P3, Ecole Polytechnique, Institut Polytechnique
+de Paris, Palaiseau, France
+C. Baldenegro Barrera , F. Beaudette , A. Buchot Perraguin , P. Busson , A. Cappati ,
+C. Charlot , F. Damas , O. Davignon , B. Diab , G. Falmagne , B.A. Fontana San-
+tos Alves , S. Ghosh , R. Granier de Cassagnac , A. Hakimi , B. Harikrishnan ,
+G. Liu , J. Motta , M. Nguyen , C. Ochando , L. Portales , R. Salerno , U. Sarkar ,
+J.B. Sauvan , Y. Sirois , A. Tarabini , E. Vernazza , A. Zabi , A. Zghiche
+Université de Strasbourg, CNRS, IPHC UMR 7178, Strasbourg, France
+J.-L. Agram18 , J. Andrea , D. Apparu , D. Bloch , G. Bourgatte , J.-M. Brom                     ,
+E.C. Chabert , C. Collard , D. Darej, U. Goerlach , C. Grimault, A.-C. Le Bihan                  ,
+P. Van Hove
+Institut de Physique des 2 Infinis de Lyon (IP2I ), Villeurbanne, France
+S. Beauceron , B. Blancon , G. Boudoul , A. Carle, N. Chanon , J. Choi , D. Contardo             ,
+P. Depasse , C. Dozen19 , H. El Mamouni, J. Fay , S. Gascon , M. Gouzevitch                      ,
+G. Grenier , B. Ille , I.B. Laktineh, M. Lethuillier , L. Mirabito, S. Perries, L. Torterotot    ,
+M. Vander Donckt , P. Verdier , S. Viret
+Georgian Technical University, Tbilisi, Georgia
+I. Bagaturia20 , I. Lomidze , Z. Tsamalaidze12
+RWTH Aachen University, I. Physikalisches Institut, Aachen, Germany
+V. Botta , L. Feld , K. Klein , M. Lipinski , D. Meuser , A. Pauls              , N. Röwert     ,
+M. Teroerde
+24
+
+
+RWTH Aachen University, III. Physikalisches Institut A, Aachen, Germany
+S. Diekmann , A. Dodonova , N. Eich , D. Eliseev , M. Erdmann , P. Fackeldey ,
+D. Fasanella , B. Fischer , T. Hebbeker , K. Hoepfner , F. Ivone , M.y. Lee ,
+L. Mastrolorenzo, M. Merschmeyer , A. Meyer , S. Mondal , S. Mukherjee , D. Noll ,
+A. Novak , F. Nowotny, A. Pozdnyakov , Y. Rath, W. Redjeb , H. Reithler ,
+A. Schmidt , S.C. Schuler, A. Sharma , A. Stein , L. Vigilante, S. Wiedenbeck , S. Zaleski
+RWTH Aachen University, III. Physikalisches Institut B, Aachen, Germany
+C. Dziwok , G. Flügge , W. Haj Ahmad21 , O. Hlushchenko, T. Kress , A. Nowack              ,
+O. Pooth , A. Stahl , T. Ziemons , A. Zotz
+Deutsches Elektronen-Synchrotron, Hamburg, Germany
+H. Aarup Petersen , M. Aldaya Martin , P. Asmuss, S. Baxter , M. Bayatmakou ,
+O. Behnke , A. Bermúdez Martı́nez , S. Bhattacharya , A.A. Bin Anuar , F. Blekman22 ,
+K. Borras23 , D. Brunner , A. Campbell , A. Cardini , C. Cheng, F. Colombina,
+S. Consuegra Rodrı́guez , G. Correia Silva , M. De Silva , L. Didukh , G. Eckerlin,
+D. Eckstein , L.I. Estevez Banos , O. Filatov , E. Gallo22 , A. Geiser , A. Giraldi ,
+G. Greau, A. Grohsjean , V. Guglielmi , M. Guthoff , A. Jafari24 , N.Z. Jomhari ,
+B. Kaech , M. Kasemann , H. Kaveh , C. Kleinwort , R. Kogler , M. Komm ,
+D. Krücker , W. Lange, D. Leyva Pernia , K. Lipka25 , W. Lohmann26 , R. Mankel ,
+I.-A. Melzer-Pellmann , M. Mendizabal Morentin , J. Metwally, A.B. Meyer , G. Milella ,
+M. Mormile , A. Mussgiller , A. Nürnberg , Y. Otarid, D. Pérez Adán , A. Raspereza ,
+B. Ribeiro Lopes , J. Rübenach, A. Saggio , A. Saibel , M. Savitskyi , M. Scham27,23 ,
+V. Scheurer, S. Schnake23 , P. Schütze , C. Schwanenberger22 , M. Shchedrolosiev ,
+R.E. Sosa Ricardo , D. Stafford, N. Tonon† , M. Van De Klundert , F. Vazzoler , A. Velyka,
+A. Ventura Barroso , R. Walsh , D. Walter , Q. Wang , Y. Wen , K. Wichmann,
+L. Wiens23 , C. Wissing , S. Wuchterl , Y. Yang , A. Zimermmane Castro Santos
+University of Hamburg, Hamburg, Germany
+A. Albrecht , S. Albrecht , M. Antonello , S. Bein , L. Benato , M. Bonanomi ,
+P. Connor , K. De Leo , M. Eich, K. El Morabit , F. Feindt, A. Fröhlich, C. Garbers ,
+E. Garutti , M. Hajheidari, J. Haller , A. Hinzmann , H.R. Jabusch , G. Kasieczka ,
+P. Keicher, R. Klanner , W. Korcari , T. Kramer , V. Kutzner , F. Labe , J. Lange ,
+A. Lobanov , C. Matthies , A. Mehta , L. Moureaux , M. Mrowietz, A. Nigamova ,
+Y. Nissan, A. Paasch , K.J. Pena Rodriguez , T. Quadfasel , M. Rieger , O. Rieger,
+D. Savoiu , J. Schindler , P. Schleper , M. Schröder , J. Schwandt , M. Sommerhalder ,
+H. Stadie , G. Steinbrück , A. Tews, M. Wolf
+Karlsruher Institut fuer Technologie, Karlsruhe, Germany
+S. Brommer , M. Burkart, E. Butz , R. Caspart , T. Chwalek , A. Dierlamm ,
+A. Droll, N. Faltermann , M. Giffels , J.O. Gosewisch, A. Gottmann , F. Hartmann28 ,
+M. Horzela , U. Husemann , M. Klute , R. Koppenhöfer , A. Lintuluoto , S. Maier ,
+S. Mitra , Th. Müller , M. Neukum, M. Oh , G. Quast , K. Rabbertz , J. Rauser,
+M. Schnepf, D. Seith, I. Shvetsov , H.J. Simonis , N. Trevisani , R. Ulrich , J. van der Lin-
+den , R.F. Von Cube , M. Wassmer , S. Wieland , R. Wolf , S. Wozniewski , S. Wunsch,
+X. Zuo
+Institute of Nuclear and Particle Physics (INPP), NCSR Demokritos, Aghia Paraskevi,
+Greece
+G. Anagnostou, P. Assiouras , G. Daskalakis , A. Kyriakis, A. Stakia
+National and Kapodistrian University of Athens, Athens, Greece
+                                                                                                25
+
+
+M. Diamantopoulou, D. Karasavvas, P. Kontaxakis , A. Manousakis-Katsikakis , A. Pana-
+giotou, I. Papavergou , N. Saoulidou , K. Theofilatos , E. Tziaferi , K. Vellidis ,
+I. Zisopoulos
+National Technical University of Athens, Athens, Greece
+G. Bakas , T. Chatzistavrou, K. Kousouris , I. Papakrivopoulos                  , G. Tsipolitis,
+A. Zacharopoulou
+University of Ioánnina, Ioánnina, Greece
+K. Adamidis, I. Bestintzanos, I. Evangelou , C. Foudas, P. Gianneios , C. Kamtsikis,
+P. Katsoulis, P. Kokkas , P.G. Kosmoglou Kioseoglou , N. Manthos , I. Papadopoulos ,
+J. Strologas
+MTA-ELTE Lendület CMS Particle and Nuclear Physics Group, Eötvös Loránd University,
+Budapest, Hungary
+M. Csanád , K. Farkas , M.M.A. Gadallah29 , S. Lökös30 , P. Major , K. Mandal ,
+G. Pásztor , A.J. Rádl31 , O. Surányi , G.I. Veres
+Wigner Research Centre for Physics, Budapest, Hungary
+M. Bartók32 , G. Bencze, C. Hajdu , D. Horvath33,34 , F. Sikler       , V. Veszpremi
+Institute of Nuclear Research ATOMKI, Debrecen, Hungary
+N. Beni , S. Czellar, J. Karancsi32 , J. Molnar, Z. Szillasi, D. Teyssier
+Institute of Physics, University of Debrecen, Debrecen, Hungary
+P. Raics, B. Ujvari35
+Karoly Robert Campus, MATE Institute of Technology, Gyongyos, Hungary
+T. Csorgo31 , F. Nemes31 , T. Novak
+Panjab University, Chandigarh, India
+J. Babbar , S. Bansal , S.B. Beri, V. Bhatnagar , G. Chaudhary , S. Chauhan                      ,
+N. Dhingra36 , R. Gupta, A. Kaur , A. Kaur , H. Kaur , M. Kaur , S. Kumar                        ,
+P. Kumari , M. Meena , K. Sandeep , T. Sheokand, J.B. Singh37 , A. Singla                        ,
+A. K. Virdi
+University of Delhi, Delhi, India
+A. Ahmed , A. Bhardwaj , B.C. Choudhary           , A. Kumar    , M. Naimuddin    , K. Ranjan    ,
+S. Saumya
+Saha Institute of Nuclear Physics, HBNI, Kolkata, India
+S. Baradia , S. Barman38 , S. Bhattacharya , D. Bhowmik, S. Dutta                   , S. Dutta,
+B. Gomber39 , M. Maity38 , P. Palit , G. Saha , B. Sahu , S. Sarkar
+Indian Institute of Technology Madras, Madras, India
+P.K. Behera , S.C. Behera , P. Kalbhor , J.R. Komaragiri40 , D. Kumar40 , A. Muham-
+mad , L. Panwar40 , R. Pradhan , P.R. Pujahari , A. Sharma , A.K. Sikdar ,
+P.C. Tiwari40 , S. Verma
+Bhabha Atomic Research Centre, Mumbai, India
+K. Naskar41
+Tata Institute of Fundamental Research-A, Mumbai, India
+T. Aziz, I. Das , S. Dugad, M. Kumar , G.B. Mohanty , P. Suryadevara
+Tata Institute of Fundamental Research-B, Mumbai, India
+26
+
+
+S. Banerjee , R. Chudasama , M. Guchait , S. Karmakar          , S. Kumar    , G. Majumder   ,
+K. Mazumdar , S. Mukherjee , A. Thachayath
+National Institute of Science Education and Research, An OCC of Homi Bhabha National
+Institute, Bhubaneswar, Odisha, India
+S. Bahinipati42 , A.K. Das, C. Kar , P. Mal , T. Mishra , V.K. Muraleedha-
+ran Nair Bindhu43 , A. Nayak43 , P. Saha , S.K. Swain, D. Vats43
+Indian Institute of Science Education and Research (IISER), Pune, India
+A. Alpana , S. Dube , B. Kansal , A. Laha , S. Pandey , A. Rastogi , S. Sharma
+Isfahan University of Technology, Isfahan, Iran
+H. Bakhshiansohi44,45 , E. Khazaie45 , M. Zeinali46
+Institute for Research in Fundamental Sciences (IPM), Tehran, Iran
+S. Chenarani47 , S.M. Etesami , M. Khakzad , M. Mohammadi Najafabadi
+University College Dublin, Dublin, Ireland
+M. Grunewald
+INFN Sezione di Baria , Università di Barib , Politecnico di Baric , Bari, Italy
+M. Abbresciaa,b , R. Alya,b,13 , C. Arutaa,b , A. Colaleoa , D. Creanzaa,c                   ,
+N. De Filippisa,c , M. De Palmaa,b , A. Di Florioa,b , W. Elmetenaweea,b , F. Erricoa,b      ,
+L. Fiorea , G. Iasellia,c , M. Incea,b , G. Maggia,c , M. Maggia , I. Margjekaa,b            ,
+V. Mastrapasquaa,b , S. Mya,b , S. Nuzzoa,b , A. Pellecchiaa,b , A. Pompilia,b               ,
+G. Pugliesea,c , R. Radognaa , D. Ramosa , A. Ranieria , G. Selvaggia,b                      ,
+L. Silvestrisa , F.M. Simonea,b , Ü. Sözbilira , A. Stamerraa , R. Vendittia               ,
+P. Verwilligena
+INFN Sezione di Bolognaa , Università di Bolognab , Bologna, Italy
+G. Abbiendia , C. Battilanaa,b , D. Bonacorsia,b , L. Borgonovia , L. Brigliadoria ,
+R. Campaninia,b , P. Capiluppia,b , A. Castroa,b , F.R. Cavalloa , M. Cuffiania,b ,
+G.M. Dallavallea , T. Diotalevia,b , F. Fabbria , A. Fanfania,b , P. Giacomellia ,
+L. Giommia,b , C. Grandia , L. Guiduccia,b , S. Lo Meoa,48 , L. Lunertia,b ,
+S. Marcellinia , G. Masettia , F.L. Navarriaa,b , A. Perrottaa , F. Primaveraa,b ,
+A.M. Rossia,b , T. Rovellia,b , G.P. Sirolia,b
+INFN Sezione di Cataniaa , Università di Cataniab , Catania, Italy
+S. Costaa,b,49 , A. Di Mattiaa , R. Potenzaa,b , A. Tricomia,b,49 , C. Tuvea,b
+INFN Sezione di Firenzea , Università di Firenzeb , Firenze, Italy
+G. Barbaglia , G. Bardellia,b , B. Camaiania,b , A. Cassesea , R. Ceccarellia,b              ,
+V. Ciullia,b , C. Civininia , R. D’Alessandroa,b , E. Focardia,b , G. Latinoa,b              ,
+P. Lenzia,b , M. Lizzoa,b , M. Meschinia , S. Paolettia , R. Seiditaa,b , G. Sguazzonia      ,
+L. Viliania
+INFN Laboratori Nazionali di Frascati, Frascati, Italy
+L. Benussi , S. Bianco , S. Meola28 , D. Piccolo
+INFN Sezione di Genovaa , Università di Genovab , Genova, Italy
+M. Bozzoa,b , P. Chatagnona , F. Ferroa , R. Mulargiaa , E. Robuttia        , S. Tosia,b
+INFN Sezione di Milano-Bicoccaa , Università di Milano-Bicoccab , Milano, Italy
+A. Benagliaa , G. Boldrinia , F. Brivioa,b , F. Cetorellia,b , F. De Guioa,b                 ,
+M.E. Dinardoa,b , P. Dinia , S. Gennaia , A. Ghezzia,b , P. Govonia,b , L. Guzzia,b          ,
+                                                                                              27
+
+
+M.T. Lucchinia,b , M. Malbertia , S. Malvezzia , A. Massironia , D. Menascea                    ,
+L. Moronia , M. Paganonia,b , D. Pedrinia , B.S. Pinolinia , S. Ragazzia,b , N. Redaellia       ,
+T. Tabarelli de Fatisa,b , D. Zuoloa,b
+INFN Sezione di Napolia , Università di Napoli ’Federico II’b , Napoli, Italy; Università della
+Basilicatac , Potenza, Italy; Università G. Marconid , Roma, Italy
+S. Buontempoa , F. Carnevalia,b , N. Cavalloa,c , A. De Iorioa,b , F. Fabozzia,c ,
+A.O.M. Iorioa,b , L. Listaa,b,50 , P. Paoluccia,28 , B. Rossia , C. Sciaccaa,b
+INFN Sezione di Padovaa , Università di Padovab , Padova, Italy; Università di Trentoc ,
+Trento, Italy
+P. Azzia , D. Biselloa,b , P. Bortignona , A. Bragagnoloa,b , R. Carlina,b ,
+P. Checchiaa , T. Dorigoa , F. Gasparinia,b , U. Gasparinia,b , A. Gozzelinoa ,
+G. Grossoa , L. Layera,51 , E. Lusiania , M. Margonia,b , A.T. Meneguzzoa,b , J. Pazzinia,b ,
+P. Ronchesea,b , R. Rossina,b , F. Simonettoa,b , G. Stronga , M. Tosia,b , H. Yarara,b ,
+M. Zanettia,b , P. Zottoa,b , A. Zucchettaa,b , G. Zumerlea,b
+INFN Sezione di Paviaa , Università di Paviab , Pavia, Italy
+S. Abu Zeida,16 , C. Aimèa,b , A. Braghieria , S. Calzaferria,b , D. Fiorinaa,b                ,
+P. Montagnaa,b , V. Rea , C. Riccardia,b , P. Salvinia , I. Vaia , P. Vituloa,b
+INFN Sezione di Perugiaa , Università di Perugiab , Perugia, Italy
+P. Asenova,52 , G.M. Bileia , D. Ciangottinia,b , L. Fanòa,b , M. Magherinia,b                 ,
+G. Mantovania,b , V. Mariania,b , M. Menichellia , F. Moscatellia,52 , A. Piccinellia,b         ,
+M. Presillaa,b , A. Rossia,b , A. Santocchiaa,b , D. Spigaa , T. Tedeschia,b
+INFN Sezione di Pisaa , Università di Pisab , Scuola Normale Superiore di Pisac , Pisa, Italy;
+Università di Sienad , Siena, Italy
+P. Azzurria , G. Bagliesia , V. Bertacchia,c , R. Bhattacharyaa , L. Bianchinia,b ,
+T. Boccalia , E. Bossinia,b , D. Bruschinia,c , R. Castaldia , M.A. Cioccia,b ,
+V. D’Amantea,d , R. Dell’Orsoa , M.R. Di Domenicoa,d , S. Donatoa , A. Giassia ,
+F. Ligabuea,c , G. Mandorlia,c , D. Matos Figueiredoa , A. Messineoa,b , M. Musicha,b ,
+F. Pallaa , S. Paroliaa,b , G. Ramirez-Sancheza,c , A. Rizzia,b , G. Rolandia,c ,
+S. Roy Chowdhurya , T. Sarkara , A. Scribanoa , N. Shafieia,b , P. Spagnoloa ,
+R. Tenchinia , G. Tonellia,b , N. Turinia,d , A. Venturia , P.G. Verdinia
+INFN Sezione di Romaa , Sapienza Università di Romab , Roma, Italy
+P. Barriaa , M. Campanaa,b , F. Cavallaria , D. Del Rea,b , E. Di Marcoa                        ,
+M. Diemoza , E. Longoa,b , P. Meridiania , G. Organtinia,b , F. Pandolfia                       ,
+R. Paramattia,b , C. Quarantaa,b , S. Rahatloua,b , C. Rovellia , F. Santanastasioa,b           ,
+L. Soffia , R. Tramontanoa,b
+INFN Sezione di Torinoa , Università di Torinob , Torino, Italy; Università del Piemonte
+Orientalec , Novara, Italy
+N. Amapanea,b , R. Arcidiaconoa,c , S. Argiroa,b , M. Arneodoa,c , N. Bartosika ,
+R. Bellana,b , A. Belloraa,b , C. Biinoa , N. Cartigliaa , M. Costaa,b , R. Covarellia,b ,
+N. Demariaa , M. Grippoa,b , B. Kiania,b , F. Leggera , C. Mariottia , S. Masellia ,
+A. Meccaa,b , E. Migliorea,b , E. Monteila,b , M. Montenoa , M.M. Obertinoa,b ,
+G. Ortonaa , L. Pachera,b , N. Pastronea , M. Pelliccionia , M. Ruspaa,c ,
+K. Shchelinaa , F. Sivieroa,b , V. Solaa , A. Solanoa,b , D. Soldia,b , A. Staianoa ,
+M. Tornagoa,b , D. Trocinoa , G. Umoreta,b , A. Vagnerinia,b
+INFN Sezione di Triestea , Università di Triesteb , Trieste, Italy
+28
+
+
+S. Belfortea , V. Candelisea,b , M. Casarsaa            , F. Cossuttia      , A. Da Rolda,b          ,
+G. Della Riccaa,b , G. Sorrentinoa,b
+Kyungpook National University, Daegu, Korea
+S. Dogra , C. Huh , B. Kim , D.H. Kim , G.N. Kim , J. Kim, J. Lee                       , S.W. Lee   ,
+C.S. Moon , Y.D. Oh , S.I. Pak , M.S. Ryu , S. Sekmen , Y.C. Yang
+Chonnam National University, Institute for Universe and Elementary Particles, Kwangju,
+Korea
+G. Bak , P. Gwak , H. Kim , D.H. Moon
+Hanyang University, Seoul, Korea
+E. Asilar , T.J. Kim , J. Park
+Korea University, Seoul, Korea
+S. Choi , S. Han, B. Hong , K. Lee, K.S. Lee     , J. Lim, J. Park, S.K. Park, J. Yoo
+Kyung Hee University, Department of Physics, Seoul, Korea
+J. Goh
+Sejong University, Seoul, Korea
+H. S. Kim , Y. Kim, S. Lee
+Seoul National University, Seoul, Korea
+J. Almond, J.H. Bhyun, J. Choi , S. Jeon , J. Kim , J.S. Kim, S. Ko        , H. Kwon      , H. Lee   ,
+S. Lee, B.H. Oh , S.B. Oh , H. Seo , U.K. Yang, I. Yoon
+University of Seoul, Seoul, Korea
+W. Jang , D.Y. Kang, Y. Kang , D. Kim       , S. Kim , B. Ko, J.S.H. Lee    , Y. Lee    , J.A. Merlin,
+I.C. Park , Y. Roh, D. Song, Watson, I.J.   , S. Yang
+Yonsei University, Department of Physics, Seoul, Korea
+S. Ha , H.D. Yoo
+Sungkyunkwan University, Suwon, Korea
+M. Choi , M.R. Kim , H. Lee, Y. Lee , Y. Lee        , I. Yu
+College of Engineering and Technology, American University of the Middle East (AUM),
+Dasman, Kuwait
+T. Beyrouthy, Y. Maghrbi
+Riga Technical University, Riga, Latvia
+K. Dreimanis , G. Pikurs, M. Seidel , V. Veckalns53
+Vilnius University, Vilnius, Lithuania
+M. Ambrozas , A. Carvalho Antunes De Oliveira            , A. Juodagalvis     , A. Rinkevicius       ,
+G. Tamulaitis
+National Centre for Particle Physics, Universiti Malaya, Kuala Lumpur, Malaysia
+N. Bin Norjoharuddeen , S.Y. Hoh54 , I. Yusuff54 , Z. Zolkapli
+Universidad de Sonora (UNISON), Hermosillo, Mexico
+J.F. Benitez , A. Castaneda Hernandez , H.A. Encinas Acosta, L.G. Gallegos Marı́ñez,
+M. León Coello , J.A. Murillo Quijada , A. Sehrawat , L. Valencia Palomo
+Centro de Investigacion y de Estudios Avanzados del IPN, Mexico City, Mexico
+G. Ayala , H. Castilla-Valdez , I. Heredia-De La Cruz55 , R. Lopez-Fernandez                         ,
+                                                                                            29
+
+
+C.A. Mondragon Herrera, D.A. Perez Navarro     , A. Sánchez Hernández
+Universidad Iberoamericana, Mexico City, Mexico
+C. Oropeza Barrera , F. Vazquez Valencia
+Benemerita Universidad Autonoma de Puebla, Puebla, Mexico
+I. Pedraza , H.A. Salazar Ibarguen , C. Uribe Estrada
+University of Montenegro, Podgorica, Montenegro
+I. Bubanja, J. Mijuskovic56 , N. Raicevic
+National Centre for Physics, Quaid-I-Azam University, Islamabad, Pakistan
+A. Ahmad , M.I. Asghar, A. Awais , M.I.M. Awan, M. Gul , H.R. Hoorani                        ,
+W.A. Khan , M. Shoaib , M. Waqas
+AGH University of Science and Technology Faculty of Computer Science, Electronics and
+Telecommunications, Krakow, Poland
+V. Avati, L. Grzanka , M. Malawski
+National Centre for Nuclear Research, Swierk, Poland
+H. Bialkowska , M. Bluj , B. Boimska , M. Górski           , M. Kazana    , M. Szleper      ,
+P. Zalewski
+Institute of Experimental Physics, Faculty of Physics, University of Warsaw, Warsaw, Poland
+K. Bunkowski , K. Doroba , A. Kalinowski , M. Konecki , J. Krolikowski
+Laboratório de Instrumentação e Fı́sica Experimental de Partı́culas, Lisboa, Portugal
+M. Araujo , P. Bargassa , D. Bastos , A. Boletti , P. Faccioli , M. Gallinaro , J. Hollar    ,
+N. Leonardo , T. Niknejad , M. Pisano , J. Seixas , J. Varela
+VINCA Institute of Nuclear Sciences, University of Belgrade, Belgrade, Serbia
+P. Adzic57 , M. Dordevic , P. Milenovic , J. Milosevic
+Centro de Investigaciones Energéticas Medioambientales y Tecnológicas (CIEMAT),
+Madrid, Spain
+M. Aguilar-Benitez, J. Alcaraz Maestre , A. Álvarez Fernández , M. Barrio Luna,
+Cristina F. Bedoya , C.A. Carrillo Montoya , M. Cepeda , M. Cerrada , N. Colino ,
+B. De La Cruz , A. Delgado Peris , D. Fernández Del Val , J.P. Fernández Ramos ,
+J. Flix , M.C. Fouz , O. Gonzalez Lopez , S. Goy Lopez , J.M. Hernandez ,
+M.I. Josa , J. León Holgado , D. Moran , C. Perez Dengra , A. Pérez-Calero Yzquierdo ,
+J. Puerta Pelayo , I. Redondo , D.D. Redondo Ferrero , L. Romero, S. Sánchez Navas ,
+J. Sastre , L. Urda Gómez , J. Vazquez Escobar , C. Willmott
+Universidad Autónoma de Madrid, Madrid, Spain
+J.F. de Trocóniz
+Universidad de Oviedo, Instituto Universitario de Ciencias y Tecnologı́as Espaciales de
+Asturias (ICTEA), Oviedo, Spain
+B. Alvarez Gonzalez , J. Cuevas , J. Fernandez Menendez , S. Folgueras , I. Gonza-
+lez Caballero , J.R. González Fernández , E. Palencia Cortezon , C. Ramón Álvarez ,
+V. Rodrı́guez Bouza , A. Soto Rodrı́guez , A. Trapote , C. Vico Villalba
+Instituto de Fı́sica de Cantabria (IFCA), CSIC-Universidad de Cantabria, Santander, Spain
+J.A. Brochero Cifuentes , I.J. Cabrillo , A. Calderon , J. Duarte Campderros , M. Fer-
+nandez , C. Fernandez Madrazo , A. Garcı́a Alonso, G. Gomez , C. Lasaosa Garcı́a ,
+C. Martinez Rivero , P. Martinez Ruiz del Arbol , F. Matorras , P. Matorras Cuevas ,
+30
+
+
+J. Piedra Gomez   , C. Prieels, A. Ruiz-Jimeno   , L. Scodellaro   , I. Vila   , J.M. Vizan Garcia
+University of Colombo, Colombo, Sri Lanka
+M.K. Jayananda , B. Kailasapathy58 , D.U.J. Sonnadara         , D.D.C. Wickramarathna
+University of Ruhuna, Department of Physics, Matara, Sri Lanka
+W.G.D. Dharmaratna , K. Liyanage , N. Perera , N. Wickramage
+CERN, European Organization for Nuclear Research, Geneva, Switzerland
+D. Abbaneo , J. Alimena , E. Auffray , G. Auzinger , J. Baechler, P. Baillon† ,
+D. Barney , J. Bendavid , M. Bianco , B. Bilin , A. Bocci , E. Brondolin , C. Caillol ,
+T. Camporesi , G. Cerminara , N. Chernyavskaya , S.S. Chhibra , S. Choudhury,
+M. Cipriani , L. Cristella , D. d’Enterria , A. Dabrowski , A. David , A. De Roeck ,
+M.M. Defranchis , M. Deile , M. Dobson , M. Dünser , N. Dupont, F. Fallavollita59 ,
+A. Florent , L. Forthomme , G. Franzoni , W. Funk , S. Ghosh , S. Giani, D. Gigi,
+K. Gill , F. Glege , L. Gouskos , E. Govorkova , M. Haranko , J. Hegeman ,
+V. Innocente , T. James , P. Janot , J. Kaspar , J. Kieseler , N. Kratochwil ,
+S. Laurila , P. Lecoq , E. Leutgeb , C. Lourenço , B. Maier , L. Malgeri ,
+M. Mannelli , A.C. Marini , F. Meijers , S. Mersi , E. Meschi , F. Moortgat ,
+M. Mulders , S. Orfanelli, L. Orsini, F. Pantaleo , E. Perez, M. Peruzzi , A. Petrilli ,
+G. Petrucciani , A. Pfeiffer , M. Pierini , D. Piparo , M. Pitt , H. Qu , T. Quast,
+D. Rabady , A. Racz, G. Reales Gutiérrez, M. Rovere , H. Sakulin , J. Salfeld-Nebgen ,
+S. Scarfi , M. Selvaggi , A. Sharma , P. Silva , P. Sphicas60 , A.G. Stahl Leiton ,
+S. Summers , K. Tatar , V.R. Tavolaro , D. Treille , P. Tropea , A. Tsirou, J. Wanczyk61 ,
+K.A. Wozniak , W.D. Zeuner
+Paul Scherrer Institut, Villigen, Switzerland
+L. Caminada62 , A. Ebrahimi , W. Erdmann , R. Horisberger , Q. Ingram                                ,
+H.C. Kaestli , D. Kotlinski , C. Lange , M. Missiroli62 , L. Noehte62 , T. Rohe
+ETH Zurich - Institute for Particle Physics and Astrophysics (IPA), Zurich, Switzerland
+T.K. Aarrestad , K. Androsov61 , M. Backhaus , P. Berger, A. Calandri , K. Datta                     ,
+A. De Cosa , G. Dissertori , M. Dittmar, M. Donegà , F. Eble , M. Galli , K. Gedia                  ,
+F. Glessgen , T.A. Gómez Espinosa , C. Grab , D. Hits , W. Lustermann , A.-M. Lyon                  ,
+R.A. Manzoni , L. Marchese , C. Martin Perez , A. Mascellani61 , F. Nessi-Tedaldi                    ,
+J. Niedziela , F. Pauss , V. Perovic , S. Pigazzini , M.G. Ratti , M. Reichmann                      ,
+C. Reissel , T. Reitenspiess , B. Ristic , F. Riti , D. Ruini, D.A. Sanz Becerra                     ,
+J. Steggemann61 , D. Valsecchi28 , R. Wallny
+Universität Zürich, Zurich, Switzerland
+C. Amsler63 , P. Bärtschi , C. Botta , D. Brzhechko, M.F. Canelli , K. Cormier ,
+A. De Wit , R. Del Burgo, J.K. Heikkilä , M. Huwiler , W. Jin , A. Jofre-
+hei , B. Kilminster , S. Leontsinis , S.P. Liechti , A. Macchiolo , P. Meiring ,
+V.M. Mikuni , U. Molinatti , I. Neutelings , A. Reimers , P. Robmann, S. Sanchez Cruz ,
+K. Schweiger , M. Senger , Y. Takahashi
+National Central University, Chung-Li, Taiwan
+C. Adloff64 , C.M. Kuo, W. Lin, P.K. Rout , S.S. Yu
+National Taiwan University (NTU), Taipei, Taiwan
+L. Ceard, Y. Chao , K.F. Chen , P.s. Chen, H. Cheng , W.-S. Hou , R. Khurana, G. Kole                ,
+Y.y. Li , R.-S. Lu , E. Paganis , A. Psallidas, A. Steen , H.y. Wu, E. Yazgan , P.r. Yu
+Chulalongkorn University, Faculty of Science, Department of Physics, Bangkok, Thailand
+                                                                                             31
+
+
+C. Asawatangtrakuldee    , N. Srimanobhas
+Çukurova University, Physics Department, Science and Art Faculty, Adana, Turkey
+D. Agyel , F. Boran , Z.S. Demiroglu , F. Dolek , I. Dumanoglu65 , E. Eskut                   ,
+Y. Guler66 , E. Gurpinar Guler66 , C. Isik , O. Kara, A. Kayis Topaksu , U. Kiminsu           ,
+G. Onengut , K. Ozdemir67 , A. Polatoz , A.E. Simsek , B. Tali68 , U.G. Tok                   ,
+S. Turkcapar , E. Uslan , I.S. Zorbakir
+Middle East Technical University, Physics Department, Ankara, Turkey
+G. Karapinar69 , K. Ocalan70 , M. Yalvac71
+Bogazici University, Istanbul, Turkey
+B. Akgun , I.O. Atakisi , E. Gülmez    , M. Kaya72   , O. Kaya73   , S. Tekten74
+Istanbul Technical University, Istanbul, Turkey
+A. Cakir , K. Cankocak65 , Y. Komurcu , S. Sen65
+Istanbul University, Istanbul, Turkey
+O. Aydilek , S. Cerci68 , B. Hacisahinoglu , I. Hos75        , B. Isildak76    , B. Kaynak    ,
+S. Ozkorucuklu , C. Simsek , D. Sunar Cerci68
+Institute for Scintillation Materials of National Academy of Science of Ukraine, Kharkiv,
+Ukraine
+B. Grynyov
+National Science Centre, Kharkiv Institute of Physics and Technology, Kharkiv, Ukraine
+L. Levchuk
+University of Bristol, Bristol, United Kingdom
+D. Anthony , E. Bhal , J.J. Brooke , A. Bundock , E. Clement , D. Cussans                     ,
+H. Flacher , M. Glowacki, J. Goldstein , G.P. Heath, H.F. Heath , L. Kreczko                  ,
+B. Krikler , S. Paramesvaran , S. Seif El Nasr-Storey, V.J. Smith , N. Stylianou77            ,
+K. Walkingshaw Pass, R. White
+Rutherford Appleton Laboratory, Didcot, United Kingdom
+A.H. Ball, K.W. Bell , A. Belyaev78 , C. Brew , R.M. Brown , D.J.A. Cockerill ,
+C. Cooke , K.V. Ellis, K. Harder , S. Harper , M.-L. Holmberg79 , Sh. Jain , J. Linacre ,
+K. Manolopoulos, D.M. Newbold , E. Olaiya, D. Petyt , T. Reis , G. Salvi , T. Schuh,
+C.H. Shepherd-Themistocleous , I.R. Tomalin, T. Williams
+Imperial College, London, United Kingdom
+R. Bainbridge , P. Bloch , S. Bonomally, J. Borg , C.E. Brown , O. Buchmuller, V. Cacchio,
+V. Cepaitis , G.S. Chahal80 , D. Colling , J.S. Dancu, P. Dauncey , G. Davies , J. Davies,
+M. Della Negra , S. Fayer, G. Fedi , G. Hall , M.H. Hassanshahi , A. Howard, G. Iles ,
+J. Langford , L. Lyons , A.-M. Magnan , S. Malik, A. Martelli , M. Mieskolainen ,
+D.G. Monk , J. Nash81 , M. Pesaresi, B.C. Radburn-Smith , D.M. Raymond, A. Richards,
+A. Rose , E. Scott , C. Seez , R. Shukla , A. Tapper , K. Uchida , G.P. Uttley ,
+L.H. Vage, T. Virdee28 , M. Vojinovic , N. Wardle , S.N. Webb , D. Winterbottom
+Brunel University, Uxbridge, United Kingdom
+K. Coldham, J.E. Cole , A. Khan, P. Kyberd , I.D. Reid
+Baylor University, Waco, Texas, USA
+S. Abdullin , A. Brinkerhoff , B. Caraway , J. Dittmann , K. Hatakeyama , A.R. Kanu-
+ganti , B. McMaster , M. Saunders , S. Sawant , C. Sutantawibul , J. Wilson
+32
+
+
+Catholic University of America, Washington, DC, USA
+R. Bartek , A. Dominguez , R. Uniyal , A.M. Vargas Hernandez
+The University of Alabama, Tuscaloosa, Alabama, USA
+S.I. Cooper , D. Di Croce , S.V. Gleyzer , C. Henderson     , C.U. Perez   , P. Rumerio82   ,
+C. West
+Boston University, Boston, Massachusetts, USA
+A. Akpinar , A. Albert , D. Arcaro , C. Cosby , Z. Demiragli , C. Erice                     ,
+E. Fontanesi , D. Gastler , S. May , J. Rohlf , K. Salyer , D. Sperka , D. Spitzbart        ,
+I. Suarez , A. Tsatsos , S. Yuan
+Brown University, Providence, Rhode Island, USA
+G. Benelli , B. Burkle , X. Coubez23 , D. Cutts , M. Hadley , U. Heintz , J.M. Hogan83      ,
+T. Kwon , G. Landsberg , K.T. Lau , D. Li , J. Luo , M. Narain , N. Pervan                  ,
+S. Sagir84 , F. Simpson , E. Usai , W.Y. Wong, X. Yan , D. Yu , W. Zhang
+University of California, Davis, Davis, California, USA
+J. Bonilla , C. Brainerd , R. Breedon , M. Calderon De La Barca Sanchez , M. Chertok        ,
+J. Conway , P.T. Cox , R. Erbacher , G. Haza , F. Jensen , O. Kukral , G. Mocellin          ,
+M. Mulhearn , D. Pellett , B. Regnery , Y. Yao , F. Zhang
+University of California, Los Angeles, California, USA
+M. Bachtis , R. Cousins , A. Datta , D. Hamilton , J. Hauser , M. Ignatenko                 ,
+M.A. Iqbal , T. Lam , E. Manca , W.A. Nash , S. Regnard , D. Saltzberg , B. Stone           ,
+V. Valuev
+University of California, Riverside, Riverside, California, USA
+R. Clare , J.W. Gary , M. Gordon, G. Hanson , G. Karapostoli               , O.R. Long      ,
+N. Manganelli , W. Si , S. Wimpenny
+University of California, San Diego, La Jolla, California, USA
+J.G. Branson, P. Chang , S. Cittolin , S. Cooperstein , D. Diaz , J. Duarte                 ,
+R. Gerosa , L. Giannini , J. Guiang , R. Kansal , V. Krutelyov , R. Lee , J. Letts          ,
+M. Masciovecchio , F. Mokhtar , M. Pieri , B.V. Sathia Narayanan , V. Sharma                ,
+M. Tadel , E. Vourliotis , F. Würthwein , Y. Xiang , A. Yagil
+University of California, Santa Barbara - Department of Physics, Santa Barbara, California,
+USA
+N. Amin, C. Campagnari , M. Citron , G. Collura , A. Dorsett , V. Dutta ,
+J. Incandela , M. Kilpatrick , J. Kim , A.J. Li , P. Masterson , H. Mei , M. Oshiro ,
+M. Quinnan , J. Richman , U. Sarica , R. Schmitz , F. Setti , J. Sheplock , P. Siddireddy,
+D. Stuart , S. Wang
+California Institute of Technology, Pasadena, California, USA
+A. Bornheim , O. Cerri, I. Dutta , A. Latorre, J.M. Lawhorn , N. Lu , J. Mao                ,
+H.B. Newman , T. Q. Nguyen , M. Spiropulu , J.R. Vlimant , C. Wang , S. Xie                 ,
+R.Y. Zhu
+Carnegie Mellon University, Pittsburgh, Pennsylvania, USA
+J. Alison , S. An , M.B. Andrews , P. Bryant , T. Ferguson , A. Harilal , C. Liu            ,
+T. Mudholkar , S. Murthy , M. Paulini , A. Roberts , A. Sanchez , W. Terrill
+University of Colorado Boulder, Boulder, Colorado, USA
+J.P. Cumalat , W.T. Ford , A. Hassani , G. Karathanasis       , E. MacDonald, F. Marini     ,
+                                                                                          33
+
+
+A. Perloff   , C. Savard   , N. Schonbeck   , K. Stenson   , K.A. Ulmer   , S.R. Wagner    ,
+N. Zipper
+Cornell University, Ithaca, New York, USA
+J. Alexander , S. Bright-Thonney , X. Chen , D.J. Cranshaw , J. Fan , X. Fan               ,
+D. Gadkari , S. Hogan , J. Monroy , J.R. Patterson , D. Quach , J. Reichert                ,
+M. Reid , A. Ryd , J. Thom , P. Wittich , R. Zou
+Fermi National Accelerator Laboratory, Batavia, Illinois, USA
+M. Albrow , M. Alyari , G. Apollinari , A. Apresyan , L.A.T. Bauerdick , D. Berry          ,
+J. Berryhill , P.C. Bhat , K. Burkett , J.N. Butler , A. Canepa , G.B. Cerati              ,
+H.W.K. Cheung , F. Chlebana , K.F. Di Petrillo , J. Dickinson , V.D. Elvira , Y. Feng      ,
+J. Freeman , A. Gandrakota , Z. Gecse , L. Gray , D. Green, S. Grünendahl                 ,
+D. Guerrero , O. Gutsche , R.M. Harris , R. Heller , T.C. Herwig , J. Hirschauer           ,
+L. Horyn , B. Jayatilaka , S. Jindariani , M. Johnson , U. Joshi , T. Klijnsma             ,
+B. Klima , K.H.M. Kwok , S. Lammel , D. Lincoln , R. Lipton , T. Liu , C. Madrid           ,
+K. Maeshima , C. Mantilla , D. Mason , P. McBride , P. Merkel , S. Mrenna                  ,
+S. Nahn , J. Ngadiuba , D. Noonan , V. Papadimitriou , N. Pastika , K. Pedro               ,
+C. Pena85 , F. Ravera , A. Reinsvold Hall86 , L. Ristori , E. Sexton-Kennedy               ,
+N. Smith , A. Soha , L. Spiegel , J. Strait , L. Taylor , S. Tkaczyk , N.V. Tran           ,
+L. Uplegger , E.W. Vaandering , I. Zoi
+University of Florida, Gainesville, Florida, USA
+P. Avery , D. Bourilkov , L. Cadamuro , V. Cherepanov , R.D. Field, M. Kim,
+E. Koenig , J. Konigsberg , A. Korytov , E. Kuznetsova87 , K.H. Lo, K. Matchev ,
+N. Menendez , G. Mitselmakher , A. Muthirakalayil Madhu , N. Rawal , D. Rosen-
+zweig , S. Rosenzweig , K. Shi , J. Wang , Z. Wu
+Florida State University, Tallahassee, Florida, USA
+T. Adams , A. Askew , R. Habibullah , V. Hagopian , T. Kolberg              , G. Martinez,
+H. Prosper , O. Viazlo , M. Wulansatiti , R. Yohay , J. Zhang
+Florida Institute of Technology, Melbourne, Florida, USA
+M.M. Baarmand , S. Butalla , T. Elkafrawy16 , M. Hohlmann           , R. Kumar Verma       ,
+M. Rahmani, F. Yumiceva
+University of Illinois at Chicago (UIC), Chicago, Illinois, USA
+M.R. Adams , H. Becerril Gonzalez , R. Cavanaugh , S. Dittmer , O. Evdokimov               ,
+C.E. Gerber , D.J. Hofman , D. S. Lemos , A.H. Merrit , C. Mills , S. Nanda , G. Oh        ,
+T. Roy , S. Rudrabhatla , M.B. Tonjes , N. Varelas , X. Wang , Z. Ye , J. Yoo
+The University of Iowa, Iowa City, Iowa, USA
+M. Alhusseini , K. Dilsiz88 , L. Emediato , R.P. Gandrajula , G. Karaman                   ,
+O.K. Köseyan , J.-P. Merlo, A. Mestvirishvili89 , J. Nachtman , O. Neogi, H. Ogul90       ,
+Y. Onel , A. Penzo , C. Snyder, E. Tiras91
+Johns Hopkins University, Baltimore, Maryland, USA
+O. Amram , B. Blumenfeld , L. Corcodilos , J. Davis , A.V. Gritsan        , S. Kyriacou    ,
+P. Maksimovic , J. Roskes , S. Sekhar , M. Swartz , T.Á. Vámi
+The University of Kansas, Lawrence, Kansas, USA
+A. Abreu , L.F. Alcerro Alcerro , J. Anguiano , P. Baringer , A. Bean , Z. Flowers ,
+T. Isidori , J. King , G. Krintiras , M. Lazarovits , C. Le Mahieu , C. Lindsey,
+J. Marquez , N. Minafra , M. Murray , M. Nickel , C. Rogan , C. Royon ,
+34
+
+
+R. Salvatico   , S. Sanders   , C. Smith   , Q. Wang   , J. Williams   , G. Wilson
+Kansas State University, Manhattan, Kansas, USA
+B. Allmond , S. Duric, A. Ivanov , K. Kaadze             , D. Kim, Y. Maravin         , T. Mitchell,
+A. Modak, K. Nam, D. Roy
+Lawrence Livermore National Laboratory, Livermore, California, USA
+F. Rebassoo , D. Wright
+University of Maryland, College Park, Maryland, USA
+E. Adams , A. Baden , O. Baron, A. Belloni , A. Bethani , S.C. Eno , N.J. Hadley                   ,
+S. Jabeen , R.G. Kellogg , T. Koeth , Y. Lai , S. Lascio , A.C. Mignerey , S. Nabili               ,
+C. Palmer , C. Papageorgakis , L. Wang , K. Wong
+Massachusetts Institute of Technology, Cambridge, Massachusetts, USA
+D. Abercrombie, W. Busza , I.A. Cali , Y. Chen , M. D’Alfonso , J. Eysermans                       ,
+C. Freer , G. Gomez-Ceballos , M. Goncharov, P. Harris, M. Hu , D. Kovalskyi                       ,
+J. Krupa , Y.-J. Lee , K. Long , C. Mironov , C. Paus , D. Rankin , C. Roland                      ,
+G. Roland , Z. Shi , G.S.F. Stephans , J. Wang, Z. Wang , B. Wyslouch , T. J. Yang
+University of Minnesota, Minneapolis, Minnesota, USA
+R.M. Chatterjee, B. Crossman , A. Evans , J. Hiltbrand , B.M. Joshi , C. Kapsiak                   ,
+M. Krohn , Y. Kubota , J. Mans , M. Revering , R. Rusack , R. Saradhy                              ,
+N. Schroeder , N. Strobbe , M.A. Wadud
+University of Mississippi, Oxford, Mississippi, USA
+L.M. Cremaldi
+University of Nebraska-Lincoln, Lincoln, Nebraska, USA
+K. Bloom , M. Bryson, D.R. Claes , C. Fangmeier , L. Finco , F. Golf , C. Joo                      ,
+R. Kamalieddin, I. Kravchenko , I. Reed , J.E. Siado , G.R. Snow† , W. Tabb                        ,
+A. Wightman , F. Yan , A.G. Zecchinelli
+State University of New York at Buffalo, Buffalo, New York, USA
+G. Agarwal , H. Bandyopadhyay , L. Hay , I. Iashvili , A. Kharchilava                , C. McLean   ,
+M. Morris , D. Nguyen , J. Pekkanen , S. Rappoccio , A. Williams
+Northeastern University, Boston, Massachusetts, USA
+G. Alverson , E. Barberis , Y. Haddad , Y. Han , A. Krishna , J. Li , J. Lidrych                   ,
+G. Madigan , B. Marzocchi , D.M. Morse , V. Nguyen , T. Orimoto , A. Parker                        ,
+L. Skinnari , A. Tishelman-Charny , T. Wamorkar , B. Wang , A. Wisecarver                          ,
+D. Wood
+Northwestern University, Evanston, Illinois, USA
+S. Bhattacharya , J. Bueghly, Z. Chen , A. Gilbert        , K.A. Hahn     , Y. Liu    , N. Odell   ,
+M.H. Schmitt , M. Velasco
+University of Notre Dame, Notre Dame, Indiana, USA
+R. Band , R. Bucci, M. Cremonesi, A. Das , R. Goldouzian , M. Hildreth ,
+K. Hurtado Anampa , C. Jessop , K. Lannon , J. Lawrence , N. Loukas , L. Lutton ,
+J. Mariano, N. Marinelli, I. Mcalister, T. McCauley , C. Mcgrady , K. Mohrman ,
+C. Moore , Y. Musienko12 , R. Ruchti , A. Townsend , M. Wayne , H. Yockey,
+M. Zarucki , L. Zygala
+The Ohio State University, Columbus, Ohio, USA
+                                                                                             35
+
+
+B. Bylsma, M. Carrigan , L.S. Durkin , B. Francis , C. Hill   , M. Joyce    , A. Lesauvage    ,
+M. Nunez Ornelas , K. Wei, B.L. Winer , B. R. Yates
+Princeton University, Princeton, New Jersey, USA
+F.M. Addesa , P. Das , G. Dezoort , P. Elmer , A. Frankenthal , B. Greenberg                  ,
+N. Haubrich , S. Higginbotham , A. Kalogeropoulos , G. Kopp , S. Kwan , D. Lange              ,
+D. Marlow , K. Mei , I. Ojalvo , J. Olsen , D. Stickland , C. Tully
+University of Puerto Rico, Mayaguez, Puerto Rico, USA
+S. Malik , S. Norberg
+Purdue University, West Lafayette, Indiana, USA
+A.S. Bakshi , V.E. Barnes , R. Chawla , S. Das , L. Gutay, M. Jones , A.W. Jung               ,
+D. Kondratyev , A.M. Koshy, M. Liu , G. Negro , N. Neumeister , G. Paspalaki                  ,
+S. Piperov , A. Purohit , J.F. Schulte , M. Stojanovic17 , J. Thieman , F. Wang               ,
+R. Xiao , W. Xie
+Purdue University Northwest, Hammond, Indiana, USA
+J. Dolen , N. Parashar
+Rice University, Houston, Texas, USA
+D. Acosta , A. Baty , T. Carnahan , M. Decaro, S. Dildick , K.M. Ecklund ,
+P.J. Fernández Manteca , S. Freed, P. Gardner, F.J.M. Geurts , A. Kumar , W. Li ,
+B.P. Padley , R. Redjimi, J. Rotter , W. Shi , S. Yang , E. Yigitbasi , L. Zhang92 ,
+Y. Zhang
+University of Rochester, Rochester, New York, USA
+A. Bodek , P. de Barbaro , R. Demina , J.L. Dulemba , C. Fallon, T. Ferbel , M. Galanti,
+A. Garcia-Bellido , O. Hindrichs , A. Khukhunaishvili , E. Ranken , R. Taus ,
+G.P. Van Onsem
+The Rockefeller University, New York, New York, USA
+K. Goulianos
+Rutgers, The State University of New Jersey, Piscataway, New Jersey, USA
+B. Chiarito, J.P. Chou , Y. Gershtein , E. Halkiadakis , A. Hart , M. Heindl ,
+D. Jaroslawski , O. Karacheban26 , I. Laflotte , A. Lath , R. Montalvo, K. Nash,
+M. Osherson , H. Routray , S. Salur , S. Schnetzer, S. Somalwar , R. Stone ,
+S.A. Thayil , S. Thomas, H. Wang
+University of Tennessee, Knoxville, Tennessee, USA
+H. Acharya, A.G. Delannoy , S. Fiorendi , T. Holmes     , E. Nibigira   , S. Spanier
+Texas A&M University, College Station, Texas, USA
+O. Bouhali93 , M. Dalchenko , A. Delgado , R. Eusebi , J. Gilmore , T. Huang                  ,
+T. Kamon94 , H. Kim , S. Luo , S. Malhotra, R. Mueller , D. Overton , D. Rathjens             ,
+A. Safonov
+Texas Tech University, Lubbock, Texas, USA
+N. Akchurin , J. Damgov , V. Hegde , K. Lamichhane              , S.W. Lee      , T. Mengke,
+S. Muthumuni , T. Peltola , I. Volobouev , A. Whitbeck
+Vanderbilt University, Nashville, Tennessee, USA
+E. Appelt , S. Greene, A. Gurrola , W. Johns , A. Melo         , F. Romeo     , P. Sheldon    ,
+S. Tuo , J. Velkovska , J. Viinikainen
+36
+
+
+University of Virginia, Charlottesville, Virginia, USA
+B. Cardwell , B. Cox , G. Cummings , J. Hakala             , R. Hirosky   , A. Ledovskoy     ,
+A. Li , C. Neu , C.E. Perez Lara , B. Tannenwald
+Wayne State University, Detroit, Michigan, USA
+P.E. Karchin , N. Poudyal
+University of Wisconsin - Madison, Madison, Wisconsin, USA
+S. Banerjee , K. Black , T. Bose , S. Dasu , I. De Bruyn , P. Everaerts , C. Galloni,
+H. He , M. Herndon , A. Herve , C.K. Koraka , A. Lanaro, A. Loeliger , R. Loveless ,
+J. Madhusudanan Sreekala , A. Mallampalli , A. Mohammadi , S. Mondal, G. Parida ,
+D. Pinna, A. Savin, V. Shang , V. Sharma , W.H. Smith , D. Teague, H.F. Tsoi ,
+W. Vetens
+Authors affiliated with an institute or an international laboratory covered by a cooperation
+agreement with CERN
+S. Afanasiev , V. Andreev , Yu. Andreev , T. Aushev , M. Azarkin , A. Babaev ,
+A. Belyaev , V. Blinov95 , E. Boos , V. Borshch , D. Budkouski , V. Chekhovsky,
+R. Chistov95 , A. Demiyanov , A. Dermenev , T. Dimova95 , I. Dremin , V. Epshteyn ,
+A. Ershov , G. Gavrilov , V. Gavrilov , S. Gninenko , V. Golovtcov , N. Golubev ,
+I. Golutvin , I. Gorbunov , A. Gribushin , V. Ivanchenko , Y. Ivanov , V. Kachanov ,
+L. Kardapoltsev95 , V. Karjavine , A. Karneyeu , L. Khein, V. Kim95 , M. Kirakosyan,
+D. Kirpichnikov , M. Kirsanov , O. Kodolova , D. Konstantinov , V. Korenkov ,
+V. Korotkikh, A. Kozyrev95 , N. Krasnikov , A. Lanev , P. Levchenko , A. Litomin,
+N. Lychkovskaya , V. Makarenko , A. Malakhov , V. Matveev95,96 , V. Murzin ,
+A. Nikitenko97 , S. Obraztsov , A. Oskin, I. Ovtin95 , V. Palichik , P. Parygin , V. Pere-
+lygin , S. Petrushanko , S. Polikarpov95 , V. Popov, E. Popova , O. Radchenko95 ,
+M. Savina , V. Savrin , D. Selivanova , V. Shalaev , S. Shmatov , S. Shulha ,
+Y. Skovpen95 , S. Slabospitskii , V. Smirnov , A. Snigirev , D. Sosnov , V. Sulimov ,
+E. Tcherniaev , A. Terkulov , O. Teryaev , I. Tlisova , M. Toms , A. Toropin ,
+L. Uvarov , A. Uzunian , I. Vardanyan , E. Vlasov , A. Vorobyev, N. Voytishin ,
+B.S. Yuldashev98 , A. Zarubin , I. Zhizhin , A. Zhokin
+†: Deceased
+1 Also at TU Wien, Vienna, Austria
+2 Also at Institute of Basic and Applied Sciences, Faculty of Engineering, Arab Academy for
+
+Science, Technology and Maritime Transport, Alexandria, Egypt
+3 Also at Université Libre de Bruxelles, Bruxelles, Belgium
+4 Also at Universidade Estadual de Campinas, Campinas, Brazil
+5 Also at Federal University of Rio Grande do Sul, Porto Alegre, Brazil
+6 Also at UFMS, Nova Andradina, Brazil
+7 Also at The University of the State of Amazonas, Manaus, Brazil
+8 Also at University of Chinese Academy of Sciences, Beijing, China
+9 Also at Nanjing Normal University Department of Physics, Nanjing, China
+10 Now at The University of Iowa, Iowa City, Iowa, USA
+11 Also at University of Chinese Academy of Sciences, Beijing, China
+12 Also at an institute or an international laboratory covered by a cooperation agreement with
+
+CERN
+13 Also at Helwan University, Cairo, Egypt
+14 Now at Zewail City of Science and Technology, Zewail, Egypt
+15 Also at British University in Egypt, Cairo, Egypt
+                                                                                            37
+
+16 Now at Ain Shams University, Cairo, Egypt
+17 Also at Purdue University, West Lafayette, Indiana, USA
+18 Also at Université de Haute Alsace, Mulhouse, France
+19 Also at Department of Physics, Tsinghua University, Beijing, China
+20 Also at Ilia State University, Tbilisi, Georgia
+21 Also at Erzincan Binali Yildirim University, Erzincan, Turkey
+22 Also at University of Hamburg, Hamburg, Germany
+23 Also at RWTH Aachen University, III. Physikalisches Institut A, Aachen, Germany
+24 Also at Isfahan University of Technology, Isfahan, Iran
+25 Also at Bergische University Wuppertal (BUW), Wuppertal, Germany
+26 Also at Brandenburg University of Technology, Cottbus, Germany
+27 Also at Forschungszentrum Jülich, Juelich, Germany
+28 Also at CERN, European Organization for Nuclear Research, Geneva, Switzerland
+29 Also at Physics Department, Faculty of Science, Assiut University, Assiut, Egypt
+30 Also at Karoly Robert Campus, MATE Institute of Technology, Gyongyos, Hungary
+31 Also at Wigner Research Centre for Physics, Budapest, Hungary
+32 Also at Institute of Physics, University of Debrecen, Debrecen, Hungary
+33 Also at Institute of Nuclear Research ATOMKI, Debrecen, Hungary
+34 Now at Universitatea Babes-Bolyai - Facultatea de Fizica, Cluj-Napoca, Romania
+35 Also at Faculty of Informatics, University of Debrecen, Debrecen, Hungary
+36 Also at Punjab Agricultural University, Ludhiana, India
+37 Also at UPES - University of Petroleum and Energy Studies, Dehradun, India
+38 Also at University of Visva-Bharati, Santiniketan, India
+39 Also at University of Hyderabad, Hyderabad, India
+40 Also at Indian Institute of Science (IISc), Bangalore, India
+41 Also at Indian Institute of Technology (IIT), Mumbai, India
+42 Also at IIT Bhubaneswar, Bhubaneswar, India
+43 Also at Institute of Physics, Bhubaneswar, India
+44 Also at Deutsches Elektronen-Synchrotron, Hamburg, Germany
+45 Now at Department of Physics, Isfahan University of Technology, Isfahan, Iran
+46 Also at Sharif University of Technology, Tehran, Iran
+47 Also  at Department of Physics, University of Science and Technology of Mazandaran,
+Behshahr, Iran
+48 Also at Italian National Agency for New Technologies, Energy and Sustainable Economic
+
+Development, Bologna, Italy
+49 Also at Centro Siciliano di Fisica Nucleare e di Struttura Della Materia, Catania, Italy
+50 Also at Scuola Superiore Meridionale, Università di Napoli ’Federico II’, Napoli, Italy
+51 Also at Università di Napoli ’Federico II’, Napoli, Italy
+52 Also at Consiglio Nazionale delle Ricerche - Istituto Officina dei Materiali, Perugia, Italy
+53 Also at Riga Technical University, Riga, Latvia
+54 Also at Department of Applied Physics, Faculty of Science and Technology, Universiti
+
+Kebangsaan Malaysia, Bangi, Malaysia
+55 Also at Consejo Nacional de Ciencia y Tecnologı́a, Mexico City, Mexico
+56 Also at IRFU, CEA, Université Paris-Saclay, Gif-sur-Yvette, France
+57 Also at Faculty of Physics, University of Belgrade, Belgrade, Serbia
+58 Also at Trincomalee Campus, Eastern University, Sri Lanka, Nilaveli, Sri Lanka
+59 Also at INFN Sezione di Pavia, Università di Pavia, Pavia, Italy
+60 Also at National and Kapodistrian University of Athens, Athens, Greece
+61 Also at Ecole Polytechnique Fédérale Lausanne, Lausanne, Switzerland
+38
+
+62 Also at Universität Zürich, Zurich, Switzerland
+63 Also at Stefan Meyer Institute for Subatomic Physics, Vienna, Austria
+64 Also at Laboratoire d’Annecy-le-Vieux de Physique des Particules, IN2P3-CNRS, Annecy-le-
+
+Vieux, France
+65 Also at Near East University, Research Center of Experimental Health Science, Mersin,
+
+Turkey
+66 Also at Konya Technical University, Konya, Turkey
+67 Also at Izmir Bakircay University, Izmir, Turkey
+68 Also at Adiyaman University, Adiyaman, Turkey
+69 Also at Istanbul Gedik University, Istanbul, Turkey
+70 Also at Necmettin Erbakan University, Konya, Turkey
+71 Also at Bozok Universitetesi Rektörlügü, Yozgat, Turkey
+72 Also at Marmara University, Istanbul, Turkey
+73 Also at Milli Savunma University, Istanbul, Turkey
+74 Also at Kafkas University, Kars, Turkey
+75 Also at Istanbul University - Cerrahpasa, Faculty of Engineering, Istanbul, Turkey
+76 Also at Ozyegin University, Istanbul, Turkey
+77 Also at Vrije Universiteit Brussel, Brussel, Belgium
+78 Also at School of Physics and Astronomy, University of Southampton, Southampton, United
+
+Kingdom
+79 Also at University of Bristol, Bristol, United Kingdom
+80 Also at IPPP Durham University, Durham, United Kingdom
+81 Also at Monash University, Faculty of Science, Clayton, Australia
+82 Also at Università di Torino, Torino, Italy
+83 Also at Bethel University, St. Paul, Minnesota, USA
+84 Also at Karamanoğlu Mehmetbey University, Karaman, Turkey
+85 Also at California Institute of Technology, Pasadena, California, USA
+86 Also at United States Naval Academy, Annapolis, Maryland, USA
+87 Also at University of Florida, Gainesville, Florida, USA
+88 Also at Bingol University, Bingol, Turkey
+89 Also at Georgian Technical University, Tbilisi, Georgia
+90 Also at Sinop University, Sinop, Turkey
+91 Also at Erciyes University, Kayseri, Turkey
+92 Also at Institute of Modern Physics and Key Laboratory of Nuclear Physics and Ion-beam
+
+Application (MOE) - Fudan University, Shanghai, China
+93 Also at Texas A&M University at Qatar, Doha, Qatar
+94 Also at Kyungpook National University, Daegu, Korea
+95 Also at another institute or international laboratory covered by a cooperation agreement
+
+with CERN
+96 Now at another institute or international laboratory covered by a cooperation agreement
+
+with CERN
+97 Also at Imperial College, London, United Kingdom
+98 Also at Institute of Nuclear Physics of the Uzbekistan Academy of Sciences, Tashkent,
+
+Uzbekistan
+
