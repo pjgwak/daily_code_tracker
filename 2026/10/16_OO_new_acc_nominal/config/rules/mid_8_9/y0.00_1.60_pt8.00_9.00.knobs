@@ -1,4 +1,0 @@
-rule TUNE9_mid8_9_E99_N016
-ct_low -0.08
-ct_high 1.78
-np_cov_scale 16

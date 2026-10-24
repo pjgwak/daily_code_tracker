@@ -1,6 +1,0 @@
-{
-  "description": "Original external OO input files; only file locations are configurable here. The frozen pp_HX acceptance and other OO selections remain in 01_skim.",
-  "data": "/data/users/pjgwak/work/daily_code_tracker/2026/04/00_OO_skims_updated/onia_to_skim/skim_roots/skim_OO2025_isMC0_globalOff_Dimuon_MiniAOD_PromptReco_v1_Jul12_merged.root",
-  "prompt": "/data/users/pjgwak/work/daily_code_tracker/2026/04/00_OO_skims_updated/onia_to_skim/skim_roots/skim_OO2025_isMC1_PR_Hijing_globalOff_MiniAOD.root",
-  "nonprompt": "/data/Oniatree/light_ions_Raa/OO_Official_MC_HIJING/Oniatree_OO2025_MC1_NP_HIJING.root"
-}

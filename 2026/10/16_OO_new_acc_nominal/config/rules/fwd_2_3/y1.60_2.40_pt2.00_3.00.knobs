@@ -1,4 +1,0 @@
-rule TUNE9_F2scan_L022_H250_W20
-ct_low -0.22
-ct_high 2.5
-width_sigma_multiplier 2

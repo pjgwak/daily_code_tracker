@@ -1,6 +1,0 @@
-# Keep imported acceptance reference snapshots byte-identical to their provenance.
-01_skim/reference/* -whitespace
-
-# Preserve standard CRLF CSV rows and the hashes of imported calibration tables.
-*.csv whitespace=cr-at-eol
-include/rootlogon.C whitespace=cr-at-eol

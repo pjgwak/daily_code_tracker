@@ -1,8 +1,0 @@
-# Recorded controls; this variant receives these through its native policy/environment.
-rule NCS_M12_M32
-pt_low 12
-pt_high 14
-ct_low -0.5
-ct_high 4
-width_prior_sigma_multiplier 1
-mean_prior_sigma_multiplier 32

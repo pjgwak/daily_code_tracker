@@ -1,4 +1,0 @@
-# Recorded controls; this variant receives these through its native policy/environment.
-rule S09_NEW
-width_prior_sigma_multiplier 1
-np_cov_scale 1
