@@ -17,7 +17,7 @@ PR 평균·폭·첫 재귀 구성비를 적합하고 나머지 재귀 구성비 
 - 두 NP 수명은 약 0.42418 mm로 일치한다. 선택한 결과는 NP MC 초기값에서 얻었으며 수명 고정은 적용하지 않았다.
 - 성공한 실행의 초기값·초기 오차·범위·고정 상태를 동일하게 복원했을 때 재현됐다. 최종 추정값을 새로운 초기값으로 사용한 실행에서는 F2의 수렴 실패와 M8의 상대 차이 +2.49559%를 관찰했다.
 
-[최종 ROOT](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt2.00_3.00.root) · [초기값·범위](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt2.00_3.00/ACTUAL_INITIAL_START_0.csv) · [최종 변수](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt2.00_3.00/FINAL_OBJECTIVE_PARAMETERS.csv) · [실제 제약 항](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt2.00_3.00/EXTERNAL_CONSTRAINTS.txt)
+[최종 ROOT](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt2.00_3.00.root) · [초기값·범위](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt2.00_3.00/ACTUAL_INITIAL_START_0.tsv) · [최종 변수](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt2.00_3.00/FINAL_OBJECTIVE_PARAMETERS.tsv) · [실제 제약 항](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt2.00_3.00/EXTERNAL_CONSTRAINTS.txt)
 
 ## Prefit 적합도
 
@@ -83,6 +83,6 @@ PR 평균·폭·첫 재귀 구성비를 적합하고 나머지 재귀 구성비 
 
 ![Data-fit PR and NP boundaries](../figures/boundaries/fwd_2_3.png)
 
-[PDF](../figures/boundaries/fwd_2_3.pdf) · [경계 수치](../figures/boundaries/windows.csv)
+[PDF](../figures/boundaries/fwd_2_3.pdf) · [경계 수치](../figures/boundaries/windows.tsv)
 
 [전체 빈 목차](../FIT_PLOTS_BY_BIN.md)

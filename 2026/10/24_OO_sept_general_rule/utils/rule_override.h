@@ -2,7 +2,7 @@
 #define OO_RULE_OVERRIDE_H
 
 // Rule-based policy override for fit2d.C.
-// If OO_RULE_DIR is set, fit2d reads <OO_RULE_DIR>/<yTag>_pt<lo>_<hi>.knobs
+// If OO_RULE_DIR is set, fit2d reads <OO_RULE_DIR>/<yTag>_pt<lo>_<hi>.txt
 // (one "key value" pair per line, '#' comments). Every key that is present
 // replaces the legacy per-bin setting; absent keys keep the 19_OO behavior.
 // The knob files are written by study/rules.py from bin features only
@@ -46,7 +46,7 @@ inline OORuleOverride oo_load_rule_override(const char *yTag, double ptLow, doub
     OORuleOverride o;
     const char *dir = std::getenv("OO_RULE_DIR");
     if (!dir || !dir[0]) return o;
-    o.path = Form("%s/%s_pt%.2f_%.2f.knobs", dir, yTag, ptLow, ptHigh);
+    o.path = Form("%s/%s_pt%.2f_%.2f.txt", dir, yTag, ptLow, ptHigh);
     std::ifstream in(o.path);
     if (!in) throw std::runtime_error("OO_RULE_DIR is set but knob file is missing: " + o.path);
     std::string line;

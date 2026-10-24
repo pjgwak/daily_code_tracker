@@ -1,0 +1,14 @@
+rule FINAL_v3
+# pr_mean=free pr_frac=fix pr_frac_k=1 pr_width=mc_joint pr_width_k=1 pr_joint_k=64 np=mc np_k=1 bkg=free bkg_k=1 purity=1.492794 gaps=(4, 2.143832, 7.757918)
+prompt_full_cov 1
+width_policy 3
+prompt_full_cov_scale 64
+float_prompt_mean 1
+prompt_frac_constrain 0
+np_constraint 1
+np_longest_free 0
+np_cov_scale 1
+profile_bkg 1
+background_penalty_scale 1
+ct_low -1.0
+ct_high 4.0

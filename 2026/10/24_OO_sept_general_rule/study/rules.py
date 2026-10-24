@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Write knob files for simple component rules (fix / constrain / free per PDF component).
 
-  python3 study/rules.py A B C      -> study/rules/<rule>/<yTag>_pt<lo>_<hi>.knobs
+  python3 study/rules.py A B C      -> study/rules/<rule>/<yTag>_pt<lo>_<hi>.txt
 
 A rule is a dict of component choices; a rule may differ only between named
 regions (REGION below), never per bin. Nominal B is not an input.
@@ -58,11 +58,11 @@ for k in (0.05, 0.1, 0.25):
         for np_, nk in (('long_free', 1), ('long_free', 16), ('mc', 1)):
             RULES[f'F_tail{k}_{mean}_{np_}{nk}'] = {'all': dict(pr_width='tail', pr_width_k=k, pr_mean=mean, np=np_, np_k=nk)}
 
-# Signal purity r = Nsig/Nbkg of the DATA mass prefit (config/signal_purity.csv, written from config/prefits_w2).
+# Signal purity r = Nsig/Nbkg of the DATA mass prefit (config/signal_purity.tsv).
 import csv as _csv
-PURITY = {r['bin']: float(r['SB']) for r in _csv.DictReader(open(BASE / 'config' / 'signal_purity.csv'))}
-# MC prompt width-gap ratios q3=(s3-s2)/s1, q4=(s4-s3)/s1 from the PR prefits (config/pr_gap_ratios.csv).
-GAPS = {r['bin']: (int(r['nres']), float(r['q3']), float(r['q4'])) for r in _csv.DictReader(open(BASE / 'config' / 'pr_gap_ratios.csv'))}
+PURITY = {r['bin']: float(r['SB']) for r in _csv.DictReader(open(BASE / 'config' / 'signal_purity.tsv'), delimiter='\t')}
+# MC prompt width-gap ratios q3=(s3-s2)/s1, q4=(s4-s3)/s1 from the PR prefits (config/pr_gap_ratios.tsv).
+GAPS = {r['bin']: (int(r['nres']), float(r['q3']), float(r['q4'])) for r in _csv.DictReader(open(BASE / 'config' / 'pr_gap_ratios.tsv'), delimiter='\t')}
 
 # Grid K (all 20 bins): gap-ratio constraints centred at k x MC (sigma 5% / 15% of the centre), fractions fixed.
 for kk in (1, 1.25, 1.5, 1.75, 2):
@@ -128,12 +128,12 @@ for pr, kw in (('w025', dict(pr_width_k=0.25)), ('j64', dict(pr_width='mc_joint'
         RULES[f'NPT_{pr}_{npn}'] = {'all': dict(kw, **npkw)}
 
 # Grid E (all 20 bins): PR widths and fractions constrained at MC with total width sqrt(stat^2 + model^2),
-# model = largest shift of the MC PR prefit under alternative fit windows (config/pr_model_err.csv).
+# model = largest shift of the MC PR prefit under alternative fit windows (config/pr_model_err.tsv).
 def _model_err():
-    path = BASE / 'config' / 'pr_model_err.csv'
+    path = BASE / 'config' / 'pr_model_err.tsv'
     if not path.exists(): return {}
     out = {}
-    for r in _csv.DictReader(open(path)): out.setdefault(r['bin'], {})[r['parameter']] = float(r['total'])
+    for r in _csv.DictReader(open(path), delimiter='\t'): out.setdefault(r['bin'], {})[r['parameter']] = float(r['total'])
     return out
 MODEL_ERR = _model_err()
 for np_ in ('mc', 'long_free'):
@@ -224,7 +224,7 @@ def write(rule):
             lines = [f'rule {rule}', '# ' + ' '.join(f'{a}={b}' for a, b in c.items())]
             lines += [f'{a} {b}' for a, b in knobs(c).items()]
             lines += [f'ct_low {window(r, lo)[0]}', f'ct_high {window(r, lo)[1]}']
-            (d / f'{y}_pt{lo:.2f}_{hi:.2f}.knobs').write_text('\n'.join(lines) + '\n')
+            (d / f'{y}_pt{lo:.2f}_{hi:.2f}.txt').write_text('\n'.join(lines) + '\n')
     print('wrote', d)
 
 

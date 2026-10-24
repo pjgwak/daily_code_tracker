@@ -18,9 +18,9 @@
 namespace oo_prompt_transport {
 struct CalibrationWindow {double low,high;std::string md5;};
 inline CalibrationWindow calibrationWindow(const std::string&tag,const std::string&prefit){
- const char*overridePath=gSystem->Getenv("OO_PR_CALIBRATION_WINDOWS");const std::string path=overridePath?overridePath:"config/pr_calibration_windows.csv";
+ const char*overridePath=gSystem->Getenv("OO_PR_CALIBRATION_WINDOWS");const std::string path=overridePath?overridePath:"config/pr_calibration_windows.tsv";
  std::ifstream in(path);if(!in)throw std::runtime_error("Cannot open PR calibration domain map: "+path);std::string line;std::getline(in,line);
- while(std::getline(in,line)){std::stringstream ss(line);std::vector<std::string> col;std::string s;while(std::getline(ss,s,','))col.push_back(s);if(col.size()<5||col[0]!=tag)continue;CalibrationWindow r{std::stod(col[1]),std::stod(col[2]),col[4]};if(!(std::isfinite(r.low)&&std::isfinite(r.high)&&r.high>r.low))throw std::runtime_error("Invalid PR calibration domain");std::unique_ptr<TMD5> md5(TMD5::FileChecksum(prefit.c_str()));if(!md5||r.md5!=md5->AsString())throw std::runtime_error("PR calibration map/pre-fit hash mismatch: "+prefit);return r;}
+ while(std::getline(in,line)){std::stringstream ss(line);std::vector<std::string> col;std::string s;while(std::getline(ss,s,'\t'))col.push_back(s);if(col.size()<5||col[0]!=tag)continue;CalibrationWindow r{std::stod(col[1]),std::stod(col[2]),col[4]};if(!(std::isfinite(r.low)&&std::isfinite(r.high)&&r.high>r.low))throw std::runtime_error("Invalid PR calibration domain");std::unique_ptr<TMD5> md5(TMD5::FileChecksum(prefit.c_str()));if(!md5||r.md5!=md5->AsString())throw std::runtime_error("PR calibration map/pre-fit hash mismatch: "+prefit);return r;}
  throw std::runtime_error("PR calibration domain missing for "+tag);
 }
 // Native fractions remain fractions in the MC calibration window. All mappings

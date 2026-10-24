@@ -16,7 +16,7 @@ PR 평균·폭·구성비를 적합한다. PR 폭 좌표의 Gaussian 제약 표�
 
 - NP 혼합모형의 한 성분 비중이 0 경계에 접근한다. 해당 성분의 수명을 독립적으로 결정한 결과로 해석하지 않는다.
 
-[최종 ROOT](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt1.00_2.00.root) · [초기값·범위](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt1.00_2.00/ACTUAL_INITIAL_START_0.csv) · [최종 변수](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt1.00_2.00/FINAL_OBJECTIVE_PARAMETERS.csv) · [실제 제약 항](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt1.00_2.00/EXTERNAL_CONSTRAINTS.txt)
+[최종 ROOT](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt1.00_2.00.root) · [초기값·범위](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt1.00_2.00/ACTUAL_INITIAL_START_0.tsv) · [최종 변수](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt1.00_2.00/FINAL_OBJECTIVE_PARAMETERS.tsv) · [실제 제약 항](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt1.00_2.00/EXTERNAL_CONSTRAINTS.txt)
 
 ## Prefit 적합도
 
@@ -82,6 +82,6 @@ PR 평균·폭·구성비를 적합한다. PR 폭 좌표의 Gaussian 제약 표�
 
 ![Data-fit PR and NP boundaries](../figures/boundaries/fwd_1_2.png)
 
-[PDF](../figures/boundaries/fwd_1_2.pdf) · [경계 수치](../figures/boundaries/windows.csv)
+[PDF](../figures/boundaries/fwd_1_2.pdf) · [경계 수치](../figures/boundaries/windows.tsv)
 
 [전체 빈 목차](../FIT_PLOTS_BY_BIN.md)

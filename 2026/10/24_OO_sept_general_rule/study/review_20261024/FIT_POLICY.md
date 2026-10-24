@@ -61,4 +61,4 @@ Mass 범위는 전 구간 [2.6, 3.5] GeV/c²이다. ctau 범위는 DATA 2D fit�
 
 Forward 1–2, 2–3 및 Mid 7–8, 8–9는 성공한 실행에 실제 입력했던 seed를 복원했다. Forward 2–3에서는 NP 좌표를 MC prefit 값으로 초기화했다. 이 네 빈의 초기값·초기 오차·범위·고정 상태가 해당 성공 실행과 일치함을 확인했다. 두 번째 전체 실행에서 20빈을 실제 재적합했으며 빈별 결과를 서로 다른 실행에서 골라 합치지 않았다.
 
-[초기값 대조](audit/initial_coordinates.json) · [고정·자유 좌표](data/fit_coordinates.csv) · [모형 성분 수](data/component_counts.csv) · [초기값별 전체 실행 비교](data/start_comparison.json)
+[초기값 대조](audit/initial_coordinates.json) · [고정·자유 좌표](data/fit_coordinates.tsv) · [모형 성분 수](data/component_counts.tsv) · [초기값별 전체 실행 비교](data/start_comparison.json)
