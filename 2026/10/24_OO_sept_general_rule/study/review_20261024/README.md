@@ -18,6 +18,6 @@
 
 각 빈 문서에는 실제 사용한 **prefit 5개 + 최종 projection 2개 + DATA PDF 경계 1개**가 포함된다. 그림은 PNG로 표시하고 원본 PDF와 ROOT 파일에 연결했다. Mass·ctau projection p-value 각각에 별도의 0.05 조건을 요구하지 않는다.
 
-[최종 수치 CSV](data/fit_results.tsv) · [Prefit 수치 CSV](data/prefit_quality.tsv) · [설정 JSON](data/policy_by_bin.json) · [요약 PDF](figures/summary/agreement.pdf) · [전체 PDF 경계 그림](figures/boundaries/all_bins.pdf)
+[최종 수치 CSV](data/fit_results.txt) · [Prefit 수치 CSV](data/prefit_quality.txt) · [설정 JSON](data/policy_by_bin.json) · [요약 PDF](figures/summary/agreement.pdf) · [전체 PDF 경계 그림](figures/boundaries/all_bins.pdf)
 
 분석 코드와 재현 방법은 [23일 폴더 README](../23_OO_simple_rules_2p1/README.md)에 있다. 이 리뷰 폴더의 문서와 그림은 독립적으로 읽을 수 있으며 ROOT와 원본 진단 CSV 링크는 23일 폴더를 참조한다.

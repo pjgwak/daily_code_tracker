@@ -17,7 +17,7 @@ PR 평균·폭·구성비에 공동 Gaussian 제약과 폭 간격비 제약을 �
 - NP 혼합모형의 한 성분 비중이 0 경계에 접근한다. 해당 성분의 수명을 독립적으로 결정한 결과로 해석하지 않는다.
 - 성공한 실행의 초기값·초기 오차·범위·고정 상태를 동일하게 복원했을 때 재현됐다. 최종 추정값을 새로운 초기값으로 사용한 실행에서는 F2의 수렴 실패와 M8의 상대 차이 +2.49559%를 관찰했다.
 
-[최종 ROOT](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y0.00_1.60/fit2d/fit2d_result_y0.00_1.60_pt8.00_9.00.root) · [초기값·범위](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y0.00_1.60/fit2d/diagnostics_y0.00_1.60_pt8.00_9.00/ACTUAL_INITIAL_START_0.tsv) · [최종 변수](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y0.00_1.60/fit2d/diagnostics_y0.00_1.60_pt8.00_9.00/FINAL_OBJECTIVE_PARAMETERS.tsv) · [실제 제약 항](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y0.00_1.60/fit2d/diagnostics_y0.00_1.60_pt8.00_9.00/EXTERNAL_CONSTRAINTS.txt)
+[최종 ROOT](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y0.00_1.60/fit2d/fit2d_result_y0.00_1.60_pt8.00_9.00.root) · [초기값·범위](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y0.00_1.60/fit2d/diagnostics_y0.00_1.60_pt8.00_9.00/ACTUAL_INITIAL_START_0.txt) · [최종 변수](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y0.00_1.60/fit2d/diagnostics_y0.00_1.60_pt8.00_9.00/FINAL_OBJECTIVE_PARAMETERS.txt) · [실제 제약 항](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y0.00_1.60/fit2d/diagnostics_y0.00_1.60_pt8.00_9.00/EXTERNAL_CONSTRAINTS.txt)
 
 ## Prefit 적합도
 
@@ -83,6 +83,6 @@ PR 평균·폭·구성비에 공동 Gaussian 제약과 폭 간격비 제약을 �
 
 ![Data-fit PR and NP boundaries](../figures/boundaries/mid_8_9.png)
 
-[PDF](../figures/boundaries/mid_8_9.pdf) · [경계 수치](../figures/boundaries/windows.tsv)
+[PDF](../figures/boundaries/mid_8_9.pdf) · [경계 수치](../figures/boundaries/windows.txt)
 
 [전체 빈 목차](../FIT_PLOTS_BY_BIN.md)

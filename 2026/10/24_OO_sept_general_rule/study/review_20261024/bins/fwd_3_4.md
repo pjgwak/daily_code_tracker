@@ -12,7 +12,7 @@ PR Gaussian 성분 수: 4. NP 지수 성분 수: 2.
 
 PR 평균·폭·구성비를 공동 Gaussian 제약 아래 적합한다. MC 상관행렬을 유지하며 표준편차는 정책표에 기록한다. NP에는 MC 공분산을 적용하고, 배경 수명·yield에는 sideband prefit 제약을 적용한다.
 
-[최종 ROOT](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt3.00_4.00.root) · [초기값·범위](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt3.00_4.00/ACTUAL_INITIAL_START_0.tsv) · [최종 변수](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt3.00_4.00/FINAL_OBJECTIVE_PARAMETERS.tsv) · [실제 제약 항](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt3.00_4.00/EXTERNAL_CONSTRAINTS.txt)
+[최종 ROOT](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/fit2d_result_y1.60_2.40_pt3.00_4.00.root) · [초기값·범위](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt3.00_4.00/ACTUAL_INITIAL_START_0.txt) · [최종 변수](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt3.00_4.00/FINAL_OBJECTIVE_PARAMETERS.txt) · [실제 제약 항](../../23_OO_simple_rules_2p1/results/recovery_candidate20_exact_starts_g7/D7_Recovery_candidate20/roots/y1.60_2.40/fit2d/diagnostics_y1.60_2.40_pt3.00_4.00/EXTERNAL_CONSTRAINTS.txt)
 
 ## Prefit 적합도
 
@@ -78,6 +78,6 @@ PR 평균·폭·구성비를 공동 Gaussian 제약 아래 적합한다. MC 상�
 
 ![Data-fit PR and NP boundaries](../figures/boundaries/fwd_3_4.png)
 
-[PDF](../figures/boundaries/fwd_3_4.pdf) · [경계 수치](../figures/boundaries/windows.tsv)
+[PDF](../figures/boundaries/fwd_3_4.pdf) · [경계 수치](../figures/boundaries/windows.txt)
 
 [전체 빈 목차](../FIT_PLOTS_BY_BIN.md)

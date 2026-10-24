@@ -76,7 +76,7 @@ mid nominal(7/27 production)은 단일 뮤온 cut이 없는 데이터로 만든 
 
 ## 4. 23일 결과의 역추적
 
-23일 campaign의 입력(소스, prefit, knob, 초기값, 범위 파일)을 그대로 쓰고 조건을 하나씩 끈 결과다(요약 `docs/evidence/reverse23_summary.tsv`).
+23일 campaign의 입력(소스, prefit, knob, 초기값, 범위 파일)을 그대로 쓰고 조건을 하나씩 끈 결과다(요약 `docs/evidence/reverse23_summary.txt`).
 
 | 빈 | 23일 | 초기값 없이 | PR 고정 없이 | 필요한 조건 | 성공 해의 NLL − 대안 해의 NLL |
 |---|---|---|---|---|---|
@@ -96,4 +96,4 @@ mid nominal(7/27 production)은 단일 뮤온 cut이 없는 데이터로 만든 
 ## 관련 파일
 
 - 스크립트: 이 스터디에 쓴 스캔·비교 스크립트는 정리하면서 지웠다. 규칙 정의는 `study/rules.py`에 남아 있다.
-- 근거 요약표: `docs/evidence/` (`oldacc_*.tsv`, `reverse23_summary.tsv`, `window_scan_*.tsv`, `np_tail_summary.tsv`와 `np_tail/*.pdf`, `prefit_study_*.tsv`, `bkg_counts_*.tsv`, `summary_*.tsv`). 중간 실행 결과(ROOT)는 정리하면서 지웠다.
+- 근거 요약표: `docs/evidence/` (`oldacc_*.txt`, `reverse23_summary.txt`, `window_scan_*.txt`, `np_tail_summary.txt`와 `np_tail/*.pdf`, `prefit_study_*.txt`, `bkg_counts_*.txt`, `summary_*.txt`). 중간 실행 결과(ROOT)는 정리하면서 지웠다.

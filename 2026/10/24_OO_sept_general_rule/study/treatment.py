@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Summarize the final-fit treatment (fixed / constrained / free) per PDF group.
 
-  python3 study/treatment.py   (reads roots/*/fit2d, writes drawing/final_summary/treatment.{tsv,md})
+  python3 study/treatment.py   (reads roots/*/fit2d, writes drawing/final_summary/treatment.{txt,md})
 Group names follow the prefit that supplies each PDF.
 """
 import csv, subprocess, sys
@@ -21,8 +21,8 @@ def group(p):
 
 def main(rule='FINAL_v3'):
     out = BASE / 'drawing' / 'final_summary'
-    subprocess.run([ROOT, '-l', '-b', '-q', f'study/dump_treatment.C("{BASE}","{out / "treatment.tsv"}")'], cwd=BASE, check=True, stdout=subprocess.DEVNULL)
-    rows = list(csv.DictReader(open(out / 'treatment.tsv'), delimiter='\t'))
+    subprocess.run([ROOT, '-l', '-b', '-q', f'study/dump_treatment.C("{BASE}","{out / "treatment.txt"}")'], cwd=BASE, check=True, stdout=subprocess.DEVNULL)
+    rows = list(csv.DictReader(open(out / 'treatment.txt'), delimiter='\t'))
     table = defaultdict(lambda: defaultdict(lambda: [0, 0, 0]))
     for r in rows:
         table[r['bin']][group(r['parameter'])][['fixed', 'constrained', 'free'].index(r['treatment'])] += 1

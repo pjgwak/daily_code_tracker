@@ -27,7 +27,7 @@
 | mid 16–20 | 0.4723 ± 0.0198 | 0.4778 | −1.14% | −0.29 | 1.00 | 1.00 |
 | mid 20–30 | 0.5472 ± 0.0256 | 0.5473 | −0.01% | −0.00 | 1.00 | 1.00 |
 
-모든 fit은 status 0, covQual 3이다. 0.138σ 이내 9빈, 2% 이내 11빈이다. DATA final fit의 신호 PDF가 ctau 범위 밖에 있는 비율은 PR ≤ 5×10⁻⁵, NP ≤ 3×10⁻⁴이다. [전체 표](../drawing/final_summary/report_table.tsv) · [PDF별 고정/제약/자유 개수](../drawing/final_summary/treatment.md) · [nominal 비교 그림](../drawing/final_summary/nominal_agreement.pdf) · fit 그림 `figs/`, `figs_publish/`
+모든 fit은 status 0, covQual 3이다. 0.138σ 이내 9빈, 2% 이내 11빈이다. DATA final fit의 신호 PDF가 ctau 범위 밖에 있는 비율은 PR ≤ 5×10⁻⁵, NP ≤ 3×10⁻⁴이다. [전체 표](../drawing/final_summary/report_table.txt) · [PDF별 고정/제약/자유 개수](../drawing/final_summary/treatment.md) · [nominal 비교 그림](../drawing/final_summary/nominal_agreement.pdf) · fit 그림 `figs/`, `figs_publish/`
 
 ## 2. 모든 빈에 공통인 처리
 
@@ -94,7 +94,7 @@ bash run_ctau_bins.sh --2d     # 최종 2D fit만
 bash run_publish.sh            # 발표용 그림
 ```
 
-빈별 prefit 선택은 `config/prefit_settings.tsv`, 최종 2D fit 설정은 `study/rules/FINAL_v3/`에 있다. 그룹 규칙의 정의는 `study/rules.py`(`FINAL_v1`)이고, `FINAL_v3`은 여기에 mid 8–9(간격비 중심 1.5 × MC)·fwd 2–3(2.4 × MC) knob을 넣은 것이다. 중간 버전 FINAL_v2는 mid 8–9에서 NP를 완전히 자유로 두어 신호 NP의 15%가 ctau 범위 밖에 놓였기 때문에(경계 조건 위반) 채택하지 않았다.
+빈별 prefit 선택은 `config/prefit_settings.txt`, 최종 2D fit 설정은 `study/rules/FINAL_v3/`에 있다. 그룹 규칙의 정의는 `study/rules.py`(`FINAL_v1`)이고, `FINAL_v3`은 여기에 mid 8–9(간격비 중심 1.5 × MC)·fwd 2–3(2.4 × MC) knob을 넣은 것이다. 중간 버전 FINAL_v2는 mid 8–9에서 NP를 완전히 자유로 두어 신호 NP의 15%가 ctau 범위 밖에 놓였기 때문에(경계 조건 위반) 채택하지 않았다.
 
 ctau 범위의 근거 문서(23일 window 스터디)는 `study/review_20261024/`에 있다. 최종 결과는 이 폴더만으로 다시 만들 수 있다.
 

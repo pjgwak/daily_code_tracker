@@ -12,9 +12,9 @@
 | `roots/y*/{mc_mass,ctau_pr,ctau_np,mass,ctau_bkg,fit2d}/` | 단계별 fit 결과 ROOT (prefit과 최종 2D fit) |
 | `figs/y*/<단계>/` | 단계별 fit 그림 |
 | `figs_publish/y*/<단계>/` | 발표용 그림 (`run_publish.sh`) |
-| `drawing/final_summary/` | 20빈 결과표(`summary.tsv`, `report_table.tsv`), PDF별 고정·제약·자유 표(`treatment.md`), nominal 비교 그림 |
-| `config/prefit_settings.tsv` | 빈별 prefit 선택: ctau 범위, 배경 성분 수, mass 배경 차수, NP·PR 성분 수 |
-| `config/pr_calibration_windows.tsv` | MC PR prefit의 범위와 파일 지문 (fit2d가 확인) |
+| `drawing/final_summary/` | 20빈 결과표(`summary.txt`, `report_table.txt`), PDF별 고정·제약·자유 표(`treatment.md`), nominal 비교 그림 |
+| `config/prefit_settings.txt` | 빈별 prefit 선택: ctau 범위, 배경 성분 수, mass 배경 차수, NP·PR 성분 수 |
+| `config/pr_calibration_windows.txt` | MC PR prefit의 범위와 파일 지문 (fit2d가 확인) |
 | `study/rules/FINAL_v3/` | 최종 2D fit knob 파일 (빈별 고정·제약·자유 설정) |
 | `study/` | `production.py` (실행 스크립트의 본체), `rules.py` (그룹 규칙 정의), `treatment.py` + `dump_treatment.C` (PDF별 고정·제약·자유 표), `rules/` (knob), `review_20261024/` (ctau 범위 근거: 23일 window 스터디) |
 | `inputs/` | DATA, PR MC, NP MC 입력 (new acceptance) |
@@ -35,4 +35,4 @@ python3 drawing/nominal_agreement.py  # nominal 비교 그림
 python3 study/treatment.py            # PDF별 고정·제약·자유 표
 ```
 
-`--2d` 실행이 끝나면 `drawing/final_summary/summary.tsv`가 갱신된다. PR prefit을 다시 만들면 `config/pr_calibration_windows.tsv`의 파일 지문도 자동으로 갱신된다.
+`--2d` 실행이 끝나면 `drawing/final_summary/summary.txt`가 갱신된다. PR prefit을 다시 만들면 `config/pr_calibration_windows.txt`의 파일 지문도 자동으로 갱신된다.

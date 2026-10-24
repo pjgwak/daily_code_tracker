@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Production runner (September folder layout): prefits and the final 2D fit into roots/, figs/, figs_publish/.
 
-Called by run_ctau_bins.sh / run_publish.sh. Per-bin prefit choices come from config/prefit_settings.tsv;
+Called by run_ctau_bins.sh / run_publish.sh. Per-bin prefit choices come from config/prefit_settings.txt;
 the 2D fit uses the knob files in study/rules/FINAL_v3 (OO_RULE_DIR).
   stages : mc, pr, np, mass, bkg, 2d (in this order when several are given)
   --redraw  : redraw saved results into figs/ without refitting
@@ -40,8 +40,8 @@ def stage_env(stage, s):
 
 
 def update_pr_map(settings):
-    """Refitted PR prefits change their md5: refresh config/pr_calibration_windows.tsv (and its window if saved)."""
-    path = BASE / 'config/pr_calibration_windows.tsv'
+    """Refitted PR prefits change their md5: refresh config/pr_calibration_windows.txt (and its window if saved)."""
+    path = BASE / 'config/pr_calibration_windows.txt'
     rows = list(csv.DictReader(open(path), delimiter='\t'))
     for r in rows:
         y, _ = r['tag'].split('_pt')
@@ -63,7 +63,7 @@ def main():
     ap.add_argument('--jobs', type=int, default=12)
     a = ap.parse_args()
     settings = []
-    for r in csv.DictReader(open(BASE / 'config/prefit_settings.tsv'), delimiter='\t'):
+    for r in csv.DictReader(open(BASE / 'config/prefit_settings.txt'), delimiter='\t'):
         reg, lo, hi = r['bin'].split('_')
         r.update(region=reg, lo=lo, hi=hi, ylo='1.6' if reg == 'fwd' else '0', yhi='2.4' if reg == 'fwd' else '1.6')
         if a.rapidity != 'both' and reg != a.rapidity: continue
@@ -93,8 +93,8 @@ def main():
         print(f'[{stage}] {len(res) - len(bad)}/{len(res)} ok' + (f', failed: {bad}' if bad else '') + f'  logs: {logdir.relative_to(BASE)}', flush=True)
         if stage == 'pr' and not draw: update_pr_map(settings)
     if '2d' in a.stages and not draw:
-        subprocess.run([ROOT, '-n', '-l', '-b', '-q', f'workflow/collect.C(".","drawing/final_summary/summary.tsv")'], cwd=BASE, capture_output=True)
-        print('summary: drawing/final_summary/summary.tsv')
+        subprocess.run([ROOT, '-n', '-l', '-b', '-q', f'workflow/collect.C(".","drawing/final_summary/summary.txt")'], cwd=BASE, capture_output=True)
+        print('summary: drawing/final_summary/summary.txt')
 
 
 if __name__ == '__main__':

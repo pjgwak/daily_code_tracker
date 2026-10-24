@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""B fraction vs nominal for FINAL_v3: drawing/final_summary/nominal_agreement.{pdf,png} (from summary.tsv)."""
+"""B fraction vs nominal for FINAL_v3: drawing/final_summary/nominal_agreement.{pdf,png} (from summary.txt)."""
 import csv
 from pathlib import Path
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 D = Path(__file__).resolve().parent / 'final_summary'
-rows = list(csv.DictReader(open(D / 'summary.tsv'), delimiter='\t'))
+rows = list(csv.DictReader(open(D / 'summary.txt'), delimiter='\t'))
 fig, axes = plt.subplots(2, 2, figsize=(11, 7), sharex='col', gridspec_kw=dict(height_ratios=[2, 1]))
 for col, (reg, label) in enumerate([('fwd', '1.6 < |y| < 2.4'), ('mid', '|y| < 1.6')]):
     rs = [r for r in rows if r['region'] == reg]

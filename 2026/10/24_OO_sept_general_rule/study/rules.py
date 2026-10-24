@@ -58,11 +58,11 @@ for k in (0.05, 0.1, 0.25):
         for np_, nk in (('long_free', 1), ('long_free', 16), ('mc', 1)):
             RULES[f'F_tail{k}_{mean}_{np_}{nk}'] = {'all': dict(pr_width='tail', pr_width_k=k, pr_mean=mean, np=np_, np_k=nk)}
 
-# Signal purity r = Nsig/Nbkg of the DATA mass prefit (config/signal_purity.tsv).
+# Signal purity r = Nsig/Nbkg of the DATA mass prefit (config/signal_purity.txt).
 import csv as _csv
-PURITY = {r['bin']: float(r['SB']) for r in _csv.DictReader(open(BASE / 'config' / 'signal_purity.tsv'), delimiter='\t')}
-# MC prompt width-gap ratios q3=(s3-s2)/s1, q4=(s4-s3)/s1 from the PR prefits (config/pr_gap_ratios.tsv).
-GAPS = {r['bin']: (int(r['nres']), float(r['q3']), float(r['q4'])) for r in _csv.DictReader(open(BASE / 'config' / 'pr_gap_ratios.tsv'), delimiter='\t')}
+PURITY = {r['bin']: float(r['SB']) for r in _csv.DictReader(open(BASE / 'config' / 'signal_purity.txt'), delimiter='\t')}
+# MC prompt width-gap ratios q3=(s3-s2)/s1, q4=(s4-s3)/s1 from the PR prefits (config/pr_gap_ratios.txt).
+GAPS = {r['bin']: (int(r['nres']), float(r['q3']), float(r['q4'])) for r in _csv.DictReader(open(BASE / 'config' / 'pr_gap_ratios.txt'), delimiter='\t')}
 
 # Grid K (all 20 bins): gap-ratio constraints centred at k x MC (sigma 5% / 15% of the centre), fractions fixed.
 for kk in (1, 1.25, 1.5, 1.75, 2):
@@ -128,9 +128,9 @@ for pr, kw in (('w025', dict(pr_width_k=0.25)), ('j64', dict(pr_width='mc_joint'
         RULES[f'NPT_{pr}_{npn}'] = {'all': dict(kw, **npkw)}
 
 # Grid E (all 20 bins): PR widths and fractions constrained at MC with total width sqrt(stat^2 + model^2),
-# model = largest shift of the MC PR prefit under alternative fit windows (config/pr_model_err.tsv).
+# model = largest shift of the MC PR prefit under alternative fit windows (config/pr_model_err.txt).
 def _model_err():
-    path = BASE / 'config' / 'pr_model_err.tsv'
+    path = BASE / 'config' / 'pr_model_err.txt'
     if not path.exists(): return {}
     out = {}
     for r in _csv.DictReader(open(path), delimiter='\t'): out.setdefault(r['bin'], {})[r['parameter']] = float(r['total'])
