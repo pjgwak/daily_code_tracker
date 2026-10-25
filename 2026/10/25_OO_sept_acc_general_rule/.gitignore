@@ -27,3 +27,6 @@ drawing/raw_yield_vs_sept.py
 drawing/dump_raw_yield_vs_sept.C
 # 웹 페이지 그림은 추적
 !docs/figs/
+# drawing/ 표·입력 기록 (pre-commit hook이 막음, refresh_all.sh로 다시 생성)
+drawing/**/*.csv
+drawing/**/*.json
