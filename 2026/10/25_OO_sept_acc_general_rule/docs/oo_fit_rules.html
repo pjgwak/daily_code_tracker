@@ -70,6 +70,11 @@ code{font:12.5px var(--font-mono);background:var(--accent-soft);padding:1px 5px;
 .stage h3{font:600 14px/1.4 var(--font-body);margin:0;color:var(--muted)}
 .stagegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
 .stagegrid.final{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.stagegrid.wide{grid-template-columns:1fr}
+.figpair a{display:block}
+.figpair figcaption b{color:#1b2230;font-weight:600}
+.figgroup{display:flex;flex-direction:column;gap:10px}
+.figgroup h3{font:600 14px/1.4 var(--font-body);margin:0;color:var(--muted)}
 .stagegrid figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;min-width:0;display:flex;flex-direction:column}
 .stagegrid a{display:block}
 .stagegrid img{display:block;width:100%;height:auto}
@@ -142,8 +147,52 @@ a{color:var(--accent)}
 </section>
 
 <section>
+  <h2>요약 그림</h2>
+  <p class="meta">9월 튜닝 폴더의 그림 코드(<code>drawing/</code>)로 저장된 FINAL_S1 결과를 다시 그린 것이다. 재적합은 하지 않았고, 값은 위 표와 같다. 전 단계 RooFitResult 140개(prefit 120 + final 20)가 모두 status 0, covQual 3, EDM &lt; 10⁻³이다(<code>drawing/fit_convergence/</code>). 그림을 누르면 원본 크기로 열린다.</p>
+  <div class="figgroup">
+    <h3>B fraction vs p<sub>T</sub></h3>
+    <div class="figpair">
+      <figure><a href="figs/sum_bfrac_fwd.png" target="_blank" rel="noopener"><img src="figs/sum_bfrac_fwd.png" alt="forward B fraction"></a><figcaption><b>1.6 &lt; |y| &lt; 2.4</b> · 파랑 2D fit, 빨강 nominal, 검정 pp (BPH-10-002)</figcaption></figure>
+      <figure><a href="figs/sum_bfrac_mid.png" target="_blank" rel="noopener"><img src="figs/sum_bfrac_mid.png" alt="mid B fraction"></a><figcaption><b>|y| &lt; 1.6</b> · 같은 표기</figcaption></figure>
+    </div>
+  </div>
+  <div class="figgroup">
+    <h3>nominal과 비교</h3>
+    <div class="figpair">
+      <figure><a href="figs/sum_vs_nominal_fwd.png" target="_blank" rel="noopener"><img src="figs/sum_vs_nominal_fwd.png" alt="forward nominal comparison"></a><figcaption><b>forward</b> · 초록 띠 nominal ±2.5%, 아래 주황 띠 nominal ±1σ<sub>stat</sub>. 2.5% 밖은 fwd 2–3(+2.96%) 하나</figcaption></figure>
+      <figure><a href="figs/sum_vs_nominal_mid.png" target="_blank" rel="noopener"><img src="figs/sum_vs_nominal_mid.png" alt="mid nominal comparison"></a><figcaption><b>mid</b> · 같은 표기. 8빈 모두 2.5% 이내</figcaption></figure>
+      <figure><a href="figs/sum_nominal_syst_fwd.png" target="_blank" rel="noopener"><img src="figs/sum_nominal_syst_fwd.png" alt="forward nominal with systematic band"></a><figcaption><b>forward</b> · nominal ± 통계 오차에 |B<sub>2D</sub> − B<sub>nom</sub>|를 띠로 표시</figcaption></figure>
+      <figure><a href="figs/sum_nominal_syst_mid.png" target="_blank" rel="noopener"><img src="figs/sum_nominal_syst_mid.png" alt="mid nominal with systematic band"></a><figcaption><b>mid</b> · 같은 표기</figcaption></figure>
+    </div>
+  </div>
+  <div class="figgroup">
+    <h3>raw yield</h3>
+    <div class="figpair">
+      <figure><a href="figs/sum_yield_ratio_fwd.png" target="_blank" rel="noopener"><img src="figs/sum_yield_ratio_fwd.png" alt="forward raw yield"></a><figcaption><b>forward</b> · N<sub>sig</sub>/Δp<sub>T</sub>, 아래는 2D fit/nominal</figcaption></figure>
+      <figure><a href="figs/sum_yield_ratio_mid.png" target="_blank" rel="noopener"><img src="figs/sum_yield_ratio_mid.png" alt="mid raw yield"></a><figcaption><b>mid</b> · 같은 표기</figcaption></figure>
+    </div>
+  </div>
+  <div class="figgroup">
+    <h3>prefit 모델 성분 수</h3>
+    <div class="figpair">
+      <figure><a href="figs/sum_model_count_mc_mass.png" target="_blank" rel="noopener"><img src="figs/sum_model_count_mc_mass.png" alt="MC mass model count"></a><figcaption><b>① MC mass</b></figcaption></figure>
+      <figure><a href="figs/sum_model_count_ctau_pr.png" target="_blank" rel="noopener"><img src="figs/sum_model_count_ctau_pr.png" alt="PR ctau model count"></a><figcaption><b>② PR MC ctau</b></figcaption></figure>
+      <figure><a href="figs/sum_model_count_ctau_np.png" target="_blank" rel="noopener"><img src="figs/sum_model_count_ctau_np.png" alt="NP ctau model count"></a><figcaption><b>③ NP MC ctau</b> · fwd 10–20은 1성분</figcaption></figure>
+      <figure><a href="figs/sum_model_count_mass.png" target="_blank" rel="noopener"><img src="figs/sum_model_count_mass.png" alt="DATA mass model count"></a><figcaption><b>④ DATA mass</b> · Chebychev 차수</figcaption></figure>
+      <figure><a href="figs/sum_model_count_ctau_bkg.png" target="_blank" rel="noopener"><img src="figs/sum_model_count_ctau_bkg.png" alt="background ctau model count"></a><figcaption><b>⑤ 배경 ctau</b> · single-sided / flipped / double-sided 성분 수</figcaption></figure>
+    </div>
+  </div>
+  <div class="figgroup">
+    <h3>ctau 투영의 비닝 의존성</h3>
+    <div class="figpair">
+      <figure><a href="figs/sum_binning_overview.png" target="_blank" rel="noopener"><img src="figs/sum_binning_overview.png" alt="binning overview"></a><figcaption><b>같은 fit, 다른 비닝의 Roo χ²/ndf</b> · 표시용 비닝(Signal / N, 2N)에서는 20빈 모두 1 이하다. 성긴 비닝에서는 fwd 2–3이 가장 크다(Signal / 60에서 4.0, Signal / 120에서 2.35). 빈별 진단 그림은 아래 뷰어의 ⑨에 있다.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section>
   <h2>빈별 fit 그림 (prefit부터 final fit까지)</h2>
-  <p class="meta">빈을 고르면 그 빈의 fit 단계 그림이 실행 순서대로 나온다(발표용 그림, <code>figs_publish/</code>). ①–⑤ prefit은 final fit에 들어가는 MC·sideband 모양과 제약 중심을 만들고, ⑥⑦은 FINAL_S1 DATA final fit이다. 그림을 누르면 원본 크기로 열린다.</p>
+  <p class="meta">빈을 고르면 그 빈의 fit 단계 그림이 실행 순서대로 나온다(발표용 그림, <code>figs_publish/</code>). ①–⑤ prefit은 final fit에 들어가는 MC·sideband 모양과 제약 중심을 만들고, ⑥⑦은 FINAL_S1 DATA final fit, ⑧⑨는 그 fit의 투영 진단이다(fwd 1–2, 2–3은 ctau 확대 ⑦′ 추가). 그림을 누르면 원본 크기로 열린다.</p>
   <div class="viewer">
     <div class="binpick" id="binpick" role="group" aria-label="빈 선택"></div>
     <div class="figinfo" id="figinfo"></div>
@@ -160,7 +209,7 @@ a{color:var(--accent)}
       <tr><td>배경 mass (DATA mass, Chebychev)</td><td>모양 고정</td></tr>
       <tr><td>배경 ctau (DATA mass sideband)</td><td>해상도 Gauss 고정. 수명·비중 자유, fwd 1–5만 sideband 값에 제약</td></tr>
       <tr><td>수율과 B</td><td>자유. nominal은 likelihood·초기값·제약 중심 어디에도 쓰지 않음</td></tr>
-      <tr><td>ctau 범위</td><td>24일과 같음: fwd 1–3 [−4, 6.5], 3–5 [−3.5, 4.5], 5–10 [−1, 4], 10–20 [−0.5, 3], mid [−1, 4]</td></tr>
+      <tr><td>ctau 범위</td><td>24일과 같음: fwd 1–2 [−4, 6.5], 3–5 [−3.5, 4.5], 5–10 [−1, 4], 10–20 [−0.5, 3], mid [−1, 4]. fwd 2–3만 [−20, 20] (10/26 변경)</td></tr>
     </tbody></table></div>
 </section>
 
@@ -255,7 +304,7 @@ a{color:var(--accent)}
 </section>
 
 <footer>
-  작업 폴더 <code>2026/10/25_OO_sept_acc_general_rule</code> · 보고서 <code>docs/REPORT.md</code> · 근거표 <code>docs/evidence/</code> · 수치·처리표 <code>drawing/final_summary/</code> · fit 결과 <code>roots/</code>, 그림 <code>figs/</code>, <code>figs_publish/</code> · 재현 <code>bash run_ctau_bins.sh</code>
+  작업 폴더 <code>2026/10/25_OO_sept_acc_general_rule</code> · 보고서 <code>docs/REPORT.md</code> · 근거표 <code>docs/evidence/</code> · 수치·처리표 <code>drawing/final_summary/</code> · 요약 그림 <code>drawing/</code> (<code>bash drawing/refresh_all.sh</code>) · fit 결과 <code>roots/</code>, 그림 <code>figs/</code>, <code>figs_publish/</code> · 재현 <code>bash run_ctau_bins.sh</code>
 </footer>
 </div>
 
@@ -306,6 +355,7 @@ const PREFIT = [
   ['mass_prefit', '④ DATA mass', 'DATA mass fit. 신호·배경 yield 시작값과 mass 배경 모양'],
   ['ctau_bkg', '⑤ 배경 ctau (sideband)', 'mass sideband ctau. 배경 ctau 모양과 제약 중심'],
 ];
+const ZOOM = ['fwd_1_2', 'fwd_2_3'];
 const pick = document.getElementById('binpick');
 const setBin = (bin, push) => {
   const d = DATA.find(x => x.bin === bin) || DATA[0];
@@ -313,7 +363,8 @@ const setBin = (bin, push) => {
   const fig = (f, t, c) => `<figure><a href="figs/${d.bin}_${f}.png" target="_blank" rel="noopener"><img src="figs/${d.bin}_${f}.png" alt="${name(d.bin)} ${t}"></a><figcaption><b>${t}</b><br>${c}</figcaption></figure>`;
   document.getElementById('stages').innerHTML =
     `<h3>prefit</h3><div class="stagegrid">${PREFIT.map(([f, t, c]) => fig(f, t, c)).join('')}</div>` +
-    `<h3>final fit (DATA, FINAL_S1)</h3><div class="stagegrid final">${fig('mass', '⑥ mass projection', 'dimuon mass. 파랑 신호, 빨강 배경')}${fig('lifetime', '⑦ ctau projection', 'ℓ<sub>J/ψ</sub>. 빨강 PR, 파랑 NP, 초록 배경')}</div>`;
+    `<h3>final fit (DATA, FINAL_S1)</h3><div class="stagegrid final">${fig('mass', '⑥ mass projection', 'dimuon mass. 파랑 신호, 빨강 배경')}${fig('lifetime', '⑦ ctau projection', 'ℓ<sub>J/ψ</sub>. 빨강 PR, 파랑 NP, 초록 배경')}${ZOOM.includes(d.bin) ? fig('lifetime_zoom', '⑦′ ctau 확대 (−2~3 mm)', '같은 fit을 신호 영역만 잘게 나눠 그림') : ''}</div>` +
+    `<h3>투영 진단 (final fit 재생, 재적합 없음)</h3><div class="stagegrid wide">${fig('diag_mass', '⑧ mass 투영 진단', '전체 창. 위: 데이터와 모델, 아래: (data − model)/√model. 왼쪽 위에 χ²/ndf')}${fig('diag_ctau', '⑨ ctau 투영 진단', '왼쪽부터 전체 창, PR·NP 각각 99%를 담는 신호 창, PR 99% core 창. 빨강 PR, 파랑 NP')}</div>`;
   document.getElementById('figinfo').textContent = `${name(d.bin)} GeV/c · B = ${d.B.toFixed(4)} ± ${d.Berr.toFixed(4)} · nominal 대비 ${(d.pct >= 0 ? '+' : '') + d.pct.toFixed(2)}% · ctau 범위 ${d.win} mm${d.tuned ? ' · 빈별 설정' : ''}`;
   if (push) { try { history.replaceState(null, '', '#' + d.bin); } catch (e) {} }
 };
