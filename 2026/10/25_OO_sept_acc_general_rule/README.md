@@ -18,7 +18,7 @@
 | `config/pr_gap_ratios.txt`, `config/signal_purity.txt` | MC PR 간격비(`study/gap_ratios.py`), final fit S/B |
 | `study/rules/FINAL_S1/` | 최종 2D fit knob 파일 (빈별 고정·제약·자유 설정) |
 | `study/` | `production.py` (실행 본체, 빈별 파이프라인), `rules.py` (규칙 정의), `run_rules.py` (후보 규칙 fit), `prefit_variant.py` (prefit 변형을 별도 폴더에서 2D fit까지), `prefit_audit.C` (prefit 품질표), `group_table.py`, `treatment.py` |
-| `study/runs/`, `study/prefit_variants/` | 후보 규칙·prefit 변형 실행 결과 (근거 요약은 `docs/evidence/`) |
+| `study/runs/`, `study/prefit_variants/` | 후보 규칙·prefit 변형을 돌리면 생기는 실행 결과. 스터디 종료 후 삭제했고 요약만 `docs/evidence/`에 남겼다 |
 | `inputs/` | DATA, PR MC, NP MC 입력 (9월 단일 뮤온 acceptance) |
 | `docs/` | 보고서, 웹 페이지 원본과 그림(`docs/figs/`), 근거표(`docs/evidence/`) |
 | `logs/` | 실행 로그 |

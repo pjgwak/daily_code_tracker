@@ -1,6 +1,6 @@
 # prefit 선택 변경 기록 (9월 단일 뮤온 acceptance 입력)
 
-| 날짜 (파리) | 빈 | 변경 | 근거 (`study/prefit_variants/`) |
+| 날짜 (파리) | 빈 | 변경 | 근거 (`docs/evidence/prefit_variants.txt`, `fwd23_effnp_variants.txt`) |
 |---|---|---|---|
 | 2026-10-25 00:30 | fwd 10–12, 12–14, 14–20 | NP 성분 2 → 1 (`np_count`) | 두 번째 NP 성분 퇴화: 10–12 yield 62±72, 12–14 오차>값, 14–20 수명 하한. 1성분 χ²/ndf 0.81, 1.02 |
 | 2026-10-25 00:30 | fwd 5–6 | PR MC fit 범위 0.05–99.95% → 0.2–99.8% 분위수 (`pr_quant`) | PR χ²/ndf 1.27→1.03, 배경 0.74→0.59, 가장 넓은 Gauss 0.25→0.14 mm (24일 fwd 4–5와 같은 처리) |
