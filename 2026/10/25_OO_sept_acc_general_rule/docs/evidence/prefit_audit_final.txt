@@ -1,0 +1,168 @@
+fwd 1-2
+  mc_mass   st0 cq3 chi2/ndf 0.813
+  ctau_pr   st0 cq3 chi2/ndf 0.957 (robust 1.109)  res n=4 sigma 0.0699 0.1349 0.2828 0.8132 frac 0.4288 0.7901 0.8662
+  ctau_np   st0 cq3 chi2/ndf 0.850 (robust 1.299)  res n=4 sigma 0.0699 0.1349 0.2828 0.8132 frac 0.4288 0.4513 0.1039
+  mass      st0 cq3 chi2/ndf 1.175
+  ctau_bkg  st0 cq3 chi2/ndf 0.956 (robust 1.193)  res n=4 sigma nan nan nan nan frac 0.2260 0.4606 0.2419
+      ! bkg_log_lifetime_offset          -0.20419 +- 0.313  [-6.90776, 1.55083] err>|val|
+fwd 2-3
+  mc_mass   st0 cq3 chi2/ndf 0.848
+  ctau_pr   st0 cq3 chi2/ndf 1.166 (robust 1.054)  res n=4 sigma 0.0462 0.0835 0.1678 0.4679 frac 0.4532 0.8009 0.8472
+      ! ctauTime1Mean                    -7.043e-05 +- 0.00016  [-0.01, 0.01] err>|val|
+  ctau_np   st0 cq3 chi2/ndf 0.807 (robust 0.961)  res n=4 sigma 0.0462 0.0835 0.1678 0.4679 frac 0.4532 0.4380 0.0922
+  mass      st0 cq3 chi2/ndf 0.872
+  ctau_bkg  st0 cq3 chi2/ndf 0.814 (robust 1.246)  res n=4 sigma nan nan nan nan frac 0.1372 0.5715 0.2536
+      ! bkg_log_lifetime_offset          -5.809 +- 2.25  [-5.80914, -3.50656] AT-LIMIT
+fwd 3-4
+  mc_mass   st0 cq3 chi2/ndf 1.007
+  ctau_pr   st0 cq3 chi2/ndf 1.182 (robust 1.103)  res n=4 sigma 0.0339 0.0603 0.1176 0.3476 frac 0.4230 0.7773 0.8597
+  ctau_np   st0 cq3 chi2/ndf 1.987 (robust 1.371)  res n=4 sigma 0.0339 0.0603 0.1176 0.3476 frac 0.4230 0.4485 0.1105
+  mass      st0 cq3 chi2/ndf 0.942
+  ctau_bkg  st0 cq3 chi2/ndf 1.359 (robust 1.412)  res n=4 sigma nan nan nan nan frac 0.2318 0.5023 0.2136
+      ! bkg_log_lifetime_offset          -9.2103 +- 9.5  [-9.21034, 2.06412] AT-LIMIT err>|val|
+fwd 4-5
+  mc_mass   st0 cq3 chi2/ndf 0.959
+  ctau_pr   st0 cq3 chi2/ndf 1.131 (robust 0.922)  res n=4 sigma 0.0253 0.0421 0.0751 0.1768 frac 0.2836 0.6921 0.8430
+  ctau_np   st0 cq3 chi2/ndf 1.799 (robust 1.075)  res n=4 sigma 0.0253 0.0421 0.0751 0.1768 frac 0.2836 0.4958 0.1859
+  mass      st0 cq3 chi2/ndf 1.024
+  ctau_bkg  st0 cq3 chi2/ndf 1.040 (robust 1.442)  res n=4 sigma nan nan nan nan frac 0.0980 0.5567 0.2388
+      ! bkg_log_lifetime_offset          -11.934 +- 14.7  [-13.8155, 2.07168] err>|val|
+fwd 5-6
+  mc_mass   st0 cq3 chi2/ndf 0.780
+  ctau_pr   st0 cq3 chi2/ndf 1.030 (robust 1.101)  res n=4 sigma 0.0203 0.0343 0.0628 0.1441 frac 0.2423 0.6804 0.8416
+  ctau_np   st0 cq3 chi2/ndf 1.649 (robust 1.127)  res n=4 sigma 0.0203 0.0343 0.0628 0.1441 frac 0.2423 0.5155 0.2038
+  mass      st0 cq3 chi2/ndf 1.008
+  ctau_bkg  st0 cq3 chi2/ndf 0.585 (robust 1.252)  res n=4 sigma nan nan nan nan frac nan nan nan
+      ! bkg_log_lifetime_offset          -5.8084 +- 2.29  [-5.80914, -3.50656] AT-LIMIT
+fwd 6-7
+  mc_mass   st0 cq3 chi2/ndf 0.862
+  ctau_pr   st0 cq3 chi2/ndf 1.147 (robust 0.910)  res n=4 sigma 0.0216 0.0396 0.0809 0.2215 frac 0.4936 0.7908 0.8665
+      ! ctauTime1Mean                    3.1191e-05 +- 7.61e-05  [-0.01, 0.01] err>|val|
+  ctau_np   st0 cq3 chi2/ndf 1.364 (robust 0.969)  res n=4 sigma 0.0216 0.0396 0.0809 0.2215 frac 0.4936 0.4005 0.0918
+  mass      st0 cq3 chi2/ndf 0.966
+  ctau_bkg  st0 cq3 chi2/ndf 0.833 (robust 0.894)  res n=4 sigma nan nan nan nan frac nan nan nan
+      ! bkg_log_lifetime_offset          -5.8091 +- 1.93  [-5.80914, -3.50656] AT-LIMIT
+fwd 7-8
+  mc_mass   st0 cq3 chi2/ndf 0.935
+  ctau_pr   st0 cq3 chi2/ndf 0.911 (robust 1.028)  res n=4 sigma 0.0181 0.0322 0.0714 0.2168 frac 0.4118 0.7845 0.9081
+  ctau_np   st0 cq3 chi2/ndf 0.751 (robust 0.664)  res n=4 sigma 0.0181 0.0322 0.0714 0.2168 frac 0.4118 0.4615 0.1151
+  mass      st0 cq3 chi2/ndf 0.917
+  ctau_bkg  st0 cq3 chi2/ndf 0.686 (robust 0.771)  res n=4 sigma nan nan nan nan frac nan nan nan
+      ! bkg_log_lifetime_offset          -3.5066 +- 2.28  [-5.80914, -3.50656] AT-LIMIT
+fwd 8-9
+  mc_mass   st0 cq3 chi2/ndf 0.710
+  ctau_pr   st0 cq3 chi2/ndf 0.779 (robust 0.878)  res n=4 sigma 0.0177 0.0328 0.0718 0.2224 frac 0.5202 0.8007 0.9012
+  ctau_np   st0 cq3 chi2/ndf 1.447 (robust 1.090)  res n=4 sigma 0.0177 0.0328 0.0718 0.2224 frac 0.5202 0.3842 0.0862
+  mass      st0 cq3 chi2/ndf 0.900
+  ctau_bkg  st0 cq3 chi2/ndf 0.910 (robust 1.174)  res n=4 sigma nan nan nan nan frac nan nan nan
+      ! bkg_log_lifetime_offset          -3.5066 +- 2.07  [-5.80914, -3.50656] AT-LIMIT
+fwd 9-10
+  mc_mass   st0 cq3 chi2/ndf 0.928
+  ctau_pr   st0 cq3 chi2/ndf 0.653 (robust 1.054)  res n=4 sigma 0.0158 0.0286 0.0655 0.1726 frac 0.4819 0.7977 0.9023
+  ctau_np   st0 cq3 chi2/ndf 1.434 (robust 1.450)  res n=4 sigma 0.0158 0.0286 0.0655 0.1726 frac 0.4819 0.4133 0.0946
+  mass      st0 cq3 chi2/ndf 0.789
+  ctau_bkg  st0 cq3 chi2/ndf 0.905 (robust 1.811)  res n=4 sigma nan nan nan nan frac nan nan nan
+      ! ctauTime1Scale                   0.031577 +- 0.0186  [0.00552605, 0.0315775] AT-LIMIT
+fwd 10-12
+  mc_mass   st0 cq3 chi2/ndf 0.910
+      ! signal_mass_frac_ratio1          0.99974 +- 0.359  [0.001, 1000] AT-LIMIT
+  ctau_pr   st0 cq3 chi2/ndf 0.794 (robust 1.106)  res n=4 sigma 0.0144 0.0264 0.0609 0.1675 frac 0.5040 0.7957 0.9066
+  ctau_np   st0 cq3 chi2/ndf 0.806 (robust 1.290)  res n=4 sigma 0.0144 0.0264 0.0609 0.1675 frac 0.5040 0.3946 0.0919
+  mass      st0 cq3 chi2/ndf 0.752
+      ! bkg_mass_p2                      0.0065112 +- 0.0642  [-1, 1] err>|val|
+      ! signal_mass_frac_ratio1          0.72593 +- 0.401  [0.001, 1000] AT-LIMIT
+  ctau_bkg  st0 cq3 chi2/ndf 0.722 (robust 2.338)  res n=4 sigma nan nan nan nan frac nan nan nan
+      ! bkg_log_lifetime_offset          -3.5066 +- 1.64  [-5.80914, -3.50656] AT-LIMIT
+fwd 12-14
+  mc_mass   st0 cq3 chi2/ndf 0.630
+  ctau_pr   st0 cq3 chi2/ndf 0.832 (robust 1.086)  res n=4 sigma 0.0122 0.0216 0.0504 0.1283 frac 0.4017 0.8065 0.8839
+  ctau_np   st0 cq3 chi2/ndf 1.015 (robust 1.043)  res n=4 sigma 0.0122 0.0216 0.0504 0.1283 frac 0.4017 0.4825 0.1023
+  mass      st0 cq3 chi2/ndf 0.565
+  ctau_bkg  st0 cq3 chi2/ndf 0.627 (robust 3.302)  res n=4 sigma nan nan nan nan frac nan nan nan
+      ! ctauTime1Scale                   0.024309 +- 0.0132  [0.00425458, 0.0243119] AT-LIMIT
+fwd 14-20
+  mc_mass   st0 cq3 chi2/ndf 0.890
+  ctau_pr   st0 cq3 chi2/ndf 1.020 (robust 1.179)  res n=3 sigma 0.0125 0.0262 0.0726 frac 0.6615 0.8735
+      ! ctauTime1Mean                    1.0911e-05 +- 6.81e-05  [-0.01, 0.01] err>|val|
+  ctau_np   st0 cq3 chi2/ndf 0.846 (robust 1.207)  res n=3 sigma 0.0125 0.0262 0.0726 frac 0.6615 0.2957
+  mass      st0 cq3 chi2/ndf 0.611
+      ! bkg_mass_p2                      0.050737 +- 0.0962  [-1, 1] err>|val|
+      ! signal_mass_frac_ratio1          0.95128 +- 0.352  [0.001, 1000] AT-LIMIT
+  ctau_bkg  st0 cq3 chi2/ndf 0.557  res n=3 sigma nan nan nan frac nan nan
+mid 7-8
+  mc_mass   st0 cq3 chi2/ndf 1.168
+  ctau_pr   st0 cq3 chi2/ndf 1.128 (robust 1.175)  res n=4 sigma 0.0179 0.0316 0.0710 0.2130 frac 0.5411 0.8153 0.8698
+  ctau_np   st0 cq3 chi2/ndf 0.921 (robust 1.136)  res n=4 sigma 0.0179 0.0316 0.0710 0.2130 frac 0.5411 0.3741 0.0737
+  mass      st0 cq3 chi2/ndf 0.751
+      ! bkg_mass_p2                      0.022957 +- 0.0291  [-1, 1] err>|val|
+  ctau_bkg  st0 cq3 chi2/ndf 0.662 (robust 0.953)  res n=4 sigma nan nan nan nan frac nan nan nan
+      ! bkg_log_lifetime_offset          -5.8078 +- 2.29  [-5.80914, -3.50656] AT-LIMIT
+mid 8-9
+  mc_mass   st0 cq3 chi2/ndf 0.871
+      ! signal_mass_frac_ratio1          0.70837 +- 0.0703  [0.001, 1000] AT-LIMIT
+  ctau_pr   st0 cq3 chi2/ndf 1.010 (robust 1.186)  res n=4 sigma 0.0146 0.0247 0.0533 0.1664 frac 0.3797 0.8249 0.8968
+  ctau_np   st0 cq3 chi2/ndf 0.869 (robust 1.074)  res n=4 sigma 0.0146 0.0247 0.0533 0.1664 frac 0.3797 0.5117 0.0974
+  mass      st0 cq3 chi2/ndf 0.817
+      ! bkg_mass_p1                      -0.022897 +- 0.034  [-1, 1] err>|val|
+      ! bkg_mass_p2                      0.0003235 +- 0.0402  [-1, 1] err>|val|
+      ! signal_mass_frac_ratio1          0.70727 +- 0.0652  [0.001, 1000] AT-LIMIT
+  ctau_bkg  st0 cq3 chi2/ndf 0.716 (robust 0.807)  res n=4 sigma nan nan nan nan frac nan nan nan
+      ! bkg_log_lifetime_offset          -3.5066 +- 1.86  [-5.80914, -3.50656] AT-LIMIT
+mid 9-10
+  mc_mass   st0 cq3 chi2/ndf 0.971
+      ! signal_mass_frac_ratio1          0.76487 +- 0.0524  [0.001, 1000] AT-LIMIT
+  ctau_pr   st0 cq3 chi2/ndf 1.056 (robust 1.069)  res n=4 sigma 0.0155 0.0266 0.0574 0.1728 frac 0.5797 0.8604 0.8766
+      ! ctauTime1Mean                    4.606e-05 +- 5.58e-05  [-0.01, 0.01] err>|val|
+  ctau_np   st0 cq3 chi2/ndf 0.724 (robust 0.909)  res n=4 sigma 0.0155 0.0266 0.0574 0.1728 frac 0.5797 0.3616 0.0514
+  mass      st0 cq3 chi2/ndf 0.848
+      ! bkg_mass_p2                      -0.017082 +- 0.0544  [-1, 1] err>|val|
+      ! signal_mass_frac_ratio1          0.79134 +- 0.0498  [0.001, 1000] AT-LIMIT
+  ctau_bkg  st0 cq3 chi2/ndf 0.801 (robust 1.016)  res n=4 sigma nan nan nan nan frac nan nan nan
+mid 10-12
+  mc_mass   st0 cq3 chi2/ndf 1.258
+      ! signal_mass_frac_ratio1          0.82488 +- 0.0418  [0.001, 1000] AT-LIMIT
+  ctau_pr   st0 cq3 chi2/ndf 0.965 (robust 1.014)  res n=4 sigma 0.0136 0.0224 0.0446 0.1275 frac 0.4848 0.8515 0.8798
+  ctau_np   st0 cq3 chi2/ndf 1.294 (robust 1.222)  res n=4 sigma 0.0136 0.0224 0.0446 0.1275 frac 0.4848 0.4387 0.0673
+  mass      st0 cq3 chi2/ndf 0.714
+      ! bkg_mass_p2                      -0.010928 +- 0.0536  [-1, 1] err>|val|
+      ! signal_mass_frac_ratio1          0.83597 +- 0.0401  [0.001, 1000] AT-LIMIT
+  ctau_bkg  st0 cq3 chi2/ndf 0.598 (robust 0.884)  res n=4 sigma nan nan nan nan frac nan nan nan
+      ! bkg_log_lifetime_offset          -3.5066 +- 1.16  [-5.80914, -3.50656] AT-LIMIT
+      ! ctauTime1Scale                   0.027244 +- 0.00443  [0.00476792, 0.0272453] AT-LIMIT
+mid 12-14
+  mc_mass   st0 cq3 chi2/ndf 1.041
+      ! signal_mass_frac_ratio1          0.70712 +- 0.0519  [0.001, 1000] AT-LIMIT
+  ctau_pr   st0 cq3 chi2/ndf 0.986 (robust 1.149)  res n=4 sigma 0.0127 0.0204 0.0401 0.1118 frac 0.4965 0.8549 0.8949
+  ctau_np   st0 cq3 chi2/ndf 1.419 (robust 1.483)  res n=4 sigma 0.0127 0.0204 0.0401 0.1118 frac 0.4965 0.4304 0.0654
+  mass      st0 cq3 chi2/ndf 0.614
+      ! signal_mass_frac_ratio1          0.73316 +- 0.0485  [0.001, 1000] AT-LIMIT
+  ctau_bkg  st0 cq3 chi2/ndf 0.709 (robust 6.542)  res n=4 sigma nan nan nan nan frac nan nan nan
+      ! bkg_sym_log_lifetime_offset      -0.42905 +- 0.721  [-4.03898, 0.892523] err>|val|
+      ! ctauTime1Scale                   0.025373 +- 0.00107  [0.00444022, 0.0253727] AT-LIMIT
+mid 14-16
+  mc_mass   st0 cq3 chi2/ndf 1.017
+  ctau_pr   st0 cq3 chi2/ndf 0.967 (robust 1.142)  res n=3 sigma 0.0132 0.0248 0.0730 frac 0.7194 0.9503
+      ! ctauTime1Mean                    -5.8963e-05 +- 6.03e-05  [-0.01, 0.01] err>|val|
+  ctau_np   st0 cq3 chi2/ndf 0.824 (robust 0.950)  res n=3 sigma 0.0132 0.0248 0.0730 frac 0.7194 0.2666
+  mass      st0 cq3 chi2/ndf 0.612
+  ctau_bkg  st0 cq3 chi2/ndf 0.752  res n=3 sigma nan nan nan frac nan nan
+      ! ctauTime1Scale                   0.026442 +- 0.0174  [0.0046292, 0.0264525] AT-LIMIT
+mid 16-20
+  mc_mass   st0 cq3 chi2/ndf 0.693
+      ! signal_mass_frac_ratio1          0.97244 +- 0.105  [0.001, 1000] AT-LIMIT
+  ctau_pr   st0 cq3 chi2/ndf 0.795 (robust 1.073)  res n=3 sigma 0.0122 0.0223 0.0712 frac 0.7119 0.9554
+      ! ctauTime1Mean                    1.2749e-05 +- 5.46e-05  [-0.01, 0.01] err>|val|
+  ctau_np   st0 cq3 chi2/ndf 1.184 (robust 1.410)  res n=3 sigma 0.0122 0.0223 0.0712 frac 0.7119 0.2753
+  mass      st0 cq3 chi2/ndf 0.561
+      ! bkg_mass_p2                      -0.035638 +- 0.107  [-1, 1] err>|val|
+      ! signal_mass_frac_ratio1          0.95718 +- 0.104  [0.001, 1000] AT-LIMIT
+  ctau_bkg  st0 cq3 chi2/ndf 0.723  res n=3 sigma nan nan nan frac nan nan
+      ! ctauTime2Delta                   0.0046204 +- 0.00913  [1e-06, 0.1] err>|val|
+mid 20-30
+  mc_mass   st0 cq3 chi2/ndf 0.876
+  ctau_pr   st0 cq3 chi2/ndf 0.601 (robust 1.100)  res n=3 sigma 0.0109 0.0193 0.0515 frac 0.7051 0.9547
+  ctau_np   st0 cq3 chi2/ndf 0.675 (robust 1.130)  res n=3 sigma 0.0109 0.0193 0.0515 frac 0.7051 0.2816
+  mass      st0 cq3 chi2/ndf 0.415
+      ! bkg_mass_p2                      0.0091608 +- 0.126  [-1, 1] err>|val|
+  ctau_bkg  st0 cq3 chi2/ndf 0.748  res n=3 sigma nan nan nan frac nan nan
+      ! ctauTime1Scale                   0.021741 +- 0.0118  [0.00380511, 0.0217435] AT-LIMIT
