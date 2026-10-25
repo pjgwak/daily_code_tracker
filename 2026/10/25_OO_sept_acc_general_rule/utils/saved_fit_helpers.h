@@ -9,6 +9,9 @@
 #include "RooPlot.h"
 #include "RooCurve.h"
 #include "RooHist.h"
+#include "TSystem.h"
+#include <cstdlib>
+#include <iostream>
 #include <iomanip>
 #include <stdexcept>
 #include "TFile.h"
@@ -111,6 +114,11 @@ static int saved_prefit_npar(const TString &path, const char *key)
 // A failed or unaudited prefit must never feed a fresh final likelihood.
 static void require_prefit_quality(TFile &file, const char *resultKey, double maximum = 2.0)
 {
+    // Diagnostic-only override (study/prefit_variant.py --env=OO_PREFIT_CHI2_MAX=...): never set in production.
+    if (const char *m = gSystem->Getenv("OO_PREFIT_CHI2_MAX")) {
+        maximum = std::atof(m);
+        std::cout << "[PREFIT_QUALITY] WARNING: chi2/ndf gate raised to " << maximum << " for " << file.GetName() << std::endl;
+    }
     auto *r = file.Get<RooFitResult>(resultKey);
     const double chi = read_saved_double_param(&file, "prefitChi2NdfValue");
     const int bins = read_saved_int_param(&file, "prefitChi2Bins", -1);

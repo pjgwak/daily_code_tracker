@@ -1,0 +1,19 @@
+# fwd 2-3, 2026-10-26: Codex 탐색(/tmp/pt23_fresh_20261026_mq0z63ll, 10/26 01:18-02:41 KST) 설정을 study/prefit_variant.py로 재현.
+# 공통 2D knob (study/rules/C23_effnp): PR 평균·폭 자유, 구성비 MC 고정, NP 1성분 수명을 MC NP 평균 수명에 제약(np_effective_mean 1),
+#   배경 수명·구성비 자유, 해상도 sideband 고정. prefit 변경: mass_cheb, ctau 창, 배경 성분 2/0/1, bkg_wide_tau=1, bkg_profile_frac=0.
+# nominal 0.11657. 판정 기준은 ±2% 또는 0.138σ (run_rules.py).
+variant     window      mass_cheb bkg      pr_mean  B               pct     pull   st cq massP  timeP
+X1codex     [-20,20]    2         2/0/1    free     0.1193±0.0077   +2.35%  +0.33  0  3  0.00   0.31   <- 채택 (Codex tail_safe_effective_mass2 +2.353% 재현)  -> mass 2차는 적합도 악화로 미채택
+X2cheb3     [-20,20]    3         2/0/1    free     0.1200±0.0078   +2.96%  +0.41  0  3  0.93   0.31   (Codex tail_safe_effective +2.964% 재현)  <- 최종 채택 (production 2026-10-26 03:25 KST, mass chi2/ndf 78.5/98 = 0.80)
+X3w4        [-4,6.5]    2         2/0/1    free     0.1260±0.0078   +8.13%  +1.13  0  3  0.00   0.76
+X4w4cheb3   [-4,6.5]    3         2/0/1    free     0.1270±0.0079   +8.91%  +1.24  0  3  0.92   0.76
+X5bkg211    [-20,20]    2         2/1/1    free     0.1232±0.0080   +5.66%  +0.78  0  3  0.00   1.00
+X6pfrac     [-20,20]    2         2/0/1 +profile_frac free 0.1246±0.0081 +6.86% +0.95  0  3  0.00   1.00
+X7meanfix   [-20,20]    2         2/0/1    MC fix   0.1221±0.0074   +4.78%  +0.66  0  3  0.00   0.30
+# prefit 품질 (X1): mass cheb2 chi2/ndf 1.346 (cheb3 0.870); 배경 sideband [-20,20] 2/0/1 wide_tau chi2/ndf 0.982 (robust 2.20), core 0.0728 mm.
+# 최종 2D fit (X1): mass chi2/ndf 169.7/98 = 1.73 (p 1e-5), ctau 645.8/629 = 1.03 (p 0.31); PR core 0.0573 mm (MC 0.0462).
+# Codex 전체 스캔(59개 완료 fit): /tmp/pt23_fresh_20261026_mq0z63ll/comparison.csv 사본 -> docs/evidence/fwd23_codex_comparison.txt
+X8np1       [-20,20]    3         2/0/1    free     0.1200±0.0077   +2.96%  +0.41  0  3  0.93   0.31   NP MC prefit 1성분(np_count=1) + MC 제약(2성분 유효 수명 대신). B·PR core(0.0572 mm)·NP 수명(log offset -0.8719) 모두 X2cheb3와 같음
+# X8 주의: 1성분 NP MC prefit은 truth ctau chi2/ndf 1961.6/292 = 6.72 (robust 22)로 품질 검사(<2)에 걸린다. 진단용 OO_PREFIT_CHI2_MAX=10으로만 돌렸고 production에는 쓰지 않는다.
+#   1성분 ML 수명 = 표본 평균이므로 2성분 prefit의 평균 수명 제약(np_effective_mean)과 수치적으로 같은 fit이다.
+# NP prefit 성분 수 != final 성분 수인 빈은 fwd 2-3뿐 (다른 19빈은 prefit과 final 성분 수가 같다).

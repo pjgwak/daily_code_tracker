@@ -34,6 +34,7 @@ def stage_env(stage, s):
     if stage == 'mc': e['OO_MC_SIG'] = f'{s["mc_cb"]},{s["mc_gauss"]}'
     if stage == 'pr': e.update(OO_PR_NRES=s['pr_nres'], OO_PR_QUANT=s.get('pr_quant', '0.0005,0.9995'))
     if stage == 'np': e['OO_NP_COUNT'] = s['np_count']
+    if stage == 'np' and s.get('np_range'): e['OO_NP_RANGE'] = s['np_range']  # truth-ctau fit range, default 0,6
     if stage == 'mass': e['OO_MASS_CHEB'] = s['mass_cheb']
     if stage == 'bkg': e.update(OO_BKG_COUNTS=f'{s["bkg_ss"]},{s["bkg_flip"]},{s["bkg_ds"]}', OO_BKG_CT_LO=s['ct_low'], OO_BKG_CT_HI=s['ct_high'], OO_BKG_ROBUST='1', OO_BKG_PROFILE_FRAC=s.get('bkg_profile_frac', '0'))
     if stage == 'bkg' and s.get('bkg_wide_tau', '0') == '1': e['OO_BKG_WIDE_TAU'] = '1'
@@ -98,7 +99,7 @@ def main():
         logdirs[stage] = BASE / 'logs' / f'{stage}{"_publish" if a.publish else "_redraw" if a.redraw else ""}_{stamp}'; logdirs[stage].mkdir(parents=True, exist_ok=True)
 
     def run(stage, s):
-        env = {k: v for k, v in os.environ.items() if not k.startswith('OO_') or k == 'OO_BKG_CHI2_SCAN'}  # diagnostics flag passes through
+        env = {k: v for k, v in os.environ.items() if not k.startswith('OO_') or k == 'OO_BKG_CHI2_SCAN' or k == 'OO_PREFIT_CHI2_MAX' or k.startswith('OO_PREFIT_JITTER')}  # diagnostics and restart flags pass through
         env.update(stage_env(stage, s))
         expr = f'gSystem->Load("{libs[stage]}");Int_t e=0;gROOT->ProcessLine("{call(stage, s, draw, a.publish).replace(chr(34), chr(92) + chr(34))};",&e);gSystem->Exit(e?11:0);'
         with open(logdirs[stage] / f'{s["bin"]}.log', 'w') as log:

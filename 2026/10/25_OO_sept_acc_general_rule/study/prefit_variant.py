@@ -2,7 +2,7 @@
 """Refit one bin with changed prefit choices, from the first affected stage through the final 2D fit,
 in an isolated work directory (the main roots/ and config/ are not touched).
 
-  python3 study/prefit_variant.py NAME BIN key=value [key=value ...] [--rule=FINAL_S1]
+  python3 study/prefit_variant.py NAME BIN key=value [key=value ...] [--rule=FINAL_S1] [--stop=pr] [--env=OO_PREFIT_JITTER=7]
       keys are config/prefit_settings.txt columns (pr_quant, pr_nres, np_count, mass_cheb, bkg_ss, ...)
   python3 study/prefit_variant.py --summary
 
@@ -12,7 +12,7 @@ from pathlib import Path
 import csv, os, shutil, subprocess, sys
 BASE = Path(__file__).resolve().parents[1]
 ORDER = ['mc', 'pr', 'np', 'mass', 'bkg', '2d']
-FIRST = {'mc_cb': 'mc', 'mc_gauss': 'mc', 'pr_nres': 'pr', 'pr_quant': 'pr', 'np_count': 'np', 'mass_cheb': 'mass',
+FIRST = {'mc_cb': 'mc', 'mc_gauss': 'mc', 'pr_nres': 'pr', 'pr_quant': 'pr', 'np_count': 'np', 'np_range': 'np', 'mass_cheb': 'mass',
          'ct_low': 'mass', 'ct_high': 'mass', 'bkg_ss': 'bkg', 'bkg_flip': 'bkg', 'bkg_ds': 'bkg', 'bkg_profile_frac': 'bkg', 'bkg_saved_ct': 'bkg', 'bkg_wide_tau': 'bkg', 'bkg_core_max': 'bkg'}
 # stage -> stages that read its output
 NEEDS = {'mc': {'mass'}, 'pr': {'np', 'bkg'}, 'np': set(), 'mass': {'bkg'}, 'bkg': set()}
@@ -47,7 +47,9 @@ def main():
                 bad = '; '.join(l.split('  res')[0].strip() for l in lines[i + 1:i + 6] if 'chi2/ndf' in l and float(l.split('chi2/ndf')[1].split()[0]) >= 2)
             print(f'{d.name:<34} {b:<10} REJECTED {why[0][:90]}' + (f'  [{bad}]' if bad else ''))
         return
-    args = [a for a in sys.argv[1:] if not a.startswith('--rule')]
+    args = [a for a in sys.argv[1:] if not a.startswith('--')]
+    stop = next((a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('--stop=')), None)          # last stage to run
+    extra = dict(a.split('=', 1)[1].split('=', 1) for a in sys.argv[1:] if a.startswith('--env='))  # e.g. --env=OO_PREFIT_JITTER=3
     rule = next((a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('--rule=')), 'FINAL_S1')
     name, b, kv = args[0], args[1], dict(a.split('=', 1) for a in args[2:])
     first = min((FIRST[k] for k in kv), key=ORDER.index)
@@ -73,8 +75,10 @@ def main():
     with open(path, 'w') as fh:
         w = csv.DictWriter(fh, fieldnames=fields, delimiter='\t', lineterminator='\n', restval=''); w.writeheader(); w.writerows(rows)
     stages = stages_from(first)
+    if stop: stages = stages[:stages.index(stop) + 1]
     (work / 'VARIANT.txt').write_text(f'bin {b}\nrule {rule}\nchanges {kv}\nstages {stages}\n')
     env = dict(os.environ, OO_MACRO_BASE=str(BASE), OO_FINAL_RULE_DIR=str(BASE / 'study/rules' / rule))
+    env.update(extra)
     rc = subprocess.run(['python3', str(work / 'study/production.py'), *stages, '--rapidity', reg, '--pt', f'{lo}:{hi}', '--jobs', '1'],
                         cwd=work, env=env).returncode
     subprocess.run([str(Path.home() / 'build/root-6.36.06/bin/root'), '-l', '-b', '-q', f'{BASE}/study/prefit_audit.C+("roots","prefit_audit.txt")'],

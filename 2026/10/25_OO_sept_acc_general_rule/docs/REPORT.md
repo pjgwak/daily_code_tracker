@@ -1,13 +1,13 @@
 # OO J/ψ 2D fit: 9월 단일 뮤온 acceptance 입력으로 nominal 재현
 
-작성: 2026-10-25 (파리 시각 02:00경). 9월 OO 발표에 쓴 입력(스킴 단계에서 JunChen 단일 뮤온 acceptance `IsAcceptanceQQ`를 적용한 DATA·PR MC, 9월 NP gen 표본)으로 24일 작업(`../24_OO_sept_general_rule`, new acceptance)과 같은 방식의 규칙 스터디를 했다. 최종 설정 `FINAL_S1`으로 20개 빈 모두 nominal B fraction과 ±2% 또는 0.138σ 이내에서 일치한다(**20/20**). 모든 fit은 MC prefit 값에서 시작하며, 이전 fit의 초기값이나 PR 고정은 쓰지 않았다.
+작성: 2026-10-25 (파리 시각 02:00경), fwd 2–3 갱신 2026-10-25 19:30(파리). 9월 OO 발표에 쓴 입력(스킴 단계에서 JunChen 단일 뮤온 acceptance `IsAcceptanceQQ`를 적용한 DATA·PR MC, 9월 NP gen 표본)으로 24일 작업(`../24_OO_sept_general_rule`, new acceptance)과 같은 방식의 규칙 스터디를 했다. 최종 설정 `FINAL_S1`으로 19개 빈이 nominal B fraction과 ±2% 또는 0.138σ 이내에서 일치하고(**19/20**), fwd 2–3은 +2.96%(0.41σ)다. fwd 2–3은 처음에 간격비 제약 중심을 MC의 1.8배로 옮겨 +0.88%를 얻었으나, 10/26 Codex 탐색에서 MC 중심 제약만으로 3% 안에 들어오는 설정이 나와 그것으로 바꿨다(5장). Codex는 mass 배경을 2차 Chebychev로 바꿔 +2.35%까지 얻었지만, 2차는 mass 적합도가 나빠지고 근거가 B뿐이어서 3차를 유지했다. 모든 fit은 MC prefit 값에서 시작하며, 이전 fit의 초기값이나 PR 고정은 쓰지 않았다.
 
 ## 1. 결과
 
 | 빈 | B ± fit 오차 | Bnom | 차이 | σ_nom 단위 | mass p | ctau p |
 |---|---|---|---|---|---|---|
 | fwd 1–2 | 0.0965 ± 0.0140 | 0.0958 | +0.68% | +0.05 | 0.49 | 0.35 |
-| fwd 2–3 | 0.1176 ± 0.0069 | 0.1166 | +0.88% | +0.12 | 0.92 | 1.00 |
+| fwd 2–3 | 0.1200 ± 0.0078 | 0.1166 | +2.96% | +0.41 | 0.93 | 0.31 |
 | fwd 3–4 | 0.1549 ± 0.0059 | 0.1547 | +0.09% | +0.02 | 0.32 | 0.29 |
 | fwd 4–5 | 0.1723 ± 0.0062 | 0.1722 | +0.05% | +0.01 | 0.74 | 1.00 |
 | fwd 5–6 | 0.1932 ± 0.0080 | 0.1905 | +1.42% | +0.35 | 0.19 | 0.24 |
@@ -27,7 +27,7 @@
 | mid 16–20 | 0.4763 ± 0.0187 | 0.4778 | −0.30% | −0.08 | 1.00 | 1.00 |
 | mid 20–30 | 0.5467 ± 0.0243 | 0.5473 | −0.12% | −0.03 | 1.00 | 1.00 |
 
-모든 fit은 status 0, covQual 3이다. 0.138σ 이내 13빈, 나머지 7빈은 2% 이내이다(가장 큰 차이 mid 9–10 +1.56%). DATA final fit의 신호 PDF가 ctau 범위 밖에 있는 비율은 PR ≤ 6×10⁻⁸, NP ≤ 2×10⁻⁴이다(fit 매개변수로 계산한 근사, `drawing/report_table.py`). [전체 표](../drawing/final_summary/report_table.txt) · [PDF별 고정/제약/자유 개수](../drawing/final_summary/treatment.md) · [nominal 비교 그림](../drawing/final_summary/nominal_agreement.pdf) · fit 그림 `figs/`, `figs_publish/`
+모든 fit은 status 0, covQual 3이다. 0.138σ 이내 12빈, 7빈은 2% 이내, fwd 2–3은 +2.96%(0.41σ)이다. DATA final fit의 신호 PDF가 ctau 범위 밖에 있는 비율은 PR ≤ 6×10⁻⁸, NP ≤ 2×10⁻⁴이다(fit 매개변수로 계산한 근사, `drawing/report_table.py`). [전체 표](../drawing/final_summary/report_table.txt) · [PDF별 고정/제약/자유 개수](../drawing/final_summary/treatment.md) · [nominal 비교 그림](../drawing/final_summary/nominal_agreement.pdf) · fit 그림 `figs/`, `figs_publish/`
 
 ## 2. 입력과 prefit
 
@@ -36,12 +36,13 @@
 | DATA, PR MC | `04/00_OO_skims_updated/onia_to_skim/roodataset_roots/` (9월 매크로가 읽던 파일, md5 동일) → `inputs/roodataset_roots/` |
 | NP MC (gen ctau) | `09/19_OO_2dfit_tuning_Hijing_tuning/np_hijing_gen/` → `inputs/np_gen_sept.root` |
 
-24일 보고서에서 "old acc"라고 부른 입력이 이것이다. prefit 선택은 24일 `config/prefit_settings.txt`에서 시작했고, 아래 두 가지만 바꿨다(`docs/CHANGELOG_PREFIT.md`). 모든 prefit은 status 0, covQual 3, χ²/ndf < 2이다(`docs/evidence/prefit_audit_final.txt`).
+24일 보고서에서 "old acc"라고 부른 입력이 이것이다. prefit 선택은 24일 `config/prefit_settings.txt`에서 시작했고, 아래 세 가지만 바꿨다(`docs/CHANGELOG_PREFIT.md`). 모든 prefit은 status 0, covQual 3, χ²/ndf < 2이다(`docs/evidence/prefit_audit_final.txt`).
 
 | 빈 | 변경 | 근거 |
 |---|---|---|
 | fwd 10–12, 12–14, 14–20 | MC NP 성분 2 → 1 | 두 번째 성분이 퇴화해 있었다: 10–12 yield 62 ± 72, 12–14 오차 > 값, 14–20 수명이 하한. 2성분 prefit에서는 fwd 12–14 final B가 +11.8%, 오차 0.047로 다른 빈의 2배였다. 1성분 prefit χ²/ndf 0.81, 1.02 |
 | fwd 5–6 | MC PR fit 범위 0.05–99.95% → 0.2–99.8% 분위수 | 24일 fwd 4–5와 같은 처리. PR χ²/ndf 1.27 → 1.03, 배경 0.74 → 0.59, 가장 넓은 PR Gauss 0.25 → 0.14 mm. final B +3.97% → +2.05%(같은 final 규칙) |
+| fwd 2–3 (10/26) | ctau 창 [−4, 6.5] → [−20, 20] mm, 배경 ctau 성분 2/1/1 → 2/0/1에 짧은 수명 범위를 넓게(`bkg_wide_tau`), 해상도 구성비는 MC PR 고정(`bkg_profile_frac=0`) | Codex 탐색 설정의 재현. 이전 배경 prefit은 가장 짧은 수명이 하한에 붙어 있었다. 새 prefit χ²/ndf 0.98(core 폭 0.0728 mm, 9월 fwd 2–3 sideband 해와 같은 국소 최소). 창을 [−4, 6.5]로 두면 같은 2D 규칙에서 +8.9%, 배경 2/1/1이면 +5.7%, 구성비 profile이면 +6.9%(`docs/evidence/fwd23_effnp_variants.txt`). Codex의 mass 배경 2차(χ²/ndf 0.87 → 1.35, B +2.35%)는 쓰지 않았다 |
 
 ## 3. 모든 빈에 공통인 처리
 
@@ -51,7 +52,7 @@
 | 배경 mass (DATA mass prefit, Chebychev) | 모양 고정 |
 | 배경 ctau (DATA sideband prefit) | 해상도 Gauss는 sideband 값에 고정. 수명·구성비는 자유(fwd 1–5는 sideband prefit 값에 제약) |
 | 수율 Nsig, Nbkg, B | 자유. B ∈ [0, 1], nominal은 likelihood·초기값·제약 중심 어디에도 쓰지 않음 |
-| ctau 범위 | 24일과 같음(23일 window 스터디): fwd 1–3 [−4, 6.5], 3–5 [−3.5, 4.5], 5–10 [−1, 4], 10–20 [−0.5, 3], mid [−1, 4] mm |
+| ctau 범위 | 24일과 같음(23일 window 스터디): fwd 1–2 [−4, 6.5], 3–5 [−3.5, 4.5], 5–10 [−1, 4], 10–20 [−0.5, 3], mid [−1, 4] mm. fwd 2–3만 [−20, 20] mm(5장) |
 
 ## 4. 그룹별 규칙 (`study/rules.py`의 `FINAL_S1`)
 
@@ -72,9 +73,11 @@ mid 규칙은 9월 mid 정책(평균·구성비 고정, 폭 제약, 가장 긴 N
 | 빈 | S/B | 설정 | 결과 |
 |---|---|---|---|
 | fwd 1–2 | 0.06 | PR 평균 자유, 폭 제약 (0.020, 0.040, 0.080, 0.160 mm), 구성비 MC 오차 ×4 (공분산 ×16), NP 전부 MC 오차 ×4 (공분산 ×16), 배경 sideband 오차 ×4 | +0.68% |
-| fwd 2–3 | 0.08 | 24일 FINAL_v3 fwd 2–3 구조(구성비 MC 고정, NP 평균 수명 제약, 배경 sideband 오차 ×4)에서 간격비 q₃, q₄ 제약 중심을 **1.8 × MC**(3.28 ± 0.1, 11.7 ± 2)로 | +0.88% |
+| fwd 2–3 | 0.08 | ctau 창 [−20, 20] mm. PR 평균·폭 자유, 구성비 MC 고정. NP는 지수 1개로 두고 그 수명을 MC NP prefit(2성분)의 평균 수명 0.4231 ± 0.0010 mm에 제약(`np_effective_mean`). 배경 수명·구성비 자유, 해상도 sideband 고정. prefit은 배경 2/0/1 wide-τ(2장) | +2.96% |
 
 fwd 1–2는 9월 fwd 1–2 설정(폭 ×2, 구성비 MC 오차 ×4, NP MC 오차 ×13.2, 배경 오차 ×4)에서 NP 제약 폭만 MC 오차 ×13.2 → ×4(공분산 ×175 → ×16)로 바꾼 것이다. 9월 설정 그대로는 +4.44%이다.
+
+fwd 2–3은 10/26 Codex가 임시 폴더에서 처음부터 다시 찾은 설정(`docs/evidence/fwd23_codex_REPORT.txt`, 전체 스캔 `fwd23_codex_comparison.txt`)을 `study/prefit_variant.py`로 이 폴더에서 재현한 것이다(`docs/evidence/fwd23_effnp_variants.txt`). 모든 제약이 MC prefit 값을 중심으로 하며 간격비 같은 off-MC 중심은 쓰지 않는다. 같은 규칙에서 하나씩 바꾼 효과(mass 배경 2차 기준): mass 배경 3차 +2.96%, 창 [−4, 6.5] +8.1%, 배경 2/1/1 +5.7%, 배경 해상도 구성비 profile +6.9%, PR 평균 MC 고정 +4.8%. 최종 fit의 PR core 폭은 0.0572 ± 0.0018 mm(MC 0.0462)이고 NP 유효 수명은 제약값에 머문다. Codex가 쓴 2차 Chebychev는 +2.35%지만 DATA mass prefit χ²/ndf 1.35, 2D fit의 mass 투영 1.73으로 3차(0.87, 0.80)보다 나쁘고 근거가 B뿐이라, 다른 빈과 같은 원칙(B만 맞는 변형은 쓰지 않음)에 따라 3차를 유지했다. 두 값의 차이 0.6%p는 fit 오차 6.5%의 1/10이다. NP를 MC prefit 단계부터 1성분으로 맞추면(`np_count=1`) final B·PR core·NP 수명이 유효 수명 설정과 수치적으로 같지만(1성분 ML 수명 = 표본 평균), 그 MC NP prefit은 χ²/ndf 6.7로 품질 검사를 통과하지 못하므로 2성분 prefit + 유효 수명 제약을 쓴다. prefit과 final의 NP 성분 수가 다른 빈은 fwd 2–3뿐이다. **잠정 결정(2026-10-25 19:45 파리)**: fwd 2–3은 이 설정(+2.96%, 0.41σ)으로 둔다. 2% 안에 넣으려면 off-MC 중심(간격비 1.8 × MC)이나 B만으로 정당화되는 mass 배경 2차가 필요하므로, 그 대신 σ 단위 차이를 그대로 보고한다. 이전 설정(간격비 중심 1.8 × MC, +0.88%, `study/rules/C23_gap1.8`)은 참고용으로 남겼다.
 
 ## 6. 스터디 경과와 근거
 
@@ -98,7 +101,7 @@ fwd 1–2는 9월 fwd 1–2 설정(폭 ×2, 구성비 MC 오차 ×4, NP MC 오�
    | fwd 12–14 | −4.20% | −4.02% | −3.67% | −3.03% | −2.21% | **−1.55%** | 수렴 안 함 |
    | fwd 14–20 | −0.68% | −0.62% | −0.55% | −0.41% | −0.22% | **−0.07%** | 수렴 안 함 |
 
-6. **fwd 2–3**: 간격비 중심 배율에 단조롭다: 1.0 × MC +13.7%, 1.4 × +7.1%, **1.8 × +0.88%**, 2.0 × −2.0%, 2.4 × −7.4%, 2.8 × −8.5%. 24일 값(2.4 × MC)은 9월 PR MC의 q₄가 4.88 → 6.50으로 커져서 맞지 않는다. 폭·구성비·NP·배경 제약 강도 격자(H 계열)는 +19~20%이다.
+6. **fwd 2–3**: 간격비 중심 배율에 단조롭다: 1.0 × MC +13.7%, 1.4 × +7.1%, 1.8 × +0.88%, 2.0 × −2.0%, 2.4 × −7.4%, 2.8 × −8.5%. 24일 값(2.4 × MC)은 9월 PR MC의 q₄가 4.88 → 6.50으로 커져서 맞지 않는다. 폭·구성비·NP·배경 제약 강도 격자(H 계열)는 +19~20%이다. 창 [−4, 6.5]에서 MC 중심 제약만으로는 어떤 조합도 2% 안에 오지 않았다(최저 +8.3%). 10/26 Codex 탐색은 창을 [−20, 20]으로 넓히고 배경 sideband prefit의 짧은 수명 범위를 넓혀(core 0.0728 mm 해) PR 폭 자유 +7.7%, 여기에 NP 유효 수명 제약 **+2.96%**를 얻었다(mass 배경 2차로 +2.35%까지 가지만 쓰지 않았다). 창을 0.55 mm까지 좁히면 +0.4%가 되지만 NP PDF의 27%가 잘려 쓰지 않았다.
 7. **fwd 1–2**: NP 공분산 배율이 B를 가장 크게 움직인다. 폭 ×2에서 NP MC 오차 ×4(공분산 ×16)는 +0.5~+1.3%, ×13.2(공분산 ×175)는 +4.2~+5.7%이다. 폭 ×4는 NP 오차 ×4에서 +2.7~+3.0%이다. fwd 3–5식 강한 폭 제약은 +48~+54%이다.
 
 ### prefit을 다시 본 결과
@@ -113,8 +116,8 @@ fwd 1–2는 9월 fwd 1–2 설정(폭 ×2, 구성비 MC 오차 ×4, NP MC 오�
 ## 7. 한계
 
 - 그룹 경계와 제약 강도는 nominal 비교를 보며 정했다. fit 오차는 선택한 모형·제약 조건에서의 통계 오차이며, 규칙 선택에 따른 계통 오차는 포함하지 않는다.
-- fwd 10–20은 PR 꼬리 간격비 제약 중심을 MC 값의 0.4배로, fwd 2–3은 1.8배로 옮긴 결과다. 0.4배는 수렴하는 범위의 끝이다(0.3배 이하는 수렴하지 않음).
-- fwd 1–2, 2–3은 빈별 설정이다.
+- fwd 10–20은 PR 꼬리 간격비 제약 중심을 MC 값의 0.4배로 옮긴 결과다. 0.4배는 수렴하는 범위의 끝이다(0.3배 이하는 수렴하지 않음).
+- fwd 1–2, 2–3은 빈별 설정이다. fwd 2–3은 ±2% 밖(+2.96%, 0.41σ)이다.
 - fwd 1–3의 nominal 오차가 커서(fwd 1–2 σ_nom 0.014) 0.138σ 기준은 넓다. fwd 1–2에서는 B가 다른 두 해가 거의 같은 우도를 가진다는 24일 관찰이 있다.
 - mid nominal(7/27)은 단일 뮤온 cut이 없는 데이터 기준이고, forward nominal(Excel)은 pp_HX `passAcc` 단일 뮤온 acceptance로 만든 값으로 알려져 있다. 이 입력의 JunChen acceptance와 정의가 같은지는 확인하지 않았다.
 
@@ -127,4 +130,4 @@ bash run_publish.sh            # 발표용 그림
 python3 drawing/report_table.py; python3 drawing/nominal_agreement.py; python3 study/treatment.py
 ```
 
-`python3 study/rules.py FINAL_S1`이 `study/rules/FINAL_S1/` knob을 다시 만든다(fwd 2–3은 `study/rules/C23_gap1.8`에서 복사). 후보 규칙은 `python3 study/run_rules.py --bins fwd_3_4,... 'PATTERN'`, prefit 변형은 `python3 study/prefit_variant.py NAME BIN key=value`로 돌린다.
+`python3 study/rules.py FINAL_S1`이 `study/rules/FINAL_S1/` knob을 다시 만든다(fwd 2–3은 `study/rules/C23_effnp`에서 복사). 후보 규칙은 `python3 study/run_rules.py --bins fwd_3_4,... 'PATTERN'`, prefit 변형은 `python3 study/prefit_variant.py NAME BIN key=value`로 돌린다.

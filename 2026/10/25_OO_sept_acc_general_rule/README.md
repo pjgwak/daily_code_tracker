@@ -1,6 +1,6 @@
 # OO J/ψ 질량–수명 2D fit: PDF별 규칙 (9월 단일 뮤온 acceptance 입력)
 
-9월 OO 발표에 쓴 입력(JunChen 단일 뮤온 acceptance를 스킴에서 적용한 DATA·PR MC, 9월 NP gen 표본)으로 24일 작업(`../24_OO_sept_general_rule`)과 같은 규칙 스터디를 했다. 최종 설정 `FINAL_S1`로 20개 빈 모두 nominal B fraction과 ±2% 또는 0.138σ 이내에서 일치한다(0.138σ 이내 13빈). 방법과 결과는 [docs/REPORT.md](docs/REPORT.md), 웹 페이지 원본은 [docs/oo_fit_rules.html](docs/oo_fit_rules.html), prefit 변경 기록은 [docs/CHANGELOG_PREFIT.md](docs/CHANGELOG_PREFIT.md)에 있다.
+9월 OO 발표에 쓴 입력(JunChen 단일 뮤온 acceptance를 스킴에서 적용한 DATA·PR MC, 9월 NP gen 표본)으로 24일 작업(`../24_OO_sept_general_rule`)과 같은 규칙 스터디를 했다. 최종 설정 `FINAL_S1`로 19개 빈이 nominal B fraction과 ±2% 또는 0.138σ 이내에서 일치하고(0.138σ 이내 12빈), fwd 2–3은 +2.96%(0.41σ, 10/26 Codex 탐색 설정 재현)다. 방법과 결과는 [docs/REPORT.md](docs/REPORT.md), 웹 페이지 원본은 [docs/oo_fit_rules.html](docs/oo_fit_rules.html), prefit 변경 기록은 [docs/CHANGELOG_PREFIT.md](docs/CHANGELOG_PREFIT.md)에 있다.
 
 ![nominal 비교](drawing/final_summary/nominal_agreement.png)
 

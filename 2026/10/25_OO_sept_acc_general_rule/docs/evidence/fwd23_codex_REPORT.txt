@@ -1,0 +1,88 @@
+Fresh PT 2–3 study — 2026-10-26
+
+Combined agreement / fit quality / NP retention gate: PASS
+Bin: 2 < pT < 3, 1.6 < |y| < 2.4
+Ctau fit window: [-20, 20] mm
+Reference B: 0.11657193
+Agreement formula: abs(100 * (B / reference - 1)) <= 2.5
+B = 0.119314408273 +/- 0.007727283691 (fit statistical uncertainty)
+Relative difference: +2.352606%
+Required fitted NP retention: >= 99%
+Fitted NP retention: 100.000000%
+Fitted prompt retention: 100.000000%
+Saved numerical minimum: tail_safe_effective_mass2_cold010
+Minimize/Hesse/status: 0/0/0
+Covariance quality: 3; EDM: 9.8147517e-08
+Mass chi2/ndf: 1.731480
+Ctau chi2/ndf: 1.026747
+Near-boundary floating parameters: none under 1%-of-error check
+
+Final model and limitations:
+- NP uses one effective exponential lifetime, constrained by the mean and propagated uncertainty from the fresh two-component MC NP prefit. It is convolved with the prompt resolution. The final data fit does not retain the two-component MC NP shape.
+- Prompt resolution has four Gaussian components: mean and ordered widths float, while mixture fractions use the fresh MC prefit.
+- Mass background is second-order Chebyshev; final mass shape uses the fresh data mass prefit.
+- Background lifetime parameters and mixture are profiled with broader lifetime bounds; resolution is fixed to the fresh sideband prefit.
+- This candidate passes the existing chi2/ndf < 2 gate. The second-order mass background has chi2/ndf about 1.73; the third-order alternative fits mass better (about 0.80) but misses the requested agreement in the tested full-window configuration.
+- Fit windows were studied. The 0.55 upper-window candidate w2_055 retains only 72.66% NP and is rejected despite its agreement.
+- NP retention is the integral of the fitted NP model within the fit window divided by its full integral; this is not a claim of model-independent physical coverage.
+- The analytical retention calculation reproduces the ROOT NP mixture transport to max difference 0.
+- B is defined within the selected window. No extrapolated B is reported.
+- This is a target-seeking exploratory fit on the same dataset. Statistical errors do not include model/window selection uncertainty, and agreement is not independent validation. No production configuration was changed.
+
+Isolation and fitting:
+- All work and outputs live under /tmp/pt23_fresh_20261026_mq0z63ll.
+- Historical result/log files and selected rule files were not opened or used as warm starts.
+- Implementation sources were inspected, including existing rule definitions; baseline and scans were defined independently.
+- Source code was copied; the unused historical F1 seed table was removed from the copy.
+- MC and data prefits were regenerated from raw input; window changes used matched-window data prefits.
+- Background prefit restarts were selected by valid minimum NLL, without consulting B.
+- B is free on [0,1]; the nominal B is absent from the likelihood and no fixed-B fit was used.
+- Original source checksums were rechecked unchanged. Raw input hashes are in provenance.json.
+
+Three cold starts (same final model/window, initial B 0.15, 0.10, 0.20):
+tail_safe_effective_mass2: B=0.119315368919, delta=+2.353430%, NP retention=100.000000%, status=0, covQual=3, EDM=3.4131526e-07, raw NLL=-3792726.960670127068
+tail_safe_effective_mass2_cold010: B=0.119314408273, delta=+2.352606%, NP retention=100.000000%, status=0, covQual=3, EDM=9.8147517e-08, raw NLL=-3792726.960670369677
+tail_safe_effective_mass2_cold020: B=0.119318072331, delta=+2.355749%, NP retention=100.000000%, status=0, covQual=3, EDM=3.8765081e-07, raw NLL=-3792726.960670081899
+Successful-start B spread: 3.6640576e-06
+The selected start has the lowest raw NLL among these identical-model starts.
+
+Recorded completed final fits: 59; failed final fits: 15; stopped exploratory fits: 1.
+The full scan, including rejected candidates and boundary flags, is preserved in comparison.csv.
+
+Actual selected configuration:
+rule fresh_tail_safe_effective_mass2
+ct_low -20
+ct_high 20
+float_prompt_mean 1
+prompt_full_cov 0
+prompt_full_cov_scale 1
+width_policy 0
+prompt_frac_constrain 0
+prompt_fraction_cov_scale 1
+prompt_width_constraint 0
+np_constraint 1
+np_cov_scale 1
+np_longest_free 0
+np_all_lifetimes_free 0
+profile_bkg 1
+background_penalty_scale 1
+profile_mass 0
+np_moment_order 1
+np_effective_mean 1
+
+Input overrides:
+{
+  "OO_BKG_PREFIT_DIR": "/tmp/pt23_fresh_20261026_mq0z63ll/calibrations/wide_tau",
+  "OO_MASS_PREFIT_DIR": "/tmp/pt23_fresh_20261026_mq0z63ll/calibrations/mass_cheb2",
+  "OO_FRESH_B_START": "0.1"
+}
+
+Reproduce this cold start using the regenerated prefits:
+python3 run_variant.py tail_safe_effective_mass2_cold010 --profile
+
+Artifacts:
+result.json; final_confirmation.json; comparison.csv; provenance.json
+selected/roots/; selected/figs/
+validation_tail_safe.log (all fresh prefits and candidate validation)
+validation_selected.log (saved selected result validation)
+review/final_comparison.png; review/final_comparison.pdf

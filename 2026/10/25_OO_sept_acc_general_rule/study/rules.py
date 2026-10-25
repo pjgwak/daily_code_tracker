@@ -179,8 +179,11 @@ RULES['SEPT12'] = {'all': dict(pr_width_k=2, pr_frac='mc', pr_frac_k=16, np='mc'
 RULES['SEPT23'] = {'all': dict(pr_width_k=4, pr_frac='mc', pr_frac_k=8, np='mc', np_k=700, bkg='sideband', bkg_k=4)}
 
 # FINAL_S1: rules for the September single-muon-acceptance inputs (2026-10-25).
-# fwd 2-3 is a per-bin setting written by hand (FINAL_v3 fwd 2-3 structure with gap-ratio centres 1.8 x MC,
-# study/rules/C23_gap1.8); write_final_s1() copies it over the generated file.
+# fwd 2-3 is a per-bin setting written by hand (study/rules/C23_effnp, 2026-10-26): ctau window [-20, 20] mm,
+# PR mean and widths free, fractions fixed at MC, NP = one exponential whose lifetime is constrained at the
+# MC NP mean lifetime (np_effective_mean), background lifetimes free; its prefits are mass Chebychev 2 and a
+# 2/0/1 sideband prefit with wide lifetime bounds (config/prefit_settings.txt). write_final_s1() copies it over
+# the generated file. The earlier per-bin file (gap-ratio centres 1.8 x MC, study/rules/C23_gap1.8) is kept for reference.
 RULES['FINAL_S1'] = {
     'fwd:1-2': dict(pr_width_k=2, pr_frac='mc', pr_frac_k=16, np='mc', np_k=16, bkg='sideband', bkg_k=4),
     'fwd:2-3': dict(pr_width_k=2, pr_frac='mc', pr_frac_k=16, np='mc', np_k=16, bkg='sideband', bkg_k=4),  # replaced, see above
@@ -268,8 +271,8 @@ def write(rule):
 
 def write_final_s1():
     write('FINAL_S1')
-    src = BASE / 'study/rules/C23_gap1.8/y1.60_2.40_pt2.00_3.00.txt'
-    text = src.read_text().replace('rule C23_gap1.8', 'rule FINAL_S1', 1)
+    src = BASE / 'study/rules/C23_effnp/y1.60_2.40_pt2.00_3.00.txt'
+    text = src.read_text().replace('rule C23_effnp', 'rule FINAL_S1', 1)
     (BASE / 'study/rules/FINAL_S1/y1.60_2.40_pt2.00_3.00.txt').write_text(text)
 
 

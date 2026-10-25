@@ -10,9 +10,8 @@ fwd 2-3
   ctau_pr   st0 cq3 chi2/ndf 1.166 (robust 1.054)  res n=4 sigma 0.0462 0.0835 0.1678 0.4679 frac 0.4532 0.8009 0.8472
       ! ctauTime1Mean                    -7.043e-05 +- 0.00016  [-0.01, 0.01] err>|val|
   ctau_np   st0 cq3 chi2/ndf 0.807 (robust 0.961)  res n=4 sigma 0.0462 0.0835 0.1678 0.4679 frac 0.4532 0.4380 0.0922
-  mass      st0 cq3 chi2/ndf 0.872
-  ctau_bkg  st0 cq3 chi2/ndf 0.814 (robust 1.246)  res n=4 sigma nan nan nan nan frac 0.1372 0.5715 0.2536
-      ! bkg_log_lifetime_offset          -5.809 +- 2.25  [-5.80914, -3.50656] AT-LIMIT
+  mass      st0 cq3 chi2/ndf 0.870
+  ctau_bkg  st0 cq3 chi2/ndf 0.982 (robust 2.200)  res n=4 sigma nan nan nan nan frac nan nan nan
 fwd 3-4
   mc_mass   st0 cq3 chi2/ndf 1.007
   ctau_pr   st0 cq3 chi2/ndf 1.182 (robust 1.103)  res n=4 sigma 0.0339 0.0603 0.1176 0.3476 frac 0.4230 0.7773 0.8597
