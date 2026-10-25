@@ -99,7 +99,7 @@ def main():
         logdirs[stage] = BASE / 'logs' / f'{stage}{"_publish" if a.publish else "_redraw" if a.redraw else ""}_{stamp}'; logdirs[stage].mkdir(parents=True, exist_ok=True)
 
     def run(stage, s):
-        env = {k: v for k, v in os.environ.items() if not k.startswith('OO_') or k == 'OO_BKG_CHI2_SCAN' or k == 'OO_PREFIT_CHI2_MAX' or k.startswith('OO_PREFIT_JITTER')}  # diagnostics and restart flags pass through
+        env = {k: v for k, v in os.environ.items() if not k.startswith('OO_') or k == 'OO_BKG_CHI2_SCAN' or k == 'OO_PREFIT_CHI2_MAX' or k == 'OO_DIAGNOSTICS_DIR' or k.startswith('OO_PREFIT_JITTER')}  # diagnostics and restart flags pass through
         env.update(stage_env(stage, s))
         expr = f'gSystem->Load("{libs[stage]}");Int_t e=0;gROOT->ProcessLine("{call(stage, s, draw, a.publish).replace(chr(34), chr(92) + chr(34))};",&e);gSystem->Exit(e?11:0);'
         with open(logdirs[stage] / f'{s["bin"]}.log', 'w') as log:
