@@ -29,6 +29,31 @@
 
 모든 fit은 status 0, covQual 3이다. 0.138σ 이내 12빈, 7빈은 2% 이내, fwd 2–3은 +2.96%(0.41σ)이다. DATA final fit의 신호 PDF가 ctau 범위 밖에 있는 비율은 PR ≤ 6×10⁻⁸, NP ≤ 2×10⁻⁴이다(fit 매개변수로 계산한 근사, `drawing/report_table.py`). [전체 표](../drawing/final_summary/report_table.txt) · [PDF별 고정/제약/자유 개수](../drawing/final_summary/treatment.md) · [nominal 비교 그림](../drawing/final_summary/nominal_agreement.pdf) · fit 그림 `figs/`, `figs_publish/`
 
+### 요약 그림
+
+9월 튜닝 폴더(`09/19_OO_2dfit_tuning_Hijing_tuning/drawing`)의 그림 코드로 저장된 FINAL_S1 결과를 다시 그렸다(`drawing/`, 재적합 없음, 실행 전후 `roots/` 해시 동일). 값은 위 표와 같다. PNG는 `docs/figs/sum_*.png`, 원본 PDF는 `drawing/` 아래에 있다.
+
+| 그림 | 내용 |
+|---|---|
+| B fraction vs pT | 2D fit, nominal, pp(BPH-10-002)를 함께 그림. fwd·mid (`drawing/b_frac/`) |
+| nominal 비교 | nominal ±2.5% 띠와 nominal ±1σ_stat 띠. 2.5% 밖은 fwd 2–3(+2.96%) 하나, mid는 8빈 모두 안 (`drawing/b_frac_comparison/`) |
+| nominal + \|B − Bnom\| 띠 | nominal ± 통계 오차에 2D fit과의 차이를 띠로 표시 |
+| raw yield | Nsig/ΔpT와 2D fit/nominal 비율 (`drawing/raw_yields/`) |
+| prefit 모델 성분 수 | 단계별(MC mass, PR, NP, DATA mass, 배경 ctau) 성분 수 (`drawing/model_count/`) |
+| 수렴 검사 | 전 단계 RooFitResult 140개(prefit 120 + final 20) 모두 status 0, covQual 3, EDM < 10⁻³ (`drawing/fit_convergence/fit_result_summary.csv`) |
+| 투영 진단 | final fit을 재생해 mass·ctau 투영을 여러 비닝으로 본 것. 빈마다 mass 1장, ctau 1장(전체 창, PR·NP 99% 신호 창, PR 99% core 창) (`drawing/projection_diagnostics/`) |
+| ctau 확대 | fwd 1–2, 2–3 lifetime을 −2~3 mm에서 잘게 나눠 그림 (`drawing/ctau_zoom/`) |
+
+![B fraction fwd](figs/sum_bfrac_fwd.png) ![B fraction mid](figs/sum_bfrac_mid.png)
+
+![nominal 비교 fwd](figs/sum_vs_nominal_fwd.png) ![nominal 비교 mid](figs/sum_vs_nominal_mid.png)
+
+![raw yield fwd](figs/sum_yield_ratio_fwd.png) ![raw yield mid](figs/sum_yield_ratio_mid.png)
+
+ctau 투영의 χ²/ndf는 비닝에 따라 달라진다. 표시용 비닝(신호 창을 N, 2N개로 나눔)에서는 20빈 모두 1 이하다. 성긴 비닝에서는 fwd 2–3이 가장 커서 신호 창 60개에서 4.0, 120개에서 2.35다. 그 다음은 fwd 3–4(60개에서 2.27)와 fwd 5–6(2.08)이다. 투영 진단은 이 폴더에서 `fit2d.C`에만 훅이 있어 prefit 단계 진단은 만들지 않았다.
+
+![ctau 비닝 의존성](figs/sum_binning_overview.png)
+
 ## 2. 입력과 prefit
 
 | 입력 | 파일 |
@@ -128,6 +153,7 @@ bash run_ctau_bins.sh          # prefit 5단계 + 최종 2D fit (FINAL_S1), 빈�
 bash run_ctau_bins.sh --2d     # 최종 2D fit만
 bash run_publish.sh            # 발표용 그림
 python3 drawing/report_table.py; python3 drawing/nominal_agreement.py; python3 study/treatment.py
+bash drawing/refresh_all.sh    # 발표용 그림 + 요약 그림 전부 (B fraction, yield, nominal 비교, 모델 성분 수, 수렴 검사, 투영 진단, 패널)
 ```
 
 `python3 study/rules.py FINAL_S1`이 `study/rules/FINAL_S1/` knob을 다시 만든다(fwd 2–3은 `study/rules/C23_effnp`에서 복사). 후보 규칙은 `python3 study/run_rules.py --bins fwd_3_4,... 'PATTERN'`, prefit 변형은 `python3 study/prefit_variant.py NAME BIN key=value`로 돌린다.
