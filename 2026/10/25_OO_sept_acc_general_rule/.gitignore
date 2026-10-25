@@ -1,0 +1,29 @@
+inputs/
+roots/
+results/
+logs/
+figs*/
+np_hijing_gen/*.root
+reference/september/roots/
+*.so
+*.pcm
+*.d
+study/build/
+__pycache__/
+build/
+# 후보 규칙·prefit 변형 실행물 (근거 요약은 docs/evidence/)
+study/runs/
+study/runs_stale_prefit1/
+study/prefit_variants/
+study/rules/*
+!study/rules/FINAL_S1/
+!study/rules/C23_gap1.8/
+!study/rules/C23_effnp/
+# 24 폴더에서 복사된 검토 자료 (원본은 24 폴더)
+study/review_20261024/
+# 24 입력으로 만든 raw yield 비교 (복사본, 이 폴더에서 다시 만들지 않음)
+drawing/raw_yield_vs_sept/
+drawing/raw_yield_vs_sept.py
+drawing/dump_raw_yield_vs_sept.C
+# 웹 페이지 그림은 추적
+!docs/figs/
