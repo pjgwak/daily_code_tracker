@@ -1368,6 +1368,14 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	timefitplot->GetYaxis()->SetTitle("Events");
 	timefitplot->GetYaxis()->SetTitleOffset(1.6);
 	timefitplot->GetXaxis()->SetTitle("");
+	// Publish display window only (fit/chi2 keep the full range): fwd pT 2-3 is fitted on [-20,20],
+	// but [-3,4] already holds 99.8% of the sideband events.
+	std::pair<double, double> ctPlotRange = ctRange;
+	if (publish && settingYLow == 1.6f && settingYHigh == 2.4f && settingPtLow == 2.0f && settingPtHigh == 3.0f)
+		ctPlotRange = {std::max(-3.0, ctRange.first), std::min(4.0, ctRange.second)};
+	const bool zoomCtauPlot = ctPlotRange != ctRange;
+	if (zoomCtauPlot)
+		timefitplot->GetXaxis()->SetLimits(ctPlotRange.first, ctPlotRange.second);
 	timefitplot->Draw("e");
 
 	TLegend leg(0.50, 0.66, 0.74, 0.89);
@@ -1548,6 +1556,8 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	fpull->GetYaxis()->SetLabelSize(0.10);
 	fpull->GetXaxis()->SetTitleSize(0.15);
 	fpull->GetXaxis()->SetLabelSize(0.10);
+	if (zoomCtauPlot)
+		fpull->GetXaxis()->SetLimits(ctPlotRange.first, ctPlotRange.second);
 	fpull->Draw();
 
 	const int npar = time_result ? time_result->floatParsFinal().getSize() : saved_prefit_npar(fitResultFileName, "timeResult");
@@ -1577,7 +1587,7 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 		tc.DrawLatex(0.88, 0.96, Form("#chi^{2}/ndf = %.1f/%d", chi2, ndf));
 	}
 
-	TLine line(ctRange.first, 0.0, ctRange.second, 0.0);
+	TLine line(ctPlotRange.first, 0.0, ctPlotRange.second, 0.0);
 	line.SetLineStyle(2);
 	line.Draw("same");
 

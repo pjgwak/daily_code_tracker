@@ -3426,7 +3426,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	// data binning and projection chi2. Zoom the axes after constructing the curves.
 	std::pair<double, double> ctPlotRange = ctRange;
 	if (settingPtLow == 2 && settingPtHigh == 3)
-		ctPlotRange = {-5.0, 5.0};
+		ctPlotRange = publish ? std::make_pair(-3.0, 4.0) : std::make_pair(-5.0, 5.0); // publish: [-3,4] holds 99.8% of data
 	if (settingPtLow == 3 && settingPtHigh == 4)
 		ctPlotRange = {-4.0, 4.0};
 	if (settingPtLow == 4 && settingPtHigh == 5)
