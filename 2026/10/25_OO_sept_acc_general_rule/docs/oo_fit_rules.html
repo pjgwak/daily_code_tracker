@@ -82,6 +82,9 @@ code{font:12.5px var(--font-mono);background:var(--accent-soft);padding:1px 5px;
 .stagegrid figcaption b{color:#1b2230;font-weight:600}
 footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:16px}
 a{color:var(--accent)}
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;z-index:50;cursor:zoom-out;padding:24px}
+#lightbox.on{display:flex}#lightbox img{max-width:100%;max-height:100%;background:#fff;border-radius:6px}
+#lightbox figcaption{position:absolute;left:0;right:0;bottom:10px;text-align:center;color:#eee;font-size:13px}
 </style>
 
 
@@ -376,4 +379,16 @@ DATA.forEach((d, i) => {
 });
 setBin((location.hash || '').slice(1) || 'mid_8_9', false);
 
+</script>
+<div id="lightbox" role="dialog" aria-label="그림 크게 보기"><img alt=""><figcaption></figcaption></div>
+<script>
+(() => {
+  const lb = document.getElementById('lightbox'), im = lb.querySelector('img'), cap = lb.querySelector('figcaption');
+  const close = () => { lb.classList.remove('on'); im.src = ''; };
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="figs/"]'); if (!a) return;
+    e.preventDefault(); im.src = a.getAttribute('href'); cap.textContent = (a.querySelector('img') || {}).alt || ''; lb.classList.add('on');
+  });
+  lb.addEventListener('click', close); document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+})();
 </script>
