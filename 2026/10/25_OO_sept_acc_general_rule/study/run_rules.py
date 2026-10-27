@@ -82,7 +82,7 @@ def main():
         return
     bins = [b for b in a.bins.split(',') if b]
     if not (names or custom) or not bins: sys.exit('need rule patterns and --bins')
-    for n in names: rules.write(n)
+    for n in names: rules.write_final_s1(n) if n.startswith('FINAL_S') else rules.write(n)  # FINAL_S* carry the hand-written fwd 2-3 file
     names += custom
     build = BASE / 'build'
     lib = next(build.rglob('fit2d_C.so'))

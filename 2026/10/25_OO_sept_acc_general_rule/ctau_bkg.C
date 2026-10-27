@@ -1,3 +1,4 @@
+#include "utils/mass_window.h"
 #include "utils/prefit_jitter.h"
 #include "utils/robust_chi2.h"
 #include "utils/projection_diagnostics.h"
@@ -296,7 +297,7 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	}
 
 	// basic cuts
-	TString cutBasic = Form("(mass>2.6 && mass<3.5) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g)",
+	TString cutBasic = Form("(mass>%g && mass<%g) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g)", oo_mass_lo(), oo_mass_hi(),
 		ptLow, ptHigh, yLow, yHigh);
 	auto dataBasic = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(inputData->reduce(cutBasic)));
 	if (!dataBasic || dataBasic->numEntries() <= 0)
@@ -378,8 +379,8 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	}
 
 	TString cutAll = Form(
-		"(mass>2.6 && mass<3.5) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g) && "
-		"(ctau >= %g && ctau <= %g)",
+		"(mass>%g && mass<%g) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g) && "
+		"(ctau >= %g && ctau <= %g)", oo_mass_lo(), oo_mass_hi(),
 		ptLow, ptHigh, yLow, yHigh, ctRange.first, ctRange.second);
 	auto dataSel = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(inputData->reduce(cutAll)));
 	if (!dataSel || dataSel->numEntries() <= 0)
@@ -394,8 +395,8 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	// Study hooks: OO_BKG_SBL_HI / OO_BKG_SBR_LO move the sideband edges.
 	const double sidebandLeftMax = gSystem->Getenv("OO_BKG_SBL_HI") ? std::atof(gSystem->Getenv("OO_BKG_SBL_HI")) : 2.9;
 	const double sidebandRightMin = gSystem->Getenv("OO_BKG_SBR_LO") ? std::atof(gSystem->Getenv("OO_BKG_SBR_LO")) : 3.2;
-	TString cutSideband = Form("(mass >= 2.6 && mass < %g) || (mass > %g && mass <= 3.5)",
-		sidebandLeftMax, sidebandRightMin);
+	TString cutSideband = Form("(mass >= %g && mass < %g) || (mass > %g && mass <= %g)",
+		oo_mass_lo(), sidebandLeftMax, sidebandRightMin, oo_mass_hi());
 	auto dataSB = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(dataSel->reduce(cutSideband)));
 	if (!dataSB || dataSB->numEntries() <= 0)
 	{
@@ -439,7 +440,8 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 	obs_time.setUnit("mm");
 	obs_time.setRange(ctRange.first, ctRange.second);
 	// Validated display binning for the lowest forward-pT background.
-	const int timePlotBins = (!isMid && ptLow == 1.f && ptHigh == 2.f) ? 240 : (settingYLow == 1.6f && settingYHigh == 2.4f && settingPtLow == 14.0f && settingPtHigh == 20.0f)
+	// Study hook (2026-10-27): OO_BKG_PLOT_BINS overrides the display / chi2 binning (per-bin setting bkg_plot_bins).
+	const int timePlotBins = gSystem->Getenv("OO_BKG_PLOT_BINS") ? std::max(2, std::atoi(gSystem->Getenv("OO_BKG_PLOT_BINS"))) : (!isMid && ptLow == 1.f && ptHigh == 2.f) ? 240 : (settingYLow == 1.6f && settingYHigh == 2.4f && settingPtLow == 14.0f && settingPtHigh == 20.0f)
 		? 200 : ((settingYLow == 1.6f && settingYHigh == 2.4f && settingPtLow == 2.0f && settingPtHigh == 3.0f)
 		? std::max(400, int(std::ceil((ctRange.second-ctRange.first)/.02))) : std::max(2, obs_time.getBins()));
 	const TString resolutionFileName = TString::Format("%s/ctau_resolution_%s.root", prResultDir.Data(), binTag.Data());
@@ -1162,6 +1164,36 @@ void ctau_bkg(float ptLow = 2, float ptHigh = 3, float yLow = 1.6, float yHigh =
 
 	std::unique_ptr<TFile> savedBkgFitFile;
 	std::unique_ptr<RooFitResult> timeResultHolder;
+
+	// Study hook (2026-10-27): OO_BKG_PAR="name=init,min,max;name2=,,max" overrides a floating parameter's
+	// start value and range before the fit (empty field keeps the current value). Per-bin setting bkg_par.
+	if (const char *ov = gSystem->Getenv("OO_BKG_PAR"))
+	{
+		std::unique_ptr<RooArgSet> pars(time_pdf.getParameters(*data));
+		std::unique_ptr<TObjArray> items(TString(ov).Tokenize(";"));
+		for (int i = 0; i < items->GetEntries(); ++i)
+		{
+			TString item = items->At(i)->GetName(); item = item.Strip(TString::kBoth);
+			if (item.IsNull()) continue;
+			const int eq = item.Index("=");
+			if (eq < 0) throw std::runtime_error(("OO_BKG_PAR item without '=': " + item).Data());
+			const TString name = item(0, eq);
+			auto *v = dynamic_cast<RooRealVar *>(pars->find(name));
+			if (!v) throw std::runtime_error(("OO_BKG_PAR unknown parameter: " + name).Data());
+			TString rest = item(eq + 1, item.Length());
+			std::vector<TString> f;
+			int start = 0;
+			for (int k = 0; k <= rest.Length(); ++k)
+				if (k == rest.Length() || rest[k] == ',') { f.push_back(rest(start, k - start)); start = k + 1; }
+			while (f.size() < 3) f.push_back("");
+			const double mn = f[1].IsNull() ? v->getMin() : f[1].Atof();
+			const double mx = f[2].IsNull() ? v->getMax() : f[2].Atof();
+			const double init = f[0].IsNull() ? std::min(std::max(v->getVal(), mn), mx) : f[0].Atof();
+			if (!(mn < mx) || init < mn || init > mx) throw std::runtime_error(("OO_BKG_PAR invalid range for " + name).Data());
+			v->setRange(mn, mx); v->setVal(init); v->setConstant(false);
+			std::cout << "[BKG_PAR] " << name << " init=" << init << " range=[" << mn << ", " << mx << "]" << std::endl;
+		}
+	}
 
 	// helper to keep the fit options identical for the baseline fit and its retry
 	// only change the strategy

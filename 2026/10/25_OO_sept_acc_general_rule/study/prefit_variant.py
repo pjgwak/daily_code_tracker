@@ -2,7 +2,7 @@
 """Refit one bin with changed prefit choices, from the first affected stage through the final 2D fit,
 in an isolated work directory (the main roots/ and config/ are not touched).
 
-  python3 study/prefit_variant.py NAME BIN key=value [key=value ...] [--rule=FINAL_S1] [--stop=pr] [--env=OO_PREFIT_JITTER=7]
+  python3 study/prefit_variant.py NAME BIN key=value [key=value ...] [--rule=FINAL_S3] [--stop=pr] [--env=OO_PREFIT_JITTER=7]
       keys are config/prefit_settings.txt columns (pr_quant, pr_nres, np_count, mass_cheb, bkg_ss, ...)
   python3 study/prefit_variant.py --summary
 
@@ -12,8 +12,8 @@ from pathlib import Path
 import csv, os, shutil, subprocess, sys
 BASE = Path(__file__).resolve().parents[1]
 ORDER = ['mc', 'pr', 'np', 'mass', 'bkg', '2d']
-FIRST = {'mc_cb': 'mc', 'mc_gauss': 'mc', 'pr_nres': 'pr', 'pr_quant': 'pr', 'np_count': 'np', 'np_range': 'np', 'mass_cheb': 'mass',
-         'ct_low': 'mass', 'ct_high': 'mass', 'bkg_ss': 'bkg', 'bkg_flip': 'bkg', 'bkg_ds': 'bkg', 'bkg_profile_frac': 'bkg', 'bkg_saved_ct': 'bkg', 'bkg_wide_tau': 'bkg', 'bkg_core_max': 'bkg'}
+FIRST = {'mass_lo': 'mc', 'mass_hi': 'mc', 'mc_cb': 'mc', 'mc_gauss': 'mc', 'pr_nres': 'pr', 'pr_quant': 'pr', 'pr_par': 'pr', 'np_count': 'np', 'np_range': 'np', 'np_par': 'np', 'mass_cheb': 'mass',
+         'ct_low': 'mass', 'ct_high': 'mass', 'bkg_ss': 'bkg', 'bkg_flip': 'bkg', 'bkg_ds': 'bkg', 'bkg_profile_frac': 'bkg', 'bkg_saved_ct': 'bkg', 'bkg_wide_tau': 'bkg', 'bkg_core_max': 'bkg', 'bkg_par': 'bkg', 'bkg_plot_bins': 'bkg'}
 # stage -> stages that read its output
 NEEDS = {'mc': {'mass'}, 'pr': {'np', 'bkg'}, 'np': set(), 'mass': {'bkg'}, 'bkg': set()}
 LINKS = ['mc_mass.C', 'ctau_pr.C', 'ctau_np.C', 'mass_window_screen.C', 'mass.C', 'ctau_bkg.C', 'fit2d.C', 'utils', 'include', 'inputs', 'workflow', 'build']
@@ -50,9 +50,9 @@ def main():
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
     stop = next((a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('--stop=')), None)          # last stage to run
     extra = dict(a.split('=', 1)[1].split('=', 1) for a in sys.argv[1:] if a.startswith('--env='))  # e.g. --env=OO_PREFIT_JITTER=3
-    rule = next((a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('--rule=')), 'FINAL_S1')
+    rule = next((a.split('=', 1)[1] for a in sys.argv[1:] if a.startswith('--rule=')), 'FINAL_S3')
     name, b, kv = args[0], args[1], dict(a.split('=', 1) for a in args[2:])
-    first = min((FIRST[k] for k in kv), key=ORDER.index)
+    todo = {s for k in kv for s in stages_from(FIRST[k])}  # union over every changed key (2026-10-27; before, only the earliest stage was refitted)
     work = BASE / 'study/prefit_variants' / f'{name}_{b}'
     if work.exists(): shutil.rmtree(work)
     (work / 'study').mkdir(parents=True)
@@ -74,7 +74,7 @@ def main():
     fields = list(rows[0]) + [k for k in kv if k not in rows[0]]
     with open(path, 'w') as fh:
         w = csv.DictWriter(fh, fieldnames=fields, delimiter='\t', lineterminator='\n', restval=''); w.writeheader(); w.writerows(rows)
-    stages = stages_from(first)
+    stages = [s for s in ORDER if s in todo] + ['2d']
     if stop: stages = stages[:stages.index(stop) + 1]
     (work / 'VARIANT.txt').write_text(f'bin {b}\nrule {rule}\nchanges {kv}\nstages {stages}\n')
     env = dict(os.environ, OO_MACRO_BASE=str(BASE), OO_FINAL_RULE_DIR=str(BASE / 'study/rules' / rule))

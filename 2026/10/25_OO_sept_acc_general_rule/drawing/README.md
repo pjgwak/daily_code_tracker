@@ -1,4 +1,4 @@
-# 저장된 최종 fit(FINAL_S1) 그리기
+# 저장된 최종 fit(FINAL_S3) 그리기
 
 9월 튜닝 폴더(`../../09/19_OO_2dfit_tuning_Hijing_tuning/drawing`)의 그림 코드를 가져와 이 폴더 결과로 그린다. 재적합 없이 `../roots/`의 저장 결과만 읽는다.
 
@@ -23,5 +23,5 @@ bash drawing/refresh_all.sh          # 전체 갱신 (MAX_JOBS=6 으로 동시 �
 ## 9월 폴더와 다른 점
 
 - 투영 진단은 이 폴더에서 `fit2d.C`에만 훅이 있어 2D fit(20빈 × mass/ctau)만 만든다. prefit 단계 진단은 없다. `run_projection_diagnostics.py`는 `run_publish.sh --2d`를 `OO_DIAGNOSTICS_DIR`과 함께 돌려 빈별 production 설정(`OO_RULE_DIR` 등)을 그대로 쓰고, 실행 전후 `roots/` 해시가 같은지 확인한다. 이를 위해 `study/production.py`가 `OO_DIAGNOSTICS_DIR`을 매크로로 넘기도록 했다.
-- `ctau_zoom`은 `OO_RULE_DIR=study/rules/FINAL_S1`으로 재생한다.
+- `ctau_zoom`은 `OO_RULE_DIR=study/rules/FINAL_S3`으로 재생한다.
 - ctau 배경 모델 스캔(`run_ctau_bkg_model_scan.sh`)은 재적합 스크립트라 가져오지 않았다.

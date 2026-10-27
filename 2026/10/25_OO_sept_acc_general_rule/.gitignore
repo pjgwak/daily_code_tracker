@@ -30,3 +30,6 @@ drawing/dump_raw_yield_vs_sept.C
 # drawing/ 표·입력 기록 (pre-commit hook이 막음, refresh_all.sh로 다시 생성)
 drawing/**/*.csv
 drawing/**/*.json
+!study/rules/FINAL_S3/
+study/scans/
+study/logs_m/

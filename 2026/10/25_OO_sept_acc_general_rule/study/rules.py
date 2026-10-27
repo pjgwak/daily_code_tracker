@@ -161,6 +161,34 @@ for kk in (0.3, 0.4, 0.5):
     RULES[f'KL_tailgap{kk}_long_free16'] = {'all': dict(pr_width='tail', pr_width_k=0.1, gap_k=kk, np='long_free', np_k=16)}
     RULES[f'KL_tailgap{kk}_long_free_sb'] = {'all': dict(pr_width='tail', pr_width_k=0.1, gap_k=kk, np='long_free', bkg='sideband')}
 
+# Grid M (2026-10-27, forward 10-20): every constraint centred at the MC prefit value (no gap-ratio centre shift).
+for mean in ('free', 'fix'):
+    for np_ in ('long_free', 'mc'):
+        RULES[f'M_wfree_{mean}_{np_}'] = {'all': dict(pr_width='free', pr_mean=mean, np=np_)}
+for k in (1, 4, 16, 64, 256):
+    RULES[f'M_joint{k}'] = {'all': dict(pr_width='mc_joint', pr_joint_k=k, np='long_free')}
+for fk in (1, 16):
+    for w, wk in (('tail', 0.1), ('abs', 1), ('free', 1)):
+        RULES[f'M_fracmc{fk}_{w}{wk}'] = {'all': dict(pr_frac='mc', pr_frac_k=fk, pr_width=w, pr_width_k=wk, np='long_free')}
+for m in (1, 2, 3):
+    RULES[f'M_bkgres{m}_tail'] = {'all': dict(pr_width='tail', pr_width_k=0.1, np='long_free', extra=dict(background_core_profile=m))}
+    RULES[f'M_bkgres{m}_wfree'] = {'all': dict(pr_width='free', np='long_free', extra=dict(background_core_profile=m))}
+RULES['M_pmass_tail'] = {'all': dict(pr_width='tail', pr_width_k=0.1, np='long_free', extra=dict(profile_mass=1))}
+RULES['M_cond_tail'] = {'all': dict(pr_width='tail', pr_width_k=0.1, np='long_free', extra=dict(conditional_bkg=1))}
+RULES['M_npmom_tail'] = {'all': dict(pr_width='tail', pr_width_k=0.1, np='mc', extra=dict(np_moment_order=1))}
+RULES['M_npeff_tail'] = {'all': dict(pr_width='tail', pr_width_k=0.1, np='mc', extra=dict(np_moment_order=1, np_effective_mean=1))}
+RULES['M_npeff_cond'] = {'all': dict(pr_width='tail', pr_width_k=0.1, np='mc', extra=dict(np_moment_order=1, np_effective_mean=1, conditional_bkg=1))}
+RULES['M_npeff_cond16'] = {'all': dict(pr_width='tail', pr_width_k=0.1, np='mc', np_k=16, extra=dict(np_moment_order=1, np_effective_mean=1, conditional_bkg=1))}
+for k in (4, 8, 16):
+    RULES[f'M_abs{k}'] = {'all': dict(pr_width_k=k, np='long_free')}
+# Grid MC (2026-10-27): mass-dependent background ctau mixture (conditional_bkg, one extra free slope) with tail strengths.
+for k in (0.05, 0.25, 0.5, 1, 2):
+    for bkg in ('free', 'sideband'):
+        RULES[f'MC_cond_tail{k}_{bkg}'] = {'all': dict(pr_width='tail', pr_width_k=k, np='long_free', bkg=bkg, extra=dict(conditional_bkg=1))}
+for mean in ('fix', 'mc8'):
+    RULES[f'MC_cond_tail0.1_{mean}'] = {'all': dict(pr_width='tail', pr_width_k=0.1, pr_mean=mean, np='long_free', extra=dict(conditional_bkg=1))}
+RULES['MC_cond_tail0.1_sideband'] = {'all': dict(pr_width='tail', pr_width_k=0.1, np='long_free', bkg='sideband', extra=dict(conditional_bkg=1))}
+
 # FINAL_v1: assembled group rules (study of 2026-10-24/25). Range keys are lo <= pT < hi.
 RULES['FINAL_v1'] = {
     'fwd:1-3': dict(pr_width_k=8, pr_frac='mc', np='mc', np_k=175, bkg='sideband'),
@@ -194,6 +222,53 @@ RULES['FINAL_S1'] = {
     'mid:7-30': dict(pr_mean='fix', pr_width_k=1, pr_frac='fix', np='long_free'),
 }
 
+# FINAL_S1 without the fwd 10-20 gap-ratio centre shift (2026-10-27 mass-window / background-prefit study).
+RULES['FINAL_S1_nogap'] = dict(RULES['FINAL_S1'], **{'fwd:10-20': dict(pr_width='tail', pr_width_k=0.1, np='long_free')})
+
+# FINAL_S1_nogap + mass-dependent background ctau mixture (conditional_bkg) in every bin (2026-10-27 sideband study).
+RULES['FINAL_S1_cond'] = {k: dict(v, extra=dict(v.get('extra', {}), conditional_bkg=1)) for k, v in RULES['FINAL_S1_nogap'].items()}
+
+# FINAL_S2 (candidate, 2026-10-27): FINAL_S1 with the fwd 10-20 gap-ratio centre shift removed (all constraints centred at MC).
+# Goes with config/prefit_settings_S2.txt (fwd 10-12: background 1/1/0, wide lifetime window, core max 3 x MC; fwd 12-14: wide window, core max 3 x MC).
+RULES['FINAL_S2'] = dict(RULES['FINAL_S1_nogap'])
+
+# Grid Q (fwd 10-14 per-bin study, 2026-10-27 afternoon): MC-centred tail x0.1 plus existing final-fit knobs not yet tried there.
+_QB = dict(pr_width='tail', pr_width_k=0.1, np='long_free')
+for m in (1, 2, 3):
+    RULES[f'Q_bc{m}'] = {'all': dict(_QB, extra=dict(background_core_profile=m))}
+    RULES[f'Q_pm_bc{m}'] = {'all': dict(_QB, extra=dict(background_core_profile=m, profile_mass=1))}
+RULES['Q_pm'] = {'all': dict(_QB, extra=dict(profile_mass=1))}
+RULES['Q_wp2'] = {'all': dict(_QB, extra=dict(width_policy=2))}                      # sigma1, gap2, gap3 fixed at MC; gap4 constrained x0.1
+RULES['Q_wp2_k1'] = {'all': dict(_QB, extra=dict(width_policy=2, width_sigma4=0.08))}  # gap4 constrained x1
+RULES['Q_wp2_free'] = {'all': dict(_QB, extra=dict(width_policy=2, prompt_width_constraint=0))}  # sigma1, gap2, gap3 fixed at MC; gap4 free
+RULES['Q_bc3_fracmc'] = {'all': dict(_QB, pr_frac='mc', extra=dict(background_core_profile=3))}
+RULES['Q_meanfix_bc3'] = {'all': dict(_QB, pr_mean='fix', extra=dict(background_core_profile=3))}
+RULES['Q_bc3_sb'] = {'all': dict(_QB, bkg='sideband', extra=dict(background_core_profile=3))}
+
+# SEPT1020: the September (09/19) fwd 10-20 final-fit policy in this vocabulary: core widths/fractions fixed, last two widths
+# constrained x0.1, PR mean constrained at MC x8 error, NP longest lifetime free and the rest MC covariance x2 (used with a 2-component NP prefit).
+RULES['SEPT1020'] = {'all': dict(pr_width='tail', pr_width_k=0.1, pr_mean='mc8', np='long_free', np_k=2)}
+RULES['SEPT1020_free'] = {'all': dict(pr_width='tail', pr_width_k=0.1, pr_mean='free', np='long_free', np_k=2)}
+
+RULES['SEPT1020_wp2k1'] = {'all': dict(pr_width='tail', pr_width_k=0.1, pr_mean='free', np='long_free', np_k=2, extra=dict(width_policy=2, width_sigma4=0.08))}
+
+# Grid FX (fwd 10-14 "fixed parameters" test, 2026-10-27): PR tails / NP lifetime / background lifetimes fixed at their prefit values
+# (constraint widths x0.001 = effectively fixed) in every combination; tail0.1 = FINAL_S2 fwd 10-20 treatment.
+for prn, prk in (('tail', 0.1), ('prfix', 0.001)):
+    for npn, npkw in (('npfree', dict(np='long_free', np_k=1)), ('npfix', dict(np='mc', np_k=0.001)), ('np2', dict(np='long_free', np_k=2))):
+        for bkn, bkkw in (('bkfree', dict(bkg='free')), ('bkfix', dict(bkg='sideband', bkg_k=0.001))):
+            RULES[f'FX_{prn}_{npn}_{bkn}'] = {'all': dict(dict(pr_width='tail', pr_width_k=prk, pr_mean='free'), **npkw, **bkkw)}
+
+for nk in (0.01, 0.1):
+    RULES[f'FX_tail_npmc{nk}_bkfree'] = {'all': dict(pr_width='tail', pr_width_k=0.1, pr_mean='free', np='mc', np_k=nk, bkg='free')}
+    RULES[f'FX_tail_npmc{nk}_bkfix'] = {'all': dict(pr_width='tail', pr_width_k=0.1, pr_mean='free', np='mc', np_k=nk, bkg='sideband', bkg_k=0.001)}
+
+# FINAL_S3 (adopted 2026-10-27 16:10 KST): FINAL_S1 with the fwd 10-20 gap-ratio centre shift removed and the September
+# fwd 10-20 NP treatment restored: two-exponential MC NP shape, longest lifetime free, the rest MC covariance x2
+# (config/prefit_settings.txt np_count=2 for fwd 10-12/12-14/14-20; fwd 10-12 background 1/1/0 and fwd 12-14 with wide
+# lifetime window and core max 3 x MC, see docs/FWD1014_MC_CENTRED.md). Everything else identical to FINAL_S1.
+RULES['FINAL_S3'] = dict(RULES['FINAL_S1'], **{'fwd:10-20': dict(pr_width='tail', pr_width_k=0.1, np='long_free', np_k=2)})
+
 # Diagnostics for the mid 8-10 background study.
 RULES['X_profile_mass'] = {'all': dict(pr_width_k=0.25, extra=dict(profile_mass=1))}
 for m in (1, 2, 3):
@@ -225,7 +300,7 @@ def knobs(c):
     k = {}
     if c['pr_width'] == 'mc_joint':
         k.update(prompt_full_cov=1, width_policy=3, prompt_full_cov_scale=c['pr_joint_k'], float_prompt_mean=1,
-                 prompt_frac_constrain=0)
+                 prompt_frac_constrain=0, prompt_mean_prior_mult=0)  # fit2d defaults the mean prior to x8 for forward pT>=10, which the joint covariance forbids
     else:
         k.update(prompt_full_cov=0, width_policy=1 if c['pr_width'] == 'tail' else 0, float_prompt_mean=int(c['pr_mean'] != 'fix'),
                  prompt_frac_constrain=int(c['pr_frac'] in ('mc', 'model')), prompt_fraction_cov_scale=c['pr_frac_k'],
@@ -269,15 +344,16 @@ def write(rule):
     print('wrote', d)
 
 
-def write_final_s1():
-    write('FINAL_S1')
+def write_final_s1(rule='FINAL_S1'):
+    write(rule)
     src = BASE / 'study/rules/C23_effnp/y1.60_2.40_pt2.00_3.00.txt'
-    text = src.read_text().replace('rule C23_effnp', 'rule FINAL_S1', 1)
-    (BASE / 'study/rules/FINAL_S1/y1.60_2.40_pt2.00_3.00.txt').write_text(text)
+    text = src.read_text().replace('rule C23_effnp', f'rule {rule}', 1)
+    if rule == 'FINAL_S1_cond': text += 'conditional_bkg 1\n'
+    (BASE / 'study/rules' / rule / 'y1.60_2.40_pt2.00_3.00.txt').write_text(text)
 
 
 if __name__ == '__main__':
     import fnmatch
     for pat in sys.argv[1:] or ['*']:
         for rule in fnmatch.filter(RULES, pat):
-            write_final_s1() if rule == 'FINAL_S1' else write(rule)
+            write_final_s1(rule) if rule.startswith('FINAL_S') else write(rule)

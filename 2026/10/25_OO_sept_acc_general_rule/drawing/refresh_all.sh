@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Re-draw the saved production fits (FINAL_S1) and all summaries; no minimization.
+# Re-draw the saved production fits (FINAL_S3) and all summaries; no minimization.
 set -euo pipefail
 DRAWING_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)"
 BASE_DIR="$(cd "${DRAWING_DIR}/.." && pwd -P)"
@@ -22,6 +22,6 @@ root -n -l -b -q 'drawing/b_frac_comparison/plot_bfraction_nominal_with_fwd_syst
 root -n -l -b -q 'drawing/b_frac_comparison/plot_bfraction_nominal_with_mid_syst.C()' > "${LOG_DIR}/mid_syst.log" 2>&1
 root -n -l -b -q 'drawing/model_count/plot_model_counts.C()' > "${LOG_DIR}/model_counts.log" 2>&1
 (cd drawing/fit_convergence && root -n -l -b -q 'check_roofit_results.C("../../roots",1e-3,false)') > "${LOG_DIR}/convergence.log" 2>&1
-(cd drawing/ctau_zoom && OO_RULE_DIR="${BASE_DIR}/study/rules/FINAL_S1" root -n -l -b -q 'plot_ctau_zoom.C+()' && rm -f plot_ctau_zoom_C*) > "${LOG_DIR}/ctau_zoom.log" 2>&1
+(cd drawing/ctau_zoom && OO_RULE_DIR="${BASE_DIR}/study/rules/FINAL_S3" root -n -l -b -q 'plot_ctau_zoom.C+()' && rm -f plot_ctau_zoom_C*) > "${LOG_DIR}/ctau_zoom.log" 2>&1
 bash drawing/all_plots_in_one/run_all_panels.sh > "${LOG_DIR}/panels.log" 2>&1
 echo "Updated B fractions, yields, nominal comparisons, model counts, convergence table, zooms, diagnostics, and all fit panels."

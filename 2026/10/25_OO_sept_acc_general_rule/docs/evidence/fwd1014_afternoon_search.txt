@@ -1,0 +1,180 @@
+# 2026-10-27 afternoon: fwd 10-12 / 12-14 per-bin search on the clean (S2) background prefits. Columns as in all_candidate_fits.txt.
+# (a) final-fit rules on NP1 prefits (refit_rules): Q_* new knobs, J_joint*, FX_* fixed-parameter grid, G/U/C
+X_n4_np1_w3_b110_fwd_10_12     C                                FAIL what():  Mean prior requires independently floating mean
+X_n4_np1_w3_b110_fwd_10_12     FX_prfix_npfix_bkfix             FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_12_14     FX_prfix_npfix_bkfix             FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_10_12     FX_prfix_npfix_bkfree            FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_12_14     FX_prfix_npfix_bkfree            FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_10_12     FX_prfix_npfree_bkfix            B=0.3345±0.0154  -2.37% -0.56σ st0 cq3 mp 0.75 tp 0.87 fail
+X_n4_np1_w3_b110_fwd_12_14     FX_prfix_npfree_bkfix            B=0.3986±0.0231  -4.21% -0.77σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     FX_prfix_npfree_bkfree           B=0.3342±0.0155  -2.44% -0.57σ st0 cq3 mp 0.76 tp 0.89 fail
+X_n4_np1_w3_b110_fwd_12_14     FX_prfix_npfree_bkfree           B=0.3979±0.0233  -4.40% -0.80σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     FX_tail_npfix_bkfix              FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_12_14     FX_tail_npfix_bkfix              FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_10_12     FX_tail_npfix_bkfree             FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_12_14     FX_tail_npfix_bkfree             FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_10_12     FX_tail_npfree_bkfix             B=0.3339±0.0155  -2.53% -0.60σ st0 cq3 mp 0.75 tp 0.87 fail
+X_n4_np1_w3_b110_fwd_12_14     FX_tail_npfree_bkfix             B=0.3992±0.0232  -4.07% -0.75σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     FX_tail_npfree_bkfree            B=0.3339±0.0156  -2.52% -0.59σ st0 cq3 mp 0.76 tp 0.89 fail
+X_n4_np1_w3_b110_fwd_12_14     FX_tail_npfree_bkfree            B=0.3985±0.0233  -4.25% -0.78σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     FX_tail_npmc0.01_bkfix           FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_12_14     FX_tail_npmc0.01_bkfix           FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_10_12     FX_tail_npmc0.01_bkfree          FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_12_14     FX_tail_npmc0.01_bkfree          FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_10_12     FX_tail_npmc0.1_bkfix            FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_12_14     FX_tail_npmc0.1_bkfix            B=0.3938±0.0223  -5.37% -0.98σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     FX_tail_npmc0.1_bkfree           FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_12_14     FX_tail_npmc0.1_bkfree           B=0.3933±0.0224  -5.50% -1.01σ st0 cq3 mp 0.98 tp 1.00 fail
+SBin1_fwd_10_12                G_tail0.1_fix_long_free_sideband B=0.3339±0.0155  -2.53% -0.60σ st0 cq3 mp 0.75 tp 0.88 fail
+SBin1_fwd_12_14                G_tail0.1_fix_long_free_sideband B=0.3988±0.0232  -4.17% -0.76σ st0 cq3 mp 0.98 tp 1.00 fail
+SBleft_fwd_10_12               G_tail0.1_fix_long_free_sideband B=0.3339±0.0155  -2.53% -0.60σ st0 cq3 mp 0.75 tp 0.88 fail
+SBleft_fwd_12_14               G_tail0.1_fix_long_free_sideband B=0.3988±0.0232  -4.17% -0.76σ st0 cq3 mp 0.98 tp 1.00 fail
+SBright_fwd_10_12              G_tail0.1_fix_long_free_sideband B=0.3339±0.0155  -2.53% -0.60σ st0 cq3 mp 0.75 tp 0.88 fail
+SBright_fwd_12_14              G_tail0.1_fix_long_free_sideband B=0.3988±0.0232  -4.17% -0.76σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     G_tail0.1_mc_long_free_free      B=0.3140±0.0157  -8.33% -1.96σ st0 cq3 mp 0.78 tp 0.99 fail
+X_n4_np1_w3_b110_fwd_10_12     J_joint16_long_free              B=0.3298±0.0151  -3.72% -0.88σ st0 cq3 mp 0.76 tp 0.90 fail
+X_n4_np1_w3_b110_fwd_10_12     J_joint16_long_free              FAIL what():  Mean prior requires independently floating mean
+X_n4_np1_w3_b110_fwd_12_14     J_joint16_long_free              B=0.3944±0.0228  -5.22% -0.95σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_12_14     J_joint16_long_free              FAIL what():  Mean prior requires independently floating mean
+X_n4_np1_w3_b110_fwd_10_12     J_joint256_long_free             B=0.3056±0.0156 -10.79% -2.54σ st0 cq3 mp 0.78 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_12_14     J_joint256_long_free             B=0.3835±0.0233  -7.85% -1.44σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     J_joint4_long_free               B=0.3330±0.0150  -2.80% -0.66σ st0 cq3 mp 0.76 tp 0.86 fail
+X_n4_np1_w3_b110_fwd_10_12     J_joint4_long_free               FAIL what():  Mean prior requires independently floating mean
+X_n4_np1_w3_b110_fwd_12_14     J_joint4_long_free               B=0.3963±0.0227  -4.76% -0.87σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_12_14     J_joint4_long_free               FAIL what():  Mean prior requires independently floating mean
+X_n4_np1_w3_b110_fwd_10_12     J_joint64_long_free              B=0.3214±0.0153  -6.19% -1.46σ st0 cq3 mp 0.77 tp 0.97 fail
+X_n4_np1_w3_b110_fwd_10_12     J_joint64_long_free              FAIL what():  Mean prior requires independently floating mean
+X_n4_np1_w3_b110_fwd_12_14     J_joint64_long_free              B=0.3912±0.0230  -5.99% -1.10σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_12_14     J_joint64_long_free              FAIL what():  Mean prior requires independently floating mean
+X_n4_np1_w3_b110_fwd_10_12     Q_bc1                            B=0.3313±0.0154  -3.28% -0.77σ st0 cq3 mp 0.76 tp 0.99 fail
+X_n4_np1_w3_b110_fwd_12_14     Q_bc1                            B=0.3964±0.0232  -4.76% -0.87σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     Q_bc2                            B=0.3314±0.0155  -3.26% -0.77σ st0 cq3 mp 0.76 tp 0.98 fail
+X_n4_np1_w3_b110_fwd_12_14     Q_bc2                            B=0.3967±0.0232  -4.67% -0.85σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     Q_bc3                            B=0.3318±0.0155  -3.15% -0.74σ st0 cq3 mp 0.76 tp 0.97 fail
+X_n4_np1_w3_b110_fwd_12_14     Q_bc3                            FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w6_b110_fwd_10_12     Q_bc3                            FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w6_b110_fwd_12_14     Q_bc3                            B=0.3967±0.0232  -4.68% -0.86σ st0 cq3 mp 0.98 tp 0.68 fail
+X_n4_np1_w3_b110_fwd_10_12     Q_bc3_fracmc                     B=0.3145±0.0156  -8.20% -1.93σ st0 cq3 mp 0.78 tp 0.99 fail
+X_n4_np1_w3_b110_fwd_12_14     Q_bc3_fracmc                     B=0.3804±0.0237  -8.58% -1.57σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     Q_bc3_sb                         FAIL what():  Invalid background core profiling mode
+X_n4_np1_w3_b110_fwd_12_14     Q_bc3_sb                         FAIL what():  Invalid background core profiling mode
+X_n4_np1_w3_b110_fwd_10_12     Q_meanfix_bc3                    B=0.3304±0.0149  -3.56% -0.84σ st0 cq3 mp 0.76 tp 0.97 fail
+X_n4_np1_w3_b110_fwd_12_14     Q_meanfix_bc3                    FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w3_b110_fwd_10_12     Q_pm                             B=0.3295±0.0161  -3.80% -0.90σ st0 cq3 mp 0.35 tp 0.97 fail
+X_n4_np1_w3_b110_fwd_12_14     Q_pm                             B=0.3913±0.0237  -5.97% -1.09σ st0 cq3 mp 0.96 tp 1.00 fail
+X_n4_np1_w6_b110_fwd_10_12     Q_pm                             B=0.3300±0.0160  -3.66% -0.86σ st0 cq3 mp 0.63 tp 0.66 fail
+X_n4_np1_w6_b110_fwd_12_14     Q_pm                             B=0.3923±0.0237  -5.74% -1.05σ st0 cq3 mp 0.97 tp 0.85 fail
+X_n4_np1_w3_b110_fwd_10_12     Q_pm_bc1                         B=0.3288±0.0159  -4.01% -0.95σ st0 cq3 mp 0.43 tp 0.99 fail
+X_n4_np1_w3_b110_fwd_12_14     Q_pm_bc1                         B=0.3902±0.0237  -6.23% -1.14σ st0 cq3 mp 0.96 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     Q_pm_bc2                         B=0.3288±0.0159  -4.02% -0.95σ st0 cq3 mp 0.42 tp 0.99 fail
+X_n4_np1_w3_b110_fwd_12_14     Q_pm_bc2                         B=0.3912±0.0236  -6.01% -1.10σ st0 cq3 mp 0.95 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     Q_pm_bc3                         B=0.3291±0.0159  -3.93% -0.93σ st0 cq3 mp 0.42 tp 0.98 fail
+X_n4_np1_w3_b110_fwd_12_14     Q_pm_bc3                         FAIL what():  No valid minimum among five configured start slots
+X_n4_np1_w6_b110_fwd_10_12     Q_pm_bc3                         B=0.3292±0.0159  -3.91% -0.92σ st0 cq3 mp 0.43 tp 0.80 fail
+X_n4_np1_w6_b110_fwd_12_14     Q_pm_bc3                         B=0.3932±0.0237  -5.51% -1.01σ st0 cq3 mp 0.96 tp 0.68 fail
+X_n4_np1_w3_b110_fwd_10_12     Q_wp2                            B=0.3342±0.0155  -2.43% -0.57σ st0 cq3 mp 0.76 tp 0.90 fail
+X_n4_np1_w3_b110_fwd_12_14     Q_wp2                            B=0.3979±0.0233  -4.39% -0.80σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     Q_wp2_free                       B=0.3348±0.0155  -2.28% -0.54σ st0 cq3 mp 0.75 tp 0.91 fail
+X_n4_np1_w3_b110_fwd_12_14     Q_wp2_free                       B=0.3995±0.0232  -4.00% -0.73σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     Q_wp2_k1                         B=0.3345±0.0155  -2.36% -0.56σ st0 cq3 mp 0.75 tp 0.90 fail
+X_n4_np1_w3_b110_fwd_12_14     Q_wp2_k1                         B=0.3993±0.0233  -4.04% -0.74σ st0 cq3 mp 0.98 tp 1.00 fail
+X_n4_np1_w3_b110_fwd_10_12     U_corefree                       B=0.2949±0.0154 -13.91% -3.28σ st0 cq3 mp 0.79 tp 1.00 fail
+
+# (b) FX fixed-parameter grid on NP2 prefits (NP2_SEPT1020_free work dirs)
+NP2_SEPT1020_free_fwd_10_12    FX_prfix_np2_bkfix               B=0.3347±0.0154  -2.29% -0.54σ st0 cq3 mp 0.75 tp 0.84 fail
+NP2_SEPT1020_free_fwd_12_14    FX_prfix_np2_bkfix               B=0.4149±0.0274  -0.31% -0.06σ st0 cq3 mp 0.98 tp 1.00 PASS
+NP2_SEPT1020_free_fwd_10_12    FX_prfix_np2_bkfree              B=0.3345±0.0155  -2.36% -0.56σ st0 cq3 mp 0.76 tp 0.87 fail
+NP2_SEPT1020_free_fwd_12_14    FX_prfix_np2_bkfree              B=0.4141±0.0275  -0.49% -0.09σ st0 cq3 mp 0.98 tp 1.00 PASS
+NP2_SEPT1020_free_fwd_10_12    FX_prfix_npfix_bkfix             FAIL what():  No valid minimum among five configured start slots
+NP2_SEPT1020_free_fwd_12_14    FX_prfix_npfix_bkfix             FAIL what():  No valid minimum among five configured start slots
+NP2_SEPT1020_free_fwd_10_12    FX_prfix_npfix_bkfree            FAIL what():  No valid minimum among five configured start slots
+NP2_SEPT1020_free_fwd_12_14    FX_prfix_npfix_bkfree            FAIL what():  No valid minimum among five configured start slots
+NP2_SEPT1020_free_fwd_10_12    FX_prfix_npfree_bkfix            B=0.3347±0.0154  -2.29% -0.54σ st0 cq3 mp 0.75 tp 0.84 fail
+NP2_SEPT1020_free_fwd_12_14    FX_prfix_npfree_bkfix            B=0.4073±0.0252  -2.13% -0.39σ st0 cq3 mp 0.98 tp 1.00 fail
+NP2_SEPT1020_free_fwd_10_12    FX_prfix_npfree_bkfree           B=0.3345±0.0155  -2.36% -0.56σ st0 cq3 mp 0.76 tp 0.87 fail
+NP2_SEPT1020_free_fwd_12_14    FX_prfix_npfree_bkfree           B=0.4066±0.0253  -2.29% -0.42σ st0 cq3 mp 0.98 tp 1.00 fail
+NP2_SEPT1020_free_fwd_10_12    FX_tail_np2_bkfix                B=0.3342±0.0155  -2.45% -0.58σ st0 cq3 mp 0.75 tp 0.84 fail
+NP2_SEPT1020_free_fwd_12_14    FX_tail_np2_bkfix                B=0.4155±0.0274  -0.17% -0.03σ st0 cq3 mp 0.98 tp 1.00 PASS
+NP2_SEPT1020_free_fwd_10_12    FX_tail_np2_bkfree               B=0.3342±0.0156  -2.44% -0.57σ st0 cq3 mp 0.76 tp 0.87 fail
+NP2_SEPT1020_free_fwd_12_14    FX_tail_np2_bkfree               B=0.4148±0.0275  -0.33% -0.06σ st0 cq3 mp 0.98 tp 1.00 PASS
+NP2_SEPT1020_free_fwd_10_12    FX_tail_npfix_bkfix              FAIL what():  No valid minimum among five configured start slots
+NP2_SEPT1020_free_fwd_12_14    FX_tail_npfix_bkfix              FAIL what():  No valid minimum among five configured start slots
+NP2_SEPT1020_free_fwd_10_12    FX_tail_npfix_bkfree             FAIL what():  No valid minimum among five configured start slots
+NP2_SEPT1020_free_fwd_12_14    FX_tail_npfix_bkfree             FAIL what():  No valid minimum among five configured start slots
+NP2_SEPT1020_free_fwd_10_12    FX_tail_npfree_bkfix             B=0.3342±0.0155  -2.45% -0.58σ st0 cq3 mp 0.75 tp 0.84 fail
+NP2_SEPT1020_free_fwd_12_14    FX_tail_npfree_bkfix             B=0.4078±0.0252  -2.00% -0.37σ st0 cq3 mp 0.98 tp 1.00 PASS
+NP2_SEPT1020_free_fwd_10_12    FX_tail_npfree_bkfree            B=0.3342±0.0156  -2.44% -0.58σ st0 cq3 mp 0.76 tp 0.87 fail
+NP2_SEPT1020_free_fwd_12_14    FX_tail_npfree_bkfree            B=0.4072±0.0253  -2.15% -0.39σ st0 cq3 mp 0.98 tp 1.00 fail
+
+# (c) prefit variants (prefit_variant.py): SB* sideband edges, MM* mass model, PQ* PR quantile window (r = outer-width lower bounds relaxed via pr_par), COMB* small upward tweaks + Q_wp2_k1, NP1/NP2/NP3 = NP component count with rule in the name (SEPT1020 = September fwd 10-20 policy, _free = PR mean free), NP2R<lo><hi> = truth range, NP2S/NP2L = second lifetime restricted to 0.02-0.15 / 0.5-3 mm via np_par, NP2C* = NP2 + tweaks
+COMB1_fwd_10_12                    fwd_10_12  B=0.3356±0.0154  -2.05% -0.48σ st0 cq3 mp 0.82 tp 0.89 fail
+COMB1_fwd_12_14                    fwd_12_14  B=0.4018±0.0226  -3.44% -0.63σ st0 cq3 mp 0.98 tp 1.00 fail
+COMB2_fwd_10_12                    fwd_10_12  B=0.3354±0.0154  -2.10% -0.50σ st0 cq3 mp 0.80 tp 0.89 fail
+COMB2_fwd_12_14                    fwd_12_14  B=0.4018±0.0226  -3.45% -0.63σ st0 cq3 mp 0.98 tp 1.00 fail
+MMcheb1_fwd_10_12                  fwd_10_12  B=0.3338±0.0156  -2.56% -0.60σ st0 cq3 mp 0.75 tp 0.89 fail
+MMcheb1_fwd_12_14                  fwd_12_14  B=0.4009±0.0227  -3.66% -0.67σ st0 cq3 mp 0.98 tp 1.00 fail
+MMcheb3_fwd_10_12                  fwd_10_12  B=0.3341±0.0155  -2.46% -0.58σ st0 cq3 mp 0.78 tp 0.89 fail
+MMcheb3_fwd_12_14                  fwd_12_14  B=0.3985±0.0234  -4.24% -0.78σ st0 cq3 mp 0.98 tp 1.00 fail
+MMg2_fwd_10_12                     fwd_10_12  B=0.3348±0.0155  -2.27% -0.53σ st0 cq3 mp 0.80 tp 0.87 fail
+MMg2_fwd_12_14                     fwd_12_14  B=0.3975±0.0234  -4.49% -0.82σ st0 cq3 mp 0.99 tp 1.00 fail
+NP1_SEPT1020_fwd_10_12             fwd_10_12  B=0.3339±0.0152  -2.53% -0.60σ st0 cq3 mp 0.76 tp 0.89 fail
+NP1_SEPT1020_fwd_12_14             fwd_12_14  B=0.3978±0.0228  -4.42% -0.81σ st0 cq3 mp 0.98 tp 1.00 fail
+NP1_SEPT1020_fwd_14_20             fwd_14_20  B=0.4072±0.0217  -1.35% -0.26σ st0 cq3 mp 0.99 tp 0.63 PASS
+NP2C1_fwd_10_12                    fwd_10_12  B=0.3358±0.0154  -1.96% -0.46σ st0 cq3 mp 0.82 tp 0.86 PASS
+NP2C2_fwd_10_12                    fwd_10_12  B=0.3351±0.0155  -2.19% -0.52σ st0 cq3 mp 0.80 tp 0.85 fail
+NP2C3_fwd_12_14                    fwd_12_14  B=0.4185±0.0271  +0.57% +0.10σ st0 cq3 mp 0.98 tp 1.00 PASS
+NP2C4_fwd_12_14                    fwd_12_14  B=0.4153±0.0274  -0.21% -0.04σ st0 cq3 mp 0.98 tp 1.00 PASS
+NP2L_fwd_10_12                     fwd_10_12  B=0.3232±0.0146  -5.64% -1.33σ st0 cq3 mp 0.75 tp 0.90 fail
+NP2L_fwd_12_14                     fwd_12_14  B=0.4154±0.0277  -0.19% -0.04σ st0 cq3 mp 0.98 tp 1.00 PASS
+NP2R010_fwd_10_12                  fwd_10_12  B=0.3342±0.0156  -2.44% -0.57σ st0 cq3 mp 0.76 tp 0.87 fail
+NP2R010_fwd_12_14                  fwd_12_14  B=0.4489±0.0395  +7.88% +1.44σ st0 cq3 mp 0.98 tp 1.00 fail
+NP2R020_fwd_10_12                  fwd_10_12  B=0.3342±0.0156  -2.44% -0.57σ st0 cq3 mp 0.76 tp 0.87 fail
+NP2R020_fwd_12_14                  fwd_12_14  B=0.4294±0.0320  +3.18% +0.58σ st0 cq3 mp 0.98 tp 1.00 fail
+NP2R03_fwd_10_12                   fwd_10_12  B=0.3343±0.0156  -2.40% -0.57σ st0 cq3 mp 0.76 tp 0.87 fail
+NP2R03_fwd_12_14                   fwd_12_14  B=0.4002±0.0234  -3.84% -0.70σ st0 cq3 mp 0.98 tp 1.00 fail
+NP2S_fwd_10_12                     fwd_10_12  B=0.3343±0.0156  -2.41% -0.57σ st0 cq3 mp 0.76 tp 0.87 fail
+NP2S_fwd_12_14                     fwd_12_14  B=0.4002±0.0234  -3.84% -0.70σ st0 cq3 mp 0.98 tp 1.00 fail
+NP2_F_tail0.1_mc8_long_free16_fwd_10_12 fwd_10_12  B=0.3343±0.0152  -2.40% -0.57σ st0 cq3 mp 0.76 tp 0.87 fail
+NP2_F_tail0.1_mc8_long_free16_fwd_12_14 fwd_12_14  B=0.4382±0.0339  +5.30% +0.97σ st0 cq3 mp 0.98 tp 1.00 fail
+NP2_F_tail0.1_mc8_long_free16_fwd_14_20 fwd_14_20  B=0.4083±0.0218  -1.10% -0.21σ st0 cq3 mp 0.99 tp 0.57 PASS
+NP2_F_tail0.1_mc8_long_free1_fwd_10_12 fwd_10_12  B=0.3342±0.0152  -2.45% -0.58σ st0 cq3 mp 0.76 tp 0.87 fail
+NP2_F_tail0.1_mc8_long_free1_fwd_12_14 fwd_12_14  B=0.4054±0.0244  -2.59% -0.47σ st0 cq3 mp 0.98 tp 1.00 fail
+NP2_F_tail0.1_mc8_long_free1_fwd_14_20 fwd_14_20  B=0.4082±0.0218  -1.12% -0.21σ st0 cq3 mp 0.99 tp 0.57 PASS
+NP2_SEPT1020_free_fwd_10_12        fwd_10_12  B=0.3342±0.0156  -2.44% -0.57σ st0 cq3 mp 0.76 tp 0.87 fail
+NP2_SEPT1020_free_fwd_12_14        fwd_12_14  B=0.4148±0.0275  -0.33% -0.06σ st0 cq3 mp 0.98 tp 1.00 PASS
+NP2_SEPT1020_free_fwd_14_20        fwd_14_20  B=0.4110±0.0225  -0.43% -0.08σ st0 cq3 mp 0.99 tp 0.56 PASS
+NP2_SEPT1020_fwd_10_12             fwd_10_12  B=0.3342±0.0152  -2.45% -0.58σ st0 cq3 mp 0.76 tp 0.87 fail
+NP2_SEPT1020_fwd_12_14             fwd_12_14  B=0.4113±0.0259  -1.17% -0.21σ st0 cq3 mp 0.98 tp 1.00 PASS
+NP2_SEPT1020_fwd_14_20             fwd_14_20  B=0.4082±0.0218  -1.11% -0.21σ st0 cq3 mp 0.99 tp 0.57 PASS
+NP3_F_tail0.1_free_long_free16_fwd_10_12 fwd_10_12  REJECTED what():  No valid high-pT MC calibration
+NP3_F_tail0.1_free_long_free16_fwd_12_14 fwd_12_14  B=0.4036±0.0245  -3.02% -0.55σ st0 cq3 mp 0.98 tp 1.00 fail
+NP3_F_tail0.1_free_long_free1_fwd_10_12 fwd_10_12  REJECTED what():  No valid high-pT MC calibration
+NP3_F_tail0.1_free_long_free1_fwd_12_14 fwd_12_14  B=0.3963±0.0227  -4.78% -0.87σ st0 cq3 mp 0.98 tp 1.00 fail
+NP3_SEPT1020_free_fwd_10_12        fwd_10_12  REJECTED what():  No valid high-pT MC calibration
+NP3_SEPT1020_free_fwd_12_14        fwd_12_14  B=0.3968±0.0228  -4.65% -0.85σ st0 cq3 mp 0.98 tp 1.00 fail
+PQ0001_fwd_10_12                   fwd_10_12  B=0.3340±0.0155  -2.51% -0.59σ st0 cq3 mp 0.76 tp 0.90 fail
+PQ0001_fwd_12_14                   fwd_12_14  B=0.3974±0.0233  -4.50% -0.82σ st0 cq3 mp 0.98 tp 1.00 fail
+PQ00025_fwd_10_12                  fwd_10_12  B=0.3339±0.0156  -2.52% -0.59σ st0 cq3 mp 0.76 tp 0.90 fail
+PQ00025_fwd_12_14                  fwd_12_14  B=0.3980±0.0233  -4.35% -0.80σ st0 cq3 mp 0.98 tp 1.00 fail
+PQ0005r_fwd_10_12                  fwd_10_12  B=0.3339±0.0156  -2.52% -0.59σ st0 cq3 mp 0.76 tp 0.89 fail
+PQ0005r_fwd_12_14                  fwd_12_14  B=0.3985±0.0233  -4.25% -0.78σ st0 cq3 mp 0.98 tp 1.00 fail
+PQ001_fwd_10_12                    fwd_10_12  B=0.3337±0.0156  -2.60% -0.61σ st0 cq3 mp 0.76 tp 0.88 fail
+PQ001_fwd_12_14                    fwd_12_14  B=0.3972±0.0235  -4.56% -0.83σ st0 cq3 mp 0.98 tp 1.00 fail
+PQ001r_fwd_10_12                   fwd_10_12  B=0.3337±0.0156  -2.60% -0.61σ st0 cq3 mp 0.76 tp 0.88 fail
+PQ001r_fwd_12_14                   fwd_12_14  B=0.3966±0.0236  -4.69% -0.86σ st0 cq3 mp 0.98 tp 1.00 fail
+PQ002_fwd_10_12                    fwd_10_12  B=0.3316±0.0157  -3.19% -0.75σ st0 cq3 mp 0.76 tp 0.86 fail
+PQ002_fwd_12_14                    fwd_12_14  B=0.3966±0.0236  -4.69% -0.86σ st0 cq3 mp 0.98 tp 1.00 fail
+PQ002r_fwd_10_12                   fwd_10_12  B=0.3271±0.0158  -4.50% -1.06σ st0 cq3 mp 0.76 tp 0.86 fail
+PQ002r_fwd_12_14                   fwd_12_14  B=0.3911±0.0238  -6.02% -1.10σ st0 cq3 mp 0.98 tp 1.00 fail
+PQ005_fwd_10_12                    fwd_10_12  B=0.3068±0.0174 -10.44% -2.46σ st0 cq3 mp 0.76 tp 0.93 fail
+PQ005_fwd_12_14                    fwd_12_14  B=0.3634±0.0284 -12.67% -2.32σ st0 cq3 mp 0.98 tp 1.00 fail
+PQ005r_fwd_10_12                   fwd_10_12  B=0.3126±0.0166  -8.75% -2.06σ st0 cq3 mp 0.76 tp 0.90 fail
+PQ005r_fwd_12_14                   fwd_12_14  B=0.3603±0.0285 -13.42% -2.46σ st0 cq3 mp 0.98 tp 1.00 fail
+SBin1_fwd_10_12                    fwd_10_12  B=0.3339±0.0156  -2.52% -0.59σ st0 cq3 mp 0.76 tp 0.89 fail
+SBin1_fwd_12_14                    fwd_12_14  B=0.3985±0.0233  -4.25% -0.78σ st0 cq3 mp 0.98 tp 1.00 fail
+SBin2_fwd_10_12                    fwd_10_12  B=0.3339±0.0156  -2.52% -0.59σ st0 cq3 mp 0.76 tp 0.89 fail
+SBin2_fwd_12_14                    fwd_12_14  B=0.3985±0.0233  -4.25% -0.78σ st0 cq3 mp 0.98 tp 1.00 fail
+SBleft_fwd_10_12                   fwd_10_12  B=0.3339±0.0156  -2.52% -0.59σ st0 cq3 mp 0.76 tp 0.89 fail
+SBleft_fwd_12_14                   fwd_12_14  B=0.3985±0.0233  -4.25% -0.78σ st0 cq3 mp 0.98 tp 1.00 fail
+SBright_fwd_10_12                  fwd_10_12  B=0.3339±0.0156  -2.52% -0.59σ st0 cq3 mp 0.76 tp 0.89 fail
+SBright_fwd_12_14                  fwd_12_14  B=0.3985±0.0233  -4.25% -0.78σ st0 cq3 mp 0.98 tp 1.00 fail

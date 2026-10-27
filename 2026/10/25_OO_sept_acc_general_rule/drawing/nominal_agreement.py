@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""B fraction vs nominal for FINAL_S1: drawing/final_summary/nominal_agreement.{pdf,png} (from summary.txt)."""
+"""B fraction vs nominal for FINAL_S3: drawing/final_summary/nominal_agreement.{pdf,png} (from summary.txt)."""
 import csv
 from pathlib import Path
 import matplotlib
@@ -15,7 +15,7 @@ for col, (reg, label) in enumerate([('fwd', '1.6 < |y| < 2.4'), ('mid', '|y| < 1
     N = [float(r['Bnom']) for r in rs]; Ne = [float(r['BnomErr']) for r in rs]
     ax = axes[0][col]
     ax.errorbar(x, N, xerr=xe, yerr=Ne, fmt='s', color='0.45', mfc='none', label='nominal')
-    ax.errorbar(x, B, xerr=xe, yerr=Be, fmt='o', color='#2a4ea0', label='this fit (FINAL_S1)')
+    ax.errorbar(x, B, xerr=xe, yerr=Be, fmt='o', color='#2a4ea0', label='this fit (FINAL_S3)')
     ax.set_title(f'OO 5.36 TeV, {label}'); ax.set_ylabel('nonprompt fraction B'); ax.legend(frameon=False)
     ax = axes[1][col]
     ax.axhspan(-2, 2, color='#e9f1ec')

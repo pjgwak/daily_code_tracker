@@ -1,3 +1,4 @@
+#include "utils/mass_window.h"
 #include "utils/prefit_jitter.h"
 #include "RooMinimizer.h"
 #include <fstream>
@@ -171,7 +172,7 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	}
 
 	// basic cuts
-	TString cutBasic = Form("(mass>2.6 && mass<3.5) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g)",
+	TString cutBasic = Form("(mass>%g && mass<%g) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g)", oo_mass_lo(), oo_mass_hi(),
 													ptLow, ptHigh, yLow, yHigh);
 	auto dataBasic = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(inputData->reduce(cutBasic)));
 	if (!dataBasic || dataBasic->numEntries() <= 0)
@@ -198,8 +199,8 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	if (const char *r = gSystem->Getenv("OO_NP_RANGE")) sscanf(r, "%lf,%lf", &ctRange.first, &ctRange.second);
 
 	TString cutAll = Form(
-			"(mass>2.6 && mass<3.5) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g) && "
-			"(truthCtau > %g && truthCtau <= %g)",
+			"(mass>%g && mass<%g) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g) && "
+			"(truthCtau > %g && truthCtau <= %g)", oo_mass_lo(), oo_mass_hi(),
 			ptLow, ptHigh, yLow, yHigh, ctRange.first, ctRange.second);
 	auto dataSel = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(inputData->reduce(cutAll)));
 	if (!dataSel || dataSel->numEntries() <= 0)
@@ -590,6 +591,35 @@ void ctau_np(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 	{
 		// fit mode
         oo_prefit_jitter(*signal_time, RooArgSet(obs_time));
+        // Study hook (2026-10-27): OO_NP_PAR="name=init,min,max;..." overrides a floating parameter's start value and range
+        // before the truth-ctau fit (empty field keeps the current value). Per-bin setting np_par.
+        if (const char *ov = gSystem->Getenv("OO_NP_PAR"))
+        {
+            std::unique_ptr<RooArgSet> pars(signal_time->getParameters(*data));
+            std::unique_ptr<TObjArray> items(TString(ov).Tokenize(";"));
+            for (int i = 0; i < items->GetEntries(); ++i)
+            {
+                TString item = items->At(i)->GetName(); item = item.Strip(TString::kBoth);
+                if (item.IsNull()) continue;
+                const int eq = item.Index("=");
+                if (eq < 0) throw std::runtime_error(("OO_NP_PAR item without '=': " + item).Data());
+                const TString name = item(0, eq);
+                auto *v = dynamic_cast<RooRealVar *>(pars->find(name));
+                if (!v) throw std::runtime_error(("OO_NP_PAR unknown parameter: " + name).Data());
+                TString rest = item(eq + 1, item.Length());
+                std::vector<TString> f;
+                int start = 0;
+                for (int k = 0; k <= rest.Length(); ++k)
+                    if (k == rest.Length() || rest[k] == ',') { f.push_back(rest(start, k - start)); start = k + 1; }
+                while (f.size() < 3) f.push_back("");
+                const double mn = f[1].IsNull() ? v->getMin() : f[1].Atof();
+                const double mx = f[2].IsNull() ? v->getMax() : f[2].Atof();
+                const double init = f[0].IsNull() ? std::min(std::max(v->getVal(), mn), mx) : f[0].Atof();
+                if (!(mn < mx) || init < mn || init > mx) throw std::runtime_error(("OO_NP_PAR invalid range for " + name).Data());
+                v->setRange(mn, mx); v->setVal(init); v->setConstant(false);
+                std::cout << "[NP_PAR] " << name << " init=" << init << " range=[" << mn << ", " << mx << "]" << std::endl;
+            }
+        }
         // Study hook: OO_NP_MULTISTART=1 runs the seeded multistart (with distinct-lifetime validity) in any bin.
         if (forwardNP2 || gSystem->Getenv("OO_NP_MULTISTART")) {
         auto pars=std::unique_ptr<RooArgSet>(signal_time->getParameters(RooArgSet(obs_time)));

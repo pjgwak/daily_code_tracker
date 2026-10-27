@@ -2,7 +2,7 @@
 """Production runner (September folder layout): prefits and the final 2D fit into roots/, figs/, figs_publish/.
 
 Called by run_ctau_bins.sh / run_publish.sh. Per-bin prefit choices come from config/prefit_settings.txt;
-the 2D fit uses the knob files in study/rules/FINAL_S1 (OO_RULE_DIR).
+the 2D fit uses the knob files in study/rules/FINAL_S3 (OO_RULE_DIR).
   stages : mc, pr, np, mass, bkg, 2d (in this order when several are given). Bins run in parallel and each
            bin moves to its next stage as soon as its own previous stage finishes (a failed stage stops that bin).
   --redraw  : redraw saved results into figs/ without refitting
@@ -31,15 +31,21 @@ def call(stage, s, draw, publish):
 
 def stage_env(stage, s):
     e = {'ROOT_HIST': '0', 'OMP_NUM_THREADS': '1'}
+    if s.get('mass_lo'): e['OO_MASS_LO'] = s['mass_lo']  # dimuon mass fit window (utils/mass_window.h), every stage
+    if s.get('mass_hi'): e['OO_MASS_HI'] = s['mass_hi']
     if stage == 'mc': e['OO_MC_SIG'] = f'{s["mc_cb"]},{s["mc_gauss"]}'
     if stage == 'pr': e.update(OO_PR_NRES=s['pr_nres'], OO_PR_QUANT=s.get('pr_quant', '0.0005,0.9995'))
+    if stage == 'np' and s.get('np_par'): e['OO_NP_PAR'] = s['np_par']  # per-bin start value / range overrides of the truth-ctau fit
+    if stage == 'pr' and s.get('pr_par'): e['OO_PR_PAR'] = s['pr_par']  # per-bin start value / range overrides of the MC resolution fit (name=init,min,max;...)
     if stage == 'np': e['OO_NP_COUNT'] = s['np_count']
     if stage == 'np' and s.get('np_range'): e['OO_NP_RANGE'] = s['np_range']  # truth-ctau fit range, default 0,6
     if stage == 'mass': e['OO_MASS_CHEB'] = s['mass_cheb']
     if stage == 'bkg': e.update(OO_BKG_COUNTS=f'{s["bkg_ss"]},{s["bkg_flip"]},{s["bkg_ds"]}', OO_BKG_CT_LO=s['ct_low'], OO_BKG_CT_HI=s['ct_high'], OO_BKG_ROBUST='1', OO_BKG_PROFILE_FRAC=s.get('bkg_profile_frac', '0'))
     if stage == 'bkg' and s.get('bkg_wide_tau', '0') == '1': e['OO_BKG_WIDE_TAU'] = '1'
     if stage == 'bkg' and s.get('bkg_core_max'): e['OO_BKG_CORE_MAX'] = s['bkg_core_max']
-    if stage == '2d': e['OO_RULE_DIR'] = os.environ.get('OO_FINAL_RULE_DIR', str(BASE / 'study/rules/FINAL_S1'))  # prefit_variant.py --rule
+    if stage == 'bkg' and s.get('bkg_par'): e['OO_BKG_PAR'] = s['bkg_par']  # per-bin start value / range overrides (name=init,min,max;...)
+    if stage == 'bkg' and s.get('bkg_plot_bins'): e['OO_BKG_PLOT_BINS'] = s['bkg_plot_bins']  # display / chi2 binning of the sideband ctau fit
+    if stage == '2d': e['OO_RULE_DIR'] = os.environ.get('OO_FINAL_RULE_DIR', str(BASE / 'study/rules/FINAL_S3'))  # prefit_variant.py --rule
     return e
 
 

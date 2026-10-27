@@ -1,3 +1,4 @@
+#include "utils/mass_window.h"
 #include "utils/prefit_jitter.h"
 #include "utils/projection_diagnostics.h"
 #include "TStyle.h"
@@ -137,7 +138,7 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		return;
 	}
 
-	TString cutAll = Form("(mass>2.6 && mass<3.5) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g)",
+	TString cutAll = Form("(mass>%g && mass<%g) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g)", oo_mass_lo(), oo_mass_hi(),
 											 ptLow, ptHigh, yLow, yHigh);
 	auto dataSel = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(inputData->reduce(cutAll)));
 	if (!dataSel || dataSel->numEntries() <= 0)
@@ -186,13 +187,13 @@ void mc_mass(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 
 		std::cerr << "ERROR: required observable mass is missing in selected dataset." << std::endl;
 		return;
 	}
-	RooRealVar obs_mass("mass", "mass", 2.6, 3.5);
+	RooRealVar obs_mass("mass", "mass", oo_mass_lo(), oo_mass_hi());
 	obs_mass.setBins(massVar->getBins());
 	obs_mass.SetTitle("mass");
 	obs_mass.setUnit("GeV/c^{2}");
-	obs_mass.setRange(2.6, 3.5);
-	obs_mass.setMin(2.6);
-	obs_mass.setMax(3.5);
+	obs_mass.setRange(oo_mass_lo(), oo_mass_hi());
+	obs_mass.setMin(oo_mass_lo());
+	obs_mass.setMax(oo_mass_hi());
 	const int massPlotBins = 200;
 
 	RooDataSet *data = dataSel.get();

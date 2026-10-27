@@ -19,7 +19,7 @@ def group(p):
     if p.startswith('bkg') or p[:3] in ('Nss', 'Nds', 'Nfl', 'Npl'): return 'bkg ctau (sideband prefit)'
     return 'other'
 
-def main(rule='FINAL_S1'):
+def main(rule='FINAL_S3'):
     out = BASE / 'drawing' / 'final_summary'
     subprocess.run([ROOT, '-l', '-b', '-q', f'study/dump_treatment.C("{BASE}","{out / "treatment.txt"}")'], cwd=BASE, check=True, stdout=subprocess.DEVNULL)
     rows = list(csv.DictReader(open(out / 'treatment.txt'), delimiter='\t'))

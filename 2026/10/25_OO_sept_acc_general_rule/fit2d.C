@@ -1,3 +1,4 @@
+#include "utils/mass_window.h"
 #include "utils/np_moment_constraint.h"
 #include <RooWrapperPdf.h>
 #include "utils/rule_override.h"
@@ -366,7 +367,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	}
 
 	// basic cut
-	TString cutBasic = Form("(mass>2.6 && mass<3.5) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g)",
+	TString cutBasic = Form("(mass>%g && mass<%g) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g)", oo_mass_lo(), oo_mass_hi(),
 													ptLow, ptHigh, yLow, yHigh);
 	auto dataBasic = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(inputData->reduce(cutBasic)));
 	if (!dataBasic || dataBasic->numEntries() <= 0)
@@ -523,8 +524,8 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	// apply cut
 	// ------------------------------------------------------------------
 	TString cutAll = Form(
-			"(mass>2.6 && mass<3.5) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g) && "
-			"(ctau >= %g && ctau <= %g)",
+			"(mass>%g && mass<%g) && (pt > %g && pt < %g) && (fabs(y) > %g && fabs(y) < %g) && "
+			"(ctau >= %g && ctau <= %g)", oo_mass_lo(), oo_mass_hi(),
 			ptLow, ptHigh, yLow, yHigh, ctRange.first, ctRange.second);
 
 	auto dataSel = std::unique_ptr<RooDataSet>(static_cast<RooDataSet *>(inputData->reduce(cutAll)));
@@ -541,10 +542,10 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 	RooRealVar &obs_time = *static_cast<RooRealVar *>(dataSel->get()->find("ctau"));
 	obs_mass.SetTitle("mass");
 	obs_mass.setUnit("GeV/c^{2}");
-	obs_mass.setRange(2.6, 3.5);
-	obs_mass.setMin(2.6);
-	obs_mass.setMax(3.5);
-	obs_mass.setRange("massFit", 2.6, 3.5);
+	obs_mass.setRange(oo_mass_lo(), oo_mass_hi());
+	obs_mass.setMin(oo_mass_lo());
+	obs_mass.setMax(oo_mass_hi());
+	obs_mass.setRange("massFit", oo_mass_lo(), oo_mass_hi());
 	obs_time.SetTitle("ctau");
 	obs_time.setUnit("mm");
 	obs_time.setRange(ctRange.first, ctRange.second);
@@ -1831,7 +1832,7 @@ void fit2d(float ptLow = 1, float ptHigh = 2, float yLow = 1.6, float yHigh = 2.
 			bkgPositiveMassSlope.setVal(k);
 			for (int j = 0; j <= 18; j++)
 			{
-				obs_mass.setVal(2.6 + .9 * j / 18.);
+				obs_mass.setVal(oo_mass_lo() + (oo_mass_hi() - oo_mass_lo()) * j / 18.);
 				double expected = bkg_mass_pdf->getVal(&massNorm), actual = marginal->getVal();
 				maxMarginal = std::max(maxMarginal, std::abs(actual / expected - 1.));
 				for (int q = 0; q <= 200; q++)

@@ -21,7 +21,7 @@ def main():
     if args.cols < 1 or args.row_gap_mm < 0:
         parser.error('cols must be positive and row gap nonnegative')
     def order(path):
-        match=re.search(r'_pt([0-9.]+)_([0-9.]+)\.pdf$', path.name)
+        match=re.search(r'_pt([0-9.]+)_([0-9.]+)(?:_[A-Za-z]+)?\.pdf$', path.name)
         return (float(match[1]), float(match[2])) if match else (math.inf, path.name)
     inputs=sorted((p.resolve() for p in args.input_dir.glob(args.pattern)
                    if p.is_file() and p.resolve()!=args.output.resolve()), key=order)

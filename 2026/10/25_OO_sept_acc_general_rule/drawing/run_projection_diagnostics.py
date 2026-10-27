@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay the saved final 2D fits (FINAL_S1, no minimization) and require projection diagnostics.
+"""Replay the saved final 2D fits (FINAL_S3, no minimization) and require projection diagnostics.
 
 Only fit2d.C writes diagnostics in this folder; the prefit macros have no diagnostics hook.
 The replay goes through run_publish.sh so each bin gets its production settings (OO_RULE_DIR etc.).

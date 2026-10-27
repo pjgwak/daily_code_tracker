@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Prefits and final 2D fit (FINAL_S1) into roots/ and figs/.
+# Prefits and final 2D fit (FINAL_S3) into roots/ and figs/.
 # Usage: bash run_ctau_bins.sh [--mc] [--pr] [--np] [--mass] [--bkg] [--2d] [--redraw] [--publish]
 #                              [--rapidity=both|fwd|mid] [--pt=LOW:HIGH] [--max-jobs=N]
 # No stage option = all stages in order (mc, pr, np, mass, bkg, 2d).
