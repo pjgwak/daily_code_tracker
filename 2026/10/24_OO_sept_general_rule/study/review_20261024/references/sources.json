@@ -1,0 +1,37 @@
+[
+  {
+    "id": "1201.5069",
+    "url": "https://arxiv.org/pdf/1201.5069",
+    "local_origin": "/data/users/pjgwak/work/daily_code_tracker/2026/10/15_OO_2dfit_rule_based_policy/references/CMS_PbPb2p76TeV_Jpsi_Y_JHEP05_063_arXiv1201.5069/1201.5069.pdf",
+    "sha256": "0e862448b447d3d4a9bad5383263ff69d4d92690ee7c0de239417970a33810e8"
+  },
+  {
+    "id": "1702.01462",
+    "url": "https://arxiv.org/pdf/1702.01462",
+    "local_origin": "/data/users/pjgwak/work/daily_code_tracker/2026/10/15_OO_2dfit_rule_based_policy/references/CMS_pp_pPb5p02TeV_Jpsi_EPJC77_269_arXiv1702.01462/1702.01462.pdf",
+    "sha256": "aca8838a1fdb6e24adde859b8e281f1eeaab4fae0e9908cdc059cb2316e5873d"
+  },
+  {
+    "id": "1710.11002",
+    "url": "https://arxiv.org/pdf/1710.11002",
+    "local_origin": "/data/users/pjgwak/work/daily_code_tracker/2026/10/15_OO_2dfit_rule_based_policy/references/CMS_pp13TeV_quarkonium_PLB780_251_arXiv1710.11002/1710.11002.pdf",
+    "sha256": "b9d26abc82e49fb717eecb8f33e569133e0eee18fb2dc3099c5ba3ff82238bfa"
+  },
+  {
+    "id": "2305.16928",
+    "url": "https://arxiv.org/pdf/2305.16928",
+    "local_origin": "/data/users/pjgwak/work/daily_code_tracker/2026/10/15_OO_2dfit_rule_based_policy/references/CMS_PbPb5p02TeV_charmonia_v2_JHEP10_115_arXiv2305.16928/2305.16928.pdf",
+    "sha256": "82c727bee292fd4ec5242f762d6b13a4dee39cd9979ef3835d0e9c78267dbe00"
+  },
+  {
+    "id": "2106.13235",
+    "url": "https://arxiv.org/pdf/2106.13235",
+    "sha256": "794b21218af252af239415b704b5fd3033151e1708418bafe0c63e1150633c95"
+  },
+  {
+    "id": "local_pp_working_note",
+    "local_origin": "/data/users/pjgwak/work/daily_code_tracker/2026/09/soohwan_hinjpsi_run3-PsiROO/doc/BinV5_Jpsi_pp_analysis_note.tex",
+    "classification": "repository working summary, not a verified CMS AN",
+    "sha256": "07f1d708a2de3fe05ba68d1572fa9a061eebfad36e6f184d74e79d2745b738ea"
+  }
+]

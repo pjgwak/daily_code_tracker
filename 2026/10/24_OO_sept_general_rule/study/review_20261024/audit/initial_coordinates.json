@@ -1,0 +1,41 @@
+{
+  "pass": true,
+  "records": [
+    {
+      "bin": "fwd_1_2",
+      "coordinates": 40,
+      "same_values_errors_bounds_fixed_flags": true,
+      "same_constraint_names": true,
+      "same_MC_frozen_coordinates": true,
+      "same_model_source": true,
+      "source_difference": null
+    },
+    {
+      "bin": "fwd_2_3",
+      "coordinates": 43,
+      "same_values_errors_bounds_fixed_flags": true,
+      "same_constraint_names": true,
+      "same_MC_frozen_coordinates": true,
+      "same_model_source": true,
+      "source_difference": null
+    },
+    {
+      "bin": "mid_7_8",
+      "coordinates": 38,
+      "same_values_errors_bounds_fixed_flags": true,
+      "same_constraint_names": true,
+      "same_MC_frozen_coordinates": true,
+      "same_model_source": false,
+      "source_difference": "Inactive optional np_all_lifetimes_free feature only; normalized source equality verified."
+    },
+    {
+      "bin": "mid_8_9",
+      "coordinates": 39,
+      "same_values_errors_bounds_fixed_flags": true,
+      "same_constraint_names": true,
+      "same_MC_frozen_coordinates": true,
+      "same_model_source": true,
+      "source_difference": null
+    }
+  ]
+}

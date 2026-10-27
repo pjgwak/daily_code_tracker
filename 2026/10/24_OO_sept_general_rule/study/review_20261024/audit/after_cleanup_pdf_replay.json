@@ -1,0 +1,129 @@
+{
+  "pass": true,
+  "bins": 20,
+  "refitted": false,
+  "max_relative_difference": 0.0,
+  "verification_artifacts": "/data/users/pjgwak/work/daily_code_tracker/2026/10/archive/23_OO_intermediate_20261024/cleanup_verification/saved_pdf_replay",
+  "records": [
+    {
+      "bin": "fwd_1_2",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "c43fd6941c669c0820b4368af4de62dd63e302221ae375ac1fdc9988feda0c70"
+    },
+    {
+      "bin": "fwd_2_3",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "849926fe46dbe54e76e92d79106c4c7e5e34a30648e4b3d94638e2425b86e9ef"
+    },
+    {
+      "bin": "fwd_3_4",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "8ca35807b590ce76ee76c5ed9029cf6a4ec6dd5ce2e4c519b67f3c9328bfeb12"
+    },
+    {
+      "bin": "fwd_4_5",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "93ef6656e12e420f5a347a82c4303450f54facd0c988415be02ca7d6a52365f6"
+    },
+    {
+      "bin": "fwd_5_6",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "42740b8d8ee68ff9b905df4ec6fb083e1d8c76e9b1ca934f3394978a5a28bf88"
+    },
+    {
+      "bin": "fwd_6_7",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "0fa173aba13c8f6b14f40ab7a51303e8e914ddc33fda2f6de21daf2cfacf0aac"
+    },
+    {
+      "bin": "fwd_7_8",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "111bb3b108b6539bb11b23cc5d58627769ae894fee07a75b4b64afc6f99b6016"
+    },
+    {
+      "bin": "fwd_8_9",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "a403beead70bce010146d7a8a3a834c816c3e5110982e6ad4146faf4a89f8cf6"
+    },
+    {
+      "bin": "fwd_9_10",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "34c2ef1932726b46b2fae368d482b6933fdd0d76ddfc2cc62ceb2c9af2e7307a"
+    },
+    {
+      "bin": "fwd_10_12",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "3c2e04f53c573d166eefbe4af0305516e675e00c3cd42f8593655afe97a4bb8c"
+    },
+    {
+      "bin": "fwd_12_14",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "08a3795df4ec68be648c299062203fbddea320b2449adc1cf66ca0868244f7dd"
+    },
+    {
+      "bin": "fwd_14_20",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "ef71cdfa5ad8f82f7088727956b0419f05d5a8031cecc8415e0f71df3f5f78a7"
+    },
+    {
+      "bin": "mid_7_8",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "9c33b84990be4cba2a0448d2fd75162472c19ba259f7b3df506cb0226cadee44"
+    },
+    {
+      "bin": "mid_8_9",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "c9cd12e55f689015b5f8623df25e280c182ff660a8eb5b1966ae377be4e057dc"
+    },
+    {
+      "bin": "mid_9_10",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "2dd1bb8e42b05a0ca119fe2f3face4ff622e7905a4a864bf6d6b156812514ec6"
+    },
+    {
+      "bin": "mid_10_12",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "f3bd87f30d9a08d0f3d7ed6d0f4f2ad84919d7e57c16cc75ae39fa0a1cc3b088"
+    },
+    {
+      "bin": "mid_12_14",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "057c9d80d8901c1eb3d70db4500ac8bceca837a5cb089bf134e7aa806212d8a5"
+    },
+    {
+      "bin": "mid_14_16",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "a58eebd1a29669a79374352f0f9b1ff6fbf25891f32b154790ac2b34b09da8e8"
+    },
+    {
+      "bin": "mid_16_20",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "3a967022b2236692a40c5f78f7b3803f8de2ba9d0611a4862e2ef3d8dfe3f61d"
+    },
+    {
+      "bin": "mid_20_30",
+      "pass": true,
+      "max_relative_difference": 0.0,
+      "unchanged_result_sha256": "ac25ed3911c983f8ef4e14a0fb30c5fd23d5a653dadfb281cf49dcdb41157c14"
+    }
+  ]
+}

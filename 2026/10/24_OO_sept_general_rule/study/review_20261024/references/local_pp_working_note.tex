@@ -1,0 +1,183 @@
+\documentclass[11pt]{article}
+\usepackage[a4paper,margin=22mm]{geometry}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{longtable}
+\usepackage{microtype}
+\usepackage{pdflscape}
+\usepackage{xcolor}
+
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue}
+\setlength{\parskip}{0.45em}
+\setlength{\parindent}{0pt}
+\newcommand{\fitgraphic}[1]{\includegraphics[width=0.90\textwidth,height=0.41\textheight,keepaspectratio]{\detokenize{#1}}}
+\newcommand{\fitgraphiccompact}[1]{\includegraphics[width=0.86\textwidth,height=0.29\textheight,keepaspectratio]{\detokenize{#1}}}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+{\Large PsiROO Analysis Note\par}
+\vspace{1.5cm}
+{\LARGE BinV5 pp $J/\psi\to\mu^+\mu^-$ Differential Cross Section\par}
+\vspace{0.5cm}
+{\large Prompt and nonprompt separation with weighted mass and direct $c\tau$ fits\par}
+\vfill
+{\large Working analysis summary generated from the current repository outputs\par}
+\vspace{0.5cm}
+{\large \today\par}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+\section{Scope and result provenance}
+
+This note compiles the current pp BinV5 $J/\psi$ analysis products: the event selection, the MC association and efficiency definition, the mass and proper-decay-length fit procedures, the exported numerical results, the model-variation ensemble, and a complete selected-fit gallery. The collision energy is $\sqrt{s}=5.36$ TeV. The measured quantity is the branching-fraction-weighted cross section,
+\begin{equation}
+\mathcal{B}(J/\psi\to\mu^+\mu^-)\,
+\frac{d^2\sigma}{dp_\mathrm{T}\,d|y|} =
+\frac{N_\mathrm{corr}}{\mathcal{L}_\mathrm{int}\,\Delta p_\mathrm{T}\,\Delta |y|}.
+\end{equation}
+
+The source tag and luminosity in the Results section are read from the current best-model CSV and all-12 measurement manifest, not from a hard-coded value in this note. The current export uses a folded $|y|$ density, so there is \emph{no} factor of two in Eq.~(1). A factor of two is needed only when comparing this folded quantity to a publication defined per signed rapidity $y$.
+
+\textbf{Configuration consistency note.} Some legacy macro defaults still contain $455.7\,\mathrm{pb}^{-1}$, whereas the current all-12 export was run with $520.0\,\mathrm{pb}^{-1}$. The numerical tables and figures in this note follow the current all-12 manifest and best-model CSV. This luminosity choice must remain fixed consistently before a final/public result is quoted.
+
+\section{Data sample and binning}
+
+The analysis is performed in two folded rapidity intervals:
+\begin{itemize}
+  \item $|y|<1.6$, with $p_\mathrm{T}$ bins $[7,8]$, $[8,9]$, $[9,10]$, $[10,12]$, $[12,14]$, $[14,16]$, $[16,20]$, and $[20,30]$ GeV.
+  \item $1.6<|y|<2.4$, with $p_\mathrm{T}$ bins $[1,2]$, $[2,3]$, $[3,4]$, $[4,5]$, $[5,6]$, $[6,7]$, $[7,8]$, $[8,9]$, $[9,10]$, $[10,12]$, $[12,14]$, and $[14,20]$ GeV.
+\end{itemize}
+
+\section{Reconstructed-candidate selection}
+
+The shared pp preselection is implemented in \texttt{Include/selection.hxx} and is applied consistently to data and to the reconstructed MC efficiency numerator.
+\begin{itemize}
+  \item Opposite-sign dimuon candidate: $q_{\mu\mu}=0$.
+  \item Candidate kinematics: $|y_{\mu\mu}|<2.4$ and $p_\mathrm{T}^{\mu\mu}<50$ GeV.
+  \item Candidate vertex probability: $P_\mathrm{vtx}>0.01$.
+  \item Trigger: the dimuon candidate and both muons must satisfy trigger bit 1, \texttt{1ULL << 1}.
+  \item Each muon must satisfy the tracker-muon selection bit \texttt{1 << 3}, $N_\mathrm{trk}>5$, $N_\mathrm{pix}>0$, $|d_{xy}|<0.3$, and $|d_z|<20$.
+  \item Muon acceptance: $|\eta|\le 2.4$ and a piecewise $p_\mathrm{T}$ threshold. The threshold is $3.3$ GeV for $|\eta|<1.0$, decreases linearly to $2.1$ GeV at $|\eta|=1.3$, then decreases from $1.53$ to $1.0$ GeV between $|\eta|=1.3$ and $1.7$, and is $1.0$ GeV for $1.7\le|\eta|\le2.4$.
+\end{itemize}
+
+\section{MC association, prompt classification, and efficiency}
+
+The efficiency calculation uses the ntuple truth association, not an additional $\Delta R$ match: a reconstructed candidate enters the numerator only when \texttt{Reco\_QQ\_whichGen >= 0}. Its reconstructed candidate is then evaluated with the same pp selection listed above. The numerator is filled in the matched generator $p_\mathrm{T}$ and rapidity, while the denominator is formed from generator-level $J/\psi$ in the same folded rapidity window.
+
+Prompt/nonprompt MC categories are classified from \texttt{Gen\_QQ\_momId}. A nonprompt candidate has a parent PDG identifier corresponding to a $b$ quark or a $b$-hadron range (5, 500--599, 5000--5999, and the corresponding higher PDG ranges); prompt is the complement. Where an input sample lacks the mother-id branch, the prompt/nonprompt sample split is trusted rather than forcing a prompt classification.
+
+Acceptance requires both generated muons to satisfy the same kinematic muon-acceptance function. The reconstructed efficiency then includes trigger, reconstruction, quality, and candidate selection. For BinV5 the correction maps are split in the two folded rapidity intervals and use the same $p_\mathrm{T}$ binning as the analysis: \texttt{ptb} for $|y|<1.6$ and \texttt{ptf} for $1.6<|y|<2.4$. The current barrel map therefore ends at $20$--$30$ GeV, not $20$--$35$ GeV. The correction products store acceptance, efficiency, and their product separately. Figure~\ref{fig:efficiency} overlays the reweighted prompt and nonprompt one-dimensional curves used to inspect this behavior.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{../macros/correction/plots/prompt_nonprompt_acc_eff_totalEff_BinV5_Rw.png}
+\caption{Prompt/nonprompt acceptance, reconstruction efficiency, and total correction versus $p_\mathrm{T}$ in both folded rapidity intervals.}
+\label{fig:efficiency}
+\end{figure}
+
+\section{Mass and proper-decay-length fits}
+
+\subsection{Mass fit}
+
+For each kinematic bin, the dimuon mass is fitted in $2.6<m_{\mu\mu}<3.5$ GeV. The fitter builds a \texttt{RooDataHist}; unweighted fits provide the raw signal yield, while PR- and NP-weighted fits use the candidate weights \texttt{effCorrPR} and \texttt{effCorrNP}, respectively, with \texttt{SumW2Error} enabled. The mass fit is a binned $\chi^2$ fit with one RooFit CPU per fit.
+
+The scan contains four signal models: double Gaussian (DG), Gaussian plus Crystal Ball (GCB), two Crystal Balls (2CB), and double-sided Crystal Ball (DSCB). The background choices are an exponential, second-order Chebychev polynomial, and third-order Chebychev polynomial. This gives 12 signal/background configurations. Signal-shape starting values are loaded from the corresponding MC workspace when present. Individual fit results are saved as \texttt{RooFitResult} objects and the scan is additionally stored in a per-bin combined RooWorkspace.
+
+\subsection{Prompt/nonprompt separation}
+
+Mass-fit signal yields in $c\tau$ slices provide the signal-only $c\tau$ histogram. The direct $c\tau$ fit uses a common three-Gaussian resolution model. The prompt component is the three-Gaussian resolution PDF; an optional double-sided decay admixture exists for dedicated stabilization studies but is disabled by default. The nonprompt component is a mixture of two single-sided decay PDFs convolved with the common resolution. The yields $N_\mathrm{prompt}$ and $N_\mathrm{nonprompt}$ are fitted simultaneously and
+\begin{equation}
+f_\mathrm{prompt}=\frac{N_\mathrm{prompt}}{N_\mathrm{prompt}+N_\mathrm{nonprompt}}
+\end{equation}
+is stored with covariance-propagated uncertainty.
+
+The current exported source uses the PR-weighted direct-$c\tau$ prompt component for the prompt yield and the NP-weighted direct-$c\tau$ nonprompt component for the nonprompt yield:
+\begin{equation}
+N_\mathrm{prompt}^\mathrm{corr}=N_\mathrm{prompt}^{\mathrm{PR}\,\mathrm{weighted}},\qquad
+N_\mathrm{nonprompt}^\mathrm{corr}=N_\mathrm{nonprompt}^{\mathrm{NP}\,\mathrm{weighted}}.
+\end{equation}
+The prompt fraction reported in the tables is then recomputed from these two corrected component yields, $N_\mathrm{prompt}^\mathrm{corr}/(N_\mathrm{prompt}^\mathrm{corr}+N_\mathrm{nonprompt}^\mathrm{corr})$.
+
+\section{Results}
+
+\input{generated/results.tex}
+
+The export-level \texttt{valid} flag checks that the required payloads are present; it is not a standalone physics-quality selection. The selected best-model rows in the current result all have status 0, covariance quality 3, and valid Hessians for both the PR- and NP-weighted direct-$c\tau$ fits. In the full 12-model scan, one non-selected variation in the updated barrel endpoint bin, PR-weighted DSCB+Cheby3 for $20<p_\mathrm{T}<30$ GeV and $|y|<1.6$, still has status 3, covariance quality 2, and an invalid Hessian; it is retained only as a model-variation diagnostic, not as the selected result.
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.95\textwidth]{../macros/studies/bin_by_bin_best_xsec/output/BestModelDifferentialCrossSection_Jpsi_BinV5.png}
+\caption{Current best-model prompt, nonprompt, and inclusive differential cross sections.}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.82\textwidth]{../macros/studies/bin_by_bin_best_xsec/output/BestModelPromptFraction_Jpsi_BinV5.png}
+\caption{Prompt fraction recomputed from the PR-weighted prompt and NP-weighted nonprompt corrected yields.}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.90\textwidth]{../macros/studies/bin_by_bin_best_xsec/output/BestModelComparisonTo2CBCheby2_Jpsi_BinV5.png}
+\caption{Current best-model result compared to the fixed 2CB+Cheby2 reference configuration.}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.96\textwidth]{../macros/result/pyplot/output_pp_oo_roo_from_jun/pp_oo_roo_from_jun.png}
+\caption{Current pp best-model cross section compared to the OO cross section from \texttt{external/FromJun}, including the resulting $R_\mathrm{OO}$.}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.96\textwidth]{../macros/studies/power_law_roo_stability/output_sigmoid_turnon/sigmoid_turnon_cross_section_pulls.png}
+\caption{Sigmoid-turn-on times power-law smoothness check for the current pp best-model and OO cross sections. The lower panels show data/fit ratios and log-space pulls.}
+\end{figure}
+
+\section{Fit-model variations and external comparison}
+
+The 12 signal/background combinations are retained as a model-dependence study. The full distributions and their ratios to the selected reference configuration are shown below. The individual variation files are under \texttt{macros/result/measurement/output\_bkg\_variations} and their summary products are under \texttt{macros/result/pyplot/output\_all12\_methods}.
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.96\textwidth]{../macros/result/pyplot/output_all12_methods/All12MethodCrossSectionFullDistribution_Jpsi_BinV5.png}
+\caption{Prompt and nonprompt cross sections from all 12 signal/background fit configurations.}
+\end{figure}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.96\textwidth]{../macros/result/pyplot/output_all12_methods/All12MethodCrossSectionComparison_Jpsi_BinV5.png}
+\caption{All 12 fit configurations divided by the reference configuration used in the variation study.}
+\end{figure}
+
+\input{generated/model_variation_yield_nll_tables.tex}
+
+\begin{figure}[p]
+\centering
+\includegraphics[width=0.90\textwidth]{../macros/studies/bin_by_bin_best_xsec/output/alice_dielectron_comparison/BestModel_vs_ALICE_dielectron_midrapidity.png}
+\caption{Best-model pp cross section compared to the available ALICE dielectron midrapidity reference points.}
+\end{figure}
+
+\section{Reproducibility map}
+
+The note is built from the following current analysis products:
+\begin{itemize}
+  \item Selection: \texttt{Include/selection.hxx} and \texttt{Include/algo.hxx}.
+  \item Acceptance and efficiency: \texttt{macros/correction/TotalEff.cpp} and \texttt{macros/correction/root/totalEff\_*.root}.
+  \item Mass fit: \texttt{macros/fit\_weighted/FitMassWeighted.C}.
+  \item $c\tau$ fit: \texttt{macros/fit\_weighted/FitDataCtauDirectWeighted.C}.
+  \item All-12 numerical exports: \texttt{macros/result/measurement/output\_bkg\_variations}.
+  \item Current selected numerical export: \texttt{macros/studies/bin\_by\_bin\_best\_xsec/output/BestModelCrossSection\_Jpsi\_BinV5.csv}.
+  \item Fit-model ensemble plots: \texttt{macros/result/pyplot/output\_all12\_methods}.
+  \item pp/OO comparison: \texttt{macros/result/pyplot/output\_pp\_oo\_roo\_from\_jun}.
+\end{itemize}
+
+\input{generated/fit_gallery.tex}
+
+\end{document}

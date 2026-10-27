@@ -1,0 +1,13 @@
+inputs/
+roots/
+results/
+logs/
+figs*/
+np_hijing_gen/*.root
+reference/september/roots/
+*.so
+*.pcm
+*.d
+study/build/
+__pycache__/
+build/

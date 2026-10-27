@@ -1,0 +1,17 @@
+{
+  "campaign": "recovery_candidate20_exact_starts_g7",
+  "rule": "D7_Recovery_candidate20",
+  "no_DATA_PR_NP_template_bins": 20,
+  "remaining_template_bins": [],
+  "totals": {
+    "PR_free": 104,
+    "PR_MC_fixed": 48,
+    "PR_DATA_prefit_fixed": 0,
+    "PR_DATA_template_fixed": 0,
+    "NP_free": 71,
+    "NP_MC_fixed": 0,
+    "NP_DATA_prefit_fixed": 0,
+    "NP_DATA_template_fixed": 0
+  },
+  "note": "This is a coordinate provenance audit, not validation of sWeight assumptions. Unvalidated sWeight shape fixing was withdrawn on 2026-10-24. Final-success-fixed coordinates remain conditional. Standard mass/background prefits remain separate."
+}

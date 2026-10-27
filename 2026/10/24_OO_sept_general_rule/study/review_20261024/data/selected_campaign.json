@@ -1,0 +1,7 @@
+{
+  "campaign": "recovery_candidate20_exact_starts_g7",
+  "rule": "D7_Recovery_candidate20",
+  "base": "/data/users/pjgwak/work/daily_code_tracker/2026/10/23_OO_simple_rules_2p1",
+  "manifest_sha256": "ebecb85ffdc29a5764835c14bdc04494f2c01fa8cc0902716ec2ec41696a69d7",
+  "plot_review_scope": "Current selected full twenty-bin refit; no numerical refit during documentation cleanup."
+}

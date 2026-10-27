@@ -1,0 +1,17 @@
+{
+  "pass_all": true,
+  "full20_campaign": "recovery_candidate20_exact_starts_g7",
+  "agreement": 20,
+  "DATA_PDF_boundaries": 20,
+  "NP_fixed": 0,
+  "exact_successful_initials_verified": true,
+  "individual_bin_pages": 20,
+  "original_prefits_verified": 100,
+  "projections": 40,
+  "conditional_bins": [
+    "fwd_2_3",
+    "mid_8_9"
+  ],
+  "same_M8_M9_policy": false,
+  "report": "interim_results/recovery_candidate20/README.md"
+}

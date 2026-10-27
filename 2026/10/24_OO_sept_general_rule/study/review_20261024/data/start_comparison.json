@@ -1,0 +1,34 @@
+[
+  {
+    "campaign": "recovery_candidate20_g7",
+    "bin": "fwd_2_3",
+    "percent": "nan",
+    "status": "-9",
+    "covQual": "-9",
+    "rawNll": "nan"
+  },
+  {
+    "campaign": "recovery_candidate20_g7",
+    "bin": "mid_8_9",
+    "percent": "2.4955853741113643",
+    "status": "0",
+    "covQual": "3",
+    "rawNll": "-45312.407949639062"
+  },
+  {
+    "campaign": "recovery_candidate20_exact_starts_g7",
+    "bin": "fwd_2_3",
+    "percent": "0.6612653009866909",
+    "status": "0",
+    "covQual": "3",
+    "rawNll": "-1198220.2327117643"
+  },
+  {
+    "campaign": "recovery_candidate20_exact_starts_g7",
+    "bin": "mid_8_9",
+    "percent": "2.0976610657307937",
+    "status": "0",
+    "covQual": "3",
+    "rawNll": "-45311.900670808718"
+  }
+]

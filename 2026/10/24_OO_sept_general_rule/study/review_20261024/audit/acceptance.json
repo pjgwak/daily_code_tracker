@@ -1,0 +1,28 @@
+{
+  "status": "PASS",
+  "inputs": [
+    {
+      "role": "nonprompt_mc",
+      "path": "inputs/np_gen_singlemu.root",
+      "sha256": "1f9c070fe13b381ab8cc2c56e85bdc3abc134e9c4bd830518c728400cb476ca8",
+      "status": "matches_frozen_production"
+    },
+    {
+      "role": "prompt_mc",
+      "path": "inputs/roodataset_roots/RooDataSet_miniAOD_isMC1_PR_Hijing_globalOff_Jpsi_cent0_200_Effw0_Accw0_PtW0_TnP0_OO25_HLT_OxyL1SingleMuOpen_v1.root",
+      "sha256": "fe338aa6f22b649ac6a553308db233753be2ca76a03095dcf131fef91542f82f",
+      "status": "matches_frozen_production"
+    },
+    {
+      "role": "data",
+      "path": "inputs/roodataset_roots/RooDataSet_miniAOD_isMC0_globalOff_Jpsi_cent0_200_Effw0_Accw0_PtW0_TnP0_OO25_HLT_OxyL1SingleMuOpen_v1.root",
+      "sha256": "49798917170de97ad9e84962a589152f6407f9c65a3835201f674cc22d8b3a81",
+      "status": "matches_frozen_production"
+    }
+  ],
+  "prior_full_input_replay": {
+    "source": "audit_acceptance.json",
+    "status": "PASS"
+  },
+  "note": "File hashes checked now; full event replay is preserved historical evidence, not rerun today."
+}
