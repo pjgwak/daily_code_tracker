@@ -1,0 +1,18 @@
+# MC fit ctau 창 변형 (study/logs_m/win_cmds.txt 명령 → 결과)
+python3 study/prefit_variant.py MCw_-1.0_3.0 fwd_10_12 ct_low=-1.0 ct_high=3.0 bkg_saved_ct=-1.0,3.0 --rule=MCw_-1.0_3.0 > study/logs_m/pv_MCw_-1.0_3.0_fwd_10_12.log 2>&1
+python3 study/prefit_variant.py MCw_-1.0_3.0 fwd_12_14 ct_low=-1.0 ct_high=3.0 bkg_saved_ct=-1.0,3.0 --rule=MCw_-1.0_3.0 > study/logs_m/pv_MCw_-1.0_3.0_fwd_12_14.log 2>&1
+python3 study/prefit_variant.py MCw_-1.0_4.0 fwd_10_12 ct_low=-1.0 ct_high=4.0 bkg_saved_ct=-1.0,4.0 --rule=MCw_-1.0_4.0 > study/logs_m/pv_MCw_-1.0_4.0_fwd_10_12.log 2>&1
+python3 study/prefit_variant.py MCw_-1.0_4.0 fwd_12_14 ct_low=-1.0 ct_high=4.0 bkg_saved_ct=-1.0,4.0 --rule=MCw_-1.0_4.0 > study/logs_m/pv_MCw_-1.0_4.0_fwd_12_14.log 2>&1
+python3 study/prefit_variant.py MCw_-2.0_6.0 fwd_10_12 ct_low=-2.0 ct_high=6.0 bkg_saved_ct=-2.0,6.0 --rule=MCw_-2.0_6.0 > study/logs_m/pv_MCw_-2.0_6.0_fwd_10_12.log 2>&1
+python3 study/prefit_variant.py MCw_-2.0_6.0 fwd_12_14 ct_low=-2.0 ct_high=6.0 bkg_saved_ct=-2.0,6.0 --rule=MCw_-2.0_6.0 > study/logs_m/pv_MCw_-2.0_6.0_fwd_12_14.log 2>&1
+python3 study/prefit_variant.py MCw_-0.5_4.0 fwd_10_12 ct_low=-0.5 ct_high=4.0 bkg_saved_ct=-0.5,4.0 --rule=MCw_-0.5_4.0 > study/logs_m/pv_MCw_-0.5_4.0_fwd_10_12.log 2>&1
+python3 study/prefit_variant.py MCw_-0.5_4.0 fwd_12_14 ct_low=-0.5 ct_high=4.0 bkg_saved_ct=-0.5,4.0 --rule=MCw_-0.5_4.0 > study/logs_m/pv_MCw_-0.5_4.0_fwd_12_14.log 2>&1
+
+MCw_-0.5_4.0_fwd_10_12             fwd_10_12  B=0.3386±0.0158  -1.16% -0.27σ st0 cq3 mp 0.76 tp 0.64 PASS
+MCw_-0.5_4.0_fwd_12_14             fwd_12_14  B=0.4068±0.0236  -2.26% -0.41σ st0 cq3 mp 0.98 tp 1.00 fail
+MCw_-1.0_3.0_fwd_10_12             fwd_10_12  B=0.3384±0.0158  -1.20% -0.28σ st0 cq3 mp 0.77 tp 0.82 PASS
+MCw_-1.0_3.0_fwd_12_14             fwd_12_14  B=0.4063±0.0236  -2.38% -0.44σ st0 cq3 mp 0.98 tp 0.98 fail
+MCw_-1.0_4.0_fwd_10_12             fwd_10_12  B=0.3386±0.0158  -1.17% -0.28σ st0 cq3 mp 0.77 tp 0.94 PASS
+MCw_-1.0_4.0_fwd_12_14             fwd_12_14  B=0.4063±0.0236  -2.36% -0.43σ st0 cq3 mp 0.98 tp 0.99 fail
+MCw_-2.0_6.0_fwd_10_12             fwd_10_12  B=0.3386±0.0158  -1.15% -0.27σ st0 cq3 mp 0.78 tp 0.30 PASS
+MCw_-2.0_6.0_fwd_12_14             fwd_12_14  B=0.4064±0.0236  -2.34% -0.43σ st0 cq3 mp 0.98 tp 0.75 fail

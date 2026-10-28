@@ -1,0 +1,22 @@
+# prefit 배경 변형 (study/logs_m/bkg_variants.txt 정의 → 결과)
+Mbkg101 fwd_10_12 bkg_ss=1 bkg_flip=0 bkg_ds=1
+Mbkg111 fwd_10_12 bkg_ss=1 bkg_flip=1 bkg_ds=1
+Mbkg201 fwd_10_12 bkg_ss=2 bkg_flip=0 bkg_ds=1
+Mbkg101w fwd_10_12 bkg_ss=1 bkg_flip=0 bkg_ds=1 bkg_wide_tau=1
+Mbkg210w fwd_10_12 bkg_wide_tau=1
+Mbkg101 fwd_12_14 bkg_ss=1 bkg_flip=0 bkg_ds=1
+Mbkg111 fwd_12_14 bkg_ss=1 bkg_flip=1 bkg_ds=1
+Mbkg201 fwd_12_14 bkg_ss=2 bkg_flip=0 bkg_ds=1
+Mbkg210 fwd_12_14 bkg_ss=2 bkg_flip=1 bkg_ds=0
+Mbkg110w fwd_12_14 bkg_wide_tau=1
+
+Mbkg101_fwd_10_12                  fwd_10_12  B=0.3424±0.0153  -0.04% -0.01σ st0 cq3 mp 0.78 tp 0.92 PASS
+Mbkg101_fwd_12_14                  fwd_12_14  B=0.3959±0.0233  -4.86% -0.89σ st0 cq3 mp 0.98 tp 1.00 fail
+Mbkg101w_fwd_10_12                 fwd_10_12  B=0.3330±0.0155  -2.78% -0.66σ st0 cq3 mp 0.76 tp 0.92 fail
+Mbkg110w_fwd_12_14                 fwd_12_14  B=0.3987±0.0234  -4.20% -0.77σ st0 cq3 mp 0.98 tp 1.00 fail
+Mbkg111_fwd_10_12                  fwd_10_12  B=0.3422±0.0152  -0.12% -0.03σ st0 cq3 mp 0.78 tp 0.95 PASS
+Mbkg111_fwd_12_14                  fwd_12_14  B=0.3975±0.0233  -4.48% -0.82σ st0 cq3 mp 0.98 tp 1.00 fail
+Mbkg201_fwd_10_12                  fwd_10_12  B=0.3323±0.0155  -3.00% -0.71σ st0 cq3 mp 0.76 tp 0.91 fail
+Mbkg201_fwd_12_14                  fwd_12_14  REJECTED what():  Invalid or unaudited prefit: roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2
+Mbkg210_fwd_12_14                  fwd_12_14  B=0.3974±0.0233  -4.51% -0.83σ st0 cq3 mp 0.98 tp 1.00 fail
+Mbkg210w_fwd_10_12                 fwd_10_12  B=0.3326±0.0155  -2.92% -0.69σ st0 cq3 mp 0.76 tp 0.93 fail

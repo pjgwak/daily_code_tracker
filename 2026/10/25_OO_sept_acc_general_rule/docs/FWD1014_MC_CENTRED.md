@@ -90,7 +90,7 @@ PR Gauss 수 × NP 성분 수 × ctau 창 × 배경 구성(깨끗한 배경 pref
 - `study/refit_rules.py WORKDIR BIN RULE…` : 기존 prefit 위에 다른 규칙 fit.
 - `study/rules.py` : `FINAL_S1_nogap`(간격비 이동 제거), `FINAL_S1_cond`(+조건부 배경), `M_npeff_cond*`.
 - 매크로 훅: ctau_bkg.C `OO_BKG_PAR`, `OO_BKG_PLOT_BINS`; 모든 매크로 `OO_MASS_LO/HI`(utils/mass_window.h, 기본 2.6/3.5). FINAL_S1을 다시 돌려 production 값이 그대로 재현되는 것을 확인했다(fwd 2–3 +2.96%, fwd 10–12 +0.02%, mid 7–8 +0.43%).
-- 실행 결과: `study/scans/S1_*`, `study/prefit_variants/{B,X,N,MW,MWB}*`, 로그 `study/logs_m/`.
+- 실행 결과(`study/scans/S1_*`, `study/prefit_variants/{B,X,N,MW,MWB}*`, 로그 `study/logs_m/`)는 스터디 종료 후 삭제했다(10/29). 스캔 결과는 `docs/evidence/fwd1012_scan_S1.tsv`·`fwd1214_scan_S1.tsv`(+ `_combos.json`), 배경·MC 창 변형은 `fwd1014_bkg_variants.txt`·`fwd1014_mc_window_variants.txt`.
 
 ## 5. 오후 재검토 (10/27 15:00–16:00 KST): 빈별 탐색, 9월 정책, NP 2·3성분, 매개변수 고정
 
