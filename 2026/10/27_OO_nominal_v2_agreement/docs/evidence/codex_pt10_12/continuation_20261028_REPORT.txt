@@ -1,0 +1,73 @@
+Forward pT 10–12 agreement 추가 검증 (2026-10-28)
+
+조건: mass [2.6,3.5] GeV; 기존 질량 무관 배경. 사용자 추가 답변에 따라 ctau 창 확대 허용.
+초기 창 [-0.2,1.5/1.6]; 확대 창 하한 -0.2/-0.3/-0.5, 상한 2/2.5/3/4 mm.
+WB110 prefit, PR tail k=0.8(확대 창은 k=0.1도 비교), NP covariance scale=1에서 한 설정씩 변경.
+최종 fit B 직접 비교; B 환산/외삽 없음. Nominal B=0.3442552626431579.
+통과: |relative difference|<=2%, PR/NP 전체 PDF 각각 >=99%, status=0/covQual=3/EDM<1e-3, 추가 경계 없음.
+기존 NP 두 번째 성분의 경계 접근은 all_bounds에 별도로 보존한다.
+
+결과: 38개 시도, 38개 결과 저장, 0개 실행 실패, 조건 통과 0개.
+기준 fit 두 개는 이전 B를 1e-8 이내로 재현. 원본 입력 14개 SHA256 불변.
+이 스캔은 민감도 검사이며 nominal과의 일치만으로 모델을 채택하지 않는다.
+
+case | B +/- error | diff % | PR % | NP % | fit_ok | additional bounds | eligible
+control_hi1.5 | 0.331912095 +/- 0.015960715 | -3.58547 | 99.865765 | 98.886858 | True | none | False
+mass_profile_hi1.5 | 0.327879241 +/- 0.016494284 | -4.75694 | 99.868686 | 98.843229 | True | none | False
+mean_fixed_hi1.5 | 0.331996817 +/- 0.015356349 | -3.56086 | 99.865768 | 98.888032 | True | none | False
+np_lifetimes_free_hi1.5 | 0.331692922 +/- 0.015949731 | -3.64914 | 99.865779 | 98.857643 | True | none | False
+np_longest_constrained_hi1.5 | 0.321574419 +/- 0.014752423 | -6.58838 | 99.863602 | 98.159396 | True | none | False
+np_unconstrained_hi1.5 | 0.999879159 +/- 0.956573150 | +190.44702 | 99.770874 | 99.289783 | True | bFraction | False
+pr_outer_free_hi1.5 | 0.331979212 +/- 0.015750830 | -3.56597 | 99.866424 | 98.887604 | True | none | False
+control_hi1.6 | 0.332342345 +/- 0.015897528 | -3.46049 | 99.865861 | 99.148552 | True | none | False
+mass_profile_hi1.6 | 0.328305360 +/- 0.016429123 | -4.63316 | 99.868747 | 99.109396 | True | none | False
+mean_fixed_hi1.6 | 0.332457177 +/- 0.015309622 | -3.42713 | 99.865864 | 99.149762 | True | none | False
+np_lifetimes_free_hi1.6 | 0.332289401 +/- 0.015898505 | -3.47587 | 99.865854 | 99.147691 | True | none | False
+np_longest_constrained_hi1.6 | 0.322169484 +/- 0.014732204 | -6.41552 | 99.863698 | 98.583776 | True | none | False
+np_unconstrained_hi1.6 | 0.999093784 +/- 0.679658432 | +190.21888 | 99.772702 | 99.430779 | True | bFraction | False
+pr_outer_free_hi1.6 | 0.332399465 +/- 0.015690062 | -3.44390 | 99.866428 | 99.149065 | True | none | False
+wide_lo-0.2_hi2_k0.1 | 0.333740373 +/- 0.015623387 | -3.05439 | 99.862524 | 99.712739 | True | none | False
+wide_lo-0.2_hi2_k0.8 | 0.333675878 +/- 0.015797390 | -3.07312 | 99.865771 | 99.714587 | True | none | False
+wide_lo-0.3_hi2_k0.1 | 0.333352529 +/- 0.015615282 | -3.16705 | 99.929230 | 99.732672 | True | none | False
+wide_lo-0.3_hi2_k0.8 | 0.332752889 +/- 0.015812945 | -3.34123 | 99.932692 | 99.732595 | True | none | False
+wide_lo-0.5_hi2_k0.1 | 0.333626616 +/- 0.015617478 | -3.08743 | 99.983931 | 99.750266 | True | none | False
+wide_lo-0.5_hi2_k0.8 | 0.333010884 +/- 0.015797767 | -3.26629 | 99.987265 | 99.749409 | True | none | False
+wide_lo-0.2_hi2.5_k0.1 | 0.334022559 +/- 0.015574453 | -2.97242 | 99.862539 | 99.904010 | True | none | False
+wide_lo-0.2_hi2.5_k0.8 | 0.333971366 +/- 0.015745923 | -2.98729 | 99.865863 | 99.906128 | True | none | False
+wide_lo-0.3_hi2.5_k0.1 | 0.333641809 +/- 0.015566478 | -3.08302 | 99.929233 | 99.924435 | True | none | False
+wide_lo-0.3_hi2.5_k0.8 | 0.333063778 +/- 0.015762424 | -3.25093 | 99.932692 | 99.925590 | True | none | False
+wide_lo-0.5_hi2.5_k0.1 | 0.333916841 +/- 0.015568651 | -3.00313 | 99.983932 | 99.941482 | True | none | False
+wide_lo-0.5_hi2.5_k0.8 | 0.333322405 +/- 0.015746299 | -3.17580 | 99.987260 | 99.942000 | True | none | False
+wide_lo-0.2_hi3_k0.1 | 0.334320466 +/- 0.015566267 | -2.88588 | 99.862546 | 99.946870 | True | none | False
+wide_lo-0.2_hi3_k0.8 | 0.334283623 +/- 0.015736275 | -2.89658 | 99.865937 | 99.949042 | True | none | False
+wide_lo-0.3_hi3_k0.1 | 0.333943086 +/- 0.015558322 | -2.99550 | 99.929232 | 99.967474 | True | none | False
+wide_lo-0.3_hi3_k0.8 | 0.333383723 +/- 0.015752590 | -3.15799 | 99.932660 | 99.968935 | True | none | False
+wide_lo-0.5_hi3_k0.1 | 0.334217114 +/- 0.015560957 | -2.91590 | 99.983932 | 99.984429 | True | none | False
+wide_lo-0.5_hi3_k0.8 | 0.333640319 +/- 0.015736227 | -3.08345 | 99.987243 | 99.985300 | True | none | False
+wide_lo-0.2_hi4_k0.1 | 0.334423581 +/- 0.015561608 | -2.85593 | 99.862548 | 99.957992 | True | none | False
+wide_lo-0.2_hi4_k0.8 | 0.334391591 +/- 0.015731248 | -2.86522 | 99.865962 | 99.960178 | True | none | False
+wide_lo-0.3_hi4_k0.1 | 0.334047375 +/- 0.015553699 | -2.96521 | 99.929232 | 99.978651 | True | none | False
+wide_lo-0.3_hi4_k0.8 | 0.333494591 +/- 0.015747235 | -3.12578 | 99.932649 | 99.980204 | True | none | False
+wide_lo-0.5_hi4_k0.1 | 0.334320938 +/- 0.015556044 | -2.88574 | 99.983933 | 99.995580 | True | none | False
+wide_lo-0.5_hi4_k0.8 | 0.333750321 +/- 0.015731346 | -3.05150 | 99.987238 | 99.996558 | True | none | False
+
+포함률·수렴·추가 경계 조건을 만족한 최선: wide_lo-0.2_hi4_k0.1, diff=-2.85593%.
+
+설정 해석
+mean_fixed: prompt mean을 MC 값에 고정.
+mass_profile: 질량 모형 파라미터를 최종 fit에서 profile.
+np_unconstrained: NP MC 제약 제거. B 경계/큰 오차 발생 여부를 별도 검사.
+np_lifetimes_free: NP 수명 제약을 해제하고 나머지 기존 제약 유지.
+np_longest_constrained: 가장 긴 NP 수명도 MC 제약에 포함.
+pr_outer_free: width_policy=2; 첫 세 폭 고정, 마지막 폭만 기존 prior로 허용. 완전 무제약이 아님.
+
+PR/NP 포함률은 전체 실수축 PDF 기준이며 최종 중심 파라미터에서 평가.
+NP RooDecay 적분과 해석적 exGaussian CDF의 차이 <1e-8, 저장 mixture 분율 재구성 오차 <1e-8.
+coverage.C 보완: NP 무제약 모형은 NsignalSS 대신 npCompositionFrac으로 창 내 분율을 구성하므로 이를 전체 공간으로 복원.
+무제약 모형의 npTransportFraction 메타데이터는 실제 PDF 계수가 아니므로 감사에 사용하지 않음.
+서로 다른 제약 설정의 raw NLL 차이를 likelihood-ratio 검정으로 사용하지 않음.
+NP 완전 무제약 결과의 큰 B는 agreement 개선으로 해석하지 않음.
+새 production 설정은 채택하지 않음. 이번 유한한 검사로 모든 가능한 개선을 배제하지 않음.
+
+재현: 이 폴더에서 python3 run.py; python3 run_wider.py; python3 audit.py; python3 report.py
+summary.csv: 수렴, 경계, PR/NP 포함률, 직접 agreement; runs/: ROOT, 로그, fit 그림.

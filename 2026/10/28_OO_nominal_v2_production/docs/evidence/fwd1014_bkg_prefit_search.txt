@@ -1,0 +1,146 @@
+# 2026-10-27 background ctau prefit re-search (study/prefit_variant.py --stop=bkg; name = B<ss><flip><ds>_<w3: ctau [-0.5,3] | w6: [-2,6]>_<t1: bkg_wide_tau | t2: bkg_par manual tau window>_c<core max x MC>)
+# columns: status covQual chi2/ndf(plot bins) robust chi2/ndf(equal-population bins) populated bins, fitted lifetimes (mm), core / core max, n params at limit, n yields with err>|val|
+B101_w3_t1_c2_fwd_10_12      st0 cq3 chi2 1.06 robust 2.03 bins 20 tauSS1=0.300 core=0.0286/0.0289 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B101_w3_t1_c3_fwd_10_12      st0 cq3 chi2 1.06 robust 2.03 bins 20 tauSS1=0.299 core=0.0286/0.0433 nlimit=0 nyield_err>val=0
+B101_w3_t1_c4_fwd_10_12      st0 cq3 chi2 1.06 robust 2.04 bins 20 tauSS1=0.300 core=0.0286/0.0578 nlimit=0 nyield_err>val=0
+B101_w3_t2_c2_fwd_10_12      st0 cq3 chi2 0.72 robust 2.34 bins 52 tauFlip=0.192 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.343 tauSS1=0.089 [bkg_log_lifetime_offset AT-LIMIT] core=0.0276/0.0289 nlimit=2 nyield_err>val=0
+B101_w3_t2_c3_fwd_10_12      st0 cq3 chi2 0.72 robust 2.34 bins 52 tauFlip=0.192 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.343 tauSS1=0.089 [bkg_log_lifetime_offset AT-LIMIT] core=0.0276/0.0289 nlimit=2 nyield_err>val=0
+B101_w3_t2_c4_fwd_10_12      st0 cq3 chi2 0.72 robust 2.34 bins 52 tauFlip=0.192 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.343 tauSS1=0.089 [bkg_log_lifetime_offset AT-LIMIT] core=0.0276/0.0289 nlimit=2 nyield_err>val=0
+B101_w6_t1_c2_fwd_10_12      st0 cq3 chi2 1.76 robust 2.42 bins 13 tauSS1=0.328 core=0.0284/0.0289 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B101_w6_t1_c3_fwd_10_12      st0 cq3 chi2 1.76 robust 2.42 bins 13 tauSS1=0.328 core=0.0284/0.0433 nlimit=0 nyield_err>val=0
+B101_w6_t1_c4_fwd_10_12      st0 cq3 chi2 1.76 robust 2.42 bins 13 tauSS1=0.328 core=0.0284/0.0578 nlimit=0 nyield_err>val=0
+B101_w6_t2_c2_fwd_10_12      st0 cq3 chi2 0.72 robust 2.34 bins 52 tauFlip=0.192 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.343 tauSS1=0.089 [bkg_log_lifetime_offset AT-LIMIT] core=0.0276/0.0289 nlimit=2 nyield_err>val=0
+B101_w6_t2_c3_fwd_10_12      st0 cq3 chi2 0.72 robust 2.34 bins 52 tauFlip=0.192 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.343 tauSS1=0.089 [bkg_log_lifetime_offset AT-LIMIT] core=0.0276/0.0289 nlimit=2 nyield_err>val=0
+B101_w6_t2_c4_fwd_10_12      st0 cq3 chi2 0.72 robust 2.34 bins 52 tauFlip=0.192 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.343 tauSS1=0.089 [bkg_log_lifetime_offset AT-LIMIT] core=0.0276/0.0289 nlimit=2 nyield_err>val=0
+B110_w3_t1_c2_fwd_10_12      st0 cq3 chi2 1.11 robust 2.05 bins 20 tauFlip=0.279 tauSS1=0.316 core=0.0285/0.0289 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B110_w3_t1_c3_fwd_10_12      st0 cq3 chi2 1.11 robust 2.05 bins 20 tauFlip=0.280 tauSS1=0.316 core=0.0285/0.0433 nlimit=0 nyield_err>val=0
+B110_w3_t1_c4_fwd_10_12      st0 cq3 chi2 1.11 robust 2.05 bins 20 tauFlip=0.279 tauSS1=0.316 core=0.0285/0.0578 nlimit=0 nyield_err>val=0
+B110_w3_t2_c2_fwd_10_12      st0 cq3 chi2 1.11 robust 2.05 bins 20 tauFlip=0.278 tauSS1=0.316 core=0.0285/0.0289 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B110_w3_t2_c3_fwd_10_12      st0 cq3 chi2 1.11 robust 2.05 bins 20 tauFlip=0.278 tauSS1=0.316 core=0.0285/0.0433 nlimit=0 nyield_err>val=0
+B110_w3_t2_c4_fwd_10_12      st0 cq3 chi2 1.11 robust 2.05 bins 20 tauFlip=0.278 tauSS1=0.316 core=0.0285/0.0578 nlimit=0 nyield_err>val=0
+B110_w6_t1_c2_fwd_10_12      st0 cq3 chi2 1.79 robust 2.42 bins 13 tauFlip=0.256 tauSS1=0.315 core=0.0285/0.0289 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B110_w6_t1_c3_fwd_10_12      st0 cq3 chi2 1.79 robust 2.43 bins 13 tauFlip=0.255 tauSS1=0.315 core=0.0285/0.0433 nlimit=0 nyield_err>val=0
+B110_w6_t1_c4_fwd_10_12      st0 cq3 chi2 1.79 robust 2.43 bins 13 tauFlip=0.255 tauSS1=0.315 core=0.0285/0.0578 nlimit=0 nyield_err>val=0
+B110_w6_t2_c2_fwd_10_12      st0 cq3 chi2 1.79 robust 2.42 bins 13 tauFlip=0.255 tauSS1=0.315 core=0.0284/0.0289 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B110_w6_t2_c3_fwd_10_12      st0 cq3 chi2 1.78 robust 2.43 bins 13 tauFlip=0.256 tauSS1=0.315 core=0.0286/0.0433 nlimit=0 nyield_err>val=0
+B110_w6_t2_c4_fwd_10_12      st0 cq3 chi2 1.79 robust 2.43 bins 13 tauFlip=0.255 tauSS1=0.315 core=0.0285/0.0578 nlimit=0 nyield_err>val=0
+B111_w3_t1_c2_fwd_10_12      st0 cq3 chi2 1.35 robust 2.42 bins 20 [Nflip1 AT-LIMIT] tauFlip=0.093 tauSS1=0.337 core=0.0281/0.0289 nlimit=1 nyield_err>val=1
+B111_w3_t1_c3_fwd_10_12      st1 cq2 chi2 1.35 robust 2.42 bins 20 [Nflip1 AT-LIMIT] tauFlip=0.045 tauSS1=0.337 core=0.0281/0.0433 nlimit=1 nyield_err>val=1
+B111_w3_t1_c4_fwd_10_12      st0 cq3 chi2 1.35 robust 2.42 bins 20 [Nflip1 AT-LIMIT] tauFlip=1.793 tauSS1=0.337 core=0.0281/0.0578 nlimit=1 nyield_err>val=1
+B111_w3_t2_c2_fwd_10_12      st0 cq3 chi2 1.33 robust 2.40 bins 20 [Nflip1 AT-LIMIT] tauFlip=0.054 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS1=0.285 core=0.0283/0.0289 nlimit=2 nyield_err>val=1
+B111_w3_t2_c3_fwd_10_12      st0 cq3 chi2 1.32 robust 2.41 bins 20 tauFlip=0.107 tauSS1=0.283 core=0.0282/0.0433 nlimit=0 nyield_err>val=1
+B111_w3_t2_c4_fwd_10_12      st0 cq3 chi2 1.34 robust 2.40 bins 20 [Nflip1 AT-LIMIT] tauFlip=0.054 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS1=0.284 core=0.0282/0.0578 nlimit=2 nyield_err>val=1
+B111_w6_t1_c2_fwd_10_12      st0 cq3 chi2 3.53 robust 2.79 bins 13 [Nflip1 AT-LIMIT] tauFlip=0.044 tauSS1=0.328 core=0.0284/0.0289 [ctauTime1Scale AT-LIMIT] nlimit=2 nyield_err>val=1
+B111_w6_t1_c3_fwd_10_12      st0 cq3 chi2 3.53 robust 2.79 bins 13 [Nflip1 AT-LIMIT] tauFlip=0.045 tauSS1=0.328 core=0.0284/0.0433 nlimit=1 nyield_err>val=1
+B111_w6_t1_c4_fwd_10_12      st0 cq3 chi2 3.53 robust 2.79 bins 13 [Nflip1 AT-LIMIT] tauFlip=0.045 tauSS1=0.328 core=0.0284/0.0578 nlimit=1 nyield_err>val=1
+B111_w6_t2_c2_fwd_10_12      st0 cq3 chi2 3.29 robust 2.77 bins 13 tauFlip=0.338 tauSS1=0.329 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0277/0.0289 nlimit=1 nyield_err>val=0
+B111_w6_t2_c3_fwd_10_12      st0 cq3 chi2 3.29 robust 2.77 bins 13 tauFlip=0.338 tauSS1=0.329 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0277/0.0433 nlimit=1 nyield_err>val=0
+B111_w6_t2_c4_fwd_10_12      st0 cq3 chi2 3.29 robust 2.77 bins 13 tauFlip=0.338 tauSS1=0.329 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0277/0.0578 nlimit=1 nyield_err>val=0
+B201_w3_t1_c2_fwd_10_12      st0 cq3 chi2 1.01 robust 2.35 bins 20 tauSS2=0.088 tauSS1=0.360 core=0.0278/0.0289 nlimit=0 nyield_err>val=0
+B201_w3_t1_c3_fwd_10_12      st0 cq3 chi2 1.01 robust 2.35 bins 20 tauSS2=0.088 tauSS1=0.360 core=0.0278/0.0433 nlimit=0 nyield_err>val=0
+B201_w3_t1_c4_fwd_10_12      st0 cq3 chi2 1.01 robust 2.35 bins 20 tauSS2=0.088 tauSS1=0.360 core=0.0278/0.0578 nlimit=0 nyield_err>val=0
+B201_w3_t2_c2_fwd_10_12      st0 cq3 chi2 0.72 robust 2.34 bins 52 tauFlip=0.192 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.343 tauSS1=0.089 [bkg_log_lifetime_offset AT-LIMIT] core=0.0276/0.0289 nlimit=2 nyield_err>val=0
+B201_w3_t2_c3_fwd_10_12      st0 cq3 chi2 0.72 robust 2.34 bins 52 tauFlip=0.192 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.343 tauSS1=0.089 [bkg_log_lifetime_offset AT-LIMIT] core=0.0276/0.0289 nlimit=2 nyield_err>val=0
+B201_w3_t2_c4_fwd_10_12      st0 cq3 chi2 0.72 robust 2.34 bins 52 tauFlip=0.192 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.343 tauSS1=0.089 [bkg_log_lifetime_offset AT-LIMIT] core=0.0276/0.0289 nlimit=2 nyield_err>val=0
+B201_w6_t1_c2_fwd_10_12      st0 cq3 chi2 3.04 robust 2.69 bins 13 tauSS2=0.088 tauSS1=0.356 core=0.0279/0.0289 nlimit=0 nyield_err>val=0
+B201_w6_t1_c3_fwd_10_12      st0 cq3 chi2 3.04 robust 2.69 bins 13 tauSS2=0.088 tauSS1=0.356 core=0.0279/0.0433 nlimit=0 nyield_err>val=0
+B201_w6_t1_c4_fwd_10_12      st0 cq3 chi2 3.04 robust 2.69 bins 13 tauSS2=0.088 tauSS1=0.356 core=0.0279/0.0578 nlimit=0 nyield_err>val=0
+B201_w6_t2_c2_fwd_10_12      st0 cq3 chi2 0.72 robust 2.34 bins 52 tauFlip=0.192 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.343 tauSS1=0.089 [bkg_log_lifetime_offset AT-LIMIT] core=0.0276/0.0289 nlimit=2 nyield_err>val=0
+B201_w6_t2_c3_fwd_10_12      st0 cq3 chi2 0.72 robust 2.34 bins 52 tauFlip=0.192 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.343 tauSS1=0.089 [bkg_log_lifetime_offset AT-LIMIT] core=0.0276/0.0289 nlimit=2 nyield_err>val=0
+B201_w6_t2_c4_fwd_10_12      st0 cq3 chi2 0.72 robust 2.34 bins 52 tauFlip=0.192 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.343 tauSS1=0.089 [bkg_log_lifetime_offset AT-LIMIT] core=0.0276/0.0289 nlimit=2 nyield_err>val=0
+B210_w3_t1_c2_fwd_10_12      st0 cq3 chi2 0.98 robust 2.30 bins 20 tauFlip=0.191 tauSS2=0.335 tauSS1=0.060 core=0.0274/0.0289 nlimit=0 nyield_err>val=0
+B210_w3_t1_c3_fwd_10_12      st0 cq3 chi2 0.98 robust 2.29 bins 20 tauFlip=0.192 tauSS2=0.335 tauSS1=0.060 core=0.0274/0.0433 nlimit=0 nyield_err>val=0
+B210_w3_t1_c4_fwd_10_12      st0 cq3 chi2 0.97 robust 2.29 bins 20 tauFlip=0.192 tauSS2=0.335 tauSS1=0.060 core=0.0274/0.0578 nlimit=0 nyield_err>val=0
+B210_w3_t2_c2_fwd_10_12      st0 cq3 chi2 0.98 robust 2.31 bins 20 tauFlip=0.194 tauSS2=0.337 tauSS1=0.069 [bkg_log_lifetime_offset AT-LIMIT] core=0.0275/0.0289 nlimit=1 nyield_err>val=0
+B210_w3_t2_c3_fwd_10_12      st0 cq3 chi2 0.98 robust 2.31 bins 20 tauFlip=0.193 tauSS2=0.337 tauSS1=0.069 [bkg_log_lifetime_offset AT-LIMIT] core=0.0275/0.0433 nlimit=1 nyield_err>val=0
+B210_w3_t2_c4_fwd_10_12      st0 cq3 chi2 0.98 robust 2.31 bins 20 tauFlip=0.193 tauSS2=0.338 tauSS1=0.069 [bkg_log_lifetime_offset AT-LIMIT] core=0.0275/0.0578 nlimit=1 nyield_err>val=0
+B210_w6_t1_c2_fwd_10_12      st0 cq3 chi2 3.20 robust 2.68 bins 13 tauFlip=0.240 tauSS2=0.334 tauSS1=0.060 core=0.0277/0.0289 nlimit=0 nyield_err>val=0
+B210_w6_t1_c3_fwd_10_12      st0 cq3 chi2 3.20 robust 2.68 bins 13 tauFlip=0.240 tauSS2=0.334 tauSS1=0.060 core=0.0277/0.0433 nlimit=0 nyield_err>val=0
+B210_w6_t1_c4_fwd_10_12      st0 cq3 chi2 3.21 robust 2.68 bins 13 tauFlip=0.240 tauSS2=0.334 tauSS1=0.059 core=0.0277/0.0578 nlimit=0 nyield_err>val=0
+B210_w6_t2_c2_fwd_10_12      st0 cq3 chi2 3.19 robust 2.68 bins 13 tauFlip=0.240 tauSS2=0.336 tauSS1=0.069 [bkg_log_lifetime_offset AT-LIMIT] core=0.0278/0.0289 nlimit=1 nyield_err>val=0
+B210_w6_t2_c3_fwd_10_12      st0 cq3 chi2 3.18 robust 2.68 bins 13 tauFlip=0.240 tauSS2=0.336 tauSS1=0.069 [bkg_log_lifetime_offset AT-LIMIT] core=0.0277/0.0433 nlimit=1 nyield_err>val=0
+B210_w6_t2_c4_fwd_10_12      st0 cq3 chi2 3.18 robust 2.68 bins 13 tauFlip=0.240 tauSS2=0.336 tauSS1=0.069 [bkg_log_lifetime_offset AT-LIMIT] core=0.0277/0.0578 nlimit=1 nyield_err>val=0
+B211_w3_t1_c2_fwd_10_12      st0 cq3 chi2 1.27 robust 2.50 bins 20 tauFlip=0.044 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.340 tauSS1=0.059 [bkg_log_lifetime_offset AT-LIMIT] core=0.0222/0.0289 nlimit=2 nyield_err>val=0
+B211_w3_t1_c3_fwd_10_12      st0 cq3 chi2 1.27 robust 2.50 bins 20 tauFlip=0.044 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.340 tauSS1=0.059 [bkg_log_lifetime_offset AT-LIMIT] core=0.0222/0.0433 nlimit=2 nyield_err>val=0
+B211_w3_t1_c4_fwd_10_12      st0 cq3 chi2 1.27 robust 2.50 bins 20 tauFlip=0.044 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.340 tauSS1=0.059 [bkg_log_lifetime_offset AT-LIMIT] core=0.0222/0.0578 nlimit=2 nyield_err>val=0
+B211_w3_t2_c2_fwd_10_12      st0 cq3 chi2 1.26 robust 2.64 bins 20 tauFlip=0.054 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.338 tauSS1=0.069 [bkg_log_lifetime_offset AT-LIMIT] core=0.0247/0.0289 nlimit=2 nyield_err>val=0
+B211_w3_t2_c3_fwd_10_12      st0 cq3 chi2 1.26 robust 2.64 bins 20 tauFlip=0.054 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.339 tauSS1=0.069 [bkg_log_lifetime_offset AT-LIMIT] core=0.0247/0.0433 nlimit=2 nyield_err>val=0
+B211_w3_t2_c4_fwd_10_12      st0 cq3 chi2 1.26 robust 2.64 bins 20 tauFlip=0.054 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS2=0.338 tauSS1=0.069 [bkg_log_lifetime_offset AT-LIMIT] core=0.0247/0.0578 nlimit=2 nyield_err>val=0
+B211_w6_t1_c2_fwd_10_12      st0 cq3 chi2 inf robust 3.18 bins 13 tauFlip=0.055 tauSS2=0.088 [bkg_log_lifetime2_offset AT-LIMIT] tauSS1=0.359 core=0.0259/0.0289 nlimit=1 nyield_err>val=0
+B211_w6_t1_c3_fwd_10_12      st0 cq3 chi2 inf robust 3.18 bins 13 tauFlip=0.055 tauSS2=0.088 tauSS1=0.359 core=0.0259/0.0433 nlimit=0 nyield_err>val=0
+B211_w6_t1_c4_fwd_10_12      st0 cq3 chi2 inf robust 3.18 bins 13 tauFlip=0.055 tauSS2=0.088 tauSS1=0.359 core=0.0259/0.0578 nlimit=0 nyield_err>val=0
+B211_w6_t2_c2_fwd_10_12      st0 cq3 chi2 inf robust 3.17 bins 13 tauFlip=0.307 tauSS2=0.345 tauSS1=0.069 [bkg_log_lifetime_offset AT-LIMIT] [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0273/0.0289 nlimit=2 nyield_err>val=0
+B211_w6_t2_c3_fwd_10_12      st0 cq3 chi2 inf robust 3.17 bins 13 tauFlip=0.307 tauSS2=0.345 tauSS1=0.069 [bkg_log_lifetime_offset AT-LIMIT] [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0273/0.0433 nlimit=2 nyield_err>val=0
+B211_w6_t2_c4_fwd_10_12      st0 cq3 chi2 inf robust 3.17 bins 13 tauFlip=0.307 tauSS2=0.345 tauSS1=0.069 [bkg_log_lifetime_offset AT-LIMIT] [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0273/0.0578 nlimit=2 nyield_err>val=0
+B101_w3_t1_c2_fwd_12_14      st0 cq3 chi2 0.78 robust 2.90 bins 18 tauSS1=0.453 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B101_w3_t1_c3_fwd_12_14      st0 cq3 chi2 0.78 robust 2.88 bins 18 tauSS1=0.453 core=0.0244/0.0365 nlimit=0 nyield_err>val=0
+B101_w3_t1_c4_fwd_12_14      st0 cq3 chi2 0.78 robust 2.87 bins 18 tauSS1=0.453 core=0.0244/0.0486 nlimit=0 nyield_err>val=0
+B101_w3_t2_c2_fwd_12_14      st0 cq3 chi2 0.63 robust 3.30 bins 49 tauFlip=0.122 tauSS1=0.380 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B101_w3_t2_c3_fwd_12_14      st0 cq3 chi2 0.63 robust 3.30 bins 49 tauFlip=0.122 tauSS1=0.380 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B101_w3_t2_c4_fwd_12_14      st0 cq3 chi2 0.63 robust 3.30 bins 49 tauFlip=0.122 tauSS1=0.380 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B101_w6_t1_c2_fwd_12_14      st0 cq3 chi2 5.76 robust 1.44 bins 10 tauSS1=0.443 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B101_w6_t1_c3_fwd_12_14      st0 cq3 chi2 5.85 robust 1.46 bins 10 tauSS1=0.443 core=0.0254/0.0365 nlimit=0 nyield_err>val=0
+B101_w6_t1_c4_fwd_12_14      st0 cq3 chi2 5.83 robust 1.46 bins 10 tauSS1=0.443 core=0.0253/0.0486 nlimit=0 nyield_err>val=0
+B101_w6_t2_c2_fwd_12_14      st0 cq3 chi2 0.63 robust 3.30 bins 49 tauFlip=0.122 tauSS1=0.380 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B101_w6_t2_c3_fwd_12_14      st0 cq3 chi2 0.63 robust 3.30 bins 49 tauFlip=0.122 tauSS1=0.380 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B101_w6_t2_c4_fwd_12_14      st0 cq3 chi2 0.63 robust 3.30 bins 49 tauFlip=0.122 tauSS1=0.380 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B110_w3_t1_c2_fwd_12_14      st0 cq3 chi2 0.64 robust 3.30 bins 18 tauFlip=0.122 tauSS1=0.380 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B110_w3_t1_c3_fwd_12_14      st0 cq3 chi2 0.64 robust 3.14 bins 18 tauFlip=0.122 tauSS1=0.381 core=0.0254/0.0365 nlimit=0 nyield_err>val=0
+B110_w3_t1_c4_fwd_12_14      st0 cq3 chi2 0.64 robust 3.14 bins 18 tauFlip=0.122 tauSS1=0.381 core=0.0254/0.0486 nlimit=0 nyield_err>val=0
+B110_w3_t2_c2_fwd_12_14      st0 cq3 chi2 0.64 robust 3.30 bins 18 tauFlip=0.122 tauSS1=0.380 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B110_w3_t2_c3_fwd_12_14      st0 cq3 chi2 0.64 robust 3.14 bins 18 tauFlip=0.122 tauSS1=0.381 core=0.0255/0.0365 nlimit=0 nyield_err>val=0
+B110_w3_t2_c4_fwd_12_14      st0 cq3 chi2 0.64 robust 3.13 bins 18 tauFlip=0.123 tauSS1=0.381 core=0.0255/0.0486 nlimit=0 nyield_err>val=0
+B110_w6_t1_c2_fwd_12_14      st0 cq3 chi2 5.95 robust 1.50 bins 10 tauFlip=0.190 tauSS1=0.386 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B110_w6_t1_c3_fwd_12_14      st0 cq3 chi2 5.99 robust 1.51 bins 10 tauFlip=0.191 tauSS1=0.387 core=0.0257/0.0365 nlimit=0 nyield_err>val=0
+B110_w6_t1_c4_fwd_12_14      st0 cq3 chi2 6.00 robust 1.51 bins 10 tauFlip=0.191 tauSS1=0.387 core=0.0257/0.0486 nlimit=0 nyield_err>val=0
+B110_w6_t2_c2_fwd_12_14      st0 cq3 chi2 5.95 robust 1.50 bins 10 tauFlip=0.190 tauSS1=0.387 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B110_w6_t2_c3_fwd_12_14      st0 cq3 chi2 6.00 robust 1.52 bins 10 tauFlip=0.191 tauSS1=0.388 core=0.0258/0.0365 nlimit=0 nyield_err>val=0
+B110_w6_t2_c4_fwd_12_14      st0 cq3 chi2 6.00 robust 1.53 bins 10 tauFlip=0.191 tauSS1=0.387 core=0.0258/0.0486 nlimit=0 nyield_err>val=0
+B111_w3_t1_c2_fwd_12_14      st0 cq3 chi2 0.79 robust nan bins 18 [Nds1 AT-LIMIT] tauFlip=0.113 tauSS1=0.359 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=2 nyield_err>val=1
+B111_w3_t1_c3_fwd_12_14      st0 cq3 chi2 0.83 robust nan bins 18 [Nds1 AT-LIMIT] tauFlip=0.122 tauSS1=0.381 core=0.0255/0.0365 nlimit=1 nyield_err>val=1
+B111_w3_t1_c4_fwd_12_14      st0 cq3 chi2 0.83 robust nan bins 18 [Nds1 AT-LIMIT] tauFlip=0.123 tauSS1=0.381 core=0.0254/0.0486 nlimit=1 nyield_err>val=1
+B111_w3_t2_c2_fwd_12_14      st0 cq3 chi2 0.79 robust nan bins 18 [Nds1 AT-LIMIT] tauFlip=0.113 tauSS1=0.358 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=2 nyield_err>val=1
+B111_w3_t2_c3_fwd_12_14      st0 cq3 chi2 0.80 robust nan bins 18 [Nds1 AT-LIMIT] tauFlip=0.115 tauSS1=0.361 core=0.0253/0.0365 nlimit=1 nyield_err>val=1
+B111_w3_t2_c4_fwd_12_14      st0 cq3 chi2 0.79 robust nan bins 18 [Nds1 AT-LIMIT] tauFlip=0.114 tauSS1=0.361 core=0.0253/0.0486 nlimit=1 nyield_err>val=1
+B111_w6_t1_c2_fwd_12_14      st0 cq3 chi2 -5.48 robust nan bins 10 tauFlip=0.034 [bkg_flip_log_lifetime_offset AT-LIMIT] tauSS1=0.427 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=2 nyield_err>val=0
+B111_w6_t1_c3_fwd_12_14      st0 cq3 chi2 -4.10 robust nan bins 10 tauFlip=0.099 tauSS1=0.373 core=0.0254/0.0365 nlimit=0 nyield_err>val=0
+B111_w6_t1_c4_fwd_12_14      st0 cq3 chi2 -4.12 robust nan bins 10 tauFlip=0.099 tauSS1=0.374 core=0.0253/0.0486 nlimit=0 nyield_err>val=0
+B111_w6_t2_c2_fwd_12_14      st0 cq3 chi2 -4.10 robust nan bins 10 tauFlip=0.099 tauSS1=0.372 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B111_w6_t2_c3_fwd_12_14      st0 cq3 chi2 -4.12 robust nan bins 10 tauFlip=0.099 tauSS1=0.373 core=0.0253/0.0365 nlimit=0 nyield_err>val=0
+B111_w6_t2_c4_fwd_12_14      st0 cq3 chi2 -4.12 robust nan bins 10 tauFlip=0.099 tauSS1=0.374 core=0.0252/0.0486 nlimit=0 nyield_err>val=0
+B201_w3_t1_c2_fwd_12_14      st0 cq2 chi2 1.01 robust nan bins 18 [Nss1 AT-LIMIT] tauSS2=0.453 tauSS1=0.433 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=2 nyield_err>val=1
+B201_w3_t1_c3_fwd_12_14      st1 cq2 chi2 1.01 robust nan bins 18 [Nss1 AT-LIMIT] tauSS2=0.453 tauSS1=0.880 core=0.0244/0.0365 nlimit=1 nyield_err>val=1
+B201_w3_t1_c4_fwd_12_14      st0 cq3 chi2 1.01 robust nan bins 18 [Nss1 AT-LIMIT] tauSS2=0.453 tauSS1=0.142 core=0.0244/0.0486 nlimit=1 nyield_err>val=1
+B201_w3_t2_c2_fwd_12_14      st0 cq3 chi2 0.63 robust 3.30 bins 49 tauFlip=0.122 tauSS1=0.380 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B201_w3_t2_c3_fwd_12_14      st0 cq3 chi2 0.63 robust 3.30 bins 49 tauFlip=0.122 tauSS1=0.380 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B201_w3_t2_c4_fwd_12_14      st0 cq3 chi2 0.63 robust 3.30 bins 49 tauFlip=0.122 tauSS1=0.380 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B201_w6_t1_c2_fwd_12_14      st0 cq3 chi2 -5.76 robust nan bins 10 [Nss1 AT-LIMIT] tauSS2=0.443 tauSS1=0.054 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=2 nyield_err>val=1
+B201_w6_t1_c3_fwd_12_14      st0 cq3 chi2 -5.84 robust nan bins 10 [Nss1 AT-LIMIT] tauSS2=0.443 tauSS1=0.098 core=0.0255/0.0365 nlimit=1 nyield_err>val=1
+B201_w6_t1_c4_fwd_12_14      st0 cq3 chi2 -5.83 robust nan bins 10 [Nss1 AT-LIMIT] tauSS2=0.443 tauSS1=0.093 core=0.0254/0.0486 nlimit=1 nyield_err>val=1
+B201_w6_t2_c2_fwd_12_14      st0 cq3 chi2 0.63 robust 3.30 bins 49 tauFlip=0.122 tauSS1=0.380 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B201_w6_t2_c3_fwd_12_14      st0 cq3 chi2 0.63 robust 3.30 bins 49 tauFlip=0.122 tauSS1=0.380 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B201_w6_t2_c4_fwd_12_14      st0 cq3 chi2 0.63 robust 3.30 bins 49 tauFlip=0.122 tauSS1=0.380 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=0
+B210_w3_t1_c2_fwd_12_14      st0 cq3 chi2 0.76 robust nan bins 18 tauFlip=0.117 tauSS2=0.446 tauSS1=0.206 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=2
+B210_w3_t1_c3_fwd_12_14      st0 cq3 chi2 0.76 robust nan bins 18 tauFlip=0.118 tauSS2=0.447 tauSS1=0.215 core=0.0250/0.0365 nlimit=0 nyield_err>val=2
+B210_w3_t1_c4_fwd_12_14      st0 cq3 chi2 0.76 robust nan bins 18 tauFlip=0.118 tauSS2=0.448 tauSS1=0.215 core=0.0250/0.0486 nlimit=0 nyield_err>val=2
+B210_w3_t2_c2_fwd_12_14      st0 cq3 chi2 0.76 robust nan bins 18 tauFlip=0.117 tauSS2=0.447 tauSS1=0.212 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=2
+B210_w3_t2_c3_fwd_12_14      st0 cq3 chi2 0.76 robust nan bins 18 tauFlip=0.118 tauSS2=0.448 tauSS1=0.217 core=0.0251/0.0365 nlimit=0 nyield_err>val=2
+B210_w3_t2_c4_fwd_12_14      st0 cq3 chi2 0.76 robust nan bins 18 tauFlip=0.118 tauSS2=0.216 tauSS1=0.448 core=0.0250/0.0486 nlimit=0 nyield_err>val=2
+B210_w6_t1_c2_fwd_12_14      st0 cq3 chi2 -5.60 robust nan bins 10 tauFlip=0.187 tauSS2=0.422 tauSS1=0.233 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=1
+B210_w6_t1_c3_fwd_12_14      st0 cq3 chi2 -5.70 robust nan bins 10 tauFlip=0.188 tauSS2=0.418 tauSS1=0.231 core=0.0256/0.0365 nlimit=0 nyield_err>val=1
+B210_w6_t1_c4_fwd_12_14      st0 cq3 chi2 -5.69 robust nan bins 10 tauFlip=0.188 tauSS2=0.419 tauSS1=0.232 core=0.0256/0.0486 nlimit=0 nyield_err>val=1
+B210_w6_t2_c2_fwd_12_14      st0 cq3 chi2 -5.60 robust nan bins 10 tauFlip=0.187 tauSS2=0.426 tauSS1=0.242 core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=1 nyield_err>val=1
+B210_w6_t2_c3_fwd_12_14      st0 cq3 chi2 -5.68 robust nan bins 10 tauFlip=0.188 tauSS2=0.427 tauSS1=0.255 core=0.0256/0.0365 nlimit=0 nyield_err>val=2
+B210_w6_t2_c4_fwd_12_14      st0 cq3 chi2 -5.68 robust nan bins 10 tauFlip=0.188 tauSS2=0.425 tauSS1=0.252 core=0.0256/0.0486 nlimit=0 nyield_err>val=2
+B211_w3_t1_c2_fwd_12_14      st0 cq3 chi2 1.08 robust nan bins 18 tauFlip=0.127 tauSS2=0.311 tauSS1=0.460 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=2 nyield_err>val=3
+B211_w3_t1_c3_fwd_12_14      st0 cq3 chi2 1.08 robust nan bins 18 tauFlip=0.128 tauSS2=0.315 tauSS1=0.459 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0245/0.0365 nlimit=1 nyield_err>val=3
+B211_w3_t1_c4_fwd_12_14      st0 cq3 chi2 1.08 robust nan bins 18 tauFlip=0.127 tauSS2=0.312 tauSS1=0.462 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0245/0.0486 nlimit=1 nyield_err>val=3
+B211_w3_t2_c2_fwd_12_14      st0 cq3 chi2 1.08 robust nan bins 18 tauFlip=0.127 tauSS2=0.326 tauSS1=0.467 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0243/0.0243 [ctauTime1Scale AT-LIMIT] nlimit=2 nyield_err>val=3
+B211_w3_t2_c3_fwd_12_14      st0 cq3 chi2 1.08 robust nan bins 18 tauFlip=0.127 tauSS2=0.456 tauSS1=0.305 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0245/0.0365 nlimit=1 nyield_err>val=3
+B211_w3_t2_c4_fwd_12_14      st0 cq3 chi2 1.08 robust nan bins 18 tauFlip=0.127 tauSS2=0.460 tauSS1=0.309 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0245/0.0486 nlimit=1 nyield_err>val=3
+B211_w6_t1_c2_fwd_12_14      st0 cq3 chi2 -1.41 robust nan bins 10 tauFlip=0.334 tauSS2=0.428 tauSS1=0.428 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0234/0.0243 nlimit=1 nyield_err>val=2
+B211_w6_t1_c3_fwd_12_14      st0 cq3 chi2 -1.42 robust nan bins 10 tauFlip=0.334 tauSS2=0.428 tauSS1=0.429 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0235/0.0365 nlimit=1 nyield_err>val=2
+B211_w6_t1_c4_fwd_12_14      st0 cq3 chi2 -1.41 robust nan bins 10 tauFlip=0.333 tauSS2=0.428 tauSS1=0.428 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0235/0.0486 nlimit=1 nyield_err>val=2
+B211_w6_t2_c2_fwd_12_14      st0 cq3 chi2 -1.42 robust nan bins 10 tauFlip=0.333 tauSS2=0.429 tauSS1=0.427 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0235/0.0243 nlimit=1 nyield_err>val=2
+B211_w6_t2_c3_fwd_12_14      st0 cq3 chi2 -1.42 robust nan bins 10 tauFlip=0.334 tauSS2=0.428 tauSS1=0.428 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0235/0.0365 nlimit=1 nyield_err>val=2
+B211_w6_t2_c4_fwd_12_14      st0 cq3 chi2 -1.42 robust nan bins 10 tauFlip=0.334 tauSS2=0.428 tauSS1=0.428 [bkg_sym_log_lifetime_offset AT-LIMIT] core=0.0235/0.0486 nlimit=1 nyield_err>val=2

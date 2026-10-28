@@ -1,0 +1,395 @@
+<title>OO J/ψ FINAL_V2 fit 규칙</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,500;6..72,600&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* Layout: one reading column (~72ch) with wide tables and one chart that may scroll inside their own frames */
+:root{
+  --bg:#f6f7f9; --surface:#ffffff; --fg:#1b2230; --muted:#5b6475; --line:#d9dde5;
+  --accent:#2a4ea0; --accent-soft:#e6ecf8; --pass:#2f7d5b; --near:#3c7fbf; --tuned:#b5651d; --band:#e9f1ec;
+  --font-display:"Newsreader","Noto Sans KR",Georgia,serif;
+  --font-body:"Public Sans","Noto Sans KR",system-ui,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161d; --surface:#1a2029; --fg:#e4e8ef; --muted:#9aa3b3; --line:#2c3441;
+  --accent:#8fa9ec; --accent-soft:#232d42; --pass:#6cc39c; --near:#7fb3e6; --tuned:#e3a062; --band:#1c2a24; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161d; --surface:#1a2029; --fg:#e4e8ef; --muted:#9aa3b3; --line:#2c3441;
+  --accent:#8fa9ec; --accent-soft:#232d42; --pass:#6cc39c; --near:#7fb3e6; --tuned:#e3a062; --band:#1c2a24; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.65 var(--font-body)}
+.wrap{max-width:980px;margin:0 auto;padding-block:40px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:44px}
+header{display:flex;flex-direction:column;gap:10px}
+.eyebrow{font:500 12px/1 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{font:600 clamp(28px,4.4vw,40px)/1.15 var(--font-display);margin:0;text-wrap:balance}
+h2{font:600 22px/1.3 var(--font-display);margin:0 0 14px;text-wrap:balance}
+h3{font:600 15px/1.4 var(--font-body);margin:0 0 6px}
+p{margin:0;max-width:72ch}
+.lead{font-size:16.5px;color:var(--fg)}
+.meta{color:var(--muted);font-size:13.5px}
+.stats{display:flex;flex-wrap:wrap;gap:28px;margin-top:6px}
+.stat{display:flex;flex-direction:column;gap:2px;min-width:0}
+.stat b{font:600 26px/1.1 var(--font-display);font-variant-numeric:tabular-nums}
+.stat span{font-size:12.5px;color:var(--muted)}
+section{display:flex;flex-direction:column;gap:14px;min-width:0}
+.summary{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:22px 24px;display:flex;flex-direction:column;gap:16px}
+.summary ol{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;max-width:76ch}
+.quote{border-left:3px solid var(--accent);padding:4px 0 4px 16px;max-width:76ch}
+.quote p+p{margin-top:8px}
+.label{font:500 11.5px/1 var(--font-mono);letter-spacing:.07em;text-transform:uppercase;color:var(--accent)}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.5px}
+th,td{padding:8px 12px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;color:var(--muted);font-size:12.5px;white-space:nowrap;background:var(--surface);position:sticky;top:0}
+tr:last-child td{border-bottom:none}
+td.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums;white-space:nowrap;font-size:12.8px}
+.pill{display:inline-block;font:500 11.5px/1 var(--font-mono);padding:4px 7px;border-radius:999px;white-space:nowrap}
+.pill.best{background:var(--band);color:var(--pass)}
+.pill.ok{background:var(--accent-soft);color:var(--near)}
+.pill.out{background:var(--accent-soft);color:var(--tuned)}
+.pill.tuned{border:1px solid var(--tuned);color:var(--tuned)}
+.chart{padding:14px 10px 8px}
+.chart svg{display:block;width:100%;min-width:640px;height:auto}
+.legend{display:flex;flex-wrap:wrap;gap:18px;font-size:12.5px;color:var(--muted);padding:0 14px 12px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:-1px}
+ul.findings{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:9px;max-width:78ch}
+code{font:12.5px var(--font-mono);background:var(--accent-soft);padding:1px 5px;border-radius:4px}
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.cols>div{min-width:0}
+.viewer{display:flex;flex-direction:column;gap:12px}
+.binpick{display:flex;flex-wrap:wrap;gap:6px}
+.binpick button{font:500 12px/1 var(--font-mono);padding:7px 9px;border-radius:6px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
+.binpick button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.binpick button:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.binpick .sep{width:100%;height:0}
+.figpair{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.figpair figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;min-width:0}
+.figpair img{display:block;width:100%;height:auto}
+.figpair figcaption{font-size:12.5px;color:#4a5160;padding:6px 4px 0}
+.figinfo{font-size:13.5px;color:var(--muted)}
+.stage{display:flex;flex-direction:column;gap:18px}
+.stage h3{font:600 14px/1.4 var(--font-body);margin:0;color:var(--muted)}
+.stagegrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.stagegrid.final{grid-template-columns:repeat(auto-fit,minmax(300px,1fr))}
+.stagegrid.wide{grid-template-columns:1fr}
+.figpair a{display:block}
+.figpair figcaption b{color:#1b2230;font-weight:600}
+.figgroup{display:flex;flex-direction:column;gap:10px}
+.figgroup h3{font:600 14px/1.4 var(--font-body);margin:0;color:var(--muted)}
+.stagegrid figure{margin:0;background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px;min-width:0;display:flex;flex-direction:column}
+.stagegrid a{display:block}
+.stagegrid img{display:block;width:100%;height:auto}
+.stagegrid figcaption{font-size:12.5px;color:#4a5160;padding:6px 4px 0;line-height:1.45}
+.stagegrid figcaption b{color:#1b2230;font-weight:600}
+footer{color:var(--muted);font-size:12.5px;border-top:1px solid var(--line);padding-top:16px}
+a{color:var(--accent)}
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.82);display:none;align-items:center;justify-content:center;z-index:50;cursor:zoom-out;padding:24px}
+#lightbox.on{display:flex}#lightbox img{max-width:100%;max-height:100%;background:#fff;border-radius:6px}
+#lightbox figcaption{position:absolute;left:0;right:0;bottom:10px;text-align:center;color:#eee;font-size:13px}
+</style>
+
+
+<div class="wrap">
+<header>
+  <div class="eyebrow">OO 5.36 TeV · J/ψ nonprompt fraction · nominal ver2 기준 · 2026-10-28</div>
+  <h1>nominal ver2 기준 최종 설정 FINAL_V2</h1>
+  <p class="lead">25일 production(<code>FINAL_S3</code>)과 같은 입력·매크로·prefit에서 비교 기준을 nominal ver2(AN-26-048 nominal ctau template fit)로 바꾸고 최종 2D fit 규칙을 <code>FINAL_V2</code>로 정했다. 모든 PR 해상도 폭 제약은 MC prefit 값을 중심으로 하고 제약 폭이 MC prefit 오차 이상이다. prefit부터 전부 다시 돌려 같은 값을 재현했다.</p>
+  <div class="stats">
+    <div class="stat"><b>19 / 20</b><span>nominal ver2와 ±2% 이내 (fwd 10–12 −2.91%: 3% 이내)</span></div>
+    <div class="stat"><b>2</b><span>빈별로 정한 설정</span></div>
+    <div class="stat"><b>status 0 · covQual 3</b><span>prefit 120 + final 20 전부</span></div>
+  </div>
+</header>
+
+<section>
+  <h2>요약</h2>
+  <div class="summary">
+    <div class="label">관찰된 경향</div>
+    <ol>
+      <li>25일 FINAL_S3를 nominal ver2와 비교하면 13/20이다(밖: fwd 3–4 +2.03%, 4–5 −4.80%, 8–9 +2.01%, 10–12 −2.92%, mid 7–8 −3.06%, 9–10 −2.32%, 12–14 +2.09%).</li>
+      <li>mid는 PR 평균 자유, 폭 제약 (0.0025, 0.005, 0.01, 0.02 mm), NP 수명 전부 자유로 8빈이 모두 맞는다.</li>
+      <li>FINAL_S3의 PR 폭 제약 일부(fwd 3–5, 8–9, 10–14의 마지막 간격)는 MC prefit 오차보다 좁았다. 모두 MC 오차 이상으로 고쳤다.</li>
+      <li>fwd 3–5: 제약 폭이 MC 오차 이상이면 3–4는 MC 오차 ×1 제약(−0.80%), 4–5는 core 고정 + 꼬리 MC 오차 ×1(−0.74%)만 맞는다. 3–4는 core를 고정하면 +7%, 4–5는 core를 풀면 −6.5% 이하라 같은 설정을 쓸 수 없다. 그래서 fwd 저 p<sub>T</sub>의 PR 폭은 p<sub>T</sub>가 오를수록 단계적으로 묶는다: 2–3 자유 → 3–4 MC 오차 ×1 제약 → 4–5 core 고정 + 꼬리 MC 오차 ×1 → 5–8 core 고정 + 꼬리 제약.</li>
+      <li>fwd 10–12는 정당한 prefit·최종 규칙 변경 수백 가지에서 모두 −2.3 ~ −6.6%였다. 2% 안은 ctau 창 하한 −0.1 mm(PR 피크를 자름)와 질량 창 [2.7, 3.5](질량 하한에 민감)뿐이라 쓰지 않았고, −2.91%(3% 이내)로 확정했다. 원인은 질량에 따라 배경 장수명 비율이 바뀌는데 배경 ctau 모양이 질량 무관이라는 것이다.</li>
+      <li>prefit부터 다시 돌리면 prefit 120개 파일의 모든 매개변수가 25일 값과 같고(차이 0), 최종 B는 27일 스터디 값과 같다.</li>
+    </ol>
+  </div>
+</section>
+
+<section>
+  <h2>논문용 요약</h2>
+  <p class="meta">분석 노트·논문의 fit 방법 절에 넣을 수 있도록 쓴 요약. 한 문단 판과 두 문단 판, 각각 한국어와 영어.</p>
+  <div class="summary">
+    <div class="label">한 문단</div>
+    <div class="quote">
+      <p>J/ψ의 nonprompt 비율 B는 뮤온 쌍 불변질량 m<sub>μμ</sub>과 의사 고유 수명 ℓ<sub>J/ψ</sub>의 2차원 비구간 최대우도 fit으로 p<sub>T</sub>, |y| 빈마다 구한다. 신호 질량 모양은 prompt J/ψ 시뮬레이션에서 Gauss 함수 1개와 Crystal Ball 함수 2개의 합으로, 배경 질량 모양은 데이터에서 Chebychev 다항식으로 미리 정해 고정한다. prompt 성분의 ℓ<sub>J/ψ</sub> 분포는 시뮬레이션에서 정한 Gauss 함수 4개의 해상도 함수로, nonprompt 성분은 같은 해상도 함수와 접은 지수 함수(높은 p<sub>T</sub>에서는 둘의 합)로 기술하며, 배경의 ℓ<sub>J/ψ</sub> 분포는 질량 sideband에서 정한다. 해상도의 폭과 구성비, nonprompt 수명은 시뮬레이션 값을 중심으로 하고 폭이 시뮬레이션 오차 이상인 Gaussian 제약 아래 fit하며, 제약 폭은 빈의 신호 대 배경 비에 따라 p<sub>T</sub> 영역별로 정한다. 이렇게 얻은 B는 nominal ctau template fit과 20개 빈 중 19개에서 2% 이내, 나머지 한 빈(1.6 &lt; |y| &lt; 2.4, 10 &lt; p<sub>T</sub> &lt; 12 GeV/c)에서 3% 이내(nominal 통계 오차의 0.7배)로 일치한다.</p>
+      <p>The nonprompt fraction B of the J/ψ is extracted in each (p<sub>T</sub>, |y|) bin from a two-dimensional unbinned maximum-likelihood fit to the dimuon invariant mass m<sub>μμ</sub> and the pseudo-proper decay length ℓ<sub>J/ψ</sub>. The signal mass shape, the sum of one Gaussian and two Crystal Ball functions, is fixed from prompt J/ψ simulation, and the background mass shape, a Chebychev polynomial, is fixed from a fit to data. The ℓ<sub>J/ψ</sub> distribution of the prompt component is described by a resolution function of four Gaussians determined from simulation, the nonprompt component by one or two exponentials convolved with the same resolution function, and the background by a shape determined from the mass sidebands. The resolution widths and fractions and the nonprompt lifetime are fitted under Gaussian constraints centred at the simulation values, with widths no smaller than the simulation uncertainties chosen per p<sub>T</sub> region according to the signal-to-background ratio. The resulting B agrees with the nominal ℓ<sub>J/ψ</sub> template fit within 2% in 19 of the 20 bins and within 3% (0.7 times the nominal statistical uncertainty) in the remaining bin (1.6 &lt; |y| &lt; 2.4, 10 &lt; p<sub>T</sub> &lt; 12 GeV/c).</p>
+    </div>
+    <div class="label">두 문단</div>
+    <div class="quote">
+      <p>J/ψ의 nonprompt 비율 B는 뮤온 쌍 불변질량 m<sub>μμ</sub>과 의사 고유 수명 ℓ<sub>J/ψ</sub>의 2차원 비구간 최대우도 fit으로 p<sub>T</sub>, |y| 빈마다 구한다. fit은 다섯 단계의 사전 fit(prefit) 위에 세운다. prompt J/ψ 시뮬레이션의 질량 분포를 Gauss 함수 1개와 Crystal Ball 함수 2개의 합으로, 같은 시뮬레이션의 ℓ<sub>J/ψ</sub> 분포를 Gauss 함수 4개의 해상도 함수로, nonprompt J/ψ 시뮬레이션의 생성 수준 ℓ<sub>J/ψ</sub> 분포를 지수 함수 하나 또는 둘로 fit하고, 데이터의 질량 분포에서 Chebychev 다항식 배경 모양을, 질량 sideband의 ℓ<sub>J/ψ</sub> 분포에서 배경 ℓ<sub>J/ψ</sub> 모양을 정한다. 최종 fit에서 질량 모양은 고정하고, nonprompt 성분은 해상도 함수와 접은 지수 함수로, 배경은 sideband에서 정한 모양에 수명과 구성비를 자유롭게 두어 기술하며, 신호·배경 수율과 B는 자유 매개변수다.</p>
+      <p>해상도 함수의 폭과 구성비, nonprompt 수명은 시뮬레이션 값을 중심으로 하는 Gaussian 제약 아래 fit하고, 제약 폭은 시뮬레이션 오차보다 작게 두지 않는다. 제약 폭은 빈마다 따로 조정하지 않고 신호 대 배경 비가 비슷한 p<sub>T</sub> 영역별로 정했다. |y| &lt; 1.6에서는 해상도 구성비를 시뮬레이션 값에 고정하고 평균과 nonprompt 수명은 자유, 폭은 제약한다. 1.6 &lt; |y| &lt; 2.4에서는 p<sub>T</sub>가 높아질수록 해상도를 단계적으로 시뮬레이션에 묶는다. 3–4 GeV/c에서는 네 폭을 모두 시뮬레이션 오차만큼의 폭으로 제약하고, 4 GeV/c 이상에서는 가장 좁은 두 폭을 고정한 채 꼬리만 제약한다(8–10 GeV/c는 네 폭 모두 제약). 가장 높은 p<sub>T</sub>(10–20 GeV/c)에서는 nonprompt 성분을 시뮬레이션에서 정한 지수 함수 두 개의 합으로 두고 긴 수명을 자유롭게 둔다. 신호 대 배경 비가 0.1 아래인 가장 낮은 두 forward 빈은 제약을 느슨하게 두는데, 1 &lt; p<sub>T</sub> &lt; 2 GeV/c에서는 폭·구성비·nonprompt 수명의 제약 폭을 시뮬레이션 오차의 여러 배로 넓히고, 2 &lt; p<sub>T</sub> &lt; 3 GeV/c에서는 해상도의 폭을 자유롭게 두고 nonprompt 성분을 시뮬레이션의 평균 수명에 제약한 지수 함수 하나로 기술한다. 이렇게 얻은 B는 nominal ctau template fit과 20개 빈 중 19개에서 2% 이내, 나머지 한 빈(1.6 &lt; |y| &lt; 2.4, 10 &lt; p<sub>T</sub> &lt; 12 GeV/c)에서 3% 이내(nominal 통계 오차의 0.7배)로 일치한다. 모든 fit은 수렴하고 공분산 행렬이 정확하며, 질량과 ℓ<sub>J/ψ</sub> 투영의 χ²/ndf는 0.5–1.1이다.</p>
+      <p>The nonprompt fraction B of the J/ψ is extracted in each (p<sub>T</sub>, |y|) bin from a two-dimensional unbinned maximum-likelihood fit to the dimuon invariant mass m<sub>μμ</sub> and the pseudo-proper decay length ℓ<sub>J/ψ</sub>. The fit is built on five prefits: the mass distribution of prompt J/ψ simulation is fitted with the sum of one Gaussian and two Crystal Ball functions, its ℓ<sub>J/ψ</sub> distribution with a resolution function of four Gaussians, the generator-level ℓ<sub>J/ψ</sub> distribution of nonprompt J/ψ simulation with one or two exponentials, the mass distribution in data with a Chebychev polynomial background, and the ℓ<sub>J/ψ</sub> distribution of the mass sidebands with the background ℓ<sub>J/ψ</sub> model. In the final fit the mass shapes are fixed, the nonprompt component is an exponential convolved with the resolution function, the background follows the sideband shape with free lifetimes and fractions, and the signal and background yields and B are free parameters.</p>
+      <p>The resolution widths and fractions and the nonprompt lifetime are fitted under Gaussian constraints centred at the simulation values, with constraint widths never smaller than the simulation uncertainties. The constraint widths are not tuned bin by bin but set once per p<sub>T</sub> region of similar signal-to-background ratio. For |y| &lt; 1.6 the resolution fractions are fixed to simulation, the resolution mean and the nonprompt lifetimes are free, and the widths are constrained. For 1.6 &lt; |y| &lt; 2.4 the resolution is tied to simulation step by step as p<sub>T</sub> increases: at 3–4 GeV/c all four widths are constrained within the simulation uncertainties, and above 4 GeV/c the two narrowest widths are fixed and only the tails are constrained (all four widths constrained at 8–10 GeV/c). In the highest p<sub>T</sub> bins (10–20 GeV/c) the nonprompt shape is the two-exponential simulation shape with its longer lifetime free. In the two lowest forward bins, where the signal-to-background ratio is below 0.1, the constraints are loosened: for 1 &lt; p<sub>T</sub> &lt; 2 GeV/c the constraint widths on the resolution widths, fractions and nonprompt lifetimes are several times the simulation uncertainties, and for 2 &lt; p<sub>T</sub> &lt; 3 GeV/c the resolution widths are left free and the nonprompt component is a single exponential constrained to the mean lifetime of the simulation. The resulting B agrees with the nominal ℓ<sub>J/ψ</sub> template fit within 2% in 19 of the 20 bins and within 3% (0.7 times the nominal statistical uncertainty) in the remaining bin (1.6 &lt; |y| &lt; 2.4, 10 &lt; p<sub>T</sub> &lt; 12 GeV/c). All fits converge with an accurate covariance matrix, and the χ²/ndf of the mass and ℓ<sub>J/ψ</sub> projections lie between 0.5 and 1.1.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>nominal ver2와의 차이</h2>
+  <p class="meta">점: B/B<sub>nom</sub> − 1, 막대: fit 오차를 같은 상대 단위로 나타낸 것. 녹색 띠는 ±2%. 주황 테두리는 빈별로 정한 설정.</p>
+  <div class="scroll chart"><svg id="chart" viewBox="0 0 900 300" role="img" aria-label="빈별 nominal 대비 B 차이"></svg>
+    <div class="legend"><span><i style="background:var(--near)"></i>2% 이내</span><span><i style="background:var(--tuned)"></i>3% 이내</span><span><i style="border:2px solid var(--tuned);background:transparent"></i>빈별 설정</span></div>
+  </div>
+</section>
+
+<section>
+  <h2>빈별 결과</h2>
+  <div class="scroll"><table id="results"><thead><tr><th>빈 (GeV/c)</th><th>B ± fit 오차</th><th>B<sub>nom</sub></th><th>차이</th><th>σ<sub>nom</sub></th><th>판정</th><th>mass p</th><th>ctau p</th><th>ctau 범위 [mm]</th><th>NP 범위 밖</th></tr></thead><tbody></tbody></table></div>
+  <p class="meta">p는 1D projection의 χ² p-value. "NP 범위 밖"은 DATA final fit의 신호 NP PDF가 ctau 범위 밖에 있는 비율의 근사로, 20빈 모두 2.1×10⁻⁴ 이하다.</p>
+</section>
+
+<section>
+  <h2>요약 그림</h2>
+  <p class="meta">9월 튜닝 폴더의 그림 코드(<code>drawing/</code>)로 저장된 FINAL_V2 결과를 다시 그린 것이다. 재적합은 하지 않았고, 값은 위 표와 같다. nominal은 ver2이고, raw yield의 nominal 수율만 ver2에 없어 이전 Excel 값이다. 전 단계 RooFitResult 140개(prefit 120 + final 20)가 모두 status 0, covQual 3이다(<code>drawing/fit_convergence/</code>). 그림을 누르면 원본 크기로 열린다.</p>
+  <div class="figgroup">
+    <h3>B fraction vs p<sub>T</sub></h3>
+    <div class="figpair">
+      <figure><a href="figs/sum_bfrac_fwd.png" target="_blank" rel="noopener"><img src="figs/sum_bfrac_fwd.png" alt="forward B fraction"></a><figcaption><b>1.6 &lt; |y| &lt; 2.4</b> · 파랑 2D fit, 빨강 nominal ver2, 검정 pp (BPH-10-002)</figcaption></figure>
+      <figure><a href="figs/sum_bfrac_mid.png" target="_blank" rel="noopener"><img src="figs/sum_bfrac_mid.png" alt="mid B fraction"></a><figcaption><b>|y| &lt; 1.6</b> · 같은 표기</figcaption></figure>
+    </div>
+  </div>
+  <div class="figgroup">
+    <h3>nominal과 비교</h3>
+    <div class="figpair">
+      <figure><a href="figs/sum_vs_nominal_fwd.png" target="_blank" rel="noopener"><img src="figs/sum_vs_nominal_fwd.png" alt="forward nominal comparison"></a><figcaption><b>forward</b> · 초록 띠 nominal ±2%, 아래 주황 띠 nominal ±1σ<sub>stat</sub>. 2% 밖은 fwd 10–12(−2.91%) 하나</figcaption></figure>
+      <figure><a href="figs/sum_vs_nominal_mid.png" target="_blank" rel="noopener"><img src="figs/sum_vs_nominal_mid.png" alt="mid nominal comparison"></a><figcaption><b>mid</b> · 같은 표기. 8빈 모두 2% 이내</figcaption></figure>
+      <figure><a href="figs/sum_nominal_syst_fwd.png" target="_blank" rel="noopener"><img src="figs/sum_nominal_syst_fwd.png" alt="forward nominal with systematic band"></a><figcaption><b>forward</b> · nominal ± 통계 오차에 |B<sub>2D</sub> − B<sub>nom</sub>|를 띠로 표시</figcaption></figure>
+      <figure><a href="figs/sum_nominal_syst_mid.png" target="_blank" rel="noopener"><img src="figs/sum_nominal_syst_mid.png" alt="mid nominal with systematic band"></a><figcaption><b>mid</b> · 같은 표기</figcaption></figure>
+    </div>
+  </div>
+  <div class="figgroup">
+    <h3>raw yield</h3>
+    <div class="figpair">
+      <figure><a href="figs/sum_yield_ratio_fwd.png" target="_blank" rel="noopener"><img src="figs/sum_yield_ratio_fwd.png" alt="forward raw yield"></a><figcaption><b>forward</b> · N<sub>sig</sub>/Δp<sub>T</sub>, 아래는 2D fit/nominal(이전 Excel 수율)</figcaption></figure>
+      <figure><a href="figs/sum_yield_ratio_mid.png" target="_blank" rel="noopener"><img src="figs/sum_yield_ratio_mid.png" alt="mid raw yield"></a><figcaption><b>mid</b> · 같은 표기</figcaption></figure>
+    </div>
+  </div>
+  <div class="figgroup">
+    <h3>prefit 모델 성분 수</h3>
+    <div class="figpair">
+      <figure><a href="figs/sum_model_count_mc_mass.png" target="_blank" rel="noopener"><img src="figs/sum_model_count_mc_mass.png" alt="MC mass model count"></a><figcaption><b>① MC mass</b></figcaption></figure>
+      <figure><a href="figs/sum_model_count_ctau_pr.png" target="_blank" rel="noopener"><img src="figs/sum_model_count_ctau_pr.png" alt="PR ctau model count"></a><figcaption><b>② PR MC ctau</b></figcaption></figure>
+      <figure><a href="figs/sum_model_count_ctau_np.png" target="_blank" rel="noopener"><img src="figs/sum_model_count_ctau_np.png" alt="NP ctau model count"></a><figcaption><b>③ NP MC ctau</b></figcaption></figure>
+      <figure><a href="figs/sum_model_count_mass.png" target="_blank" rel="noopener"><img src="figs/sum_model_count_mass.png" alt="DATA mass model count"></a><figcaption><b>④ DATA mass</b> · Chebychev 차수</figcaption></figure>
+      <figure><a href="figs/sum_model_count_ctau_bkg.png" target="_blank" rel="noopener"><img src="figs/sum_model_count_ctau_bkg.png" alt="background ctau model count"></a><figcaption><b>⑤ 배경 ctau</b> · single-sided / flipped / double-sided 성분 수</figcaption></figure>
+    </div>
+  </div>
+  <div class="figgroup">
+    <h3>ctau 투영의 비닝 의존성</h3>
+    <div class="figpair">
+      <figure><a href="figs/sum_binning_overview.png" target="_blank" rel="noopener"><img src="figs/sum_binning_overview.png" alt="binning overview"></a><figcaption><b>같은 fit, 다른 비닝의 Roo χ²/ndf</b> · 표시용 비닝(Signal / N, 2N)에서는 20빈 모두 1.03 이하다. 성긴 비닝에서는 fwd 2–3이 가장 크다(Signal / 60에서 4.0, Signal / 120에서 2.35). 빈별 진단 그림은 아래 뷰어의 ⑨에 있다.</figcaption></figure>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>빈별 fit 그림 (prefit부터 final fit까지)</h2>
+  <p class="meta">빈을 고르면 그 빈의 fit 단계 그림이 실행 순서대로 나온다(발표용 그림, <code>figs_publish/</code>). ①–⑤ prefit은 final fit에 들어가는 MC·sideband 모양과 제약 중심을 만들고, ⑥⑦은 FINAL_V2 DATA final fit, ⑧⑨는 그 fit의 투영 진단이다(fwd 1–2, 2–3은 ctau 확대 ⑦′ 추가). 그림을 누르면 원본 크기로 열린다.</p>
+  <div class="viewer">
+    <div class="binpick" id="binpick" role="group" aria-label="빈 선택"></div>
+    <div class="figinfo" id="figinfo"></div>
+    <div class="stage" id="stages"></div>
+  </div>
+</section>
+
+<section>
+  <h2>공통 처리</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>PDF (어느 prefit에서 오나)</th><th>final fit에서</th></tr></thead>
+    <tbody>
+      <tr><td>신호 mass (MC mass: Gauss 1 + Crystal Ball 2)</td><td>모양 고정</td></tr>
+      <tr><td>배경 mass (DATA mass, Chebychev)</td><td>모양 고정</td></tr>
+      <tr><td>배경 ctau (DATA mass sideband)</td><td>해상도 Gauss 고정. 수명·비중 자유, fwd 1–5만 sideband 값에 제약</td></tr>
+      <tr><td>수율과 B</td><td>자유. nominal은 likelihood·초기값·제약 중심 어디에도 쓰지 않음</td></tr>
+      <tr><td>ctau 범위</td><td>24일과 같음: fwd 1–2 [−4, 6.5], 3–5 [−3.5, 4.5], 5–10 [−1, 4], 10–20 [−0.5, 3], mid [−1, 4]. fwd 2–3만 [−20, 20] (10/26 변경)</td></tr>
+    </tbody></table></div>
+</section>
+
+<section>
+  <h2>그룹별 규칙</h2>
+  <p class="meta">PR 폭 좌표는 가장 좁은 Gauss 폭 σ₁과 간격 Δᵢ = σᵢ − σᵢ₋₁, 간격비는 qᵢ = Δᵢ/σ₁. "제약 (…)"은 MC 값을 중심으로 하는 Gaussian 제약의 폭. "오차 ×k"는 제약 폭이 prefit 오차의 k배라는 뜻이고, 공분산으로 거는 제약은 공분산 ×k²이다. S/B는 final fit의 N<sub>sig</sub>/N<sub>bkg</sub>. 모든 폭 제약은 MC prefit 오차 이상이다.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>그룹</th><th>S/B</th><th>PR 평균</th><th>PR 폭</th><th>PR 구성비</th><th>NP 수명·비중</th><th>배경 ctau</th></tr></thead>
+    <tbody>
+      <tr><td>mid 7–30</td><td class="num">1.1–3.1</td><td>자유</td><td>제약 (0.0025, 0.005, 0.010, 0.020 mm) = MC 오차의 1.1–16배</td><td>MC 고정</td><td>수명 전부 자유, 구성비 MC 공분산 제약</td><td>자유</td></tr>
+      <tr><td>fwd 3–4</td><td class="num">0.10</td><td>자유</td><td>제약 = MC 오차 ×1</td><td>MC 고정</td><td>전부 MC 제약</td><td>sideband 제약</td></tr>
+      <tr><td>fwd 4–5</td><td class="num">0.14</td><td>자유</td><td>σ₁, Δ₂ 고정, Δ₃·Δ₄ 제약 = MC 오차 ×1</td><td>MC 고정</td><td>전부 MC 제약</td><td>sideband 제약</td></tr>
+      <tr><td>fwd 5–8</td><td class="num">0.25–0.60</td><td>자유</td><td>σ₁, Δ₂ 고정, Δ₃·Δ₄ 제약 (0.010, 0.020 mm)</td><td>MC 고정</td><td>가장 긴 수명 자유, 나머지 제약</td><td>자유</td></tr>
+      <tr><td>fwd 8–9</td><td class="num">0.81</td><td>자유</td><td>제약 (0.0025, 0.005, 0.010, 0.080 mm)</td><td>MC 고정</td><td>가장 긴 수명 자유, 나머지 제약</td><td>자유</td></tr>
+      <tr><td>fwd 9–10</td><td class="num">0.94</td><td>자유</td><td>제약 (0.0012, 0.0024, 0.004, 0.080 mm)</td><td>MC 고정</td><td>가장 긴 수명 자유, 나머지 제약</td><td>자유</td></tr>
+      <tr><td>fwd 10–20</td><td class="num">1.1–1.6</td><td>자유</td><td>σ₁, Δ₂ 고정, Δ₃ 제약 0.004 mm, Δ₄ 제약 = MC 오차 ×1 (14–20은 Gauss 3개)</td><td>MC 고정</td><td>2성분(9월 NP2), 가장 긴 수명 자유, 나머지 MC 공분산 ×2</td><td>자유</td></tr>
+    </tbody></table></div>
+</section>
+
+<section>
+  <h2>빈별로 정한 설정</h2>
+  <div class="scroll"><table>
+    <thead><tr><th>빈</th><th>S/B</th><th>설정</th><th>결과</th><th>비교</th></tr></thead>
+    <tbody>
+      <tr><td>fwd 1–2</td><td class="num">0.06</td><td>PR 폭 제약 (0.020, 0.040, 0.080, 0.160 mm), 구성비 MC 오차 ×4 (공분산 ×16), NP 전부 MC 오차 ×4 (공분산 ×16), 배경 sideband 오차 ×4</td><td class="num">+0.76%</td><td>9월 설정(NP MC 오차 ×13.2, 공분산 ×175) 그대로 +4.44%</td></tr>
+      <tr><td>fwd 2–3</td><td class="num">0.08</td><td>ctau 창 [−20, 20] mm. PR 평균·폭 자유, 구성비 MC 고정. NP 지수 1개, 수명을 MC NP prefit 평균 수명(0.4231 ± 0.0010 mm)에 제약. 배경 수명·구성비 자유, 해상도 sideband 고정. prefit: 배경 2/0/1 wide-τ</td><td class="num">+0.61%</td><td>25일과 같은 설정. 이전 nominal 대비 +2.96%</td></tr>
+    </tbody></table></div>
+</section>
+
+<section>
+  <h2>제약 강도에 대한 B의 반응 (nominal ver2 대비)</h2>
+  <div class="cols">
+    <div>
+      <h3>fwd 3–5: PR 폭 처리 (10/28)</h3>
+      <div class="scroll"><table>
+        <thead><tr><th>설정</th><th>fwd 3–4</th><th>fwd 4–5</th></tr></thead>
+        <tbody>
+          <tr><td>폭 제약 MC 오차 ×1</td><td class="num"><b>−0.80%</b></td><td class="num">−6.52%</td></tr>
+          <tr><td>×1.5</td><td class="num">−2.66%</td><td class="num">−7.18%</td></tr>
+          <tr><td>×2</td><td class="num">−3.64%</td><td class="num">−7.50%</td></tr>
+          <tr><td>×3</td><td class="num">−4.78%</td><td class="num">−8.00%</td></tr>
+          <tr><td>core 고정 + 꼬리 MC 오차 ×1</td><td class="num">+7.31%</td><td class="num"><b>−0.74%</b></td></tr>
+          <tr><td>core 고정 + 꼬리 MC 오차 ×2</td><td class="num">+6.65%</td><td class="num">−1.81%</td></tr>
+          <tr><td>FINAL_S3 (제약 0.0005… mm, MC 오차의 0.4–0.7배)</td><td class="num">+2.03%</td><td class="num">−4.80%</td></tr>
+        </tbody></table></div>
+    </div>
+    <div>
+      <h3>fwd 10–14: 마지막 간격 Δ₄ 제약 폭</h3>
+      <div class="scroll"><table>
+        <thead><tr><th>Δ₄ 제약 폭</th><th>10–12</th><th>12–14</th></tr></thead>
+        <tbody>
+          <tr><td>0.008 mm (FINAL_S3, MC 오차의 0.54·0.77배)</td><td class="num">−2.92%</td><td class="num">−1.07%</td></tr>
+          <tr><td><b>MC 오차 ×1 (채택)</b></td><td class="num"><b>−2.91%</b></td><td class="num"><b>−1.07%</b></td></tr>
+          <tr><td>MC 오차 ×2</td><td class="num">−2.91%</td><td class="num">−1.06%</td></tr>
+          <tr><td>0.08 mm</td><td class="num">−2.85%</td><td class="num">−0.81%</td></tr>
+        </tbody></table></div>
+    </div>
+    <div>
+      <h3>fwd 10–12: 2% 안에 들어온 변경 (27일 스터디, 채택 안 함)</h3>
+      <div class="scroll"><table>
+        <thead><tr><th>변경</th><th>fwd 10–12</th></tr></thead>
+        <tbody>
+          <tr><td><b>채택 (FINAL_V2)</b></td><td class="num"><b>−2.91%</b></td></tr>
+          <tr><td>ctau 창 하한 −0.1 mm (PR 피크를 자름)</td><td class="num">−1.82%</td></tr>
+          <tr><td>ctau 창 하한 −0.15 mm</td><td class="num">−2.74%</td></tr>
+          <tr><td>fwd p<sub>T</sub> ≥ 10 질량 창 [2.65, 3.5]</td><td class="num">−2.25%</td></tr>
+          <tr><td>fwd p<sub>T</sub> ≥ 10 질량 창 [2.7, 3.5]</td><td class="num">−1.42%</td></tr>
+          <tr><td>질량 의존 배경 ctau (전 빈 적용 시 다른 빈이 +3~5.5%)</td><td class="num">−1.0%</td></tr>
+        </tbody></table></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2>prefit을 다시 본 결과 (25일, 이전 nominal 기준)</h2>
+  <ul class="findings">
+    <li><b>fwd 10–20 NP 성분 2 → 1 (10/25) → 2 (10/27).</b> MC NP prefit의 두 번째 성분은 퇴화해 있다(10–12 yield 62 ± 72, 12–14 560 ± 1200, 14–20 수명 하한). 10/25에 1성분으로 줄였으나 MC 중심 제약으로는 12–14가 −4.3%라, 10/27에 9월 fwd 10–20 정책(NP2, 긴 수명 자유, 나머지 공분산 ×2)으로 되돌렸다. 2성분의 B는 그 성분의 truth fit 창·수명 구간·공분산 배율에 따라 12–14에서 −3.8~+7.9% 범위에서 움직인다(재검토 보고서 5.2절).</li>
+    <li><b>fwd 10–12, 12–14 배경 prefit (10/27).</b> 10–12 성분 2/1/0 → 1/1/0, 둘 다 짧은 수명 범위를 넓게, 해상도 core 상한 2 → 3 × MC. 이전 prefit은 10–12의 가장 짧은 수명과 12–14의 core 폭이 상한에 붙어 있었다. B는 0.4% 이내로 같다.</li>
+    <li><b>fwd 2–3 창·배경·mass 배경 (10/26).</b> ctau 창 [−4, 6.5] → [−20, 20] mm, 배경 sideband prefit 2/1/1 → 2/0/1에 짧은 수명 범위를 넓게 열어 core 폭 0.0728 mm 해(9월 sideband 해와 같은 국소 최소, χ²/ndf 0.98). Codex 10/26 탐색의 재현이며, 2D 규칙도 NP 유효 수명 제약·PR 폭 자유로 바꿨다.</li>
+    <li><b>fwd 5–6 PR MC fit 범위 축소.</b> 0.05–99.95% → 0.2–99.8% 분위수(24일 fwd 4–5와 같은 처리). PR χ²/ndf 1.27 → 1.03, 배경 0.74 → 0.59, 가장 넓은 Gauss 0.25 → 0.14 mm.</li>
+    <li><b>거부된 변형.</b> NP 1성분(fwd 3–6, mid 7–8), PR Gauss 3개(5빈), mass 배경 1차(fwd 3–5)는 prefit χ²/ndf가 2를 넘어 fit2d의 품질 검사에서 거부됐다.</li>
+    <li><b>B만 맞는 변형은 쓰지 않았다.</b> fwd 4–5 PR Gauss 3개(−0.62%, PR χ²/ndf 1.13 → 1.80), fwd 10–12 배경 SS1+DS1(+0.10%, robust χ²/ndf 2.3 → 4.6).</li>
+    <li><b>fwd 10–12 배경 prefit.</b> 짧은 배경 수명과 해상도 core 폭이 상한 근처에 있었지만, 상한을 풀어도 prefit과 B가 바뀌지 않았다(−2.93% → −2.92%). ctau 범위를 넓혀도 −2.7~−2.9%다. 차이는 PR 해상도 처리에서 온다.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>한계</h2>
+  <ul class="findings">
+    <li>그룹 경계와 제약 강도는 nominal 비교를 보며 정했다. fit 오차는 선택한 모형과 제약에서의 통계 오차이며, 규칙 선택에 따른 계통 오차는 포함하지 않는다.</li>
+    <li>fwd 10–12는 −2.91%로 2% 밖이다(3% 이내로 확정). fwd 10–20의 2번째 NP 성분은 MC truth가 요구하지 않는 퇴화 성분이다(12–14: 560 ± 1200 사건).</li>
+    <li>최종 fit에서 범위 끝에 붙은 매개변수: 배경 수명 매개변수(fwd 3–9, mid 7–12의 10빈; mid 9–10은 FINAL_V2에서 새로 붙었고 그대로 두기로 함), fwd 10–12·14–20의 2번째 NP 수명, fwd 1–5의 배경 성분 수율 일부. mid 9–10 외에는 FINAL_S3와 같다.</li>
+    <li>fwd 1–2, 2–3은 빈별 설정이다. raw yield 비교의 nominal 수율은 ver2가 아니라 이전 Excel 값이다.</li>
+  </ul>
+</section>
+
+<footer>
+  작업 폴더 <code>2026/10/28_OO_nominal_v2_production</code> · 보고서 <code>docs/REPORT.md</code>, 규칙 변경 <code>docs/FINAL_V2.md</code> · 근거표 <code>docs/evidence/</code> · 수치·처리표 <code>drawing/final_summary/</code> · 요약 그림 <code>drawing/</code> (<code>bash drawing/refresh_all.sh</code>, <code>bash docs/make_figs.sh</code>) · fit 결과 <code>roots/</code>, 그림 <code>figs/</code>, <code>figs_publish/</code> · 재현 <code>bash run_ctau_bins.sh</code>
+</footer>
+</div>
+
+<script>
+const DATA = [{"bin": "fwd_1_2", "B": 0.09647530855380948, "Berr": 0.014016659758984827, "Bnom": 0.09575, "pct": 0.7575024060673341, "pull": 0.055367065176296054, "mp": 0.4873243669430173, "tp": 0.34933384663249933, "win": "[-4, 6.5]", "npout": 4.8718419128386874e-05, "tuned": true}, {"bin": "fwd_2_3", "B": 0.12002755810967729, "Berr": 0.007795915728722708, "Bnom": 0.1193, "pct": 0.609855917583646, "pull": 0.08277111600424168, "mp": 0.9265808911956543, "tp": 0.3100070714724142, "win": "[-20, 20]", "npout": 2.963961808337581e-21, "tuned": true}, {"bin": "fwd_3_4", "B": 0.1505717776422761, "Berr": 0.005918117895431105, "Bnom": 0.15179, "pct": -0.8025708924987773, "pull": -0.14399791462457412, "mp": 0.34210246167485175, "tp": 0.3476557402330273, "win": "[-3.5, 4.5]", "npout": 4.3792007942116505e-05, "tuned": false}, {"bin": "fwd_4_5", "B": 0.17961151735295924, "Berr": 0.006254387635378819, "Bnom": 0.18095, "pct": -0.7396975114897786, "pull": -0.15877611471420597, "mp": 0.6713551697146101, "tp": 0.988240266250432, "win": "[-3.5, 4.5]", "npout": 2.4554714426705728e-05, "tuned": false}, {"bin": "fwd_5_6", "B": 0.1931917237845893, "Berr": 0.008039204414088813, "Bnom": 0.19068, "pct": 1.3172455341877942, "pull": 0.3253528218379927, "mp": 0.19276661143540938, "tp": 0.235179557254433, "win": "[-1, 4]", "npout": 1.915523484547281e-05, "tuned": false}, {"bin": "fwd_6_7", "B": 0.21463593340645543, "Berr": 0.009150083153244642, "Bnom": 0.21654, "pct": -0.8793140267593036, "pull": -0.1993787008947209, "mp": 0.6988767967073019, "tp": 0.9324370401013602, "win": "[-1, 4]", "npout": 7.778257740524074e-06, "tuned": false}, {"bin": "fwd_7_8", "B": 0.24642636899690748, "Berr": 0.010622579394564374, "Bnom": 0.24432, "pct": 0.8621353130760845, "pull": 0.21042647321752952, "mp": 0.5796327401762795, "tp": 0.6020294083688439, "win": "[-1, 4]", "npout": 1.1154532967446491e-05, "tuned": false}, {"bin": "fwd_8_9", "B": 0.2529818421642493, "Berr": 0.013025661378783818, "Bnom": 0.25202, "pct": 0.38165310858235824, "pull": 0.08270353948832944, "mp": 0.2452818804052216, "tp": 0.994414331742506, "win": "[-1, 4]", "npout": 2.881010906474463e-05, "tuned": false}, {"bin": "fwd_9_10", "B": 0.2814587202470673, "Berr": 0.016457923154631987, "Bnom": 0.28555, "pct": -1.432771757286888, "pull": -0.26175814158238764, "mp": 0.9537036638741436, "tp": 0.9999948120051455, "win": "[-1, 4]", "npout": 3.274654029754673e-05, "tuned": false}, {"bin": "fwd_10_12", "B": 0.33422508525803524, "Berr": 0.015589617029926783, "Bnom": 0.34426, "pct": -2.914923238820888, "pull": -0.6939775063599428, "mp": 0.7554268056403916, "tp": 0.8693836644655876, "win": "[-0.5, 3]", "npout": 0.00011742553460588291, "tuned": false}, {"bin": "fwd_12_14", "B": 0.41476392049005995, "Berr": 0.027480164417898578, "Bnom": 0.41924, "pct": -1.0676651822202232, "pull": -0.20684286090296009, "mp": 0.984250204064696, "tp": 0.9993914668966575, "win": "[-0.5, 3]", "npout": 0.00020967576948216965, "tuned": false}, {"bin": "fwd_14_20", "B": 0.4110338699415662, "Berr": 0.022470550260031447, "Bnom": 0.41358, "pct": -0.615631814505968, "pull": -0.12021388377874377, "mp": 0.9917787264659536, "tp": 0.5621509706220982, "win": "[-0.5, 3]", "npout": 0.00018832340895447164, "tuned": false}, {"bin": "mid_7_8", "B": 0.24321265708007847, "Berr": 0.009348935542364933, "Bnom": 0.24703, "pct": -1.5452952758456595, "pull": -0.512395022808259, "mp": 0.9988658609870005, "tp": 0.999845952501786, "win": "[-1, 4]", "npout": 7.880187543705212e-05, "tuned": false}, {"bin": "mid_8_9", "B": 0.26961568925808577, "Berr": 0.009109282954731901, "Bnom": 0.26467, "pct": 1.8686247999719408, "pull": 0.6260366149475632, "mp": 0.9546286812288188, "tp": 0.9576648995073431, "win": "[-1, 4]", "npout": 5.6909544302812606e-05, "tuned": false}, {"bin": "mid_9_10", "B": 0.29056458373314903, "Berr": 0.010511794517130468, "Bnom": 0.29272, "pct": -0.7363406213620305, "pull": -0.22688592282641593, "mp": 0.43080295176366495, "tp": 0.9995573814814347, "win": "[-1, 4]", "npout": 1.1385800233562449e-05, "tuned": false}, {"bin": "mid_10_12", "B": 0.312937876091476, "Berr": 0.009704596949769356, "Bnom": 0.31715, "pct": -1.3281172658123896, "pull": -0.4690561145349655, "mp": 0.9742477902614494, "tp": 0.9608498289196338, "win": "[-1, 4]", "npout": 9.009436965109234e-05, "tuned": false}, {"bin": "mid_12_14", "B": 0.3830720533107957, "Berr": 0.01332605668497952, "Bnom": 0.37757, "pct": 1.457227351430368, "pull": 0.4391103999038846, "mp": 0.9984372194999415, "tp": 0.9965802315457958, "win": "[-1, 4]", "npout": 3.654659086207596e-05, "tuned": false}, {"bin": "mid_14_16", "B": 0.40379794379854805, "Berr": 0.018612084067968715, "Bnom": 0.40657, "pct": -0.6818152351260376, "pull": -0.1637363379475448, "mp": 0.9651525254608626, "tp": 0.9670395526488422, "win": "[-1, 4]", "npout": 1.5382840782013262e-05, "tuned": false}, {"bin": "mid_16_20", "B": 0.47746307516383574, "Berr": 0.019171125154736096, "Bnom": 0.48169, "pct": -0.8775197401158952, "pull": -0.2327601782028783, "mp": 0.9995096671973687, "tp": 0.9976550761691471, "win": "[-1, 4]", "npout": 3.3395184487522286e-05, "tuned": false}, {"bin": "mid_20_30", "B": 0.5492004816882732, "Berr": 0.0250460959000694, "Bnom": 0.54026, "pct": 1.6548479784313619, "pull": 0.37691744048369374, "mp": 0.999974222765334, "tp": 0.9983635172687756, "win": "[-1, 4]", "npout": 3.7749654084727835e-05, "tuned": false}];
+const name = b => { const [r, lo, hi] = b.split('_'); return `${r} ${lo}–${hi}`; };
+const verdict = d => Math.abs(d.pct) <= 2 ? ['ok', '±2%'] : ['out', '±3%'];
+const tb = document.querySelector('#results tbody');
+for (const d of DATA) {
+  const [cls, txt] = verdict(d);
+  const tr = document.createElement('tr');
+  tr.innerHTML = `<td>${name(d.bin)}${d.tuned ? ' <span class="pill tuned">빈별</span>' : ''}</td>
+    <td class="num">${d.B.toFixed(4)} ± ${d.Berr.toFixed(4)}</td><td class="num">${d.Bnom.toFixed(4)}</td>
+    <td class="num">${(d.pct >= 0 ? '+' : '') + d.pct.toFixed(2)}%</td><td class="num">${(d.pull >= 0 ? '+' : '') + d.pull.toFixed(2)}</td>
+    <td><span class="pill ${cls}">${txt}</span></td><td class="num">${d.mp.toFixed(2)}</td><td class="num">${d.tp.toFixed(2)}</td>
+    <td class="num">${d.win}</td><td class="num">${d.npout.toExponential(0)}</td>`;
+  tb.appendChild(tr);
+}
+// chart: x = bins (fwd then mid), y = percent difference
+const svg = document.getElementById('chart'), NS = 'http://www.w3.org/2000/svg';
+const W = 900, H = 300, L = 52, R = 14, T = 16, B = 62, ymin = -6, ymax = 6;
+const y = v => T + (ymax - v) / (ymax - ymin) * (H - T - B);
+const step = (W - L - R) / DATA.length, x = i => L + step * (i + 0.5);
+const el = (t, a, txt) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; svg.appendChild(e); return e; };
+el('rect', { x: L, y: y(2), width: W - L - R, height: y(-2) - y(2), fill: 'var(--band)' });
+for (const v of [-6, -4, -2, 0, 2, 4, 6]) {
+  el('line', { x1: L, x2: W - R, y1: y(v), y2: y(v), stroke: 'var(--line)', 'stroke-width': v === 0 ? 1.4 : 0.8 });
+  el('text', { x: L - 8, y: y(v) + 4, 'text-anchor': 'end', 'font-size': 11, fill: 'var(--muted)', 'font-family': 'JetBrains Mono, monospace' }, (v > 0 ? '+' : '') + v + '%');
+}
+const split = DATA.findIndex(d => d.bin.startsWith('mid'));
+el('line', { x1: L + step * split, x2: L + step * split, y1: T, y2: H - B, stroke: 'var(--muted)', 'stroke-dasharray': '3 4', 'stroke-width': 1 });
+el('text', { x: L + 6, y: T + 12, 'font-size': 12, fill: 'var(--muted)' }, 'forward 1.6<|y|<2.4');
+el('text', { x: L + step * split + 6, y: T + 12, 'font-size': 12, fill: 'var(--muted)' }, 'mid |y|<1.6');
+DATA.forEach((d, i) => {
+  const rel = 100 * d.Berr / d.Bnom, cx = x(i);
+  const lo = Math.max(ymin, d.pct - rel), hi = Math.min(ymax, d.pct + rel);
+  el('line', { x1: cx, x2: cx, y1: y(hi), y2: y(lo), stroke: 'var(--muted)', 'stroke-width': 1.2, opacity: 0.55 });
+  const col = Math.abs(d.pct) <= 2 ? 'var(--near)' : 'var(--tuned)';
+  el('circle', { cx, cy: y(d.pct), r: 5, fill: col, stroke: d.tuned ? 'var(--tuned)' : 'none', 'stroke-width': d.tuned ? 2.5 : 0 });
+  const t = el('text', { x: cx, y: H - B + 14, 'font-size': 10.5, fill: 'var(--muted)', 'text-anchor': 'end', 'font-family': 'JetBrains Mono, monospace', transform: `rotate(-45 ${cx} ${H - B + 14})` }, name(d.bin).replace('fwd ', 'f ').replace('mid ', 'm '));
+});
+
+// fit figure viewer
+const PREFIT = [
+  ['mc_mass', '① MC mass', 'PR MC 신호 mass 모양. final fit에서 고정'],
+  ['ctau_pr', '② PR MC ctau', 'PR 해상도(Gauss 4개). 폭·구성비의 제약 중심'],
+  ['ctau_np', '③ NP MC ctau', 'NP 수명 모양. NP 제약 중심과 공분산'],
+  ['mass_prefit', '④ DATA mass', 'DATA mass fit. 신호·배경 yield 시작값과 mass 배경 모양'],
+  ['ctau_bkg', '⑤ 배경 ctau (sideband)', 'mass sideband ctau. 배경 ctau 모양과 제약 중심'],
+];
+const ZOOM = ['fwd_1_2', 'fwd_2_3'];
+const pick = document.getElementById('binpick');
+const setBin = (bin, push) => {
+  const d = DATA.find(x => x.bin === bin) || DATA[0];
+  for (const b of pick.querySelectorAll('button')) b.setAttribute('aria-pressed', b.dataset.bin === d.bin);
+  const fig = (f, t, c) => `<figure><a href="figs/${d.bin}_${f}.png" target="_blank" rel="noopener"><img src="figs/${d.bin}_${f}.png" alt="${name(d.bin)} ${t}"></a><figcaption><b>${t}</b><br>${c}</figcaption></figure>`;
+  document.getElementById('stages').innerHTML =
+    `<h3>prefit</h3><div class="stagegrid">${PREFIT.map(([f, t, c]) => fig(f, t, c)).join('')}</div>` +
+    `<h3>final fit (DATA, FINAL_V2)</h3><div class="stagegrid final">${fig('mass', '⑥ mass projection', 'dimuon mass. 파랑 신호, 빨강 배경')}${fig('lifetime', '⑦ ctau projection', 'ℓ<sub>J/ψ</sub>. 빨강 PR, 파랑 NP, 초록 배경')}${ZOOM.includes(d.bin) ? fig('lifetime_zoom', '⑦′ ctau 확대 (−2~3 mm)', '같은 fit을 신호 영역만 잘게 나눠 그림') : ''}</div>` +
+    `<h3>투영 진단 (final fit 재생, 재적합 없음)</h3><div class="stagegrid wide">${fig('diag_mass', '⑧ mass 투영 진단', '전체 창. 위: 데이터와 모델, 아래: (data − model)/√model. 왼쪽 위에 χ²/ndf')}${fig('diag_ctau', '⑨ ctau 투영 진단', '왼쪽부터 전체 창, PR·NP 각각 99%를 담는 신호 창, PR 99% core 창. 빨강 PR, 파랑 NP')}</div>`;
+  document.getElementById('figinfo').textContent = `${name(d.bin)} GeV/c · B = ${d.B.toFixed(4)} ± ${d.Berr.toFixed(4)} · nominal ver2 대비 ${(d.pct >= 0 ? '+' : '') + d.pct.toFixed(2)}% · ctau 범위 ${d.win} mm${d.tuned ? ' · 빈별 설정' : ''}`;
+  if (push) { try { history.replaceState(null, '', '#' + d.bin); } catch (e) {} }
+};
+DATA.forEach((d, i) => {
+  if (i > 0 && d.bin.startsWith('mid') && !DATA[i - 1].bin.startsWith('mid')) { const s = document.createElement('span'); s.className = 'sep'; pick.appendChild(s); }
+  const b = document.createElement('button'); b.type = 'button'; b.dataset.bin = d.bin; b.textContent = name(d.bin).replace('fwd', 'fwd').replace('mid', 'mid');
+  b.addEventListener('click', () => setBin(d.bin, true)); pick.appendChild(b);
+});
+setBin((location.hash || '').slice(1) || 'fwd_10_12', false);
+
+</script>
+<div id="lightbox" role="dialog" aria-label="그림 크게 보기"><img alt=""><figcaption></figcaption></div>
+<script>
+(() => {
+  const lb = document.getElementById('lightbox'), im = lb.querySelector('img'), cap = lb.querySelector('figcaption');
+  const close = () => { lb.classList.remove('on'); im.src = ''; };
+  document.addEventListener('click', e => {
+    const a = e.target.closest('a[href^="figs/"]'); if (!a) return;
+    e.preventDefault(); im.src = a.getAttribute('href'); cap.textContent = (a.querySelector('img') || {}).alt || ''; lb.classList.add('on');
+  });
+  lb.addEventListener('click', close); document.addEventListener('keydown', e => { if (e.key === 'Escape') close(); });
+})();
+</script>

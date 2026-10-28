@@ -1,0 +1,78 @@
+Forward pT 10–12 독립 스터디
+대상: 27_OO_nominal_v2_agreement; 인접 대조군: forward 9–10, 12–14.
+판정: 계산 오류로 B가 튄 것은 재현되지 않았다. 질량에 따른 배경 ctau 변화와 prompt 모형의 부족이 함께 보인다.
+nominal과 2% 이내 일치를 타당성 기준으로 삼을 수 없다. 새로운 production 설정은 채택하지 않았다.
+
+1. 원본 nominal 자체의 품질
+원본 ROOT의 pt10–12: B=0.344255263 ± 0.014456277; chi2/ndf=61.4867/13; p=2.8440169e-08.
+원본 그림 fit_pt9_2gauss.png도 같은 수치와 prompt 영역의 큰 잔차를 표시한다.
+nominal의 고정 prompt narrow 성분 비율은 2.81963412e-07; 실질적으로 폭 0.0234923 mm의 단일 Gaussian에 가깝다.
+인접 9–10 p=0.012803, 12–14 p=2.7038e-74. 2D와 수치가 가까운 빈도 모양 적합도 문제가 있다.
+nominal saved fit은 status=0/covQual=3이지만 EDM이 크다(10–12:118.631). 생성 코드와 저장 규약을 확인하기 전에는 이를 독립적인 비수렴 증거로 단정하지 않는다.
+
+2. 동일 production 입력·prefit으로 8개 새 fit
+모두 status=0, covQual=3, EDM<1e-3. 재구성한 workspace의 raw NLL과 저장 raw NLL 차이는 모두 1e-7 미만.
+각 fit은 B 시작값 0.15/0.2/0.65 및 nuisance ±0.5 error를 포함한 5개 시작 슬롯을 사용했다.
+bin       baseline B ± error       conditional B ± error     baseline/conditional vs nominal     2ΔNLL
+fwd_9_10    0.2814587 ± 0.0164579   0.2880017 ± 0.0164735   -1.43% / +0.86%   14.99926
+fwd_10_12   0.3342168 ± 0.0155900   0.3407814 ± 0.0156138   -2.92% / -1.01%   20.26969
+fwd_12_14   0.4147615 ± 0.0274792   0.4186609 ± 0.0275224   -1.07% / -0.14%   6.56497
+pt10–12 기준 fit B는 이전 저장값과 동일하다. nominal 근처 B=0.34426 고정 시 2ΔNLL=0.410948.
+이는 동일 2D 모형에서 nominal 근처의 B를 배제할 근거가 약하다는 뜻이다. 두 방법의 차이 유의도는 아니다.
+배경 질량 의존 기울기=-1.32982 ± 0.30705 /GeV.
+pt10–12의 114개 joint cell Poisson deviance: 187.548 → 168.108. 희소 빈 및 제약 때문에 이 값을 단순 chi2 p로 환산하지 않았다.
+질량 모양까지 profile한 대조 fit: B=0.3298039. B가 올라가는 효과는 일반적인 자유도 증가와 같지 않다.
+NP 두 번째 수명은 여전히 약하게 정해져 있으며 하한까지 거리가 오차보다 작다. 수렴 상태만으로 모든 좌표의 식별성이 확보된 것은 아니다.
+
+3. 배경의 질량 의존성을 원자료에서 확인
+왼쪽 mass 2.6–2.8, 오른쪽 3.35–3.5; long은 ctau>0.1 mm. 단위 가중 사건을 직접 센 결과:
+fwd_9_10: left 122/511=0.2387; right 30/214=0.1402; two-proportion z=2.974 (탐색적).
+fwd_10_12: left 145/475=0.3053; right 40/212=0.1887; two-proportion z=3.182 (탐색적).
+fwd_12_14: left 59/185=0.3189; right 16/93=0.1720; two-proportion z=2.603 (탐색적).
+이 결과는 배경 factorization의 한계를 뒷받침한다. sideband 신호 누출, 선택 편향, 다중 검정을 보정한 발견 유의도가 아니다.
+
+4. ctau별 질량 fit 재현은 B만 맞고 모양은 맞지 않는다
+16개 ctau bin 질량 fit을 새로 수행했으며 모두 status=0/covQual=3. 신호 질량 모양 고정, 질량 배경 계수와 수율은 각 bin에서 자유.
+2D의 PR/NP 모양 고정 후 수율만 적합: B[-0.1,2]=0.3481590 ± 0.0154291; chi2/ndf=54.9179/14, 근사 p=8.9438e-07.
+따라서 기존 보고서의 B≈0.3482는 창 정규화를 적용하면 재현된다. 하지만 좋은 모형 재현의 증거로 쓸 수 없다.
+같은 창으로 적분한 2D B: baseline 0.3351558, conditional 0.3417186. 창 보정만으로 차이는 없어지지 않는다.
+같은 새 질량 수율에 해석적 Gaussian/exGaussian 구간 적분을 사용한 독립 민감도 비교:
+nominal_fixed_resolution: B=0.3402916 ± 0.0155973; chi2/ndf=41.4021/13; p≈8.1977e-05.
+single_gaussian_free: B=0.3335004 ± 0.0168151; chi2/ndf=30.6840/11; p≈0.0012362.
+double_gaussian_free: B=0.3159337 ± 0.0179068; chi2/ndf=16.9444/9; p≈0.049594.
+double Gaussian을 자유화하면 B≈0.316으로 바뀐다. 근사 p≈0.05인 경계 수준이고 추가 자유도의 영향을 검증해야 하므로 채택하지 않는다.
+이는 원본 nominal을 완전히 재현한 fit이 아니다. 원본의 bin별 수율·공분산을 사용하지 않고, 이 스터디에서 새로 뽑은 수율을 사용했다.
+위 템플릿 오차/p는 mass shape의 공통 불확실성, bin 간 공분산, MC 형태 불확실성을 포함하지 않는 조건부 진단이다.
+
+5. 확인하고 수정한 진단 코드 오류
+scripts/bfix_scan.py: 서로 다른 Offset(true) fit의 minNll을 뺄 때 2ΔNLL=105.296이 출력되던 오류. rawFinalNll로 비교하도록 수정. 기존 파일 쌍의 올바른 값은 0.414213.
+macro/fit2d.C의 OO_SLICE_DUMP: conditional 배경에서 B_mass 적분 × 특정 mass에서의 B_ctau 적분을 사용하던 오류. joint PDF를 두 변수에 대해 적분하도록 수정.
+이전 conditional 잔차표의 개별 cell 배경 예측은 새 진단과 최대 5.09 events 차이가 난다. 이 오류는 fit 추정값이 아니라 진단표에 영향을 준다.
+수정 후 factorized/conditional 각각 114개 cell을 독립 workspace 적분과 대조했고, B 변화가 1e-10 미만임을 검증했다.
+해석적 템플릿 적분 검증: integrals_checked 576; max_absolute_error 3.3324336345952332e-11
+
+6. 해석과 남은 검증
+(확인) 최적화의 우연한 해가 pt10–12 차이를 만든다는 증거는 없다. 기존 기준 B가 재현되고 여러 유효 시작값의 B 차이가 작다.
+(확인) mass–ctau 배경 상관은 10–12에만 있지 않다. conditional 배경은 9–10/10–12/12–14 모두 likelihood를 개선한다.
+(확인) nominal의 prompt 모양 적합도가 부족하다. nominal B를 정답으로 두고 창/제약/상한을 조절하는 채택 기준은 정당화되지 않는다.
+(미확정) 특정 새 B를 최종값으로 채택할 수는 없다. 두 방법은 같은 데이터에 기반하므로 오차를 독립으로 합쳐 차이 유의도를 계산하지 않았다.
+다음 채택 조건: 원본 nominal 생성 코드와 bin 수율·공분산 확보 → prompt 모형/질량 배경을 동일 데이터에서 검증 → paired bootstrap 또는 toy closure로 bias·coverage 및 방법 간 covariance 확인 → 전 빈에 일관된 기준 적용.
+
+재현 자료
+run_study.py: 입력/소스 SHA256와 별도 source snapshot, 8개 fresh fits, 5-start diagnostics.
+diagnose.C: workspace raw NLL, 전체 2D 적분, 원자료 sideband, ctau별 질량 fit.
+template_refit.C: 독립 bin-integrated 템플릿과 27개 시작 조합; validate_template_integrals().
+validate_changes.py: 변경된 slice hook 2회 fresh fits 및 raw-NLL 비교 회귀 검증.
+analyze.py: summary.json, comparison.csv, sidebands.csv, comparison/template_quality PNG·PDF, 본 보고서 생성.
+재실행: python study_codex_pt10_12/reproduce.py. 기존 production 결과와 규칙은 수정하지 않았다.
+
+ROOT 공식 참고: https://root.cern.ch/doc/v636/classRooAbsPdf.html (createNLL Offset 및 ExternalConstraints).
+
+7. 추가 paired empirical bootstrap (200회)
+유효 pair 200/200; 실패 replicate=[]. 동일 사건 인덱스를 두 모형에 함께 재표본추출했다.
+ΔB = B_conditional − B_factorized. 관측 ΔB=0.0065641; bootstrap mean=0.0066275, SD=0.0020089.
+bootstrap 분포의 2.5/16/50/84/97.5 percentiles=[0.002971403716217601, 0.0045313028355778795, 0.006419308921724043, 0.008770155042974605, 0.011000794486223094].
+두 B 추정값의 bootstrap 상관계수=0.992651; 각각의 SD=0.0165167, 0.0165963.
+ΔB>0인 표본 비율=1.000. 이 비율은 선택 전 가설검정 p-value가 아니다.
+이 bootstrap은 사건 수 N, MC/prefit, 제약 중심, 분석 모형을 고정한 조건부 통계 진단이다. 원본 nominal과의 공분산, 절대 bias 또는 coverage를 검증한 것은 아니다.
+재실행: python study_codex_pt10_12/run_bootstrap.py; python study_codex_pt10_12/analyze.py

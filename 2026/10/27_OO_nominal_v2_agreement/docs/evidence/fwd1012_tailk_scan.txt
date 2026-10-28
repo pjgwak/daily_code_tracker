@@ -1,0 +1,22 @@
+# fwd 10-12 tail-strength scan on clean prefits (S4 c89/c172, S5 c20); all CLEAN except c172 F_tail1 (ctauTime4Delta err-near-bound)
+c20                        F_tail0.15_np1               B=0.3369±0.0156  -2.14% -0.51σ st0 cq3 mp 0.74 tp 0.82
+c89                        F_tail0.15_np1               B=0.3369±0.0156  -2.14% -0.51σ st0 cq3 mp 0.74 tp 0.82
+c172                       F_tail0.15_np1               B=0.3372±0.0156  -2.06% -0.49σ st0 cq3 mp 0.77 tp 0.79
+c20                        F_tail0.25_np2               B=0.3374±0.0157  -1.99% -0.47σ st0 cq3 mp 0.74 tp 0.82
+c89                        F_tail0.25_np2               B=0.3374±0.0157  -1.99% -0.47σ st0 cq3 mp 0.74 tp 0.82
+c172                       F_tail0.25_np2               B=0.3375±0.0157  -1.97% -0.47σ st0 cq3 mp 0.77 tp 0.79
+c89                        F_tail0.2_np1                B=0.3372±0.0157  -2.06% -0.49σ st0 cq3 mp 0.74 tp 0.82
+c20                        F_tail0.2_np1                B=0.3372±0.0157  -2.07% -0.49σ st0 cq3 mp 0.74 tp 0.82
+c172                       F_tail0.2_np1                B=0.3373±0.0157  -2.02% -0.48σ st0 cq3 mp 0.77 tp 0.79
+c172                       F_tail0.35_np1               B=0.3377±0.0158  -1.92% -0.46σ st0 cq3 mp 0.77 tp 0.79
+c20                        F_tail0.35_np1               B=0.3378±0.0157  -1.87% -0.45σ st0 cq3 mp 0.74 tp 0.82
+c89                        F_tail0.35_np1               B=0.3378±0.0157  -1.87% -0.45σ st0 cq3 mp 0.74 tp 0.82
+c172                       F_tail0.5_np1                B=0.3379±0.0158  -1.86% -0.44σ st0 cq3 mp 0.77 tp 0.79
+c20                        F_tail0.5_np1                B=0.3382±0.0158  -1.76% -0.42σ st0 cq3 mp 0.74 tp 0.82
+c89                        F_tail0.5_np1                B=0.3382±0.0158  -1.76% -0.42σ st0 cq3 mp 0.74 tp 0.82
+c172                       F_tail0.5_np2                B=0.3379±0.0158  -1.86% -0.44σ st0 cq3 mp 0.77 tp 0.79
+c20                        F_tail0.5_np2                B=0.3382±0.0158  -1.76% -0.42σ st0 cq3 mp 0.74 tp 0.82
+c89                        F_tail0.5_np2                B=0.3382±0.0158  -1.76% -0.42σ st0 cq3 mp 0.74 tp 0.82
+c20                        F_tail1_np1                  B=0.3386±0.0158  -1.65% -0.39σ st0 cq3 mp 0.74 tp 0.82
+c89                        F_tail1_np1                  B=0.3386±0.0158  -1.65% -0.39σ st0 cq3 mp 0.74 tp 0.82
+c172                       F_tail1_np1                  B=0.3387±0.0158  -1.62% -0.38σ st0 cq3 mp 0.77 tp 0.80

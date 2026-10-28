@@ -1,0 +1,78 @@
+bkg101_fwd_10_12: {'bkg_ss': '1', 'bkg_flip': '0', 'bkg_ds': '1'} / rule FINAL_v3
+bkg110_fwd_10_12: {'bkg_ss': '1', 'bkg_flip': '1', 'bkg_ds': '0'} / rule FINAL_v3
+bkg201_fwd_10_12: {'bkg_ss': '2', 'bkg_flip': '0', 'bkg_ds': '1'} / rule FINAL_v3
+bkg211_fwd_10_12: {'bkg_ss': '2', 'bkg_flip': '1', 'bkg_ds': '1'} / rule FINAL_v3
+bkg310_fwd_10_12: {'bkg_ss': '3', 'bkg_flip': '1', 'bkg_ds': '0'} / rule FINAL_v3
+cheb1_fwd_10_12: {'mass_cheb': '1'} / rule FINAL_v3
+cheb1_fwd_12_14: {'mass_cheb': '1'} / rule FINAL_v3
+cheb1_fwd_3_4: {'mass_cheb': '1'} / rule FINAL_v3
+cheb1_fwd_4_5: {'mass_cheb': '1'} / rule FINAL_v3
+cheb1_fwd_5_6: {'mass_cheb': '1'} / rule FINAL_v3
+cheb1_fwd_7_8: {'mass_cheb': '1'} / rule FINAL_v3
+cheb1_mid_7_8: {'mass_cheb': '1'} / rule FINAL_v3
+cheb2_fwd_3_4: {'mass_cheb': '2'} / rule FINAL_v3
+cheb3_fwd_10_12: {'mass_cheb': '3'} / rule FINAL_v3
+cheb3_fwd_12_14: {'mass_cheb': '3'} / rule FINAL_v3
+cheb3_fwd_4_5: {'mass_cheb': '3'} / rule FINAL_v3
+cheb3_fwd_5_6: {'mass_cheb': '3'} / rule FINAL_v3
+cheb3_fwd_7_8: {'mass_cheb': '3'} / rule FINAL_v3
+cheb3_mid_7_8: {'mass_cheb': '3'} / rule FINAL_v3
+core3_fwd_10_12: {'bkg_core_max': '3'} / rule FINAL_v3
+ct-0.5_4.0_fwd_10_12: {'ct_low': '-0.5', 'ct_high': '4.0', 'bkg_saved_ct': '-0.5,4.0'} / rule W1012_-0.5_4.0
+ct-0.75_3.0_fwd_10_12: {'ct_low': '-0.75', 'ct_high': '3.0', 'bkg_saved_ct': '-0.75,3.0'} / rule W1012_-0.75_3.0
+ct-1.0_3.0_fwd_10_12: {'ct_low': '-1.0', 'ct_high': '3.0', 'bkg_saved_ct': '-1.0,3.0'} / rule W1012_-1.0_3.0
+ct-1.0_4.0_fwd_10_12: {'ct_low': '-1.0', 'ct_high': '4.0', 'bkg_saved_ct': '-1.0,4.0'} / rule W1012_-1.0_4.0
+np1_fwd_10_12: {'np_count': '1'} / rule FINAL_v3
+np1_fwd_12_14: {'np_count': '1'} / rule FINAL_v3
+np1_fwd_3_4: {'np_count': '1'} / rule FINAL_v3
+np1_fwd_4_5: {'np_count': '1'} / rule FINAL_v3
+np1_fwd_5_6: {'np_count': '1'} / rule FINAL_v3
+np1_fwd_7_8: {'np_count': '1'} / rule FINAL_v3
+np1_mid_7_8: {'np_count': '1'} / rule FINAL_v3
+np3_fwd_10_12: {'np_count': '3'} / rule FINAL_v3
+np3_fwd_12_14: {'np_count': '3'} / rule FINAL_v3
+np3_fwd_3_4: {'np_count': '3'} / rule FINAL_v3
+np3_fwd_4_5: {'np_count': '3'} / rule FINAL_v3
+np3_fwd_5_6: {'np_count': '3'} / rule FINAL_v3
+np3_fwd_7_8: {'np_count': '3'} / rule FINAL_v3
+np3_mid_7_8: {'np_count': '3'} / rule FINAL_v3
+nres3_fwd_10_12: {'pr_nres': '3'} / rule FINAL_v3
+nres3_fwd_12_14: {'pr_nres': '3'} / rule FINAL_v3
+nres3_fwd_3_4: {'pr_nres': '3'} / rule FINAL_v3
+nres3_fwd_4_5: {'pr_nres': '3'} / rule FINAL_v3
+nres3_fwd_5_6: {'pr_nres': '3'} / rule FINAL_v3
+nres3_fwd_7_8: {'pr_nres': '3'} / rule FINAL_v3
+nres3_mid_7_8: {'pr_nres': '3'} / rule FINAL_v3
+prq01_fwd_10_12: {'pr_quant': '0.0001,0.9999'} / rule FINAL_v3
+prq01_fwd_12_14: {'pr_quant': '0.0001,0.9999'} / rule FINAL_v3
+prq01_fwd_3_4: {'pr_quant': '0.0001,0.9999'} / rule FINAL_v3
+prq01_fwd_4_5: {'pr_quant': '0.0001,0.9999'} / rule FINAL_v3
+prq01_fwd_5_6: {'pr_quant': '0.0001,0.9999'} / rule FINAL_v3
+prq01_fwd_7_8: {'pr_quant': '0.0001,0.9999'} / rule FINAL_v3
+prq01_mid_7_8: {'pr_quant': '0.0001,0.9999'} / rule FINAL_v3
+prq05_fwd_4_5: {'pr_quant': '0.0005,0.9995'} / rule FINAL_v3
+prq2_fwd_10_12: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_fwd_1_2: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_fwd_12_14: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_fwd_14_20: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_fwd_2_3: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_fwd_3_4: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_fwd_5_6: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_fwd_6_7: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_fwd_7_8: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_fwd_8_9: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_fwd_9_10: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_mid_10_12: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_mid_12_14: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_mid_14_16: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_mid_16_20: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_mid_20_30: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_mid_7_8: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_mid_8_9: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+prq2_mid_9_10: {'pr_quant': '0.002,0.998'} / rule FINAL_v3
+widecore3_fwd_10_12: {'bkg_wide_tau': '1', 'bkg_core_max': '3'} / rule FINAL_v3
+wide_fwd_10_12: {'bkg_wide_tau': '1'} / rule FINAL_v3
+wide_fwd_5_6: {'bkg_wide_tau': '1'} / rule FINAL_v3
+wide_fwd_6_7: {'bkg_wide_tau': '1'} / rule FINAL_v3
+wide_fwd_7_8: {'bkg_wide_tau': '1'} / rule FINAL_v3
+wide_fwd_8_9: {'bkg_wide_tau': '1'} / rule FINAL_v3

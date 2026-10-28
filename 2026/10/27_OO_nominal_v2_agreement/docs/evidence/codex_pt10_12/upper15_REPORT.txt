@@ -1,0 +1,67 @@
+pT 10–12, 1.6 < |y| < 2.4: ctau 상한 1.5 주변 재스터디
+
+사용자 조건
+질량 창 [2.6,3.5] GeV 유지. 기존 질량 무관 배경 모델 유지.
+하한 -0.2/-0.25/-0.3 mm, 중심 상한 1.5 mm. 주변 상한 1.4/1.55/1.6도 확인.
+최종 data fit B를 nominal과 직접 비교. B 환산·외삽은 수행하지 않음.
+Nominal B = 0.34425526264315792; 차이(%) = 100*(B/nominal-1).
+PR·NP는 각각 전체 PDF의 99% 이상을 최종 data fit 창에 포함해야 함.
+99%는 최종 fit 중심 파라미터에서 평가하며, 포함률의 신뢰구간을 의미하지 않음.
+
+결과
+99%와 수렴·추가 경계 기준을 만족하는 후보 중 nominal에 가장 가까운 값: wb_lo-0.2_hi1.6_k0.8, B=0.332342345, 차이=-3.46049%.
+65개 시도, 65개 저장된 적합, 0개 실패.
+2% agreement + PR/NP 각각 99% + 유효 수렴 + 추가 경계 문제 없음: 0개.
+상한 1.5에 한정한 통과 후보: 0개.
+최종 B에 nominal prior, nominal 고정값 또는 nominal을 이용한 seed를 넣지 않음.
+
+직전 후보와 같은 WB110, tail k=0.8, np_cov_scale=1 비교
+ctau low | high | B +/- error | nominal 대비 % | PR % | NP % | 99% | 2%
+-0.20 | 1.40 | 0.331184141 +/- 0.016020154 | -3.79693 | 99.866093 | 98.568076 | False | False
+-0.25 | 1.40 | 0.330742763 +/- 0.016036976 | -3.92514 | 99.906278 | 98.576452 | False | False
+-0.30 | 1.40 | 0.330264519 +/- 0.016036760 | -4.06406 | 99.932553 | 98.579062 | False | False
+-0.20 | 1.50 | 0.331912095 +/- 0.015960715 | -3.58547 | 99.865765 | 98.886858 | False | False
+-0.25 | 1.50 | 0.331447059 +/- 0.015977378 | -3.72055 | 99.906306 | 98.895465 | False | False
+-0.30 | 1.50 | 0.330966065 +/- 0.015978325 | -3.86027 | 99.932646 | 98.899055 | False | False
+-0.20 | 1.55 | 0.331794508 +/- 0.015900335 | -3.61963 | 99.865739 | 98.979363 | False | False
+-0.25 | 1.55 | 0.331333150 +/- 0.015916918 | -3.75364 | 99.906393 | 98.988103 | False | False
+-0.30 | 1.55 | 0.330854904 +/- 0.015916778 | -3.89256 | 99.932747 | 98.992094 | False | False
+-0.20 | 1.60 | 0.332342345 +/- 0.015897528 | -3.46049 | 99.865861 | 99.148552 | True | False
+-0.25 | 1.60 | 0.331888065 +/- 0.015914068 | -3.59245 | 99.906354 | 99.157785 | True | False
+-0.30 | 1.60 | 0.331414450 +/- 0.015913952 | -3.73003 | 99.932681 | 99.162739 | True | False
+
+검사한 설정
+기존/넓은 PR calibration(Production/WB110), tail k=0.1/0.25/0.5/0.8/1.
+k는 width_sigma=(0.01,0.02,0.04,0.08)*k mm. 기본 width_policy=1에서 앞의 두 core 폭은 고정.
+PR core 대안: width_policy=0; core prior 폭 (0.01,0.02)*k_core, k_core=0.05/0.1/0.25/0.5. tail k=0.8 유지.
+배경 core profile mode=1/2/3, NP covariance scale=0.25/4/16.
+배경 lifetime을 prefit에 제약하는 대안(profile_bkg=0), penalty scale=0.5/1/2.
+추가 제약 스캔은 하한 -0.25, 상한 1.5/1.6에서 실행.
+기존 prefit과 calibration을 유지해 최종 data-fit 창과 명시한 nuisance 설정만 비교.
+
+설정군별 결과: count | min/max difference % | coverage99 count | eligible count
+background_core_profile: 6 | -4.66527, -4.33270 | 3 | 0
+background_lifetime_constraints: 6 | -3.92615, -3.61792 | 3 | 0
+prompt_core_constraints: 8 | -16.38597, -9.15976 | 0 | 0
+NP_covariance: 6 | -3.72242, -3.53492 | 3 | 0
+window_width_scan: 30 | -4.02176, -3.56569 | 0 | 0
+upper_edge_control: 6 | -4.06406, -3.46049 | 3 | 0
+upper_edge_99_check: 3 | -3.89256, -3.61963 | 0 | 0
+
+품질 확인
+수렴 기준: status=0, covQual=3, 0<=EDM<1e-3. 각 후보의 실제 값은 summary.csv.
+기존 NP 두 번째 성분 NsignalSS2 및 signal2_log_lifetime_offset의 약한 경계 접근은 별도 기록.
+추가 경계 접근: 허용 범위의 1% 이내 또는 fitted error의 0.5배 이내. all_bounds/new_bounds 열 참조.
+수치가 2%에 가깝다는 이유만으로 경계 접근이나 실패한 적합을 채택하지 않음.
+99% 판정은 최종 PR/NP PDF를 전체 실수축으로 정규화한 물리적 포함률. 잘린 창 안에서 다시 정규화해 100%로 계산하지 않음.
+PR Gaussian CDF와 NP RooDecay 적분을 사용하고, NP 적분을 독립 exGaussian CDF 및 저장된 mixture 분율로 검증.
+prefit PDF 포함률도 기록하지만 사용자 조건에 따른 통과 판정은 최종 data-fit PDF 기준.
+기록된 원본 입력 14개 SHA256 불변. Production rule/prefit/result는 교체하지 않음.
+이번 스캔에서 통과 후보가 없더라도 모든 가능한 모델에서 불가능하다는 의미는 아님.
+
+파일과 재현
+summary.csv / summary.json: 모든 후보의 직접 agreement, 포함률, 수렴, 경계 정보.
+window_scan.png/pdf: 동일 설정에서 fit 창 변화에 따른 B agreement와 NP 포함률.
+runs/<case>/case.json, execution.json, run.log, roots, figs: 정확한 설정과 원본 fit 결과.
+python run.py; python run_constraints.py; python run_boundary.py
+집계와 보고서: python audit.py; python report.py

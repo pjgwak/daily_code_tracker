@@ -1,0 +1,20 @@
+rule FINAL_S3
+# pr_mean=fix pr_frac=fix pr_frac_k=1 pr_width=abs pr_width_k=1 pr_joint_k=1 np=long_free np_k=1 bkg=free bkg_k=1 bin=mid_8_9 purity=1.795987 gaps=(4, 1.960395, 7.758146)
+prompt_full_cov 0
+width_policy 0
+float_prompt_mean 0
+prompt_frac_constrain 0
+prompt_fraction_cov_scale 1
+prompt_mean_prior_mult 0
+prompt_width_constraint 1
+width_sigma1 0.01
+width_sigma2 0.02
+width_sigma3 0.04
+width_sigma4 0.08
+np_constraint 1
+np_longest_free 1
+np_cov_scale 1
+profile_bkg 1
+background_penalty_scale 1
+ct_low -1.0
+ct_high 4.0

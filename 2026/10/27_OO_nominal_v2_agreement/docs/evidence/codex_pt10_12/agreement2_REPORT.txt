@@ -1,0 +1,70 @@
+pT 10-12 agreement study: nominal assumed correct
+Rapidity: 1.6 < |y| < 2.4; generated 2026-10-28
+
+USER CONSTRAINTS
+Mass window stays [2.6,3.5] GeV. Final data-fit window must contain >=99% of EACH complete PR and NP PDF.
+Nominal B = 0.34425526264315792; relative agreement = 100*(B/nominal-1).
+Target interval = [0.33737015739029474,0.3511403678960211].
+Nominal is used only to score results. No nominal constraint or nominal-based starting B is used in the fits.
+
+RESULT
+Yes: changing only conditional_bkg from 0 to 1 in the original full-window rule meets all requirements.
+B = 0.340781428152 +/- 0.015613793170; relative difference = -1.009087%.
+ctau = [-0.5,3] mm; final PR = 99.998610567%, NP = 99.987862658%.
+MC-prefit PR = 99.998618337%, NP = 99.967388887%.
+Original background result: B = 0.334216765600, difference = -2.916004%.
+The background change adds one slope for the mass dependence of the positive-tail log odds.
+Background PDF = mass PDF times ctau PDF conditional on mass; all conditional component weights are normalized.
+With the same data and constraints, 2*(NLL_baseline-NLL_conditional) = 20.26969158.
+This is evidence from the data likelihood as well as improved numerical agreement; no significance claim is made.
+Full-window conditional fits with width k=0.05,0.1,0.25,0.5 give differences in [-1.2612005451537178, -0.9608411715597787].
+Width k multiplies (0.01,0.02,0.04,0.08) mm. Under width_policy=1, first two widths remain fixed; tail gaps have priors.
+
+WINDOW COMPARISON
+B reported by fit2d is the NP fraction in the fitted ctau window.
+Trimming the window can change B even for the same physical mixture. Both direct and common-window differences are reported.
+B_reference transports the fitted physical signal mixture back to [-0.5,3] mm; no new fit or error propagation is done for that column.
+This common-window check is an additional robustness diagnostic; it does not assert a new definition of the external nominal.
+Final PDF coverage is the user requirement. MC-prefit coverage is separately reported as a conservative cross-check.
+
+case | B | diff % | ref-window diff % | final PR % | final NP % | prefit PR % | prefit NP % | new boundary flags
+mass_2.6_3.5 | 0.334216766 | -2.91600 | -2.91600 | 99.998599 | 99.988021 | 99.998618 | 99.967389 | none
+conditional_full | 0.340781428 | -1.00909 | -1.00909 | 99.998611 | 99.987863 | 99.998618 | 99.967389 | none
+prod_ct-0.1_k0.5 | 0.337500003 | -1.96228 | -2.30784 | 99.389316 | 99.908895 | 99.269150 | 99.877480 | none
+wb110_ct-0.1_k0.5 | 0.337994542 | -1.81863 | -2.12170 | 99.429717 | 99.893696 | 99.237667 | 99.858414 | none
+fixed_mass_wb_ct-0.1_k0.8 | 0.338371594 | -1.70910 | -1.99639 | 99.459545 | 99.898282 | 99.237667 | 99.858414 | none
+
+QUALITY AND LIMITATIONS
+78 mass-fixed successful fits audited; 10 mass-changing results excluded from the current decision.
+Every successful retained fit has status=0, covQual=3 and EDM<1e-3.
+19 fits pass direct agreement, final 99% coverage, and no additional near-bound flag.
+8 also pass MC-prefit 99% coverage and common-window agreement.
+All main candidates inherit weak NP second-component parameters NsignalSS2 and signal2_log_lifetime_offset near a boundary.
+Thus no claim is made that every parameter is well identified. New PR/background boundary issues are flagged separately.
+A near-bound flag means <1% of the allowed range or <0.5 fitted errors from a bound.
+The conditional+mass-profile trial failed the five-start covariance quality requirement and is excluded; a final result was not saved.
+Production and WB110 prefits had status=0,covQual=3. Standard chi2/ndf was below 1, but robust background chi2/ndf was about 2.05/2.13.
+This is a feasibility and sensitivity study. Agreement alone does not validate a new background model or establish its systematic uncertainty.
+Nearby scans use the same data; their agreement is not independent replication.
+
+ACCEPTANCE AUDIT
+PR: Gaussian CDF integrals weighted with full-space physical Gaussian fractions.
+NP: reconstructed decay PDF after convolution with the full-space prompt resolution; native truth-window yields are transported to full space.
+The integration denominator is the full real line, not the fit-normalized truncated PDF.
+NP integrals are evaluated with RooDecay and checked independently with analytic exGaussian CDFs.
+Reconstructed in-window mixture weights are compared to saved PR/NP transport fractions.
+Max CDF-vs-RooFit error = 4.108e-15; max saved-weight reconstruction error = 1.11e-16.
+Both prefit and postfit coverages are evaluated at fitted central parameter values, not a confidence bound.
+
+FILES AND REPRODUCTION
+mass_fixed_summary.csv: all fixed-mass results with acceptance, common-window transport and boundary flags.
+fit_results.csv, parameters.csv, coverage.csv: numerical ROOT audits.
+prefit_results.csv, prefit_parameters.csv: all five prefit stages, including earlier mass-window studies.
+runs/<case>/case.json and execution.json: exact settings and execution outcome; run.log and ROOT fit results are retained.
+rules/conditional_full/y1.60_2.40_pt10.00_12.00.txt: preferred study rule.
+Reproduce the preferred fit from this directory:
+  python -c 'import run_scan as s; s.run({"name":"conditional_full_reproduction","group":"reproduction","changes":{"conditional_bkg":1},"env":{"OO_MASS_LO":"2.6","OO_MASS_HI":"3.5"},"prefits":"production"})'
+Recompute audits/report: python refresh.py && python analyze_agreement.py
+Full scan runners: run_scan.py (historical broad scan), run_mass_fixed.py, run_99_windows.py.
+The earlier full_pipeline mass-window trials remain archived and are excluded by the fixed 2.6 requirement.
+All 14 recorded original input hashes are unchanged. No production rule, prefit or result was replaced.

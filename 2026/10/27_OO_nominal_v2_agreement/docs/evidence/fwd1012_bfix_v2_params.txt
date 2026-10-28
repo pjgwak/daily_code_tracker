@@ -1,0 +1,15 @@
+minNll free -52.152 (st0 cq3)  fixed 0.496 (st0 cq3)  2dNLL = 105.296
+B free 0.33422 ± 0.01559  fixed 0.34430
+  signal_log_lifetime_offset         free     -1.11925 ± 0.053      fixed     -1.12946  shift  -0.19 err
+  ctauTime1Mean                      free  0.000163442 ± 0.000831   fixed   2.2707e-05  shift  -0.17 err
+  bkgCompositionFrac1                free     0.640671 ± 0.0242     fixed     0.643852  shift  +0.13 err
+  bkg_log_lifetime_offset            free     -1.34557 ± 0.0811     fixed     -1.34051  shift  +0.06 err
+  ctauTime3Delta                     free    0.0353089 ± 0.00363    fixed    0.0351188  shift  -0.05 err
+  bkgCompositionFrac2                free     0.802674 ± 0.0356     fixed     0.801281  shift  -0.04 err
+  NsignalSS2                         free      67.3617 ± 109        fixed       69.425  shift  +0.02 err AT-LIMIT
+  Nbkg                               free      1706.85 ± 49.2       fixed      1706.12  shift  -0.01 err
+  Nsig                               free      1982.15 ± 51.9       fixed      1982.88  shift  +0.01 err
+  bkg_flip_log_lifetime_offset       free     -2.21104 ± 0.329      fixed     -2.20764  shift  +0.01 err
+  signal2_log_lifetime_offset        free     -5.59359 ± 6.71       fixed     -5.54371  shift  +0.01 err
+  NsignalSS1                         free      84324.6 ± 425        fixed      84322.6  shift  -0.00 err
+  ctauTime4Delta                     free     0.106021 ± 0.00799    fixed     0.106007  shift  -0.00 err

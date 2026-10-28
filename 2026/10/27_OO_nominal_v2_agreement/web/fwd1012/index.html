@@ -1,0 +1,58 @@
+<title>fwd 10–12 그림 비교</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* layout: one comparison grid, rows = fit stage, columns = setting; click a figure to enlarge */
+:root{--bg:#f6f7f9;--fg:#1d2330;--muted:#5c6577;--line:#d9dde5;--card:#ffffff;--good:#1f7a4d;--bad:#b4462f;
+--sans:"IBM Plex Sans KR","IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14171d;--fg:#e4e7ee;--muted:#9aa3b5;--line:#2c323d;--card:#1c2028;--good:#5cc28f;--bad:#e58a73;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14171d;--fg:#e4e7ee;--muted:#9aa3b5;--line:#2c323d;--card:#1c2028;--good:#5cc28f;--bad:#e58a73;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
+h1{font-size:1.3rem;margin:0 0 6px;text-wrap:balance}
+p.note{color:var(--muted);margin:0 0 16px;max-width:70ch;line-height:1.5}
+.wrap{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--card)}
+table{border-collapse:collapse;min-width:1100px;width:100%}
+th,td{border-bottom:1px solid var(--line);padding:8px;vertical-align:top;text-align:left}
+thead th{position:sticky;top:0;background:var(--card);font-size:.85rem;line-height:1.4}
+th.stage{font-size:.85rem;white-space:nowrap;color:var(--muted);width:90px}
+.b{font-family:var(--mono);font-variant-numeric:tabular-nums;font-size:1rem;display:block;margin-top:2px}
+.ok{color:var(--good)}.no{color:var(--bad)}
+td img{width:100%;max-width:340px;cursor:zoom-in;display:block;background:#fff}
+td.same{color:var(--muted);font-size:.8rem}
+#lb{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:env(safe-area-inset-top,0px) 16px env(safe-area-inset-bottom,0px);z-index:20;cursor:zoom-out}
+#lb img{max-height:94vh;max-width:100%;background:#fff}
+</style>
+
+<h1>fwd 10–12 (1.6 &lt; |y| &lt; 2.4) 그림 비교</h1>
+<p class="note">B는 nominal ver2 (0.34426 ± 0.01446) 대비 %. 꼬리 제약 k = 0.5 (MC 중심). 열 2·3은 같은 prefit이고 최종 fit의 ctau 창 하한만 다르다. 그림을 누르면 크게 보인다.</p>
+
+<div class="wrap"><table>
+<thead><tr><th></th>
+<th>① production FINAL_S3<br>prefit 창 [−0.5,3], 배경 1/1/0<br>최종 [−0.5,3]<span class="b no">0.3342 −2.92%</span></th>
+<th>② WB110: ① + pr_quant 0.0001<br>최종 [−0.5,3], k 0.5<span class="b no">0.3337 −3.06%</span></th>
+<th>③ WB110: ② 와 같은 prefit<br>최종 [−0.1,3], k 0.5<span class="b ok">0.3380 −1.82%</span></th>
+<th>④ c89: prefit 창 [−0.1,3], 배경 1/0/0<br>최종 [−0.1,3], k 0.5<span class="b ok">0.3382 −1.76%</span></th>
+</tr></thead>
+<tbody id="rows"></tbody>
+</table></div>
+<div id="lb" hidden><img alt=""></div>
+
+<script>
+const rows=[
+ ['MC 질량',['mc','mc','mc','mc']],
+ ['데이터 질량',['prod_mass','wb_mass',null,'c89_mass']],
+ ['PR ctau',['prod_pr','wb_pr',null,'c89_pr']],
+ ['NP ctau',['prod_np','wb_np',null,'c89_np']],
+ ['배경 ctau',['prod_bkg','wb_bkg',null,'c89_bkg']],
+ ['최종 질량',['prod_fmass','wb05_fmass','wb01_fmass','c89_fmass']],
+ ['최종 ctau',['prod_fct','wb05_fct','wb01_fct','c89_fct']]];
+const tb=document.getElementById('rows');
+for(const [name,cells] of rows){
+ const tr=document.createElement('tr');
+ tr.innerHTML=`<th class="stage">${name}</th>`+cells.map(c=>c?`<td><img loading="lazy" src="img/${c}.png" alt="${name}"></td>`:'<td class="same">② 와 같음</td>').join('');
+ tb.appendChild(tr);}
+const lb=document.getElementById('lb');
+document.addEventListener('click',e=>{
+ if(e.target.matches('td img')){lb.querySelector('img').src=e.target.src;lb.hidden=false;}
+ else if(!lb.hidden&&lb.contains(e.target)){lb.hidden=true;}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')lb.hidden=true;});
+</script>
