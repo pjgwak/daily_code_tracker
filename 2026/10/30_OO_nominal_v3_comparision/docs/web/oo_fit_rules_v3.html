@@ -479,7 +479,7 @@ const setBin = (bin, push) => {
     `<h3>prefit</h3><div class="stagegrid">${PREFIT.map(([f, t, c]) => fig(f, t, c)).join('')}</div>` +
     `<h3>final fit (DATA, FINAL_V4)</h3><div class="stagegrid final">${fig('mass', '⑥ mass projection', 'dimuon mass. 파랑 신호, 빨강 배경')}${fig('lifetime', '⑦ ctau projection', 'ℓ<sub>J/ψ</sub>. 빨강 PR, 파랑 NP, 초록 배경')}${ZOOM.includes(d.bin) ? fig('lifetime_zoom', '⑦′ ctau 확대 (−2~3 mm)', '같은 fit을 신호 영역만 잘게 나눠 그림') : ''}</div>` +
     `<h3>투영 진단 (final fit 재생, 재적합 없음)</h3><div class="stagegrid wide">${fig('diag_mass', '⑧ mass 투영 진단', '전체 창. 위: 데이터와 모델, 아래: (data − model)/√model. 왼쪽 위에 χ²/ndf')}${fig('diag_ctau', '⑨ ctau 투영 진단', '왼쪽부터 전체 창, PR·NP 각각 99%를 담는 신호 창, PR 99% core 창. 빨강 PR, 파랑 NP')}</div>`;
-  document.getElementById('figinfo').textContent = `${name(d.bin)} GeV/c · B = ${d.B.toFixed(4)} ± ${d.Berr.toFixed(4)} · nominal ver3 대비 ${(d.pct >= 0 ? '+' : '') + d.pct.toFixed(2)}% · ctau 범위 ${d.win} mm${d.review ? ''}`;
+  document.getElementById('figinfo').textContent = `${name(d.bin)} GeV/c · B = ${d.B.toFixed(4)} ± ${d.Berr.toFixed(4)} · nominal ver3 대비 ${(d.pct >= 0 ? '+' : '') + d.pct.toFixed(2)}% · ctau 범위 ${d.win} mm`;
   if (push) { try { history.replaceState(null, '', '#' + d.bin); } catch (e) {} }
 };
 DATA.forEach((d, i) => {
