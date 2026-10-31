@@ -1,0 +1,130 @@
+# 배경 질량 처리 스터디 (2026-10-31): 최종 규칙 FINAL_V2 고정, prefit 변형 체인 (study/prefit_variant.py). nominal ver3 기준 %.
+# mlo2.7/2.8 = 질량 창 하한 2.6 -> 2.7/2.8 GeV (전 단계 재적합), mhi3.4/3.3 = 상한 3.5 -> 3.4/3.3, cheb<n> = 질량 배경 Chebychev 차수 (production: fwd 1-4 3차, 나머지 2차).
+# w20_111/w20_201 (fwd 1-2), w15/w30 (fwd 2-3) = ctau 창 변형. REJECTED = prefit 품질 검사(chi2/ndf >= 2) 탈락.
+# 기준(FINAL_V2, 변형 없음): docs/evidence/baseline_FINAL_V2_vs_ver3.txt
+cheb1_fwd_10_12                    fwd_10_12  B=0.3341±0.0156  +1.53% +0.38σ st0 cq3 mp 0.75 tp 0.87 PASS
+cheb3_fwd_10_12                    fwd_10_12  B=0.3344±0.0156  +1.63% +0.40σ st0 cq3 mp 0.78 tp 0.87 PASS
+cheb4_fwd_10_12                    fwd_10_12  B=0.3337±0.0157  +1.42% +0.35σ st0 cq3 mp 0.78 tp 0.89 PASS
+mhi3.4_fwd_10_12                   fwd_10_12  B=0.3317±0.0158  +0.80% +0.20σ st0 cq3 mp 0.94 tp 0.85 PASS
+mlo2.7_fwd_10_12                   fwd_10_12  B=0.3394±0.0158  +3.14% +0.77σ st0 cq3 mp 0.82 tp 0.92 fail
+mlo2.8_fwd_10_12                   fwd_10_12  B=0.3477±0.0158  +5.66% +1.40σ st0 cq3 mp 0.98 tp 0.89 fail
+cheb1_fwd_1_2                      fwd_1_2    running
+cheb2_fwd_1_2                      fwd_1_2    running
+cheb4_fwd_1_2                      fwd_1_2    running
+mhi3.3_fwd_1_2                     fwd_1_2    B=0.0916±0.0141  +8.80% +0.49σ st0 cq3 mp 0.07 tp 0.51 fail
+mhi3.4_fwd_1_2                     fwd_1_2    B=0.0950±0.0136 +12.79% +0.71σ st0 cq3 mp 0.60 tp 0.58 fail
+mlo2.7_fwd_1_2                     fwd_1_2    running
+mlo2.8_fwd_1_2                     fwd_1_2    running
+w20_111_fwd_1_2                    fwd_1_2    B=0.0740±0.0124 -12.10% -0.67σ st0 cq3 mp 0.52 tp 1.00 fail
+w20_201_fwd_1_2                    fwd_1_2    REJECTED what():  Invalid or unaudited prefit: roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2  [ctau_bkg  st0 cq3 chi2/ndf 3.100 (robust 5.544)]
+cheb1_fwd_12_14                    fwd_12_14  B=0.4185±0.0271  +4.09% +0.82σ st0 cq3 mp 0.98 tp 1.00 fail
+cheb3_fwd_12_14                    fwd_12_14  B=0.4148±0.0275  +3.15% +0.63σ st0 cq3 mp 0.98 tp 1.00 fail
+cheb4_fwd_12_14                    fwd_12_14  B=0.4181±0.0271  +3.99% +0.80σ st0 cq3 mp 0.99 tp 1.00 fail
+mhi3.4_fwd_12_14                   fwd_12_14  B=0.4138±0.0276  +2.92% +0.59σ st0 cq3 mp 0.99 tp 1.00 fail
+mlo2.7_fwd_12_14                   fwd_12_14  B=0.4150±0.0276  +3.20% +0.64σ st0 cq3 mp 0.99 tp 1.00 fail
+mlo2.8_fwd_12_14                   fwd_12_14  B=0.4209±0.0279  +4.68% +0.94σ st0 cq3 mp 0.99 tp 1.00 fail
+cheb1_fwd_14_20                    fwd_14_20  B=0.4110±0.0227  -0.67% -0.14σ st0 cq3 mp 0.99 tp 0.58 PASS
+cheb3_fwd_14_20                    fwd_14_20  B=0.4112±0.0225  -0.62% -0.13σ st0 cq3 mp 0.99 tp 0.56 PASS
+cheb4_fwd_14_20                    fwd_14_20  B=0.4112±0.0234  -0.61% -0.13σ st0 cq3 mp 0.99 tp 0.63 PASS
+mhi3.4_fwd_14_20                   fwd_14_20  B=0.4063±0.0225  -1.81% -0.37σ st0 cq3 mp 0.99 tp 0.51 PASS
+mlo2.7_fwd_14_20                   fwd_14_20  B=0.4155±0.0229  +0.42% +0.09σ st0 cq3 mp 1.00 tp 0.61 PASS
+mlo2.8_fwd_14_20                   fwd_14_20  B=0.4192±0.0229  +1.33% +0.28σ st0 cq3 mp 1.00 tp 0.40 PASS
+w15_fwd_2_3                        fwd_2_3    B=0.1204±0.0078  +2.83% +0.38σ st0 cq3 mp 0.93 tp 0.01 fail
+w30_fwd_2_3                        fwd_2_3    B=0.1200±0.0078  +2.51% +0.34σ st0 cq3 mp 0.93 tp 0.31 fail
+cheb1_fwd_2_3                      fwd_2_3    REJECTED what():  Invalid or unaudited prefit: roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt2.00_3  [mass      st0 cq3 chi2/ndf 6.542]
+cheb2_fwd_2_3                      fwd_2_3    B=0.1193±0.0077  +1.94% +0.26σ st0 cq3 mp 0.00 tp 0.31 PASS
+cheb4_fwd_2_3                      fwd_2_3    B=0.1206±0.0079  +3.03% +0.41σ st0 cq3 mp 0.93 tp 0.31 fail
+mhi3.3_fwd_2_3                     fwd_2_3    B=0.1166±0.0082  -0.41% -0.06σ st0 cq3 mp 0.85 tp 0.54 PASS
+mhi3.4_fwd_2_3                     fwd_2_3    B=0.1167±0.0078  -0.30% -0.04σ st0 cq3 mp 0.96 tp 0.39 PASS
+mlo2.7_fwd_2_3                     fwd_2_3    B=0.1243±0.0080  +6.22% +0.84σ st0 cq3 mp 0.89 tp 0.73 fail
+mlo2.8_fwd_2_3                     fwd_2_3    B=0.1284±0.0080  +9.66% +1.30σ st0 cq3 mp 0.82 tp 0.65 fail
+cheb1_fwd_3_4                      fwd_3_4    REJECTED what():  Invalid or unaudited prefit: roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt3.00_4  [mass      st0 cq3 chi2/ndf 11.362]
+cheb2_fwd_3_4                      fwd_3_4    B=0.1509±0.0060  -4.87% -0.92σ st0 cq3 mp 0.00 tp 0.36 fail
+cheb4_fwd_3_4                      fwd_3_4    B=0.1509±0.0060  -4.87% -0.92σ st0 cq3 mp 0.35 tp 0.35 fail
+mhi3.4_fwd_3_4                     fwd_3_4    B=0.1502±0.0060  -5.35% -1.01σ st0 cq3 mp 0.46 tp 0.44 fail
+mlo2.7_fwd_3_4                     fwd_3_4    B=0.1548±0.0061  -2.43% -0.46σ st0 cq3 mp 0.93 tp 0.93 fail
+mlo2.8_fwd_3_4                     fwd_3_4    B=0.1579±0.0063  -0.49% -0.09σ st0 cq3 mp 0.98 tp 0.94 PASS
+cheb1_fwd_4_5                      fwd_4_5    REJECTED what():  Invalid or unaudited prefit: roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt4.00_5  [mass      st0 cq3 chi2/ndf 3.704]
+cheb3_fwd_4_5                      fwd_4_5    B=0.1796±0.0063  +8.53% +1.68σ st0 cq3 mp 0.67 tp 0.99 fail
+cheb4_fwd_4_5                      fwd_4_5    B=0.1806±0.0064  +9.10% +1.80σ st0 cq3 mp 0.73 tp 0.99 fail
+mhi3.4_fwd_4_5                     fwd_4_5    B=0.1778±0.0063  +7.42% +1.46σ st0 cq3 mp 0.43 tp 0.98 fail
+mlo2.7_fwd_4_5                     fwd_4_5    B=0.1853±0.0064 +11.96% +2.36σ st0 cq3 mp 0.37 tp 0.87 fail
+mlo2.8_fwd_4_5                     fwd_4_5    B=0.1913±0.0066 +15.62% +3.08σ st0 cq3 mp 0.11 tp 0.80 fail
+cheb1_fwd_5_6                      fwd_5_6    B=0.1976±0.0084  +2.84% +0.71σ st0 cq3 mp 0.00 tp 0.41 fail
+cheb3_fwd_5_6                      fwd_5_6    B=0.1932±0.0080  +0.53% +0.13σ st0 cq3 mp 0.20 tp 0.24 PASS
+cheb4_fwd_5_6                      fwd_5_6    B=0.1932±0.0080  +0.53% +0.13σ st0 cq3 mp 0.20 tp 0.24 PASS
+mhi3.4_fwd_5_6                     fwd_5_6    B=0.1914±0.0081  -0.41% -0.10σ st0 cq3 mp 0.27 tp 0.29 PASS
+mlo2.7_fwd_5_6                     fwd_5_6    B=0.1961±0.0081  +2.07% +0.51σ st0 cq3 mp 0.21 tp 0.19 fail
+mlo2.8_fwd_5_6                     fwd_5_6    B=0.2003±0.0082  +4.24% +1.06σ st0 cq3 mp 0.18 tp 0.00 fail
+cheb1_fwd_6_7                      fwd_6_7    B=0.2152±0.0094  -2.70% -0.63σ st0 cq3 mp 0.36 tp 0.96 fail
+cheb3_fwd_6_7                      fwd_6_7    B=0.2147±0.0091  -2.93% -0.68σ st0 cq3 mp 0.71 tp 0.93 fail
+cheb4_fwd_6_7                      fwd_6_7    B=0.2146±0.0091  -2.99% -0.70σ st0 cq3 mp 0.72 tp 0.93 fail
+mhi3.4_fwd_6_7                     fwd_6_7    B=0.2126±0.0092  -3.85% -0.90σ st0 cq3 mp 0.53 tp 0.94 fail
+mlo2.7_fwd_6_7                     fwd_6_7    B=0.2183±0.0092  -1.28% -0.30σ st0 cq3 mp 0.86 tp 0.87 PASS
+mlo2.8_fwd_6_7                     fwd_6_7    B=0.2203±0.0094  -0.41% -0.10σ st0 cq3 mp 0.46 tp 0.94 PASS
+cheb1_fwd_7_8                      fwd_7_8    B=0.2466±0.0108  +4.18% +1.11σ st0 cq3 mp 0.49 tp 0.69 fail
+cheb3_fwd_7_8                      fwd_7_8    B=0.2465±0.0106  +4.14% +1.10σ st0 cq3 mp 0.60 tp 0.60 fail
+cheb4_fwd_7_8                      fwd_7_8    B=0.2465±0.0106  +4.13% +1.10σ st0 cq3 mp 0.60 tp 0.59 fail
+mhi3.4_fwd_7_8                     fwd_7_8    B=0.2435±0.0106  +2.87% +0.76σ st0 cq3 mp 0.92 tp 0.53 fail
+mlo2.7_fwd_7_8                     fwd_7_8    B=0.2543±0.0108  +7.41% +1.96σ st0 cq3 mp 0.74 tp 0.68 fail
+mlo2.8_fwd_7_8                     fwd_7_8    B=0.2596±0.0109  +9.65% +2.56σ st0 cq3 mp 0.73 tp 0.42 fail
+cheb1_fwd_8_9                      fwd_8_9    B=0.2541±0.0132  +1.85% +0.42σ st0 cq3 mp 0.21 tp 0.99 PASS
+cheb3_fwd_8_9                      fwd_8_9    B=0.2529±0.0130  +1.38% +0.32σ st0 cq3 mp 0.29 tp 0.99 PASS
+cheb4_fwd_8_9                      fwd_8_9    B=0.2507±0.0126  +0.49% +0.11σ st0 cq3 mp 0.35 tp 0.99 PASS
+mhi3.4_fwd_8_9                     fwd_8_9    B=0.2501±0.0131  +0.25% +0.06σ st0 cq3 mp 0.09 tp 0.99 PASS
+mlo2.7_fwd_8_9                     fwd_8_9    B=0.2545±0.0130  +2.01% +0.46σ st0 cq3 mp 0.84 tp 1.00 fail
+mlo2.8_fwd_8_9                     fwd_8_9    B=0.2595±0.0131  +4.01% +0.92σ st0 cq3 mp 0.16 tp 1.00 fail
+cheb1_fwd_9_10                     fwd_9_10   B=0.2802±0.0161  -0.84% -0.17σ st0 cq3 mp 0.93 tp 1.00 PASS
+cheb3_fwd_9_10                     fwd_9_10   B=0.2815±0.0165  -0.40% -0.08σ st0 cq3 mp 0.95 tp 1.00 PASS
+cheb4_fwd_9_10                     fwd_9_10   B=0.2803±0.0161  -0.80% -0.16σ st0 cq3 mp 0.96 tp 1.00 PASS
+mhi3.4_fwd_9_10                    fwd_9_10   B=0.2781±0.0165  -1.61% -0.33σ st0 cq3 mp 0.88 tp 1.00 PASS
+mlo2.7_fwd_9_10                    fwd_9_10   B=0.2845±0.0165  +0.67% +0.14σ st0 cq3 mp 1.00 tp 1.00 PASS
+mlo2.8_fwd_9_10                    fwd_9_10   B=0.2919±0.0170  +3.30% +0.67σ st0 cq3 mp 0.96 tp 1.00 fail
+cheb1_mid_10_12                    mid_10_12  B=0.3131±0.0097  -3.68% -1.33σ st0 cq3 mp 0.97 tp 0.96 fail
+cheb3_mid_10_12                    mid_10_12  B=0.3130±0.0097  -3.71% -1.35σ st0 cq3 mp 0.97 tp 0.96 fail
+cheb4_mid_10_12                    mid_10_12  B=0.3130±0.0097  -3.69% -1.34σ st0 cq3 mp 0.97 tp 0.96 fail
+mhi3.4_mid_10_12                   mid_10_12  B=0.3101±0.0097  -4.60% -1.67σ st0 cq3 mp 0.98 tp 0.97 fail
+mlo2.7_mid_10_12                   mid_10_12  B=0.3158±0.0098  -2.83% -1.03σ st0 cq3 mp 0.93 tp 0.98 fail
+mlo2.8_mid_10_12                   mid_10_12  B=0.3183±0.0098  -2.08% -0.75σ st0 cq3 mp 0.96 tp 0.97 fail
+cheb1_mid_12_14                    mid_12_14  B=0.3807±0.0135  -1.88% -0.58σ st0 cq3 mp 1.00 tp 1.00 PASS
+cheb3_mid_12_14                    mid_12_14  B=0.3831±0.0133  -1.27% -0.39σ st0 cq3 mp 1.00 tp 1.00 PASS
+cheb4_mid_12_14                    mid_12_14  B=0.3877±0.0130  -0.07% -0.02σ st0 cq3 mp 1.00 tp 1.00 PASS
+mhi3.4_mid_12_14                   mid_12_14  B=0.3817±0.0133  -1.63% -0.50σ st0 cq3 mp 0.95 tp 1.00 PASS
+mlo2.7_mid_12_14                   mid_12_14  B=0.3832±0.0135  -1.25% -0.39σ st0 cq3 mp 1.00 tp 1.00 PASS
+mlo2.8_mid_12_14                   mid_12_14  B=0.3878±0.0134  -0.05% -0.02σ st0 cq3 mp 0.99 tp 1.00 PASS
+cheb1_mid_14_16                    mid_14_16  B=0.4060±0.0184  -1.46% -0.34σ st0 cq3 mp 0.97 tp 0.97 PASS
+cheb3_mid_14_16                    mid_14_16  B=0.4040±0.0186  -1.94% -0.46σ st0 cq3 mp 0.97 tp 0.97 PASS
+cheb4_mid_14_16                    mid_14_16  B=0.4037±0.0186  -2.01% -0.47σ st0 cq3 mp 0.97 tp 0.97 fail
+mhi3.4_mid_14_16                   mid_14_16  B=0.4015±0.0187  -2.55% -0.60σ st0 cq3 mp 0.99 tp 0.98 fail
+mlo2.7_mid_14_16                   mid_14_16  B=0.4046±0.0186  -1.78% -0.42σ st0 cq3 mp 0.97 tp 0.96 PASS
+mlo2.8_mid_14_16                   mid_14_16  B=0.4092±0.0188  -0.67% -0.16σ st0 cq3 mp 1.00 tp 0.80 PASS
+cheb1_mid_16_20                    mid_16_20  B=0.4781±0.0191  -2.30% -0.62σ st0 cq3 mp 1.00 tp 1.00 fail
+cheb3_mid_16_20                    mid_16_20  B=0.4775±0.0192  -2.41% -0.65σ st0 cq3 mp 1.00 tp 1.00 fail
+cheb4_mid_16_20                    mid_16_20  B=0.4784±0.0191  -2.22% -0.60σ st0 cq3 mp 1.00 tp 1.00 fail
+mhi3.4_mid_16_20                   mid_16_20  B=0.4761±0.0192  -2.70% -0.73σ st0 cq3 mp 1.00 tp 1.00 fail
+mlo2.7_mid_16_20                   mid_16_20  B=0.4757±0.0192  -2.78% -0.75σ st0 cq3 mp 1.00 tp 1.00 fail
+mlo2.8_mid_16_20                   mid_16_20  B=0.4762±0.0193  -2.67% -0.72σ st0 cq3 mp 1.00 tp 1.00 fail
+cheb1_mid_20_30                    mid_20_30  B=0.5491±0.0251  +0.89% +0.20σ st0 cq3 mp 1.00 tp 1.00 PASS
+cheb3_mid_20_30                    mid_20_30  B=0.5492±0.0251  +0.90% +0.21σ st0 cq3 mp 1.00 tp 1.00 PASS
+cheb4_mid_20_30                    mid_20_30  B=0.5507±0.0246  +1.17% +0.27σ st0 cq3 mp 1.00 tp 1.00 PASS
+mhi3.4_mid_20_30                   mid_20_30  B=0.5482±0.0251  +0.72% +0.16σ st0 cq3 mp 1.00 tp 1.00 PASS
+mlo2.7_mid_20_30                   mid_20_30  B=0.5523±0.0250  +1.47% +0.33σ st0 cq3 mp 1.00 tp 1.00 PASS
+mlo2.8_mid_20_30                   mid_20_30  B=0.5552±0.0251  +2.00% +0.45σ st0 cq3 mp 1.00 tp 1.00 PASS
+cheb1_mid_7_8                      mid_7_8    B=0.2431±0.0094  -3.59% -1.21σ st0 cq3 mp 1.00 tp 1.00 fail
+cheb3_mid_7_8                      mid_7_8    B=0.2432±0.0093  -3.57% -1.20σ st0 cq3 mp 1.00 tp 1.00 fail
+cheb4_mid_7_8                      mid_7_8    B=0.2432±0.0093  -3.55% -1.19σ st0 cq3 mp 1.00 tp 1.00 fail
+mhi3.4_mid_7_8                     mid_7_8    B=0.2404±0.0094  -4.67% -1.57σ st0 cq3 mp 1.00 tp 1.00 fail
+mlo2.7_mid_7_8                     mid_7_8    B=0.2461±0.0094  -2.41% -0.81σ st0 cq3 mp 0.96 tp 1.00 fail
+mlo2.8_mid_7_8                     mid_7_8    B=0.2499±0.0093  -0.91% -0.31σ st0 cq3 mp 0.98 tp 1.00 PASS
+cheb1_mid_8_9                      mid_8_9    B=0.2696±0.0091  -0.42% -0.14σ st0 cq3 mp 0.95 tp 0.96 PASS
+cheb3_mid_8_9                      mid_8_9    B=0.2696±0.0091  -0.42% -0.14σ st0 cq3 mp 0.96 tp 0.96 PASS
+cheb4_mid_8_9                      mid_8_9    B=0.2698±0.0091  -0.37% -0.12σ st0 cq3 mp 0.96 tp 0.96 PASS
+mhi3.4_mid_8_9                     mid_8_9    B=0.2670±0.0091  -1.37% -0.47σ st0 cq3 mp 0.98 tp 0.96 PASS
+mlo2.7_mid_8_9                     mid_8_9    B=0.2728±0.0091  +0.74% +0.25σ st0 cq3 mp 0.99 tp 0.93 PASS
+mlo2.8_mid_8_9                     mid_8_9    B=0.2748±0.0091  +1.51% +0.51σ st0 cq3 mp 0.97 tp 0.96 PASS
+cheb1_mid_9_10                     mid_9_10   B=0.2907±0.0105  -2.35% -0.73σ st0 cq3 mp 0.42 tp 1.00 fail
+cheb3_mid_9_10                     mid_9_10   B=0.2906±0.0105  -2.37% -0.74σ st0 cq3 mp 0.45 tp 1.00 fail
+cheb4_mid_9_10                     mid_9_10   B=0.2909±0.0104  -2.27% -0.71σ st0 cq3 mp 0.46 tp 1.00 fail
+mhi3.4_mid_9_10                    mid_9_10   B=0.2879±0.0105  -3.27% -1.02σ st0 cq3 mp 0.42 tp 1.00 fail
+mlo2.7_mid_9_10                    mid_9_10   B=0.2922±0.0105  -1.82% -0.57σ st0 cq3 mp 0.67 tp 1.00 PASS
+mlo2.8_mid_9_10                    mid_9_10   B=0.2969±0.0106  -0.27% -0.08σ st0 cq3 mp 0.67 tp 1.00 PASS

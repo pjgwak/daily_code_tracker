@@ -1,0 +1,12 @@
+name,value
+npJoint_NsignalSS1_mean,89444.898927816248
+npJoint_signal2_log_lifetime_offset_mean,-2.0360813047861828
+npJoint_NsignalSS2_mean,3288.39705967181
+ctauTime1Scale_mean,0.017688518929182502
+ctauTime1Scale_sigma,0.0025000000000000001
+ctauTime2Delta_mean,0.015151913082715462
+ctauTime2Delta_sigma,0.0050000000000000001
+ctauTime3Delta_mean,0.038935730930010341
+ctauTime3Delta_sigma,0.01
+ctauTime4Delta_mean,0.15058050537020537
+ctauTime4Delta_sigma,0.080000000000000002

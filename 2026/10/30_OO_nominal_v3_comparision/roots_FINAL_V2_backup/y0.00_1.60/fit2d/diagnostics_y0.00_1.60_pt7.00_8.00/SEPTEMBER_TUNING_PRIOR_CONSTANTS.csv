@@ -1,0 +1,11 @@
+name,value
+npJoint_NsignalSS1_mean,45552.040473917521
+npJoint_NsignalSS2_mean,134687.32803096488
+ctauTime1Scale_mean,0.017869429744893542
+ctauTime1Scale_sigma,0.0025000000000000001
+ctauTime2Delta_mean,0.013704951809196328
+ctauTime2Delta_sigma,0.0050000000000000001
+ctauTime3Delta_mean,0.039445805989246407
+ctauTime3Delta_sigma,0.01
+ctauTime4Delta_mean,0.14200263819863465
+ctauTime4Delta_sigma,0.02

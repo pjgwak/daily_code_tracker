@@ -1,0 +1,55 @@
+# fwd 2-3 restudy 2026-10-31 (afternoon, KST): mass window restored to 2.6-3.5 GeV (FINAL_V2 prefits); B vs nominal ver3 (0.11705). pass = |%|<=2 or |sigma|<=0.138
+# A. final-fit knob only, production prefits (study/run_rules.py): bkg_mass_constraint k = Chebychev coefficients constrained to the DATA mass prefit with width k x prefit error (-1 = free)
+M23_bmfree                         fwd_2_3    B=0.1200±0.0078  +2.53% +0.34σ st0 cq3 mp 0.89 tp 0.31 fail
+M23_bmc1                           fwd_2_3    B=0.1200±0.0078  +2.54% +0.34σ st0 cq3 mp 0.89 tp 0.31 fail
+M23_bmc8                           fwd_2_3    B=0.1200±0.0078  +2.53% +0.34σ st0 cq3 mp 0.89 tp 0.31 fail
+M23_bmc2                           fwd_2_3    B=0.1200±0.0078  +2.53% +0.34σ st0 cq3 mp 0.89 tp 0.31 fail
+M23_bmc4                           fwd_2_3    B=0.1200±0.0078  +2.53% +0.34σ st0 cq3 mp 0.89 tp 0.31 fail
+# B. prefit-variant chains: W23 = ctau window [lo,hi] (b<ss><flip><ds>[w] = sideband composition, w = wide-tau), X23 = mass background model (exp, cheb2, cheb4; bmc2/bmfree = coefficients x2 constrained / free), P23 = sideband composition at [-20,20], PR MC fit quantiles (prq), PR Gauss 3 (prn3), NP truth components (np1, np3); Q23 = PR quantile scan and quantile 0.001 + fraction MC-covariance constraint (ADOPTED, FINAL_V4); WNmc/WNlf = NP two components restored (MC covariance constraint / longest lifetime free) at narrow windows
+P23_bkg101w_fwd_2_3                fwd_2_3    B=0.1303±0.0075 +11.35% +1.52σ st0 cq3 mp 0.93 tp 0.29 fail
+WNmc_wm6_10_b201w_fwd_2_3          fwd_2_3    B=0.1322±0.0084 +12.90% +1.73σ st0 cq3 mp 0.92 tp 0.54 fail
+Q23_prq001_fracmc_fwd_2_3          fwd_2_3    B=0.1193±0.0080  +1.91% +0.26σ st0 cq3 mp 0.93 tp 0.49 PASS
+X23_cheb2_bmc2_fwd_2_3             fwd_2_3    B=0.1193±0.0078  +1.94% +0.26σ st0 cq3 mp 0.00 tp 0.31 PASS
+X23_cheb2_bmfree_fwd_2_3           fwd_2_3    B=0.1193±0.0078  +1.94% +0.26σ st0 cq3 mp 0.00 tp 0.31 PASS
+WNlf_wm6_10_b201w_fwd_2_3          fwd_2_3    B=0.1415±0.0100 +20.86% +2.80σ st0 cq3 mp 0.92 tp 0.51 fail
+P23_prq001_fwd_2_3                 fwd_2_3    B=0.1195±0.0079  +2.10% +0.28σ st0 cq3 mp 0.93 tp 0.52 fail
+Q23_prq0012_fwd_2_3                fwd_2_3    B=0.1196±0.0080  +2.21% +0.30σ st0 cq3 mp 0.93 tp 0.77 fail
+Q23_prq0008_fwd_2_3                fwd_2_3    B=0.1199±0.0079  +2.43% +0.33σ st0 cq3 mp 0.93 tp 0.74 fail
+W23_wm20_30_b201w_fwd_2_3          fwd_2_3    B=0.1200±0.0078  +2.51% +0.34σ st0 cq3 mp 0.93 tp 0.31 fail
+W23_wm25_25_b201w_fwd_2_3          fwd_2_3    B=0.1200±0.0078  +2.52% +0.34σ st0 cq3 mp 0.93 tp 0.31 fail
+WNmc_wm4_6p5_b211_fwd_2_3          fwd_2_3    B=0.1466±0.0086 +25.26% +3.39σ st0 cq3 mp 0.92 tp 0.75 fail
+P23_bkg301w_fwd_2_3                fwd_2_3    B=0.1200±0.0078  +2.54% +0.34σ st0 cq3 mp 0.93 tp 0.29 fail
+P23_np3_fwd_2_3                    fwd_2_3    B=0.1200±0.0078  +2.54% +0.34σ st0 cq3 mp 0.93 tp 0.31 fail
+W23_wm30_20_b201w_fwd_2_3          fwd_2_3    B=0.1200±0.0078  +2.54% +0.34σ st0 cq3 mp 0.93 tp 0.31 fail
+W23_wm20_10_b201w_fwd_2_3          fwd_2_3    B=0.1201±0.0078  +2.57% +0.35σ st0 cq3 mp 0.93 tp 0.34 fail
+W23_wm15_20_b201w_fwd_2_3          fwd_2_3    B=0.1203±0.0078  +2.78% +0.37σ st0 cq3 mp 0.93 tp 0.01 fail
+W23_wm20_15_b201w_fwd_2_3          fwd_2_3    B=0.1204±0.0078  +2.83% +0.38σ st0 cq3 mp 0.93 tp 0.02 fail
+WNlf_wm4_6p5_b111_fwd_2_3          fwd_2_3    B=0.1514±0.0095 +29.35% +3.94σ st0 cq3 mp 0.92 tp 0.00 fail
+X23_cheb4_bmfree_fwd_2_3           fwd_2_3    B=0.1205±0.0079  +2.99% +0.40σ st0 cq3 mp 0.88 tp 0.31 fail
+WNmc_wm4_6p5_b111_fwd_2_3          fwd_2_3    B=0.1521±0.0082 +29.93% +4.02σ st0 cq3 mp 0.92 tp 0.00 fail
+X23_cheb4_bmc2_fwd_2_3             fwd_2_3    B=0.1206±0.0079  +3.00% +0.40σ st0 cq3 mp 0.88 tp 0.31 fail
+WNlf_wm6_10_b111_fwd_2_3           fwd_2_3    B=0.1531±0.0094 +30.83% +4.14σ st0 cq3 mp 0.92 tp 0.02 fail
+WNmc_wm6_10_b111_fwd_2_3           fwd_2_3    B=0.1535±0.0081 +31.11% +4.18σ st0 cq3 mp 0.92 tp 0.02 fail
+WNmc_wm8_12_b111_fwd_2_3           fwd_2_3    B=0.1542±0.0081 +31.71% +4.26σ st0 cq3 mp 0.93 tp 0.01 fail
+WNlf_wm8_12_b111_fwd_2_3           fwd_2_3    B=0.1542±0.0094 +31.76% +4.26σ st0 cq3 mp 0.93 tp 0.01 fail
+Q23_prq0015_fwd_2_3                fwd_2_3    B=0.1208±0.0078  +3.21% +0.43σ st0 cq3 mp 0.93 tp 0.92 fail
+P23_prq002_fwd_2_3                 fwd_2_3    B=0.1210±0.0075  +3.35% +0.45σ st0 cq3 mp 0.93 tp 0.67 fail
+WNlf_wm4_6p5_b211_fwd_2_3          fwd_2_3    B=0.1568±0.0114 +34.00% +4.56σ st0 cq3 mp 0.92 tp 0.80 fail
+W23_wm10_20_b201w_fwd_2_3          fwd_2_3    B=0.1219±0.0078  +4.16% +0.56σ st0 cq3 mp 0.93 tp 0.06 fail
+W23_wm10_10_b201w_fwd_2_3          fwd_2_3    B=0.1220±0.0078  +4.20% +0.56σ st0 cq3 mp 0.93 tp 0.07 fail
+W23_wm10_15_b201w_fwd_2_3          fwd_2_3    B=0.1220±0.0078  +4.21% +0.57σ st0 cq3 mp 0.93 tp 0.06 fail
+P23_bkg211w_fwd_2_3                fwd_2_3    B=0.1241±0.0081  +6.05% +0.81σ st0 cq3 mp 0.93 tp 1.00 fail
+W23_wm8_12_b201w_fwd_2_3           fwd_2_3    B=0.1245±0.0079  +6.40% +0.86σ st0 cq3 mp 0.93 tp 0.30 fail
+P23_bkg201_fwd_2_3                 fwd_2_3    B=0.1258±0.0076  +7.47% +1.00σ st0 cq3 mp 0.93 tp 0.27 fail
+W23_wm6_10_b201w_fwd_2_3           fwd_2_3    B=0.1265±0.0077  +8.11% +1.09σ st0 cq3 mp 0.92 tp 0.56 fail
+W23_wm4_6p5_b201w_fwd_2_3          fwd_2_3    B=0.1270±0.0079  +8.46% +1.14σ st0 cq3 mp 0.92 tp 0.76 fail
+W23_wm5_20_b201w_fwd_2_3           fwd_2_3    B=0.1270±0.0078  +8.53% +1.14σ st0 cq3 mp 0.92 tp 0.71 fail
+P23_bkg111w_fwd_2_3                fwd_2_3    B=0.1282±0.0081  +9.50% +1.28σ st0 cq3 mp 0.93 tp 0.99 fail
+W23_wm8_12_b111w_fwd_2_3           fwd_2_3    B=0.1282±0.0081  +9.53% +1.28σ st0 cq3 mp 0.93 tp 0.99 fail
+W23_wm6_10_b111w_fwd_2_3           fwd_2_3    B=0.1282±0.0081  +9.54% +1.28σ st0 cq3 mp 0.92 tp 1.00 fail
+P23_bkg300w_fwd_2_3                fwd_2_3    REJECTED what():  Invalid or unaudited prefit: roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2
+W23_wm4_6p5_b111w_fwd_2_3          fwd_2_3    REJECTED what():  Invalid or unaudited prefit: roots/y1.60_2.40/ctau_bkg/ctau_bkg_fitresult_y1.60_2
+P23_np1_fwd_2_3                    fwd_2_3    REJECTED what():  Invalid or unaudited prefit: roots/y1.60_2.40/ctau_np/ctau_np_model_y1.60_2.40_pt  [ctau_np   st0 cq3 chi2/ndf 6.718 (robust 22.464)]
+X23_exp_bmc2_fwd_2_3               fwd_2_3    REJECTED what():  Invalid or unaudited prefit: roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt2.00_3  [mass      st0 cq3 chi2/ndf 2.940]
+X23_exp_fwd_2_3                    fwd_2_3    REJECTED what():  Invalid or unaudited prefit: roots/y1.60_2.40/mass/mass_model_y1.60_2.40_pt2.00_3  [mass      st0 cq3 chi2/ndf 2.940]
+P23_prn3_fwd_2_3                   fwd_2_3    REJECTED what():  No finite prefit candidate  [ctau_pr   st0 cq3 chi2/ndf 3.441 (robust 1.812)]

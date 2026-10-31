@@ -1,0 +1,36 @@
+# fwd 2-3 NP-model study 2026-10-31 evening (KST): FINAL_V4 prefits (PR quantile 0.001, fractions MC-covariance constrained, PR mean/widths free, bkg free, ctau [-20,20]). B vs nominal ver3 (0.11705).
+# MC truth prefit (0-6 mm, two exponentials): tau1 0.523 mm (64 %), tau2 0.244 mm (36 %), mean 0.4231 +- 0.0010 mm; one exponential over 0-6 mm: chi2/ndf 6.7 (rejected).
+# N23/R23: np_count = truth components (fit2d reads at most 3), np_range = truth fit range (default 0-6 mm); mc = components kept with the MC-covariance constraint, lf = longest lifetime free, eff = single effective exponential constrained to the MC mean lifetime.
+# S23: one-exponential truth prefit with restricted ranges (lifetime 0.455 / 0.477 / 0.512 mm for 0.3-3 / 0.5-6 / 1-6 mm), kept with the MC constraint.
+# NM23: two exponentials kept, constrained through their first n moments only (np_moment_order n, np_effective_mean 0). mom1 = ADOPTED in FINAL_V4 (production 18:44 KST, B = 0.1193 +- 0.0080, +1.91 %).
+N23_np1_lf_fwd_2_3                 fwd_2_3    REJECTED [ctau_np   st0 cq3 chi2/ndf 6.718 (robust 22.464)]
+N23_np1_mc_fwd_2_3                 fwd_2_3    REJECTED [ctau_np   st0 cq3 chi2/ndf 6.718 (robust 22.464)]
+N23_np2_lf_fwd_2_3                 fwd_2_3    B=0.1328±0.0099 +13.46% +1.81σ st0 cq3 mp 0.93 tp 0.44 fail
+N23_np2_mc_fwd_2_3                 fwd_2_3    B=0.1251±0.0084  +6.85% +0.92σ st0 cq3 mp 0.93 tp 0.47 fail
+N23_np3_lf_fwd_2_3                 fwd_2_3    REJECTED No valid minimum among five configured start slots
+N23_np3_mc_fwd_2_3                 fwd_2_3    REJECTED No valid minimum among five configured start slots
+N23_np4_lf_fwd_2_3                 fwd_2_3    REJECTED No valid minimum among five configured start slots
+N23_np4_mc_fwd_2_3                 fwd_2_3    REJECTED No valid minimum among five configured start slots
+R23_np2_r0_10_eff_fwd_2_3          fwd_2_3    B=0.1193±0.0080  +1.91% +0.26σ st0 cq3 mp 0.93 tp 0.49 PASS
+R23_np2_r0_10_lf_fwd_2_3           fwd_2_3    B=0.1328±0.0099 +13.47% +1.81σ st0 cq3 mp 0.93 tp 0.44 fail
+R23_np2_r0_10_mc_fwd_2_3           fwd_2_3    B=0.1251±0.0085  +6.85% +0.92σ st0 cq3 mp 0.93 tp 0.47 fail
+R23_np2_r0_20_eff_fwd_2_3          fwd_2_3    B=0.1193±0.0080  +1.91% +0.26σ st0 cq3 mp 0.93 tp 0.49 PASS
+R23_np2_r0_20_lf_fwd_2_3           fwd_2_3    B=0.1328±0.0099 +13.47% +1.81σ st0 cq3 mp 0.93 tp 0.44 fail
+R23_np2_r0_20_mc_fwd_2_3           fwd_2_3    B=0.1251±0.0085  +6.85% +0.92σ st0 cq3 mp 0.93 tp 0.47 fail
+R23_np2_r0_3_eff_fwd_2_3           fwd_2_3    B=0.1200±0.0080  +2.54% +0.34σ st0 cq3 mp 0.93 tp 0.49 fail
+R23_np2_r0_3_lf_fwd_2_3            fwd_2_3    B=0.1327±0.0098 +13.41% +1.80σ st0 cq3 mp 0.93 tp 0.44 fail
+R23_np2_r0_3_mc_fwd_2_3            fwd_2_3    B=0.1251±0.0085  +6.84% +0.92σ st0 cq3 mp 0.93 tp 0.47 fail
+R23_np3_r0_10_lf_fwd_2_3           fwd_2_3    REJECTED No valid minimum among five configured start slots
+R23_np3_r0_10_mc_fwd_2_3           fwd_2_3    REJECTED No valid minimum among five configured start slots
+R23_np3_r0_20_lf_fwd_2_3           fwd_2_3    B=0.1322±0.0102 +12.98% +1.74σ st0 cq3 mp 0.93 tp 0.42 fail
+R23_np3_r0_20_mc_fwd_2_3           fwd_2_3    REJECTED No valid minimum among five configured start slots
+R23_np3_r0_3_lf_fwd_2_3            fwd_2_3    B=0.1322±0.0096 +12.92% +1.73σ st0 cq3 mp 0.93 tp 0.41 fail
+R23_np3_r0_3_mc_fwd_2_3            fwd_2_3    B=0.1250±0.0084  +6.78% +0.91σ st0 cq3 mp 0.93 tp 0.44 fail
+S23_np1_r0_2_fwd_2_3               fwd_2_3    REJECTED [ctau_np   st0 cq3 chi2/ndf 3.342 (robust 11.915)]
+S23_np1_r0_3_fwd_2_3               fwd_2_3    REJECTED [ctau_np   st0 cq3 chi2/ndf 4.700 (robust 19.333)]
+S23_np1_r0p3_3_fwd_2_3             fwd_2_3    B=0.1131±0.0077  -3.37% -0.45σ st0 cq3 mp 0.93 tp 0.52 fail
+S23_np1_r0p5_6_fwd_2_3             fwd_2_3    B=0.1091±0.0074  -6.82% -0.92σ st0 cq3 mp 0.93 tp 0.53 fail
+S23_np1_r1_6_fwd_2_3               fwd_2_3    B=0.1028±0.0071 -12.20% -1.64σ st0 cq3 mp 0.93 tp 0.55 fail
+NM23_mom1                          fwd_2_3    B=0.1193±0.0080  +1.91% +0.26σ st0 cq3 mp 0.93 tp 0.47 PASS
+NM23_mom3                          fwd_2_3    B=0.1251±0.0085  +6.85% +0.92σ st0 cq3 mp 0.93 tp 0.47 fail
+NM23_mom2                          fwd_2_3    B=0.1225±0.0082  +4.69% +0.63σ st0 cq3 mp 0.93 tp 0.46 fail
