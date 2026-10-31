@@ -39,15 +39,19 @@
 
 σ = (B − B_ver3)/ver3 오차. NP 계통 = |ΔB|/B_ver3, PR 계통 = |ΔB|/(1 − B_ver3). 전체 표 `drawing/final_summary/report_table.txt`(사본 `docs/evidence/report_table_FINAL_V4.txt`; 오전 FINAL_V3는 `report_table_FINAL_V3.txt`), PDF별 고정/제약/자유 `drawing/final_summary/treatment.md`, fit 그림 `figs/`, `figs_publish/`. 오전 FINAL_V3와의 차이는 fwd 2–3(−0.29 → +1.91, 질량 창 복구)과 mid 8–9(+1.67 → +1.10), 10–12(−1.80 → −0.23), 16–20(−1.34 → −0.91), 20–30(+1.48 → +0.31)뿐이다.
 
-![B fraction](figs/final_v4_bfrac.png)
+![B fraction](figs/v4_zoom_bfrac.png)
 
-![NP systematic](figs/final_v4_sys_np.png)
+![NP systematic, zoomed](figs/v4_zoom_sys_np.png)
 
-![PR systematic](figs/final_v4_sys_pr.png)
+![NP systematic, 0-5 %](figs/v4_wide_sys_np.png)
+
+![PR systematic, zoomed](figs/v4_zoom_sys_pr.png)
+
+![PR systematic, 0-5 %](figs/v4_wide_sys_pr.png)
 
 ![all systematics with the 2D-fit item](figs/syst_summary_with_2dfit.png)
 
-(`docs/figs/final_v4_*.png`는 `drawing/v3_systematics.py`로 production 결과표에서 그린 것(FINAL_V4·V3·V2 비교). 사용자가 준 세 그림과 같은 정의다. `final_*.png` = 오전 FINAL_V3, `baseline_*.png` = FINAL_V2. `syst_summary_with_2dfit.png`는 사용자가 올린 계통 오차 요약 슬라이드의 막대를 픽셀로 읽어 같은 축척에 2D fit 항목을 더한 것, 수치 `docs/evidence/syst_summary_figure_values.txt`.)
+(`docs/figs/v4_zoom_*.png` / `v4_wide_*.png`는 `drawing/v3_systematics.py`로 production 결과표에서 그린 것: nominal ver3 vs FINAL_V4만, 확대 뷰와 y축 0–5% 고정 뷰(`--ymax=5`). `final_v4_*.png`는 V3·V2를 겹친 판. 사용자가 준 세 그림과 같은 정의다. `final_*.png` = 오전 FINAL_V3, `baseline_*.png` = FINAL_V2. `syst_summary_with_2dfit.png`는 사용자가 올린 계통 오차 요약 슬라이드의 막대를 픽셀로 읽어 같은 축척에 2D fit 항목을 더한 것, 수치 `docs/evidence/syst_summary_figure_values.txt`.)
 
 ## 1. 출발점: FINAL_V2를 ver3와 비교
 

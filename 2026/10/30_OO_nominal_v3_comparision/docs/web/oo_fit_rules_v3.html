@@ -134,14 +134,13 @@ a{color:var(--accent)}
 
 <section>
   <h2>전파된 수율 계통 오차</h2>
-  <p class="meta">사용자가 준 세 그림(<code>2dfit_fractions_nominal_compare.png</code>, <code>2dfit_systematics_{prompt,nonprompt}_yield.png</code>)과 같은 정의로 production 결과표에서 그린 것(<code>drawing/v3_systematics.py</code>). 왼쪽 FINAL_V4(오전 FINAL_V3와 함께), 오른쪽 FINAL_V2(출발점). 그림을 누르면 원본 크기로 열린다.</p>
+  <p class="meta">최신 nominal(ver3)과 최신 2D fit(FINAL_V4)만 비교. NP 수율 계통 = |ΔB|/B<sub>ver3</sub>, PR 수율 계통 = |ΔB|/(1−B<sub>ver3</sub>) (<code>drawing/v3_systematics.py</code>; 사용자가 준 그림과 같은 정의). 왼쪽은 값에 맞춘 확대 뷰, 오른쪽은 y축을 0–5%로 고정한 넓은 뷰. 녹색 띠 2%. 그림을 누르면 원본 크기로 열린다.</p>
   <div class="figpair">
-    <figure><a href="figs/sum_v3_sys_np.png" target="_blank" rel="noopener"><img src="figs/sum_v3_sys_np.png" alt="FINAL_V4 nonprompt yield systematic"></a><figcaption><b>FINAL_V4 · NP 수율 계통 = |ΔB|/B</b> · fwd 0.0–2.0%, mid 0.1–1.1% (FINAL_V4와 오전 FINAL_V3, FINAL_V2를 함께 그림)</figcaption></figure>
-    <figure><a href="figs/sum_v2_sys_np.png" target="_blank" rel="noopener"><img src="figs/sum_v2_sys_np.png" alt="FINAL_V2 nonprompt yield systematic"></a><figcaption><b>FINAL_V2 · NP 수율 계통</b> · fwd 0.4–14.6%, mid 0.4–3.7%</figcaption></figure>
-    <figure><a href="figs/sum_v3_sys_pr.png" target="_blank" rel="noopener"><img src="figs/sum_v3_sys_pr.png" alt="FINAL_V4 prompt yield systematic"></a><figcaption><b>FINAL_V4 · PR 수율 계통 = |ΔB|/(1−B)</b> · 최대 0.9% (mid 16–20)</figcaption></figure>
-    <figure><a href="figs/sum_v2_sys_pr.png" target="_blank" rel="noopener"><img src="figs/sum_v2_sys_pr.png" alt="FINAL_V2 prompt yield systematic"></a><figcaption><b>FINAL_V2 · PR 수율 계통</b> · 최대 2.3%</figcaption></figure>
-    <figure><a href="figs/sum_v3_bfrac.png" target="_blank" rel="noopener"><img src="figs/sum_v3_bfrac.png" alt="FINAL_V4 B fraction vs nominal ver3"></a><figcaption><b>FINAL_V4 · B vs nominal ver3</b></figcaption></figure>
-    <figure><a href="figs/sum_v2_bfrac.png" target="_blank" rel="noopener"><img src="figs/sum_v2_bfrac.png" alt="FINAL_V2 B fraction vs nominal ver3"></a><figcaption><b>FINAL_V2 · B vs nominal ver3</b></figcaption></figure>
+    <figure><a href="figs/sum_v4_zoom_sys_np.png" target="_blank" rel="noopener"><img src="figs/sum_v4_zoom_sys_np.png" alt="NP yield systematic, zoomed"></a><figcaption><b>NP 수율 계통 · 확대</b> · fwd 0.0–2.0%, mid 0.1–1.1%</figcaption></figure>
+    <figure><a href="figs/sum_v4_wide_sys_np.png" target="_blank" rel="noopener"><img src="figs/sum_v4_wide_sys_np.png" alt="NP yield systematic, 0-5 %"></a><figcaption><b>NP 수율 계통 · 0–5%</b></figcaption></figure>
+    <figure><a href="figs/sum_v4_zoom_sys_pr.png" target="_blank" rel="noopener"><img src="figs/sum_v4_zoom_sys_pr.png" alt="PR yield systematic, zoomed"></a><figcaption><b>PR 수율 계통 · 확대</b> · fwd ≤0.6%, mid ≤0.9%</figcaption></figure>
+    <figure><a href="figs/sum_v4_wide_sys_pr.png" target="_blank" rel="noopener"><img src="figs/sum_v4_wide_sys_pr.png" alt="PR yield systematic, 0-5 %"></a><figcaption><b>PR 수율 계통 · 0–5%</b></figcaption></figure>
+    <figure><a href="figs/sum_v4_bfrac.png" target="_blank" rel="noopener"><img src="figs/sum_v4_bfrac.png" alt="FINAL_V4 B fraction vs nominal ver3"></a><figcaption><b>B vs nominal ver3</b> · 검정 nominal ver3, 파랑 2D fit FINAL_V4</figcaption></figure>
   </div>
 </section>
 
